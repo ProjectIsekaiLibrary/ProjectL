@@ -3,6 +3,7 @@
 #pragma comment(lib, "dinput8")
 #pragma comment(lib, "dxguid")
 
+// https://www.notion.so/KEY-CODE-LIST-3fe3e429fa224b77b8699b6568e052f4 참고
 enum class KEY
 {
 	//키보드 숫자키

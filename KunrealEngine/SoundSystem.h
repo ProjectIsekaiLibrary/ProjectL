@@ -31,6 +31,7 @@ namespace KunrealEngine
 		unsigned long dataSize;
 	};
 
+
 	struct Sound
 	{
 		std::string soundName;
