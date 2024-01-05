@@ -6,7 +6,6 @@
 #pragma comment(lib, "dxguid")
 
 // https://www.notion.so/KEY-CODE-LIST-3fe3e429fa224b77b8699b6568e052f4 Âü°í
-
 enum class KEY;
 
 namespace KunrealEngine
@@ -15,7 +14,7 @@ namespace KunrealEngine
 	{
 	private:
 		InputSystem();
-		~InputSystem();
+		~InputSystem(); 
 
 	private:
 		IDirectInput8* _input;

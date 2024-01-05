@@ -18,7 +18,7 @@ namespace KunrealEngine
 		:_input(nullptr), _keyboard(nullptr), _mouse(nullptr)
 		/*,_screenHeight(0), _screenWidth(0)*/, _mouseX(0), _mouseY(0)
 		, _mouseWheelData(0), _prevmouseWheelData(0)
-		, _mouseState(), _cKey()
+		, _mouseState(), _cKey(), _hWnd()
 	{
 
 	}
