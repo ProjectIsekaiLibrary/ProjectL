@@ -1,0 +1,8 @@
+﻿  Light.cpp
+C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(75): warning C4715: 'KunrealEngine::Light::GetLightType': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(140): warning C4715: 'KunrealEngine::Light::GetAmbient': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(177): warning C4715: 'KunrealEngine::Light::GetDiffuse': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(212): warning C4715: 'KunrealEngine::Light::GetSpecular': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(233): warning C4715: 'KunrealEngine::Light::GetDirection': 모든 제어 경로에서 값을 반환하지는 않습니다.
+  KunrealEngine.vcxproj -> C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\Bin\x64\Debug\KunrealEngine.dll
+  0개 파일이 복사되었습니다.
