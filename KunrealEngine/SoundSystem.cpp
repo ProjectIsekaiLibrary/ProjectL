@@ -2,7 +2,7 @@
 #include <assert.h>
 #include <algorithm>
 
-#define Assert(formula, message) assert(formula && message)
+#define ASsert(formula, message) assert(formula && message)
 #define Assert(message) assert(0 && message)
 
 namespace KunrealEngine
@@ -160,6 +160,8 @@ namespace KunrealEngine
 			index++;
 
 		}
+
+		return 0;
 	}
 
 	Sound& SoundSystem::FindSound(std::string soundname)
@@ -171,6 +173,7 @@ namespace KunrealEngine
 				return *sound;
 			}
 		}
+		Assert("FindSound function -> sound cannot find");
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -227,7 +230,7 @@ namespace KunrealEngine
 
 		// Read in the wave file header.
 		WaveHeaderType waveFileHeader;
-		unsigned int count = fread(&waveFileHeader, sizeof(waveFileHeader), 1, filePtr);
+		unsigned int count = (unsigned int)fread(&waveFileHeader, sizeof(waveFileHeader), 1, filePtr);
 		if (count != 1)
 		{
 			Assert("LoadWaveFile function -> fread is failed");
@@ -240,7 +243,7 @@ namespace KunrealEngine
 			fseek(filePtr, waveFileHeader.dataSize, SEEK_CUR);
 
 			// "data" 청크 정보 읽기
-			count = fread(&waveFileHeader.dataChunkId, sizeof(waveFileHeader.dataChunkId), 1, filePtr);
+			count = (unsigned int)fread(&waveFileHeader.dataChunkId, sizeof(waveFileHeader.dataChunkId), 1, filePtr);
 			if (count != 1)
 			{
 				// fread 실패
@@ -249,7 +252,7 @@ namespace KunrealEngine
 				return false;
 			}
 
-			count = fread(&waveFileHeader.dataSize, sizeof(waveFileHeader.dataSize), 1, filePtr);
+			count = (unsigned int)fread(&waveFileHeader.dataSize, sizeof(waveFileHeader.dataSize), 1, filePtr);
 			if (count != 1)
 			{
 				// fread 실패
@@ -361,7 +364,7 @@ namespace KunrealEngine
 		}
 
 		// Read in the wave file data into the newly created buffer.
-		count = fread(waveData, 1, waveFileHeader.dataSize, filePtr);
+		count = (unsigned int)fread(waveData, 1, std::extent<decltype(waveData)>::value, filePtr);
 		if (count != waveFileHeader.dataSize)
 		{
 			Assert("LoadWaveFile function -> fread is failed");

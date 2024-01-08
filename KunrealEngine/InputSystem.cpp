@@ -6,7 +6,7 @@
 #include "InputSystemStruct.h"
 #include "InputSystem.h"
 
-#define Assert(formula, message) assert(formula && message)
+#define ASsert(formula, message) assert(formula && message)
 #define Assert(message) assert(0 && message)
 
 #define KEYDOWN(name, key) ((name[key] & 0x80) ? true : false)

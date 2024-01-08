@@ -36,8 +36,8 @@ namespace KunrealEngine
 	{
 		std::string soundName;
 		std::string fileName;
-		IDirectSoundBuffer8* soundBuffer;
-		int volume; // 0~100
+		IDirectSoundBuffer8* soundBuffer = nullptr;
+		int volume = 0; // 0~100
 	};
 
 	class SoundSystem
