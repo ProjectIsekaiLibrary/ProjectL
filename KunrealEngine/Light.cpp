@@ -267,5 +267,15 @@ void KunrealEngine::Light::SetPointRange(float range)
 		GInterface::GraphicsPointLight* _castedLight = dynamic_cast<GInterface::GraphicsPointLight*>(_light);
 
 		_castedLight->SetRange(range);
+
+		_rangeP = range;
+	}
+}
+
+float KunrealEngine::Light::GetPointRange()
+{
+	if (_light != nullptr)
+	{
+		return this->_rangeP;
 	}
 }

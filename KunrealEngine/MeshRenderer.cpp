@@ -67,9 +67,9 @@ void KunrealEngine::MeshRenderer::SetActive(bool active)
 	}
 }
 
-void KunrealEngine::MeshRenderer::SetMeshObject(const char* fileName, const char* textureName)
+void KunrealEngine::MeshRenderer::SetMeshObject(const char* fileName, const char* textureName, bool isSolid)
 {
-	this->_mesh = GRAPHICS->CreateRenderable(fileName, textureName);
+	this->_mesh = GRAPHICS->CreateRenderable(fileName, textureName, isSolid);
 	this->_meshFileName = fileName;
 
 	if (textureName != nullptr)
@@ -117,7 +117,7 @@ std::string KunrealEngine::MeshRenderer::GetTextureName()
 void KunrealEngine::MeshRenderer::SetNormalTexture(const char* textureName)
 {
 	this->_mesh->SetNormalTexture(textureName);
-	this->_normalName = _textureName;
+	this->_normalName = textureName;
 }
 
 std::string KunrealEngine::MeshRenderer::GetNormalName()

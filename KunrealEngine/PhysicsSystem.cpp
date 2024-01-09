@@ -1,4 +1,6 @@
+#include <cassert>
 #include "PhysicsSystem.h"
+#include "TimeManager.h"
 #include "GameObject.h"
 #include "Transform.h"
 
@@ -15,10 +17,10 @@ void KunrealEngine::PhysicsSystem::Initialize()
 
 	// visual debugger 세팅, 로컬에 연결
 	_pvd = PxCreatePvd(*_foundation);
-	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 3546, 10);
-	_pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eDEBUG);
+	physx::PxPvdTransport* transport = physx::PxDefaultPvdSocketTransportCreate("127.0.0.1", 5425, 10);
+	_pvd->connect(*transport, physx::PxPvdInstrumentationFlag::eALL);
 
-	// 버전, 세팅, 단위 등의 정보를 담은 물리
+	// 버전, 세팅, 단위 등의 정보를 담은 물리						// _tolerance를 따로 정해주지 않았다면
 	_physics = PxCreatePhysics(PX_PHYSICS_VERSION, *_foundation, physx::PxTolerancesScale(), true, _pvd);
 
 	PxInitExtensions(*_physics, _pvd);
@@ -27,8 +29,14 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	CreatePhysXScene();
 
 	// 머티리얼 생성(임의)
-	_material = _physics->createMaterial(0.6f, 0.5f, 0.0f);
+	_material = _physics->createMaterial(0.5f, 0.5f, 0.5f);
 
+	/// 시험용 코드 추후 지울것
+	// 평지 만들기
+	physx::PxRigidStatic* groundPlane = physx::PxCreatePlane(*_physics, physx::PxPlane(0, 1, 0, 1), *_material);
+	_pxScene->addActor(*groundPlane);
+
+	
 
 	// collider 전부 만들기.
 	//MakeAllCollider();
@@ -39,11 +47,17 @@ void KunrealEngine::PhysicsSystem::Finalize()
 
 }
 
+void KunrealEngine::PhysicsSystem::FixedUpdate()
+{
+	_pxScene->simulate(TimeManager::GetInstance().GetDeltaTime());
+	_pxScene->fetchResults(true);
+}
+
 void KunrealEngine::PhysicsSystem::CreatePhysXScene()
 {
-	// 씬에 대한 설정
+	// 씬에 대한 설정		// SceneDescription
 	physx::PxSceneDesc sceneDesc(_physics->getTolerancesScale());
-	sceneDesc.gravity = physx::PxVec3(0.0f, -9.81f, 0.0f);
+	sceneDesc.gravity = physx::PxVec3(0.f, -9.81f, 0.f);				// 중력 설정
 	_dispatcher = physx::PxDefaultCpuDispatcherCreate(2);
 	sceneDesc.cpuDispatcher = _dispatcher;
 	sceneDesc.filterShader = physx::PxDefaultSimulationFilterShader;
