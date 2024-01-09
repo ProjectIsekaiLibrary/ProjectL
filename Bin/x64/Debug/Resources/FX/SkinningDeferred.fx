@@ -1,0 +1,156 @@
+//=============================================================================
+// Basic.fx by Frank Luna (C) 2011 All Rights Reserved.
+//
+// Basic effect that currently supports transformations, lighting, and texturing.
+//=============================================================================
+
+#include "LightHelper.fx"
+
+cbuffer cbPerObject
+{
+    float4x4 gWorld;
+    float4x4 gWorldInvTranspose;
+    float4x4 gWorldViewProj;
+    float4x4 gTexTransform;
+    Material gMaterial;
+};
+
+cbuffer cbSkinned
+{
+    float4x4 gBoneTransforms[96];
+};
+
+// Nonnumeric values cannot be added to a cbuffer.
+Texture2D gDiffuseMap;
+Texture2D gNormalMap;
+TextureCube gCubeMap;
+
+SamplerState samAnisotropic
+{
+    Filter = ANISOTROPIC;
+    MaxAnisotropy = 4;
+
+    AddressU = WRAP;
+    AddressV = WRAP;
+};
+
+struct VertexIn
+{
+    float3 PosL : POSITION;
+    float3 NormalL : NORMAL;
+    float2 Tex : TEXCOORD;
+    float3 TangentL : TANGENT;
+
+    float3 Weight : BLENDWEIGHT;
+
+    uint4 BoneIndicles : BLENDINDICES;
+};
+
+struct VertexOut
+{
+    float4 PosH : SV_POSITION;
+    float3 PosW : POSITION;
+    float3 NormalW : NORMAL;
+    float2 Tex : TEXCOORD;
+    float3 TangentW : TANGENT;
+};
+
+struct PSOut
+{
+    float4 Position : SV_Target0;
+    float4 Diffuse : SV_Target1;
+    float4 BumpedNormal : SV_Target2;
+    float4 Depth : SV_Target3;
+};
+
+VertexOut VS(VertexIn vin)
+{
+    VertexOut vout;
+
+    float weights[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+    weights[0] = vin.Weight.x;
+    weights[1] = vin.Weight.y;
+    weights[2] = vin.Weight.z;
+    weights[3] = 1 - weights[0] - weights[1] - weights[2];
+
+    float3 posL = float3(0.0f, 0.0f, 0.0f);
+    float3 normalL = float3(0.0f, 0.0f, 0.0f);
+
+    posL += weights[0] * mul(float4(vin.PosL, 1.0F), gBoneTransforms[vin.BoneIndicles.x]).xyz;
+    normalL += weights[0] * mul(vin.NormalL, (float3x3) gBoneTransforms[vin.BoneIndicles.x]);
+
+    posL += weights[1] * mul(float4(vin.PosL, 1.0F), gBoneTransforms[vin.BoneIndicles.y]).xyz;
+    normalL += weights[1] * mul(vin.NormalL, (float3x3) gBoneTransforms[vin.BoneIndicles.y]);
+
+    posL += weights[2] * mul(float4(vin.PosL, 1.0F), gBoneTransforms[vin.BoneIndicles.z]).xyz;
+    normalL += weights[2] * mul(vin.NormalL, (float3x3) gBoneTransforms[vin.BoneIndicles.z]);
+
+    posL += weights[3] * mul(float4(vin.PosL, 1.0F), gBoneTransforms[vin.BoneIndicles.w]).xyz;
+    normalL += weights[3] * mul(vin.NormalL, (float3x3) gBoneTransforms[vin.BoneIndicles.w]);
+
+
+	// Transform to world space space.
+    vout.PosW = mul(float4(posL, 1.0f), gWorld).xyz;
+    vout.NormalW = mul(normalL, (float3x3) gWorldInvTranspose);
+    vout.TangentW = mul(vin.TangentL, (float3x3) gWorld);
+    
+	// Transform to homogeneous clip space.
+    vout.PosH = mul(float4(posL, 1.0f), gWorldViewProj);
+
+	// Output vertex attributes for interpolation across triangle.
+    vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
+	///vout.Tex = vin.Tex;
+
+    return vout;
+}
+
+PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
+{
+    PSOut output;
+
+    // Interpolating normal can unnormalize it, so normalize it.
+    pin.NormalW = normalize(pin.NormalW);
+
+    float3 normalMap = gNormalMap.Sample(samAnisotropic, pin.Tex).rgb;
+
+    float4 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+
+    float3 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW);
+    
+    output.Position = float4(pin.PosW, 1.0f);
+    output.Diffuse = diffuse;
+    output.BumpedNormal = float4(bumpedNormal.xyz, 1.0f);
+    output.Depth = float4(pin.PosH.zzz, 1.0f);
+
+    return output;
+}
+
+technique11 Light
+{
+    pass P0
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS(false, false)));
+    }
+}
+
+technique11 LightTex
+{
+    pass P0
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS(true, false)));
+    }
+}
+
+technique11 LightTexReflect
+{
+    pass P0
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS(true, true)));
+    }
+}
