@@ -1,0 +1,158 @@
+#pragma once
+#include <vector>
+#include <string>
+#include "IWindow.h"
+
+
+namespace KunrealEngine
+{
+    class GameObject;
+    class Transform;
+    class MeshRenderer;
+    class Compoent;
+
+}
+
+
+namespace EpicTool
+{
+
+	enum LightType
+	{
+		DirectionalLight,
+		PointLight,
+		SpotLight,
+		None
+	};
+
+
+    class InspectorWindow : public IWindow
+    {
+    public:
+        InspectorWindow();
+        ~InspectorWindow();
+
+    public:
+        void Initialize();
+
+        virtual void ShowWindow() override;
+        virtual void ShowWindow(bool* _open, std::vector<Object>& object) override;
+
+        void ShowWindow(int& selectedObjectIndex);
+
+        template<typename PieceType> // 특수화를 통해 컴포넌트의 조각을 만듬
+        void DrawComponentPiece(PieceType& data, const std::string name); // 조각을 만들어 두고 갖다 쓰자
+
+        // 종화형이 준 팁으로는 일단 템플릿을 통해 기본 뼈대를 모두 정의해두고 그것을 가져다 만드는 것이 좋다고 했다
+        template<typename ComponentType>
+        void DrawComponentInfo(ComponentType* instance);
+
+        void DeleteComponent(KunrealEngine::Component* instance);
+
+        void SetSelectObject(); // 선택된 오브젝트를 조작할 때 사용
+
+        void IsCheckItem(bool& Item);
+
+        void SetMeshObjectEditor(std::vector<std::string> & meshList, int selectedItem);
+      
+        void ComboMeshControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected, const char* name);
+
+        void ComboLightControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected);
+
+    private:
+        void ListToRemove(std::vector<std::string>& list, std::vector<std::string>& listEditor, const std::string stringToRemove);
+
+        void ListStrToRemove(std::string& listStr , const std::string removeString);
+    private:
+        std::vector<KunrealEngine::GameObject*> _gameObjectlist;
+
+        std::vector<KunrealEngine::Component*> _compoenetList;
+
+        std::vector<std::string> _lightList;
+
+        std::string _lightSelect;
+
+        int _selectedObjectIndex;
+
+        int _selectedObjectIndex2;
+
+
+    private:
+        // 컴포넌트를 쓰기 위한 임의 변수
+        // 해당 변수를 통해 컴포넌트를 부른다
+        KunrealEngine::Transform* _tranform;
+
+        KunrealEngine::MeshRenderer* _meshRenderer;
+
+        KunrealEngine::Camera* _camera;
+
+        KunrealEngine::Light* _light;
+
+        bool _meshState;
+
+        bool _cameraFix; // 카메라
+
+        
+
+        //int _selectedMesh = -1; // 메쉬 선택을 보여줄 변수
+
+        int _selectedNormal;
+
+
+    private:
+        // 콤보에서 선택한 부분을 판단하는 변수
+        int _comboMeshSelect;
+
+        int _comboNormalSelect; 
+
+        int _comboDiffuseSelect;
+
+        int _comboLightSelect;
+
+       std::string _selectObjectName;
+        int _selectObjectNumber;
+
+        // 오브젝트의 활성화를 관리할 변수
+        bool _isObjectActive;
+
+        bool _isMeshRenderActive;
+
+        bool _isLightActive;
+
+        bool _isCameraActive;
+
+    private:
+        // 그래픽스에서 받아온 목록을 저장
+        std::vector<std::string> _meshList;
+          
+        std::vector<std::string> _meshListEditor;
+
+        std::vector<std::string> _textureList;
+
+        std::vector<std::string> _TextureListEditor;
+
+        const std::string _meshStringToRemove = "Resources/ASEFile/";
+
+        const std::string _textureStringToRemove = "Resources/Textures/";
+    
+        const std::string _directionalLight = "DirectionalLight";
+
+        const std::string _pointLight = "PointLight";
+
+        const std::string _spotLight = "SpotLight";
+
+    private:
+
+       float _ambient[4];
+       float _diffuse[4];
+       float _specular[4];
+       float _direction[3];
+
+       float _pointAmbient[4];
+       float _pointDiffuse[4];
+       float _pointSpecular[4];
+       float _pointRange;
+
+       bool _lightGet;
+    };
+}

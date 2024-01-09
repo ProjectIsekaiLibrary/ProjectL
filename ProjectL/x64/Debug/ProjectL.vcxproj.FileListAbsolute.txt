@@ -1,1 +1,2 @@
 C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\ProjectL\x64\Debug\ProjectL.vcxproj.CopyComplete
+C:\FinalProjeact\ProjectL\ProjectL\x64\Debug\ProjectL.vcxproj.CopyComplete

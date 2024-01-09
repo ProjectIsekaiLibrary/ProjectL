@@ -1,8 +1,34 @@
-﻿  Light.cpp
-C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(75): warning C4715: 'KunrealEngine::Light::GetLightType': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(140): warning C4715: 'KunrealEngine::Light::GetAmbient': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(177): warning C4715: 'KunrealEngine::Light::GetDiffuse': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(212): warning C4715: 'KunrealEngine::Light::GetSpecular': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\KunrealEngine\Light.cpp(233): warning C4715: 'KunrealEngine::Light::GetDirection': 모든 제어 경로에서 값을 반환하지는 않습니다.
-  KunrealEngine.vcxproj -> C:\Users\KOCCA19\Desktop\Projects\GA4thFinalProject_Isekai\5_Project\ProjectL\Bin\x64\Debug\KunrealEngine.dll
-  0개 파일이 복사되었습니다.
+﻿  pch.cpp
+  Camera.cpp
+  Component.cpp
+  dllmain.cpp
+  EngineCore.cpp
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  GameObject.cpp
+  GraphicsSystem.cpp
+  InputSystem.cpp
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  KunrealAPI.cpp
+  Light.cpp
+  MeshRenderer.cpp
+  PhysicsSystem.cpp
+  Scene.cpp
+  SceneManager.cpp
+  SoundSystem.cpp
+  TimeManager.cpp
+  Transform.cpp
+  코드를 생성하고 있습니다...
+C:\FinalProjeact\ProjectL\KunrealEngine\SoundSystem.cpp(177): warning C4715: 'KunrealEngine::SoundSystem::FindSound': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(87): warning C4715: 'KunrealEngine::MeshRenderer::GetMeshName': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(129): warning C4715: 'KunrealEngine::MeshRenderer::GetNormalName': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(142): warning C4715: 'KunrealEngine::MeshRenderer::GetMaterial': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(158): warning C4715: 'KunrealEngine::MeshRenderer::GetReflect': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(75): warning C4715: 'KunrealEngine::Light::GetLightType': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(140): warning C4715: 'KunrealEngine::Light::GetAmbient': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(177): warning C4715: 'KunrealEngine::Light::GetDiffuse': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(212): warning C4715: 'KunrealEngine::Light::GetSpecular': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(233): warning C4715: 'KunrealEngine::Light::GetDirection': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\FinalProjeact\ProjectL\KunrealEngine\GraphicsSystem.cpp(58): warning C4715: 'KunrealEngine::GraphicsSystem::GetCubeMapList': 모든 제어 경로에서 값을 반환하지는 않습니다.
+     C:\FinalProjeact\ProjectL\Bin\x64\Debug\KunrealEngine.lib 라이브러리 및 C:\FinalProjeact\ProjectL\Bin\x64\Debug\KunrealEngine.exp 개체를 생성하고 있습니다.
+  KunrealEngine.vcxproj -> C:\FinalProjeact\ProjectL\Bin\x64\Debug\KunrealEngine.dll
+  1개 파일이 복사되었습니다.
