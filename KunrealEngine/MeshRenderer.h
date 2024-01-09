@@ -51,7 +51,7 @@ namespace KunrealEngine
 	public:
 		// 처음 컴포넌트를 생성한 후 실행해줘야함
 		// 매개변수로 mesh 파일 이름, 텍스처 이름 -> 텍스처는 default 매개변수로 nullptr 가지고 있음
-		void SetMeshObject(const char* fileName, const char* textureName = nullptr);
+		void SetMeshObject(const char* fileName, const char* textureName = nullptr, bool isSolid = true);
 		std::string GetMeshName();
 
 		// 이미 mesh를 무언가 가지고 있을 때 교체하는 함수

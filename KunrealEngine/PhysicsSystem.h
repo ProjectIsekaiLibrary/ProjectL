@@ -32,6 +32,7 @@ namespace KunrealEngine
 	public:
 		void Initialize();
 		void Finalize();
+		void FixedUpdate();
 
 	public:
 		void CreatePhysXScene();
@@ -44,18 +45,19 @@ namespace KunrealEngine
 		void AddActorsToScene();
 
 	private:
-		std::vector<physx::PxRigidDynamic*> _rigidDynamics;
-		std::vector<physx::PxRigidStatic*> _rigidStatics;
-		std::vector<physx::PxFixedJoint*> _fixedJoints;
+		std::vector<physx::PxRigidDynamic*>	_rigidDynamics;
+		std::vector<physx::PxRigidStatic*>	_rigidStatics;
+		std::vector<physx::PxFixedJoint*>	_fixedJoints;
 
 	private:
-		physx::PxDefaultAllocator		_allocator;
-		physx::PxDefaultErrorCallback	_errorCallback;
-		physx::PxFoundation* _foundation;
-		physx::PxPhysics* _physics;
-		physx::PxDefaultCpuDispatcher* _dispatcher;
-		physx::PxScene* _pxScene;
-		physx::PxMaterial* _material;
-		physx::PxPvd* _pvd;
+		physx::PxDefaultAllocator			_allocator;
+		physx::PxDefaultErrorCallback		_errorCallback;
+		physx::PxTolerancesScale			_torlerance;
+		physx::PxFoundation*				_foundation;
+		physx::PxPhysics*					_physics;
+		physx::PxScene*						_pxScene;
+		physx::PxDefaultCpuDispatcher*		_dispatcher;
+		physx::PxMaterial*					_material;
+		physx::PxPvd*						_pvd;
 	};
 }

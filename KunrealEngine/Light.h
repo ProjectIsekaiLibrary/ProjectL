@@ -107,6 +107,7 @@ namespace KunrealEngine
 		void SetPointPosition();
 
 		void SetPointRange(float range);
+		float GetPointRange();
 	};
 }
 
