@@ -1,0 +1,229 @@
+#include <d3d11.h>
+#include <DirectXMath.h>
+#include "GeometryGenerator.h"
+#include "ArkDevice.h"
+#include "d3dx11effect.h"
+#include "deferredBuffer.h"
+#include "CommonStruct.h"
+#include "Camera.h"
+#include "ArkEffect.h"
+#include "ArkBuffer.h"
+#include "ResourceManager.h"
+#include "LightManager.h"
+#include "DirectionalLight.h"
+#include "PointLight.h"
+#include "deferredRenderer.h"
+
+ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight)
+	: _tech(nullptr), _fxDirLightCount(nullptr),_fxPointLightCount(nullptr),
+	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr),
+	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _deferredBuffer(nullptr),
+	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		_backGroundColor[i] = 1.0f;
+	}
+
+	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
+
+	Initailize();
+
+	_material.ambient.x = 0.5f;
+	_material.ambient.y = 0.5f;
+	_material.ambient.z = 0.5f;
+	_material.ambient.w = 1.0f;
+
+	_material.diffuse.x = 0.5f;
+	_material.diffuse.y = 0.5f;
+	_material.diffuse.z = 0.5f;
+	_material.diffuse.w = 1.0f;
+
+	_material.specular.x = 0.9f;
+	_material.specular.y = 0.9f;
+	_material.specular.z = 0.9f;
+	_material.specular.w = 1.0f;
+
+}
+
+ArkEngine::ArkDX11::DeferredRenderer::~DeferredRenderer()
+{
+	
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
+{
+	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+	
+	SetEffect();
+
+	BuildQuadBuffers();
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::BeginRender()
+{
+	_deferredBuffer->SetRenderTargets();
+	_deferredBuffer->ClearRenderTargets(_backGroundColor);
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::Update(ArkEngine::ICamera* pCamera)
+{
+	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(pCamera);
+
+	_eyePosW = DirectX::XMFLOAT3(camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
+
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::Render()
+{
+	auto deviceContext = _arkDevice->GetDeviceContext();
+
+	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	deviceContext->RSSetState(_arkDevice->GetSolidRS());
+
+	SetDirLight();
+
+	SetPointLight();
+
+	_fxEyePosW->SetRawValue(&_eyePosW, 0, sizeof(DirectX::XMFLOAT3));
+
+	_fxMaterial->SetRawValue(&_material, 0, sizeof(Material));
+
+	DirectX::XMFLOAT4 tempMaterial = { 0.5f, 0.5f, 0.5f, 0.5f };
+
+	_positionMap->SetResource(_deferredBuffer->GetSRV(0));
+	_diffuseMap->SetResource(_deferredBuffer->GetSRV(1));
+	_normalMap->SetResource(_deferredBuffer->GetSRV(2));
+
+	D3DX11_TECHNIQUE_DESC techDesc;
+	_tech->GetDesc(&techDesc);
+
+	UINT stride = sizeof(ArkEngine::ArkDX11::Postex);
+	UINT offset = 0;
+
+	auto vertexBuffer = _arkBuffer->GetVertexBuffer();
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(_arkBuffer->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	_tech->GetPassByIndex(0)->Apply(0, deviceContext);
+	deviceContext->DrawIndexed(6, 0, 0);
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
+{
+	_arkBuffer = nullptr;
+	_arkEffect = nullptr;
+	_arkDevice = nullptr;
+	
+	_diffuseMap = nullptr;
+	_normalMap = nullptr;
+	_positionMap = nullptr;
+	_tech = nullptr;
+
+	_fxPointLightCount->Release();
+	_fxPointLights->Release();
+
+	_fxDirLightCount->Release();
+	_fxDirLights->Release();
+
+	_fxEyePosW->Release();
+
+	delete _deferredBuffer;
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
+{
+	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/finalDeferred.fx");
+	auto effect = _arkEffect->GetEffect();
+
+	_tech = effect->GetTechniqueByIndex(0);
+
+	_fxDirLights = effect->GetVariableByName("gDirLights");
+	_fxDirLightCount = effect->GetVariableByName("gDirLightCount")->AsScalar();
+
+	_fxPointLights = effect->GetVariableByName("gPointLights");
+	_fxPointLightCount = effect->GetVariableByName("gPointLightCount")->AsScalar();
+
+	_fxEyePosW = effect->GetVariableByName("gEyePosW")->AsVector();
+
+	// юс╫ц 
+	_fxMaterial = effect->GetVariableByName("gMaterial");
+
+	_positionMap = effect->GetVariableByName("PositionTexture")->AsShaderResource();
+	_normalMap = effect->GetVariableByName("BumpedNormalTexture")->AsShaderResource();
+	_diffuseMap = effect->GetVariableByName("DiffuseAlbedoTexture")->AsShaderResource();
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()
+{
+	GeometryGenerator generator;
+
+	generator.CreateQuad();
+
+	_arkBuffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("Quad");
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::SetDirLight()
+{
+	auto dirLightList = LightManager::GetInstance()->GetActiveDirLightList();
+
+	if (dirLightList.size() > 0)
+	{
+		size_t dataSize = dirLightList.size() * sizeof(ArkEngine::ArkDX11::DirectionalLight);
+
+		if (dataSize <= UINT32_MAX)
+		{
+			uint32_t dataSize32 = static_cast<uint32_t>(dataSize);
+
+			_fxDirLights->SetRawValue(dirLightList.data(), 0, dataSize32);
+		}
+
+		size_t size = dirLightList.size();
+
+		if (size <= INT_MAX)
+		{
+			int intSize = static_cast<int>(size);
+			_fxDirLightCount->SetInt(intSize);
+		}
+	}
+	else
+	{
+		_fxDirLightCount->SetInt(0);
+	}
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::SetPointLight()
+{
+	auto pointLightList = LightManager::GetInstance()->GetActivePointLightList();
+
+	if (pointLightList.size() > 0)
+	{
+		size_t dataSize = pointLightList.size() * sizeof(ArkEngine::ArkDX11::PointLight);
+
+		if (dataSize <= UINT32_MAX)
+		{
+			uint32_t dataSize32 = static_cast<uint32_t>(dataSize);
+
+			_fxPointLights->SetRawValue(pointLightList.data(), 0, dataSize32);
+		}
+
+		size_t size = pointLightList.size();
+
+		if (size <= INT_MAX)
+		{
+			int intSize = static_cast<int>(size);
+			_fxPointLightCount->SetInt(intSize);
+		}
+	}
+	else
+	{
+		_fxPointLightCount->SetInt(0);
+	}
+}
+
+ArkEngine::ArkDX11::deferredBuffer* ArkEngine::ArkDX11::DeferredRenderer::GetDeferredBuffer()
+{
+	return _deferredBuffer;
+}
