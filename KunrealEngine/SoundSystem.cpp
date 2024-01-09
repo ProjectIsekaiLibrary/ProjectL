@@ -364,7 +364,7 @@ namespace KunrealEngine
 		}
 
 		// Read in the wave file data into the newly created buffer.
-		count = (unsigned int)fread(waveData, 1, std::extent<decltype(waveData)>::value, filePtr);
+		count = (unsigned int)fread(waveData, 1, waveFileHeader.dataSize, filePtr);
 		if (count != waveFileHeader.dataSize)
 		{
 			Assert("LoadWaveFile function -> fread is failed");
