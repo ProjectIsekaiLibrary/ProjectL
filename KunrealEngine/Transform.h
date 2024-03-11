@@ -1,5 +1,6 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
 #include "../KunrealMath/MathHeaders.h"
@@ -15,13 +16,15 @@ namespace KunrealEngine
 	{
 	typedef bool FLAG;
 
-	public:
+		friend class GameObject;
+	private:
 		Transform();
+	public:
 		~Transform();
 
 	public:
 		virtual void Initialize() override;
-		virtual void Finalize() override;
+		virtual void Release() override;
 
 		virtual void FixedUpdate() override;
 		virtual void Update() override;
@@ -34,15 +37,12 @@ namespace KunrealEngine
 		virtual void SetActive(bool active) override;
 
 	private:
-		/// DX Math를 사용하지 않기 위해
-		KunrealMath::Float3 _position;
-		KunrealMath::Float3 _rotation;
-		KunrealMath::Float3 _scale;
+		DirectX::XMFLOAT3 _position;
+		DirectX::XMFLOAT4 _rotation;				// local
+		DirectX::XMFLOAT3 _scale;
 
-		KunrealMath::Float2 _UIPosition;
-		KunrealMath::Float2 _UIScale;
-
-		KunrealMath::Matrix4x4 _worldTM;
+		DirectX::XMFLOAT4 _quaternion;				// world
+		DirectX::XMFLOAT4X4 _worldTM;
 
 	public:
 		// Rotation값 조정
@@ -54,24 +54,14 @@ namespace KunrealEngine
 		// Scale값 조정
 		void SetScale(float x, float y, float z);
 
-		KunrealMath::Float3 GetPosition();
-		KunrealMath::Float3 GetRotation();
-		KunrealMath::Float3 GetScale();
-
-	public:
-		/// UI전용 Transform 값
-		// UI 전용 2D 좌표값
-		void SetUIPosition(float x, float y);
-		KunrealMath::Float2 GetUIPosition();
-
-		// UI 전용 2D 스케일
-		void SetUIScale(float x, float y);
-		KunrealMath::Float2 GetUIScale();
+		DirectX::XMFLOAT3 GetPosition();
+		DirectX::XMFLOAT4 GetRotation();
+		DirectX::XMFLOAT3 GetScale();
 
 	public:
 		// WorldTM 계산			// SRT
-		void CreateWorldTransformMatrix();
-		KunrealMath::Matrix4x4 GetWorldTM();
+		DirectX::XMFLOAT4X4 CreateWorldTransformMatrix();
+		DirectX::XMFLOAT4X4 GetWorldTM();
 	};
 }
 

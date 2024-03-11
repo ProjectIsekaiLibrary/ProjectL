@@ -30,6 +30,7 @@ namespace ArkEngine
 			void CaculateTransform();
 
 			const DirectX::XMMATRIX GetTranslationMatrix() const;
+			const DirectX::XMVECTOR GetTranslationVector() const;
 			const DirectX::XMMATRIX GetRotatinMatrix() const;
 
 			const DirectX::XMMATRIX GetScaleMatrix() const;

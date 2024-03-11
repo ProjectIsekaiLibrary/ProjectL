@@ -15,49 +15,83 @@ EpicTool::FileLoad::~FileLoad()
 /// <summary>
 /// 리플랙션으로 대부분 폐기 예정
 /// 2024.01.08
+/// 
+/// 컴포넌트 기반이라 디시리얼라이즈가 필요하다고 판단함
+/// 2024.03.04
 /// </summary>
 void EpicTool::FileLoad::Initialize()  // 아래 부분은 이후에 반복적으로 호출 될 수 있는 부분이기에 분리할 수도 있다 , 
 {
-    ////json파일 중에 앞서 저장해둔 파일을 읽어옴
-    //std::ifstream inputFile("editor_stte.json");
-    //if (inputFile.is_open()) // 해당 부분 안쪽으로 진입을 못함
-    //{
-    //    nlohmann::json jsonData;
-    //    inputFile >> jsonData;
-    //    inputFile.close();
-    //    // json에 따라 오브젝트를 설정함
-    //    for (const auto& jsonItem : jsonData)
-    //    {
-    //        std::string sceneName = jsonItem["SceneName"];
+    //json파일 중에 앞서 저장해둔 파일을 읽어옴
+   std::ifstream inputFile("output.json");
+   if (inputFile.is_open())
+   {
+	   nlohmann::json jsonData;
+	   inputFile >> jsonData;
+	   inputFile.close();
+	   // json에 따라 오브젝트를 설정함
+	   for (const auto& jsonItem : jsonData)
+	   {
+		   std::string objectName = jsonItem["POD"]["name"];
+		   KunrealEngine::GetCurrentScene()->CreateObject(objectName);
 
-    //        std::string objectName = jsonItem["ObjectName"];  // 이름 갖고있기
+		   KunrealEngine::GameObject* object = KunrealEngine::GetCurrentScene()->GetGameObject(objectName);
+		   std::vector<KunrealEngine::GameObject*> objectIndex = KunrealEngine::GetCurrentScene()->
+			   GetObjectList();
 
-    //        std::string mainCamera = "MainCamera";
+		   if (object)
+		   {
+			   KunrealEngine::Transform* trans = object->GetComponent<KunrealEngine::Transform>();
 
-    //        {
-    //        	////존재 안하면 만들고 설정  // 해당부분 문제 발생 (주석처리하면 없는 오브젝트는 안만들고 중복으로 만듬)
-				//KunrealEngine::CreateScene(sceneName);
-				//if (objectName != mainCamera)
-				//{
-				//	KunrealEngine::GetScene(sceneName)->CreateObject(objectName);
-				//}
+			   trans->SetPosition(jsonItem["POD"]["position_x"], jsonItem["POD"]["position_y"], jsonItem["POD"]["position_z"]);
+			   trans->SetRotation(jsonItem["POD"]["rotation_x"], jsonItem["POD"]["rotation_y"], jsonItem["POD"]["rotation_z"]);
+			   trans->SetScale(jsonItem["POD"]["scale_x"], jsonItem["POD"]["scale_y"], jsonItem["POD"]["scale_z"]);
 
-    //        	KunrealEngine::GameObject* object = KunrealEngine::GetCurrentScene()->GetGameObject(objectName); 
-    //        	std::vector<KunrealEngine::GameObject*> objectIndex = KunrealEngine::GetCurrentScene()->
-    //        		GetObjectList();
 
-    //            if(object)
-    //        	{    
-    //        		// 오브젝트의 데이터를 가져옴
-    //        		// 오브젝트가 있다면 트랜스폼을 가져옴
-    //        		KunrealEngine::Transform* trans = object->GetComponent<KunrealEngine::Transform>();
-    //                
-    //        		// json 값에 따라 Transform을 설정해줌
-    //        		trans->SetPosition(jsonItem["TransformData"]["position_x"], jsonItem["TransformData"]["position_y"], jsonItem["TransformData"]["position_z"]);
-    //        		trans->SetRotation(jsonItem["TransformData"]["rotation_x"], jsonItem["TransformData"]["rotation_y"], jsonItem["TransformData"]["rotation_z"]);
-    //        		trans->SetScale(jsonItem["TransformData"]["scale_x"], jsonItem["TransformData"]["scale_y"], jsonItem["TransformData"]["scale_z"]);
+			   // 메쉬 관련
+			   auto meshRenderer = jsonItem["POD"].find("meshRenderer");
+			   auto diffuse = jsonItem["POD"]["meshRenderer"].find("Diffuse");
+			   auto mesh = jsonItem["POD"]["meshRenderer"].find("Mesh");
+			   auto normal = jsonItem["POD"]["meshRenderer"].find("Normal");
+			   auto renderingState = jsonItem["POD"]["meshRenderer"].find("RenderingState");
 
-    //                // json값에 따라 mesh component를 설정해줌
+			   if (meshRenderer != jsonItem["POD"].end() && !jsonItem["POD"]["meshRenderer"].empty())
+			   {
+				   object->AddComponent<KunrealEngine::MeshRenderer>();
+				   KunrealEngine::MeshRenderer* meshRenderer = object->GetComponent<KunrealEngine::MeshRenderer>();
+
+				   if (diffuse != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Diffuse"].empty()))
+				   {
+					   object->GetComponent<KunrealEngine::MeshRenderer>()->SetDiffuseTexture(0, jsonItem["POD"]["meshRenderer"]["Diffuse"].get<std::string>().c_str());
+				   }
+				   if (mesh != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Mesh"].empty()))
+				   {
+					   object->GetComponent<KunrealEngine::MeshRenderer>()->SetMeshObject(jsonItem["POD"]["meshRenderer"]["Mesh"].get<std::string>().c_str());
+				   }
+				   if (normal != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Normal"].empty()))
+				   {
+					   // 노멀은 디퓨즈와 같은 이유로 보류
+				   }
+				   //if (renderingState != jsonItem["POD"]["meshRenderer"].end() && jsonItem["POD"]["meshRenderer"]["RenderingState"] == "\u0001")
+				   //{
+					  // object->GetComponent<KunrealEngine::MeshRenderer>()->
+					  // 기본적으로 true라고 생각
+				   //}
+
+			   }
+
+
+			   // 라이트
+
+			   // 이미지
+
+			   // 커스텀컴포넌트
+
+			   // 애니메이션 프레임 (애니메이션 쪽이 ui 미구현이 많음)
+
+		   }
+	   }
+
+   }
 
 				//	auto meshRenderer = jsonItem["MeshData"].find("MeshRenderer");
 				//	auto textureRenderer = jsonItem["MeshData"].find("TextureRenderer");

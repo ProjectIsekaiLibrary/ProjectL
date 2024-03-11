@@ -22,6 +22,9 @@ namespace EpicTool
 {
     class InspectorWindow;
     class HierarchyWindow;
+    class DebugWindow;
+    class Serialize;
+    enum DebugType;
 
     class ShowWindowManager : public IWindow
     {
@@ -37,12 +40,24 @@ namespace EpicTool
 
         virtual void ShowWindow(bool* _open, std::vector<Object>& object) override;
 
-    private:
+        virtual void ShowWindow(int& selectedObjectIndex); // 창을 출력
 
-        int _selectedObjectIndex;  // 정말 쓰고싶지않은데 일단 임시로
+    private:
 
         // 각 윈도우의 객체 설정
         InspectorWindow* _inspector;
         HierarchyWindow* _Hierarchy;
+
+        DebugWindow* _debugWindow;
+
+        DebugType _debugHierarchyType;
+        DebugType _debugInspectorType;
+
+	private:
+		std::string _deleteObject;
+		std::string _deleteComponent;
+
+    private:
+        Serialize* _serialize;
     };
 }

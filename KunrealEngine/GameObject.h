@@ -37,7 +37,7 @@ namespace KunrealEngine
 		void LateUpdate();
 
 		void OnDisable();
-		void Finalize();
+		void Release();
 
 	private: 
 		std::vector<Component*> _componentContainer;		// 컴포넌트들을 담을 벡터
@@ -104,6 +104,21 @@ namespace KunrealEngine
 			newComponent->Initialize();
 		}
 
+		// 오브젝트에 매개변수를 가진 컴포넌트를 추가하는 함수
+		template<typename T, typename U>
+		void AddComponentParam(U param)
+		{
+			T* newComponent = new T(param);
+
+			this->_componentContainer.emplace_back(newComponent);
+			if (newComponent->GetOwner() == nullptr)
+			{
+				newComponent->SetOwner(this);											// 컴포넌트의 소유주를 이 오브젝트로
+				newComponent->_componentName = GetOriginalTypeName(typeid(T).name());	// 컴포넌트의 이름을 넣어줌
+			}
+			newComponent->Initialize();
+		}
+
 		// 오브젝트의 특정 컴포넌트를 반환하는 함수
 		// componentContainer는 오브젝트 내에서의 컨테이너
 		template<typename T>
@@ -130,6 +145,7 @@ namespace KunrealEngine
 
 		// 컴포넌트 리스트를 반환
 		std::vector<Component*> GetComponentList();
+
 	};
 }
 

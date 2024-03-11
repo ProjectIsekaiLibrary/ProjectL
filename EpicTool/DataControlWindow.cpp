@@ -1,11 +1,12 @@
 
 #include "imgui.h"
-#include "FileSave.h"
+//#include "FileSave.h"
 #include <nlohmann/json.hpp> 
 #include <iostream>
 #include <fstream>
 #include "DataControlWindow.h"
 #include "KunrealAPI.h"
+#include "Serialize.h"
 
 #include <string.h>
  // NFD를 쓸것인데 아직 lib 빌드가 안되었다 확인해야함
@@ -33,16 +34,16 @@ void EpicTool::DataControlWindow::ShowWindow()
 
 }
 
-void EpicTool::DataControlWindow::ShowWindow(bool& close)
+void EpicTool::DataControlWindow::ShowWindow(bool& close) //세이브 버튼 다른 곳으로 이동 해야할듯
 {
 	std::string samplefilePath = _saveFilePath;
 
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-	_fileSave = nullptr;
+
 	if (_fileSave == nullptr)
 	{
-		_fileSave = new FileSave();
+		_serialize = new Serialize();
 	}
 
 	if (_show_save_editor)
@@ -116,7 +117,7 @@ void EpicTool::DataControlWindow::ShowWindow(bool* _open, std::vector<Object>& o
 
 void EpicTool::DataControlWindow::Initialize()
 {
-   
+
 }
  
 void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
@@ -135,7 +136,7 @@ void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
             _saveFilePath = chosenPath;
 
             free(outPath);
-            _fileSave->OnFileSave(_saveFilePath);
+			_serialize->SaveFile(_saveFilePath);
         }
     }
 }

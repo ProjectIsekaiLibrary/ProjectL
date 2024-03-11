@@ -17,12 +17,13 @@ enum class eBUFFERTYPE
 	GBUFFER_POSITION,
 	GBUFFER_DIFFUSE,
 	GBUFFER_NORMALMAP,
+	GBUFFER_EMISSIONMAP,
 	GBUFFER_DEPTH,
-
+	GBUFFER_MATERIAL,
+	GBUFFER_COLOR,
 	// G¹öÆÛ ¿ä¼ÒÀÇ ÃÑ °¹¼ö
 	GBUFFER_COUNT		
 };
-
 
 namespace ArkEngine
 {
@@ -46,6 +47,7 @@ namespace ArkEngine
 
 		public:
 			ID3D11ShaderResourceView* GetSRV(int index);
+			ID3D11Texture2D* GetTextrue(int index);
 
 		private:
 			void CreateRenderTargetTexture(ArkEngine::ArkDX11::ArkDevice* pDeivce);

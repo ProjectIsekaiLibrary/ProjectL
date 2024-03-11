@@ -62,7 +62,7 @@ namespace ArkEngine
 		
 		// Animation
 	private:
-		std::shared_ptr<asAnimation> ReadAnimationData(aiAnimation* srcAnimation);
+		std::shared_ptr<asAnimation> ReadAnimationData(aiAnimation* srcAnimation, std::string animName);
 		
 		// SRT와 관련된 부분을 추출하는 함수
 		std::shared_ptr<asAnimationNode> ParseAnimationNode(std::shared_ptr<asAnimation> animation, aiNodeAnim* srcNode);

@@ -87,6 +87,30 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 		diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
 		spec    = specFactor * mat.Specular * L.Specular;
 	}
+		
+	//// Initialize outputs.
+	//ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+	//
+	//// The light vector aims opposite the direction the light rays travel.
+	//float3 lightVec = -light.Direction;
+	//
+	//// Add ambient term.
+	//ambient = mat.Ambient * light.Ambient;
+	//
+	//// Calculate Lambertian term
+	//float NdotL = max(0.0f, dot(normal, lightVec));
+	//diffuse = mat.Diffuse * light.Diffuse * NdotL;
+	//
+	//// Calculate specular term
+	//if (NdotL > 0)
+	//{
+	//	float3 H = normalize(lightVec + toEye);
+	//	float specularPower = max(1.0f, mat.Specular.w); // Ensure power is at least 1 to avoid issues
+	//	float NdotH = max(0.0f, dot(normal, H));
+	//	spec = mat.Specular * light.Specular * pow(NdotH, specularPower);
+	//}
 }
 
 //---------------------------------------------------------------------------------------

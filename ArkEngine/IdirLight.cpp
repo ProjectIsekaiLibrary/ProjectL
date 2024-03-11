@@ -1,6 +1,6 @@
+#include <DirectXMath.h>
 #include "DirectionalLight.h"
 #include "LightManager.h"
-#include "MathConverter.h"
 #include "IdirLight.h"
 
 ArkEngine::IdirLight::IdirLight(unsigned int lightIndex)
@@ -49,47 +49,43 @@ void ArkEngine::IdirLight::Delete()
 	delete this;
 }
 
-void ArkEngine::IdirLight::SetAmbient(KunrealEngine::KunrealMath::Float4 ambient)
+void ArkEngine::IdirLight::SetAmbient(DirectX::XMFLOAT4 ambient)
 {
-	auto amb = ArkEngine::ArkDX11::ConvertFloat4(ambient);
-	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetAmbient(amb);
+	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetAmbient(ambient);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetAmbient(amb);
+		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetAmbient(ambient);
 	}
 }
 
-void ArkEngine::IdirLight::SetDiffuse(KunrealEngine::KunrealMath::Float4 diffuse)
+void ArkEngine::IdirLight::SetDiffuse(DirectX::XMFLOAT4 diffuse)
 {
-	auto dif = ArkEngine::ArkDX11::ConvertFloat4(diffuse);
-	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetDiffuse(dif);
+	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetDiffuse(diffuse);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetDiffuse(dif);
+		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetDiffuse(diffuse);
 	}
 }
 
-void ArkEngine::IdirLight::SetSpecular(KunrealEngine::KunrealMath::Float4 specular)
+void ArkEngine::IdirLight::SetSpecular(DirectX::XMFLOAT4 specular)
 {
-	auto spec = ArkEngine::ArkDX11::ConvertFloat4(specular);
-	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetSpecular(spec);
+	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetSpecular(specular);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetSpecular(spec);
+		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetSpecular(specular);
 	}
 }
 
-void ArkEngine::IdirLight::SetDirection(KunrealEngine::KunrealMath::Float3 direction)
+void ArkEngine::IdirLight::SetDirection(DirectX::XMFLOAT3 direction)
 {
-	auto dir = ArkEngine::ArkDX11::ConvertFloat3(direction);
-	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetDir(dir);
+	ArkEngine::LightManager::GetInstance()->GetAllDirLightList()[_index].SetDir(direction);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetDir(dir);
+		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetDir(direction);
 	}
 }
 

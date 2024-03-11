@@ -1,4 +1,8 @@
+#define NOMINMAX
+
 #include <DirectXMath.h>
+#include <algorithm>
+#include "MathHeaders.h"
 #include "GeometryGenerator.h"
 #include "ArkBuffer.h"
 #include "CommonStruct.h"
@@ -11,34 +15,67 @@
 #include "d3dx11effect.h"
 #include "DebugObject.h"
 
-ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, eDebugType type)
-	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr), _fxWorldViewProj(nullptr),
-	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr), 
-	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _width(0.0f), _height(0.0f), _depth(0.0f), _minPos(0.0f), _type(type)
+ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, eDebugType type, DirectX::XMFLOAT4 color)
+	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
+	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
+	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(type)
 {
-	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
-	auto maxPos = buffer->GetMaxPos();
-	auto minPos = buffer->GetMinPos();
+	auto buffers = ResourceManager::GetInstance()->GetArkBuffer(_objectName);
 
-	_width = maxPos.x - minPos.x;
-	_height = maxPos.y - minPos.y;
-	_depth = maxPos.z - minPos.z;
+	DirectX::XMFLOAT3 maxPos = buffers[0]->GetMaxPos();
+	DirectX::XMFLOAT3 minPos = buffers[0]->GetMinPos();
+
+	for (auto index : buffers)
+	{
+		minPos.x = std::min(minPos.x, index->GetMinPos().x);
+		minPos.y = std::min(minPos.y, index->GetMinPos().y);
+		minPos.z = std::min(minPos.z, index->GetMinPos().z);
+
+		maxPos.x = std::max(maxPos.x, index->GetMaxPos().x);
+		maxPos.y = std::max(maxPos.y, index->GetMaxPos().y);
+		maxPos.z = std::max(maxPos.z, index->GetMaxPos().z);
+	}
+
+	_halfWidth = std::abs(maxPos.x - minPos.x) / 2;
+	_halfHeight = std::abs(maxPos.y - minPos.y) / 2;
+	_halfDepth = std::abs(maxPos.z - minPos.z) / 2;
 	_minPos = minPos.y;
+
+	_centerPos.x = (maxPos.x + minPos.x) / 2;
+	_centerPos.y = (maxPos.y + minPos.y) / 2 - _halfHeight;
+	_centerPos.z = (maxPos.z + minPos.z) / 2;
 
 	_objectName += "/Debug";
 
 	Initialize();
 }
 
-ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, eDebugType type, float centerPosY, float range)
-	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr), _fxWorldViewProj(nullptr),
+ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, float width, float height, float depth, DirectX::XMFLOAT4 color)
+	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
+	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
 	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
-	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _width(0.0f), _height(0.0f), _depth(0.0f), _minPos(0.0f), _type(type)
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(width / 2), _halfHeight(height / 2), _halfDepth(depth / 2), _minPos(0.0f), _type(eDebugType::Cube)
 {
-	_width = range;
-	_height = range;
-	_depth = range;
-	_minPos = centerPosY - (range/2);
+	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
+
+	//_minPos -= _halfHeight;
+
+	_objectName += "/Debug";
+
+	Initialize();
+}
+
+ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, float centerPosY, float range, DirectX::XMFLOAT4 color)
+	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
+	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
+	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(eDebugType::Shpere)
+{
+	_halfWidth = std::abs(range / 2);
+	_halfHeight = std::abs(range / 2);
+	_halfDepth = std::abs(range / 2);
+	_minPos = centerPosY - (range / 2);
 
 	_objectName += "/Debug";
 
@@ -69,9 +106,13 @@ void ArkEngine::ArkDX11::DebugObject::Update(ArkEngine::ICamera* p_Camera)
 {
 	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
 
-	DirectX::XMStoreFloat4x4(&_world, DirectX::XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
 	DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
 	DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
+
+	_fxFrustum->SetFloatVectorArray(reinterpret_cast<float*>(&p_Camera->GetFrstum()[0]), 0, static_cast<uint32_t>(p_Camera->GetFrstum().size()));
+
+	CheckFrustum(p_Camera);
 }
 
 void ArkEngine::ArkDX11::DebugObject::Render()
@@ -95,8 +136,8 @@ void ArkEngine::ArkDX11::DebugObject::Render()
 	for (UINT p = 0; p < techDesc.Passes; ++p)
 	{
 		DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
-		world = XMMatrixMultiply(world, _meshTransform->GetTransformMatrix());
 
+		_fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
 		DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
 		DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
 		DirectX::XMMATRIX WorldViewProj = world * view * proj;
@@ -119,7 +160,9 @@ void ArkEngine::ArkDX11::DebugObject::Finalize()
 	_indexBuffer = nullptr;
 	_vertexBuffer = nullptr;
 
+	_fxFrustum->Release();
 	_fxWorldViewProj->Release();
+	_fxWorld->Release();
 
 	_tech = nullptr;
 	_effect = nullptr;
@@ -133,6 +176,11 @@ bool ArkEngine::ArkDX11::DebugObject::GetRenderingState()
 void ArkEngine::ArkDX11::DebugObject::SetRenderingState(bool tf)
 {
 	_isRendering = tf;
+}
+
+void ArkEngine::ArkDX11::DebugObject::SetTransform(DirectX::XMFLOAT4X4 matrix)
+{
+	_meshTransform->SetTransformMatrix(matrix);
 }
 
 void ArkEngine::ArkDX11::DebugObject::SetTransformMatrix(DirectX::XMFLOAT4X4 matrix)
@@ -155,21 +203,73 @@ void ArkEngine::ArkDX11::DebugObject::SetScale(float x, float y, float z)
 	_meshTransform->SetScaleMatrix(x, y, z);
 }
 
+void ArkEngine::ArkDX11::DebugObject::Delete()
+{
+	delete this;
+}
+
+float ArkEngine::ArkDX11::DebugObject::GetRadius()
+{
+	return _halfWidth;
+}
+
+void ArkEngine::ArkDX11::DebugObject::CheckFrustum(ArkEngine::ICamera* p_Camera)
+{
+	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
+	auto vertexPosList = buffer->GetVertexPosList();
+
+	auto frustum = p_Camera->GetFrstum();
+
+	int outFrustum = 0;
+
+	for (int i = 0; i < 6; i++)
+	{
+		DirectX::XMFLOAT3 planeNormal = { frustum[i].x, frustum[i].y, frustum[i].z };
+		float planeD = frustum[i].w;
+		float distance = 0.0f;
+
+		for (int i = 0; i < vertexPosList.size(); i++)
+		{
+			auto finalPos = DirectX::XMVector3TransformCoord(DirectX::XMLoadFloat3(&vertexPosList[i]), _meshTransform->GetTransformMatrix());
+			auto tempResult = DirectX::XMVector3Dot(DirectX::XMLoadFloat3(&planeNormal), finalPos);
+			distance = DirectX::XMVectorGetX(tempResult) + planeD;
+
+			// 프러스텀 (시야) 내부에 들어올 경우
+			if (distance > 0.0f)
+			{
+				outFrustum++;
+				break;
+			}
+		}
+	}
+
+	// 버텍스가 하나라도 들어온 경우
+	if (outFrustum == 6)
+	{
+		_isRendering = true;
+	}
+	// 버텍스 중 하나도 들어오지 않은 경우
+	else
+	{
+		_isRendering = false;
+	}
+}
+
 void ArkEngine::ArkDX11::DebugObject::BuildGeomtryBuffers()
 {
 	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
 
+	GeometryGenerator geomGenerator;
+
 	if (buffer == nullptr)
 	{
-		GeometryGenerator geomGen;
-
-		if (_type == eDebugType::Box)
+		if (_type == eDebugType::Cube)
 		{
-			geomGen.CreateDebugBox(_objectName.c_str(), _minPos, _width, _height, _depth, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+			geomGenerator.CreateDebugBox(_objectName.c_str(), _centerPos, _halfWidth * 2, _halfHeight * 2, _halfDepth * 2, _color);
 		}
 		else if (_type == eDebugType::Shpere)
 		{
-			geomGen.CreateDebugSphere(_objectName.c_str(), _minPos, _width, DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+			geomGenerator.CreateDebugSphere(_objectName.c_str(), _minPos, _halfWidth * 2, _color);
 		}
 
 		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
@@ -184,6 +284,8 @@ void ArkEngine::ArkDX11::DebugObject::BuildGeomtryBuffers()
 void ArkEngine::ArkDX11::DebugObject::SetEffect()
 {
 	_tech = _effect->GetTechniqueByIndex(0);
-
+	_fxWorld = _effect->GetVariableByName("gWorld")->AsMatrix();
 	_fxWorldViewProj = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
+
+	_fxFrustum = _effect->GetVariableByName("gFrustum")->AsVector();
 }

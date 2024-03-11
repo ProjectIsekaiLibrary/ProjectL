@@ -1,6 +1,7 @@
 #pragma once
 #include <windows.h>
 #include "CommonHeader.h"
+#include "GameObject.h"
 #include "../GraphicsInterface/GraphicsHeaders.h"
 
 /// <summary>
@@ -22,6 +23,7 @@ namespace KunrealEngine
 {
 	class _DECLSPEC GraphicsSystem
 	{
+		friend class MeshRenderer;
 	private:
 		GraphicsSystem();
 		~GraphicsSystem();
@@ -31,7 +33,8 @@ namespace KunrealEngine
 		static GraphicsSystem& GetInstance();
 
 		void Initialize(HWND hwnd, int screenWidth, int screenHeight);
-		void Finalize();
+		void Update(int x, int y);
+		void Release();
 
 		GInterface::GraphicsInterface* GetGraphics();
 
@@ -49,9 +52,26 @@ namespace KunrealEngine
 		// 큐브맵 리스트 반환
 		const std::vector<std::string> GetCubeMapList();
 
+	private:
+		// pick 가능한 오브젝트 컨테이너
+		std::vector<GameObject*> _pickableList;
+		GameObject* _pickedObject;
+
+		// picking으로 얻은 GraphicsRenderable을 가지고 있는 오브젝트 반환
+		void SetPickedObject(int mouseX, int mouseY);
+
 	public:
+		// pick된 오브젝트 반환
+		GameObject* GetPickedObject();
+
+	public:
+		// picking이 가능한 오브젝트들의 컨테이너 반환
+		const std::vector<GameObject*> GetPickableList();
+
+		// Render 가능한 오브젝트들의 목록 반환
 		const std::vector<std::string> GetRenderableList();
 
+		// 사용가능한 텍스처 목록 반환
 		const std::vector<std::string> GetTextureList();
 		 
 	private:

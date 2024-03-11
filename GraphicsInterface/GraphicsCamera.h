@@ -7,15 +7,6 @@
 
 #pragma once
 
-namespace KunrealEngine
-{
-	namespace KunrealMath
-	{
-		struct Float2;
-		struct Float3;
-	}
-}
-
 namespace GInterface
 {
 	class GraphicsCamera
@@ -28,12 +19,13 @@ namespace GInterface
 		virtual void Delete() abstract;
 
 	public:
+		virtual DirectX::XMFLOAT3 GetCameraPosition() abstract;
 		// 카메라 위치 설정
-		virtual void SetCameraPosition(KunrealEngine::KunrealMath::Float3 position) abstract;
+		virtual void SetCameraPosition(DirectX::XMFLOAT3 position) abstract;
 		// 카메라가 바라보는 타겟 위치 설정
-		virtual void SetTargetPosition(KunrealEngine::KunrealMath::Float3 position) abstract;
+		virtual void SetTargetPosition(DirectX::XMFLOAT3 position) abstract;
 		// 카메라 회전 angle.x (위아래), angle.y (좌우)
-		virtual void RotateCamera(KunrealEngine::KunrealMath::Float2 angle) abstract;
+		virtual void RotateCamera(DirectX::XMFLOAT2 angle) abstract;
 
 	public:
 		// 카메라 좌우 이동

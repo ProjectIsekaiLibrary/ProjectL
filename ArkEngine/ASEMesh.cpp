@@ -14,7 +14,6 @@
 #include "ArkBuffer.h"
 #include "Transform.h"
 #include "Animator.h"
-#include "MathConverter.h"
 #include "DirectionalLight.h"
 #include "LightManager.h"
 #include "GeometryGenerator.h"
@@ -28,7 +27,7 @@ ArkEngine::ArkDX11::ASEMesh::ASEMesh(const std::string& fileName, const std::str
 	_fxBoneTransforms(nullptr),
 	_diffuseMap(nullptr), _diffuseMapSRV(nullptr), _normalMap(nullptr), _normalMapSRV(nullptr),
 	_cubeMap(nullptr), _boneTMList(), _world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr),
-	_material(), _eyePosW(),
+	_material(),
 	_arkDevice(nullptr), _arkEffect(nullptr), _totalVertexCount(0), _totalIndexCount(0), _meshTransform(nullptr),
 	_aseParser(nullptr), _animator(nullptr),
 	_isStaticMesh(true), _isRendering(true), _myIndex(0),
@@ -60,15 +59,13 @@ void ArkEngine::ArkDX11::ASEMesh::Initialize()
 
 	SetEffect();
 
-	SetDiffuseTexture(_textureName.c_str());
-
 	SetBasicMaterial();
 
 	SetLight();
 
 	SetAnimator();
 
-	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Box);
+	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Cube);
 }
 
 void ArkEngine::ArkDX11::ASEMesh::Update(ArkEngine::ICamera* p_Camera)
@@ -78,8 +75,6 @@ void ArkEngine::ArkDX11::ASEMesh::Update(ArkEngine::ICamera* p_Camera)
 	DirectX::XMStoreFloat4x4(&_world, DirectX::XMMatrixIdentity());
 	DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
 	DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
-
-	_eyePosW = DirectX::XMFLOAT3(camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
 }
 
 void ArkEngine::ArkDX11::ASEMesh::Render()
@@ -249,12 +244,11 @@ void ArkEngine::ArkDX11::ASEMesh::SetRenderingState(bool tf)
 	_debugObject->SetRenderingState(tf);
 }
 
-void ArkEngine::ArkDX11::ASEMesh::SetTransform(KunrealEngine::KunrealMath::Matrix4x4 matrix)
+void ArkEngine::ArkDX11::ASEMesh::SetTransform(DirectX::XMFLOAT4X4 matrix)
 {
-	DirectX::XMFLOAT4X4 transformMat = ArkEngine::ArkDX11::ConvertMatrix4x4(matrix);
-	_meshTransform->SetTransformMatrix(transformMat);
+	_meshTransform->SetTransformMatrix(matrix);
 
-	_debugObject->SetTransformMatrix(transformMat);
+	_debugObject->SetTransformMatrix(matrix);
 }
 
 void ArkEngine::ArkDX11::ASEMesh::SetPosition(float x, float y, float z)
@@ -290,7 +284,7 @@ void ArkEngine::ArkDX11::ASEMesh::SetModel(const char* fileName)
 	}
 }
 
-void ArkEngine::ArkDX11::ASEMesh::SetDiffuseTexture(const char* textureName)
+void ArkEngine::ArkDX11::ASEMesh::SetDiffuseTexture(int index, const char* textureName)
 {
 	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(textureName);
 
@@ -301,7 +295,7 @@ void ArkEngine::ArkDX11::ASEMesh::SetDiffuseTexture(const char* textureName)
 	}
 }
 
-void ArkEngine::ArkDX11::ASEMesh::SetNormalTexture(const char* textureName)
+void ArkEngine::ArkDX11::ASEMesh::SetNormalTexture(int index, const char* textureName)
 {
 	// ASE에는 Tangent값을 구해놓지 않아 일단 노말 텍스쳐는 적용되지 않도록
 	//auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(textureName);
@@ -310,6 +304,11 @@ void ArkEngine::ArkDX11::ASEMesh::SetNormalTexture(const char* textureName)
 	//{
 	//	_normalMapSRV = texture->GetDiffuseMapSRV();
 	//}
+}
+
+void ArkEngine::ArkDX11::ASEMesh::SetEmissiveTexture(int index, const char* textureName)
+{
+
 }
 
 void ArkEngine::ArkDX11::ASEMesh::SetAnimator()
@@ -349,15 +348,27 @@ const GInterface::Material ArkEngine::ArkDX11::ASEMesh::GetMaterial()
 
 void ArkEngine::ArkDX11::ASEMesh::SetMaterial(GInterface::Material material)
 {
-	_material.ambient = ArkEngine::ArkDX11::ConvertFloat4(material.ambient);
-	_material.diffuse = ArkEngine::ArkDX11::ConvertFloat4(material.diffuse);
-	_material.diffuse = ArkEngine::ArkDX11::ConvertFloat4(material.diffuse);
-	_material.reflect = ArkEngine::ArkDX11::ConvertFloat4(material.reflect);
+	_material.ambient = material.ambient;
+	_material.diffuse = material.diffuse;
+	_material.diffuse = material.diffuse;
+	_material.reflect = material.reflect;
 }
 
-void ArkEngine::ArkDX11::ASEMesh::SetReflect(KunrealEngine::KunrealMath::Float4 reflect)
+void ArkEngine::ArkDX11::ASEMesh::SetReflect(DirectX::XMFLOAT4 reflect)
 {
-	_material.reflect = ArkEngine::ArkDX11::ConvertFloat4(reflect);
+	_material.reflect = reflect;
+}
+
+const std::vector<std::string> ArkEngine::ArkDX11::ASEMesh::GetDiffuseTextureList()
+{
+	std::vector<std::string> test;
+	return test;
+}
+
+const std::vector<std::string> ArkEngine::ArkDX11::ASEMesh::GetNormalTextureList()
+{
+	std::vector<std::string> test;
+	return test;
 }
 
 void ArkEngine::ArkDX11::ASEMesh::PlayAnimation(float deltaTime, bool continiousPlay)
@@ -375,6 +386,51 @@ void ArkEngine::ArkDX11::ASEMesh::PlayAnimation(float deltaTime, bool continious
 	}
 }
 
+void ArkEngine::ArkDX11::ASEMesh::PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay)
+{
+
+}
+
+const std::vector<std::string>& ArkEngine::ArkDX11::ASEMesh::GetClipNames()
+{
+	return std::vector<std::string>();
+}
+
+void ArkEngine::ArkDX11::ASEMesh::PauseAnimation()
+{
+
+}
+
+void ArkEngine::ArkDX11::ASEMesh::ReplayAnimation()
+{
+
+}
+
+float ArkEngine::ArkDX11::ASEMesh::GetCurrentFrame()
+{
+	return 0;
+}
+
+bool ArkEngine::ArkDX11::ASEMesh::GetPickable()
+{
+	return false;
+}
+
+void ArkEngine::ArkDX11::ASEMesh::SetPickable(bool tf)
+{
+
+}
+
+unsigned int ArkEngine::ArkDX11::ASEMesh::GetHashID()
+{
+	return 0;
+}
+
+bool ArkEngine::ArkDX11::ASEMesh::GetInsideFrustumState()
+{
+	return true;
+}
+
 void ArkEngine::ArkDX11::ASEMesh::StopAnimation()
 {
 	if (_animator != nullptr)
@@ -383,7 +439,7 @@ void ArkEngine::ArkDX11::ASEMesh::StopAnimation()
 	}
 }
 
-void ArkEngine::ArkDX11::ASEMesh::PlayFBXAnimation(float deltaTime, int animIndex, bool couninuousPlay)
+void ArkEngine::ArkDX11::ASEMesh::PlayAnimation(float speed, float deltaTime, int animIndex, bool couninuousPlay)
 {
 
 }

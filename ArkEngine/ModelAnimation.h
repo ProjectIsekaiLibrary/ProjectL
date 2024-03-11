@@ -10,7 +10,7 @@ struct ModelKeyframeData
 	float time = 0.f;
 	// 이부분 vec3 유심히 봐볼것
 	Vec3 scale = { 0,0,0 };
-	Quaternion rotation;
+	Quaternion rotation = { };
 	Vec3 translation = { 0,0,0 };
 };
 
@@ -25,13 +25,11 @@ struct ModelAnimation
 
 	std::shared_ptr<ModelKeyframe> GetKeyframe(const std::wstring& name);
 
-	std::wstring name;
+	std::string name;
 	float duration = 0.f;
 	float frameRate = 0.f;
 	unsigned int frameCount = 0;
-
+	
 	std::unordered_map<std::wstring, std::shared_ptr<ModelKeyframe>> keyframes;
-
-	float currentTime = 0.f;
 };
 

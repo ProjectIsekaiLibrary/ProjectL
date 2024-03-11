@@ -25,6 +25,7 @@ namespace EpicTool
     class DataControlWindow;
     class GraphicWindow;
     class GameWindow;
+
     class IWindow;
 
     class MainTool
@@ -37,7 +38,7 @@ namespace EpicTool
 
         void Loop(); // 기본 루프
 
-        void Finalize(); // 종료
+        void Release(); // 종료
 
         
 
@@ -70,6 +71,8 @@ namespace EpicTool
         DataControlWindow* _saveloadWindow;
         GameWindow* _gameWindow;
         ShowWindowManager* _windowManager;
+        
+
 
         // 엔진
         KunrealEngine::EngineCore* _core;
@@ -91,6 +94,9 @@ namespace EpicTool
      WNDCLASSEXW ewc;
 
 	 ImVec4 _clearColor;
+
+    private:
+		int _selectedObjectIndex;  // 오브젝트리스트에서 무엇을 선택했는지 관리
     };
 }
 

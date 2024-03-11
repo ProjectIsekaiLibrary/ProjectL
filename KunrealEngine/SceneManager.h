@@ -29,8 +29,8 @@ namespace KunrealEngine
 		// 생성, 초기화 관련
 		void Initialize();
 
-		// SceneManager가 Finalize될 때 존재하는 scene들을 모두 Finalize해주고 그 후 삭제
-		void Finalize();
+		// SceneManager가 release될 때 존재하는 scene들을 모두 release해주고 그 후 삭제
+		void Release();
 
 		// scene을 관리하기 위한 함수들
 	public:

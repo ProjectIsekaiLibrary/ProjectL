@@ -30,6 +30,8 @@ namespace ArkEngine
 			ArkBuffer(const char* fileName, int totalVertexCount, std::vector<ArkEngine::ArkDX11::Vertex> vertexList, int totalIndexCount, std::vector<unsigned int> indexList);
 			ArkBuffer(const char* fileName, int totalVertexCount, std::vector<ArkEngine::ArkDX11::Postex> vertexList, int totalIndexCount, std::vector<unsigned int> indexList);
 			ArkBuffer(const char* fileName, int totalVertexCount, std::vector<ArkEngine::ArkDX11::PosColor> vertexList, int totalIndexCount, std::vector<unsigned int> indexList);
+			ArkBuffer(const char* fileName, int totalVertexCount, std::vector<std::vector<ArkEngine::ArkDX11::Vertex>> vertexList, int totalIndexCount, std::vector<std::vector<unsigned int>> indexList);
+
 			~ArkBuffer();
 
 		public:
@@ -40,11 +42,12 @@ namespace ArkEngine
 			unsigned int const GetTotalIndexCount();
 
 		public:
+			std::vector<DirectX::XMFLOAT3> GetVertexPosList();
+
 			DirectX::XMFLOAT3 GetMaxPos();
 			DirectX::XMFLOAT3 GetMinPos();
 
 			void SetSize(DirectX::XMFLOAT3 minPos, DirectX::XMFLOAT3 maxPos);
-
 
 		private:
 			void CreateVertexBuffer(int totalVertexCount, std::vector<ArkEngine::ArkDX11::Vertex> vertexList);
@@ -52,7 +55,6 @@ namespace ArkEngine
 			void CreatePosColorBuffer(int totalVertexCount, std::vector<ArkEngine::ArkDX11::PosColor> vertexList);
 
 			void CreateIndexBuffer(int totalIndexCount, std::vector<unsigned int> indexList);
-
 
 		public:
 			virtual void Load(const char* fileName) override;
@@ -67,6 +69,8 @@ namespace ArkEngine
 
 			DirectX::XMFLOAT3 _minPos;
 			DirectX::XMFLOAT3 _maxPos;
+
+			std::vector<DirectX::XMFLOAT3> _vertexPosList;
 		};
 	}
 }

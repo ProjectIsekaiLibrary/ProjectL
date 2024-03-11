@@ -9,7 +9,7 @@ int main(int, char**)
     EpicTool::MainTool* pMainTool = new EpicTool::MainTool();
     pMainTool->Initialize();
     pMainTool->Loop();
-    pMainTool->Finalize();
+    pMainTool->Release();
 
     delete pMainTool;
 

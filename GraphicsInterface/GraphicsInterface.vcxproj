@@ -153,8 +153,10 @@
   <ItemGroup>
     <ClInclude Include="framework.h" />
     <ClInclude Include="GraphicsCamera.h" />
+    <ClInclude Include="GraphicsDebug.h" />
     <ClInclude Include="GraphicsDirLight.h" />
     <ClInclude Include="GraphicsHeaders.h" />
+    <ClInclude Include="GraphicsImage.h" />
     <ClInclude Include="GraphicsInterface.h" />
     <ClInclude Include="GraphicsLight.h" />
     <ClInclude Include="GraphicsPointLight.h" />

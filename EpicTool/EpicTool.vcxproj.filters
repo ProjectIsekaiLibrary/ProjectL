@@ -25,6 +25,24 @@
     <Filter Include="DataControl">
       <UniqueIdentifier>{63014e03-42fe-40c3-896e-066d1c090750}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Serialize">
+      <UniqueIdentifier>{284601e3-ba99-41c2-a567-7b4f28a4e7ce}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="boost">
+      <UniqueIdentifier>{36104256-7c33-4474-8614-1cc759f7e2b7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="boost\pfr">
+      <UniqueIdentifier>{566880c0-4a04-4a54-884c-3b3f0b7c6842}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Layer\Debug">
+      <UniqueIdentifier>{667d8ad4-1fff-4586-a9af-0d435c2aeb92}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="imgui\imguizmo">
+      <UniqueIdentifier>{3140e4bf-aafb-4c42-bbce-ff0bb77cd802}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Serialize\TemplateData">
+      <UniqueIdentifier>{2c0ef25a-66f5-4b0d-8144-e43c2fb050f6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicWindow.h">
@@ -84,6 +102,162 @@
     <ClInclude Include="..\imgui\backends\imgui_impl_win32.h">
       <Filter>sources</Filter>
     </ClInclude>
+    <ClInclude Include="Serialize.h">
+      <Filter>Serialize</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\config.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\core.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\core_name.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\cast_to_layout_compatible.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\config.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core14_classic.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core14_loophole.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core17.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core17_generated.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core_name.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core_name14_disabled.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\core_name20_static.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\detectors.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\fake_object.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\fields_count.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\for_each_field_impl.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\functional.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\io.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\make_flat_tuple_of_references.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\make_integer_sequence.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\offset_based_getter.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\possible_reflectable.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\rvalue_t.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\sequence_tuple.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\size_array.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\size_t_.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\stdarray.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\stdtuple.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\tie_from_structure_tuple.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\detail\unsafe_declval.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\functions_for.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\functors.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\io.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\io_fields.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\ops.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\ops_fields.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\traits.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\traits_fwd.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr\tuple_size.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="..\boost_1_84_0\boost\pfr.hpp">
+      <Filter>boost\pfr</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugType.h">
+      <Filter>Layer\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugWindow.h">
+      <Filter>Layer\Debug</Filter>
+    </ClInclude>
+    <ClInclude Include="..\imgui\Imguizmo\ImGuizmo-master\GraphEditor.h">
+      <Filter>imgui\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\imgui\Imguizmo\ImGuizmo-master\ImCurveEdit.h">
+      <Filter>imgui\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\imgui\Imguizmo\ImGuizmo-master\ImGradient.h">
+      <Filter>imgui\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\imgui\Imguizmo\ImGuizmo-master\ImGuizmo.h">
+      <Filter>imgui\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\imgui\Imguizmo\ImGuizmo-master\ImSequencer.h">
+      <Filter>imgui\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\imgui\Imguizmo\ImGuizmo-master\ImZoomSlider.h">
+      <Filter>imgui\imguizmo</Filter>
+    </ClInclude>
+    <ClInclude Include="Storable.h">
+      <Filter>Serialize</Filter>
+    </ClInclude>
+    <ClInclude Include="ITemplateData.h">
+      <Filter>Serialize\TemplateData</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -139,6 +313,30 @@
     </ClCompile>
     <ClCompile Include="..\imgui\backends\imgui_impl_win32.cpp">
       <Filter>sources</Filter>
+    </ClCompile>
+    <ClCompile Include="Serialize.cpp">
+      <Filter>Serialize</Filter>
+    </ClCompile>
+    <ClCompile Include="DebugWindow.cpp">
+      <Filter>Layer\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\Imguizmo\ImGuizmo-master\GraphEditor.cpp">
+      <Filter>imgui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\Imguizmo\ImGuizmo-master\ImCurveEdit.cpp">
+      <Filter>imgui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\Imguizmo\ImGuizmo-master\ImGradient.cpp">
+      <Filter>imgui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\Imguizmo\ImGuizmo-master\ImGuizmo.cpp">
+      <Filter>imgui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\imgui\Imguizmo\ImGuizmo-master\ImSequencer.cpp">
+      <Filter>imgui\imguizmo</Filter>
+    </ClCompile>
+    <ClCompile Include="Storable.cpp">
+      <Filter>Serialize</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

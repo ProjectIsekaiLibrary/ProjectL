@@ -11,7 +11,7 @@
 #include "CubeMap.h"
 
 ArkEngine::ArkDX11::CubeMap::CubeMap(const std::string& fileName, const std::string& textureName, bool isCube)
-	: _fileName(fileName), _textureName(textureName), _effectName("Resources/FX/Sky.fx"), _effect(nullptr), _tech(nullptr),
+	: _fileName(fileName), _textureName("Resources/Textures/CubeMaps/"+textureName), _effectName("Resources/FX/Sky.fx"), _effect(nullptr), _tech(nullptr),
 	_fxWorldViewProj(nullptr), _cubeMap(nullptr), _cubeMapSRV(nullptr),
 	_vertexBuffer(nullptr), _indexBuffer(nullptr), _world(), _view(), _proj(),
 	_arkDevice(nullptr), _arkEffect(nullptr), _totalIndexCount(0), _isCube(isCube)

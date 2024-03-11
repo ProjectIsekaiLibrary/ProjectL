@@ -23,7 +23,7 @@ namespace KunrealEngine
 
 	private:
 		virtual void Initialize() abstract;
-		virtual void Finalize() abstract;
+		virtual void Release() abstract;
 
 		virtual void FixedUpdate() abstract;
 		virtual void Update() abstract;
@@ -35,7 +35,7 @@ namespace KunrealEngine
 
 		virtual void SetActive(bool active) abstract;
 
-	private:
+	protected:
 		GameObject* _ownerObject;					// 컴포넌트가 어떤 오브젝트에 부여되고 있는지
 		bool _isActivated;							// 활성화 여부
 		bool _isUnique;								// 중복 추가가 가능한 컴포넌트인지 체크

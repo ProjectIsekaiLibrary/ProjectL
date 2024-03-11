@@ -1,17 +1,24 @@
-#include "PointLight.h"
+#include <DirectXMath.h>
 #include "LightManager.h"
-#include "MathConverter.h"
+#include "PointLight.h"
+#include "DebugObject.h"
 #include "IPointLight.h"
 
 ArkEngine::IPointLight::IPointLight(unsigned int lightIndex)
-	: _index(lightIndex), _activeIndex(-1), _isActive(false)
+	: _index(lightIndex), _activeIndex(-1), _isActive(false), _debugObject(nullptr)
 {
 	SetActive(true);
+
+	std::string lightName = "PointLight";
+	//_debugObject = new ArkEngine::ArkDX11::DebugObject(lightName, 0, 2);
 }
 
 ArkEngine::IPointLight::~IPointLight()
 {
-	
+	if (_debugObject != nullptr)
+	{
+		delete _debugObject;
+	}
 }
 
 void ArkEngine::IPointLight::Delete()
@@ -21,7 +28,7 @@ void ArkEngine::IPointLight::Delete()
 	if (_isActive == true)
 	{
 		auto& activeLightList = ArkEngine::LightManager::GetInstance()->GetActivePointLightList();
-		activeLightList[_activeIndex].DeleteDebugObject();
+
 		activeLightList.erase(activeLightList.begin() + _activeIndex);
 
 		for (auto index : iLightList)
@@ -49,57 +56,63 @@ void ArkEngine::IPointLight::Delete()
 	delete this;
 }
 
-void ArkEngine::IPointLight::SetAmbient(KunrealEngine::KunrealMath::Float4 ambient)
+void ArkEngine::IPointLight::SetAmbient(DirectX::XMFLOAT4 ambient)
 {
-	auto amb = ArkEngine::ArkDX11::ConvertFloat4(ambient);
-	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetAmbient(amb);
+	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetAmbient(ambient);
 
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetAmbient(amb);
+		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetAmbient(ambient);
 	}
 }
 
-void ArkEngine::IPointLight::SetDiffuse(KunrealEngine::KunrealMath::Float4 diffuse)
+void ArkEngine::IPointLight::SetDiffuse(DirectX::XMFLOAT4 diffuse)
 {
-	auto dif = ArkEngine::ArkDX11::ConvertFloat4(diffuse);
-	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetDiffuse(dif);
+	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetDiffuse(diffuse);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetDiffuse(dif);
+		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetDiffuse(diffuse);
 	}
 }
 
-void ArkEngine::IPointLight::SetSpecular(KunrealEngine::KunrealMath::Float4 specular)
+void ArkEngine::IPointLight::SetSpecular(DirectX::XMFLOAT4 specular)
 {
-	auto spec = ArkEngine::ArkDX11::ConvertFloat4(specular);
-	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetSpecular(spec);
+	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetSpecular(specular);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetSpecular(spec);
+		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetSpecular(specular);
 	}
 }
 
-void ArkEngine::IPointLight::SetPosition(KunrealEngine::KunrealMath::Float3 position)
+void ArkEngine::IPointLight::SetPosition(DirectX::XMFLOAT3 position)
 {
-	auto pos = ArkEngine::ArkDX11::ConvertFloat3(position);
-	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetPosition(pos);
+	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetPosition(position);
 	
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetPosition(pos);
+		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetPosition(position);
+	}
+	if (_debugObject != nullptr)
+	{
+		_debugObject->SetPosition(position.x, position.y, position.z);
 	}
 }
 
 void ArkEngine::IPointLight::SetRange(float range)
 {
-	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetRange(range/2);
+	float radius = range / 2;
+
+	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetRange(radius);
 
 	if (_activeIndex > -1)
 	{
-		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetRange(range/2);
+		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetRange(radius);
+	}
+	if (_debugObject != nullptr)
+	{
+		_debugObject->SetScale(radius, radius, radius);
 	}
 }
 

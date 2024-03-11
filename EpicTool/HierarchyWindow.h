@@ -14,6 +14,8 @@ namespace KunrealEngine
 
 namespace EpicTool
 {
+    enum DebugType;
+    class DebugWindow;
 
     class HierarchyWindow : public IWindow // 인터페이스가 필요할지 고민된다
     {
@@ -38,11 +40,15 @@ namespace EpicTool
 
         //void RenderDragBox(int& selectedObjectIndex); // 드래그 시 작동을 관리 
 
+        void GetDebugType(DebugType& instance);
 
+        void GetDeleteObjectName(std::string& objectName);
+
+        bool GetIsHierarchySelected();
 
     private:
         // 각 오브젝트의 갯수
-        int _createEmptyCount;
+        int _createEmptyCount;   
         int _cubeCount;
         int _sphereCount;
 
@@ -60,7 +66,15 @@ namespace EpicTool
         std::vector<KunrealEngine::GameObject*> _gameObjectlist;
 
         // 드래그시 출현하는 반투명 박스 위치
+	private:
+		DebugWindow* _debugWindow;  // 디버그 테스트용 객체
+        DebugType _DebugType;
 
+        std::string _deleteObjectName;
+
+    private:
+        // 하이어라이를 클릭해서 선택했을 경우를 반환
+        //bool _isHierarchySelected;
     };
 }
 

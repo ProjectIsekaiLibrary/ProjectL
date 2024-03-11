@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <algorithm>
+#include <functional>
 #include "ResourceManager.h"
 #include "ArkEffect.h"
 #include "d3dx11effect.h"
@@ -10,7 +11,6 @@
 #include "ArkTexture.h"
 #include "ArkBuffer.h"
 #include "Transform.h"
-#include "MathConverter.h"
 #include "DirectionalLight.h"
 #include "LightManager.h"
 #include "GeometryGenerator.h"
@@ -19,33 +19,28 @@
 #include "../FbxLoader/AssimpTool.h"
 #include "../FbxLoader/FileUtils.h"
 #include "../FbxLoader/Utils.h"
+#include "FBXAnimator.h"
 #include "FBXMesh.h"
 
-ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, const std::string& textureName, bool isSolid)
-	: _fileName(fileName), _effectName("Resources/FX/BasicTexDeferred.fx"), _textureName(textureName), _transform(),
+ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
+	: _simpleModelName(), _fileName(fileName), _effectName("Resources/FX/BasicTexDeferred.fx"),
+	_diffuseTextureName(), _normalTextureName(),
 	_effect(nullptr), _tech(nullptr),
-	_fxWorld(nullptr), _fxWorldInvTranspose(nullptr), _fxWorldViewProj(nullptr), _fxTexTransform(nullptr), _fxMaterial(nullptr),
-	_fxBoneTransforms(nullptr),
-	_diffuseMap(nullptr), _diffuseMapSRV(nullptr), _normalMap(nullptr), _normalMapSRV(nullptr),
-	_cubeMap(nullptr), _boneTMList(), _world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr),
-	_material(), _eyePosW(),
+	_fxWorld(nullptr), _fxWorldInvTranspose(nullptr), _fxWorldViewProj(nullptr),
+	_fxTexTransform(nullptr), _fxMaterial(nullptr), _fxBoneTransforms(nullptr),
+	_diffuseMap(nullptr), _diffuseMapSRV(), _normalMap(nullptr), _normalMapSRV(), _emissionMap(nullptr), _emissionMapSRV(),
+	_cubeMap(nullptr), _fxColor(nullptr),
+	_boneTMList(), _world(), _view(), _proj(), _vertexBuffer(), _indexBuffer(),
 	_arkDevice(nullptr), _arkEffect(nullptr), _totalVertexCount(0), _totalIndexCount(0), _meshTransform(nullptr),
-	_isStaticMesh(true), _isRendering(true), _isSolid(isSolid), _myIndex(0),
-	_animTransforms(0), _bones(0), _animations(0),
-	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
-	_currentTime(0.0f), _animationSpeed(0.0f), _utils(nullptr),
+	_debugObject(nullptr),
+	_prevAnimationPlayingState(true), _isAnimationPlaying(false), _isRendering(true), _isSolid(isSolid),
+	_isPickable(false), _hashValue(0), _objectIndex(0), _color(),
 	_modelPath(L"Resources/Models/"), _texturePath(L"Resources/Textures/"),
-	_invGlobal(), _anim(nullptr),
 	_meshCount(0), _boneIndexNum(0),
-	_debugObject(nullptr)
-
+	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
+	_animator(nullptr)
 {
 	Initialize();
-
-	for (int i = 0; i < 96; i++)
-	{
-		_boneTMList.emplace_back();
-	}
 }
 
 
@@ -56,47 +51,71 @@ ArkEngine::ArkDX11::FBXMesh::~FBXMesh()
 
 void ArkEngine::ArkDX11::FBXMesh::Initialize()
 {
-	// 이쪽에서 무슨 모델 띄울건지 정해준다
-	BuildGeometryBuffersFBX(_utils->ToWString(_fileName));
-
-	ReadFBXAnimation(L"Kachujin/Idle");
-	ReadFBXAnimation(L"Kachujin/Run");
-	ReadFBXAnimation(L"Kachujin/Slash");
-
-
-	if (_isStaticMesh == false)
-	{
-		_effectName = "Resources/FX/SkinningDeferred.fx";
-	}
-
+	// 기초 세팅 가져오기
 	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>(_effectName);
 	_effect = _arkEffect->GetEffect();
-
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+
+	size_t pos = _fileName.find_last_of("/");
+
+	if (pos != std::string::npos) {
+		_simpleModelName = _fileName.substr(0, pos);
+	}
+
+	_objectIndex = ResourceManager::GetInstance()->GetObjectIndex();
+	for (int i = 0; i < 4; i++)
+	{
+		_color[i] = 0.0f;
+	}
+
+	// 애니메이터를 먼저 초기화 해줘야 애니메이션 데이터들을 읽어올 수가 있는데
+	// isStatic으로 구분을 지을 수가 없이 계속 생성을 해준다
+	// 이쪽은 해결해줘야 할 문제임
+	SetAnimator();
+
+	std::unique_ptr<ArkEngine::Utils> utils;
+
+	utils = std::make_unique<ArkEngine::Utils>();
+
+	// 이쪽에서 무슨 모델 띄울건지 정해준다
+	BuildGeometryBuffersFBX(utils->ToWString(_fileName));
+	ReadMaterial(utils->ToWString(_fileName));
+
+	if (_animator->CheckClipFile(_fileName) == false)
+	{
+		_animator = nullptr;
+	}
 
 	_meshTransform = new Transform();
 
 	SetEffect();
 
-	SetDiffuseTexture(_textureName.c_str());
-
-	SetBasicMaterial();
-
-	SetLight();
-
-	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Box);
+	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Cube);
 }
 
 void ArkEngine::ArkDX11::FBXMesh::Update(ArkEngine::ICamera* p_Camera)
 {
+	if (_prevAnimationPlayingState != _isAnimationPlaying)
+	{
+		if (_isAnimationPlaying == true)
+		{
+			_effectName = "Resources/FX/SkinningDeferred.fx";
+		}
+		else
+		{
+			_effectName = "Resources/FX/BasicTexDeferred.fx";
+		}
+
+		_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>(_effectName);
+		_effect = _arkEffect->GetEffect();
+		SetEffect();
+	}
+
 	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
 
-	DirectX::XMStoreFloat4x4(&_world, DirectX::XMMatrixIdentity());
+	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
 	DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
 	DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
-
-	_eyePosW = DirectX::XMFLOAT3(camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
-
 }
 
 void ArkEngine::ArkDX11::FBXMesh::Render()
@@ -118,19 +137,6 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 	UINT stride = sizeof(ArkEngine::ArkDX11::Vertex);
 	UINT offset = 0;
 
-	deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-	deviceContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
-	DirectX::XMMATRIX texTransform = DirectX::XMMatrixIdentity();
-	_fxTexTransform->SetMatrix(reinterpret_cast<float*>(&texTransform));
-
-	_fxMaterial->SetRawValue(&_material, 0, sizeof(Material));
-
-	_diffuseMap->SetResource(_diffuseMapSRV);
-
-	_normalMap->SetResource(_normalMapSRV);
-
-
 	auto nowCubeMap = ResourceManager::GetInstance()->GetNowCubeMap();
 
 	if (nowCubeMap != nullptr)
@@ -139,23 +145,35 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 		_cubeMap->SetResource(cubeTexture->GetDiffuseMapSRV());
 	}
 
+	DirectX::XMMATRIX texTransform = DirectX::XMMatrixIdentity();
+	_fxTexTransform->SetMatrix(reinterpret_cast<float*>(&texTransform));
 
+	_fxColor->SetFloatVector(_color);
 
-	D3DX11_TECHNIQUE_DESC techDesc;
-	_tech->GetDesc(&techDesc);
-	for (UINT p = 0; p < techDesc.Passes; ++p)
+	for (int i = 0; i < _vertexBuffer.size(); i++)
 	{
-		unsigned sumIndexCount = 0;
-		unsigned sumVertexCount = 0;
+		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer[i], &stride, &offset);
+		deviceContext->IASetIndexBuffer(_indexBuffer[i], DXGI_FORMAT_R32_UINT, 0);
 
-
-		_tech->GetPassByIndex(p)->Apply(0, deviceContext);
-
-		for (auto nowMesh : _meshes)
+		if (_material.size() > i)
 		{
+			_fxMaterial->SetRawValue(&_material[i], 0, sizeof(Material));
+		}
+
+		_diffuseMap->SetResource(_diffuseMapSRV[i]);
+
+		_normalMap->SetResource(_normalMapSRV[i]);
+
+		_emissionMap->SetResource(_emissionMapSRV[i]);
+
+		D3DX11_TECHNIQUE_DESC techDesc;
+		_tech->GetDesc(&techDesc);
+
+		for (UINT p = 0; p < techDesc.Passes; ++p)
+		{
+			auto nowMesh = _meshes[i];
 			{
 				DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
-				world = XMMatrixMultiply(world, _meshTransform->GetTransformMatrix());
 
 				DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
 				DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
@@ -170,37 +188,21 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 				_fxWorldInvTranspose->SetMatrix(reinterpret_cast<float*>(&worldInvTranspose));
 				_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
 
-				static float testNum = 0.0f;
-				static float slowman = 0.0f;
 				/// <summary>
 				/// 계층구조 mesh 해야함
 				/// </summary>
-					/// Animation 부분
-				if (_isStaticMesh == false)
+				/// Animation 부분
+
+				if (_isAnimationPlaying == true)
 				{
-					UpdateAnimationTransforms(2, testNum);
-
-					_fxBoneTransforms->SetMatrixArray(reinterpret_cast<float*>(&_boneTMList[0]), 0, static_cast<uint32_t>(_boneTMList.size()));
-					//testNum++;
-
-					slowman++;
-					if (slowman > 5.f)
+					if (_animator != nullptr)
 					{
-						//testNum++;
-						slowman = 0.f;
+						_fxBoneTransforms->SetMatrixArray(reinterpret_cast<float*>(&_animator->_boneTransformMatrix[0]), 0, static_cast<uint32_t>(_animator->_boneTransformMatrix.size()));
 					}
-
-					if (testNum > _anim->duration)
-					{
-						testNum = 0.f;
-					}
-
 				}
 
-				deviceContext->DrawIndexed(nowMesh->indexNum, sumIndexCount, sumVertexCount);
-
-				sumVertexCount += nowMesh->vertexNum;
-				sumIndexCount += nowMesh->indexNum;
+				_tech->GetPassByIndex(p)->Apply(0, deviceContext);
+				deviceContext->DrawIndexed(nowMesh->indexNum, 0, 0);
 			}
 		}
 	}
@@ -210,29 +212,26 @@ void ArkEngine::ArkDX11::FBXMesh::Finalize()
 {
 	delete _debugObject;
 
-	_indexBufferSize.clear();
-
-	for (auto index : _bones)
-	{
-		index.reset();
-	}
-
-	for (auto ani : _animations)
-	{
-		ani.reset();
-	}
-
 	_tech = nullptr;
 	_effect = nullptr;
 
-	_vertexBuffer = nullptr;
-	_indexBuffer = nullptr;
+	for (int i = 0; i < _vertexBuffer.size(); i++)
+	{
+		_vertexBuffer[i] = nullptr;
+	}
+
+	for (int i = 0; i < _indexBuffer.size(); i++)
+	{
+		_indexBuffer[i] = nullptr;
+	}
 
 	_boneTMList.clear();
 
-	_normalMapSRV = nullptr;
-	_diffuseMapSRV = nullptr;
+	_emissionMapSRV.clear();
+	_normalMapSRV.clear();
+	_diffuseMapSRV.clear();
 
+	_emissionMap->Release();
 	_normalMap->Release();
 	_diffuseMap->Release();
 
@@ -247,7 +246,7 @@ void ArkEngine::ArkDX11::FBXMesh::Finalize()
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
 
-	if (_isStaticMesh == false)
+	if (_isAnimationPlaying == true)
 	{
 		_fxBoneTransforms->Release();
 	}
@@ -270,12 +269,11 @@ void ArkEngine::ArkDX11::FBXMesh::SetRenderingState(bool tf)
 	_debugObject->SetRenderingState(tf);
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetTransform(KunrealEngine::KunrealMath::Matrix4x4 matrix)
+void ArkEngine::ArkDX11::FBXMesh::SetTransform(DirectX::XMFLOAT4X4 matrix)
 {
-	DirectX::XMFLOAT4X4 transformMat = ArkEngine::ArkDX11::ConvertMatrix4x4(matrix);
-	_meshTransform->SetTransformMatrix(transformMat);
+	_meshTransform->SetTransformMatrix(matrix);
 
-	_debugObject->SetTransformMatrix(transformMat);
+	_debugObject->SetTransformMatrix(matrix);
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetPosition(float x, float y, float z)
@@ -301,103 +299,245 @@ void ArkEngine::ArkDX11::FBXMesh::SetScale(float x, float y, float z)
 
 void ArkEngine::ArkDX11::FBXMesh::SetModel(const char* fileName)
 {
-
+	_fileName = fileName;
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetDiffuseTexture(const char* textureName)
+void ArkEngine::ArkDX11::FBXMesh::SetDiffuseTexture(int index, const char* textureName)
 {
-	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(textureName);
+	if (index < _diffuseTextureName.size())
+	{
+		std::string finalTextureName = textureName;
+		if (finalTextureName.find("Resources/Textures/") == std::string::npos)
+		{
 
-	if (texture != nullptr)
-	{
-		_diffuseMapSRV = texture->GetDiffuseMapSRV();
-		_tech = _effect->GetTechniqueByName("LightTexReflect");
-	}
-	else
-	{
-		texture = nullptr;
-		_diffuseMapSRV = nullptr;
+			finalTextureName = "Resources/Textures/" + finalTextureName;
+		}
+
+		_diffuseTextureName[index] = finalTextureName.c_str();
+
+		auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(_diffuseTextureName[index]);
+
+		if (texture != nullptr)
+		{
+			_diffuseMapSRV[index] = texture->GetDiffuseMapSRV();
+		}
+		else
+		{
+			texture = nullptr;
+		}
 	}
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetNormalTexture(const char* textureName)
+void ArkEngine::ArkDX11::FBXMesh::SetNormalTexture(int index, const char* textureName)
 {
-	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(textureName);
+	if (index < _normalTextureName.size())
+	{
+		std::string finalTextureName = textureName;
+		if (finalTextureName.find("Resources/Textures/") == std::string::npos)
+		{
 
-	if (texture != nullptr)
-	{
-		_normalMapSRV = texture->GetDiffuseMapSRV();
+			finalTextureName = "Resources/Textures/" + finalTextureName;
+		}
+
+		_normalTextureName[index] = finalTextureName.c_str();
+
+
+		auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(_normalTextureName[index]);
+
+		if (texture != nullptr)
+		{
+			_normalMapSRV[index] = texture->GetDiffuseMapSRV();
+		}
+		else
+		{
+			texture = nullptr;
+		}
 	}
-	else
+}
+
+void ArkEngine::ArkDX11::FBXMesh::SetEmissiveTexture(int index, const char* textureName)
+{
+	if (index < _emssiveTextureName.size())
 	{
-		texture = nullptr;
-		_normalMapSRV = nullptr;
+		std::string finalTextureName = textureName;
+		if (finalTextureName.find("Resources/Textures/") == std::string::npos)
+		{
+	
+			finalTextureName = "Resources/Textures/" + finalTextureName;
+		}
+	
+		_emssiveTextureName[index] = finalTextureName.c_str();
+	
+	
+		auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(_emssiveTextureName[index]);
+	
+		if (texture != nullptr)
+		{
+			_emissionMapSRV[index] = texture->GetDiffuseMapSRV();
+		}
+		else
+		{
+			texture = nullptr;
+		}
 	}
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetAnimator()
 {
-
+	_animator = std::make_unique<FBXAnimator>();
 }
 
 const GInterface::Material ArkEngine::ArkDX11::FBXMesh::GetMaterial()
 {
 	GInterface::Material material;
 
-	material.ambient.x = _material.ambient.x;
-	material.ambient.y = _material.ambient.y;
-	material.ambient.z = _material.ambient.z;
-	material.ambient.w = _material.ambient.w;
+	material.ambient.x = _material.back().ambient.x;
+	material.ambient.y = _material.back().ambient.y;
+	material.ambient.z = _material.back().ambient.z;
+	material.ambient.w = _material.back().ambient.w;
 
-	material.diffuse.x = _material.diffuse.x;
-	material.diffuse.y = _material.diffuse.y;
-	material.diffuse.z = _material.diffuse.z;
-	material.diffuse.w = _material.diffuse.w;
+	material.diffuse.x = _material.back().diffuse.x;
+	material.diffuse.y = _material.back().diffuse.y;
+	material.diffuse.z = _material.back().diffuse.z;
+	material.diffuse.w = _material.back().diffuse.w;
 
-	material.specular.x = _material.specular.x;
-	material.specular.y = _material.specular.y;
-	material.specular.z = _material.specular.z;
-	material.specular.w = _material.specular.w;
+	material.specular.x = _material.back().specular.x;
+	material.specular.y = _material.back().specular.y;
+	material.specular.z = _material.back().specular.z;
+	material.specular.w = _material.back().specular.w;
 
-	material.reflect.x = _material.reflect.x;
-	material.reflect.y = _material.reflect.y;
-	material.reflect.z = _material.reflect.z;
-	material.reflect.w = _material.reflect.w;
+	material.reflect.x = _material.back().reflect.x;
+	material.reflect.y = _material.back().reflect.y;
+	material.reflect.z = _material.back().reflect.z;
+	material.reflect.w = _material.back().reflect.w;
 
 	return material;
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetMaterial(GInterface::Material material)
 {
-	_material.ambient = ArkEngine::ArkDX11::ConvertFloat4(material.ambient);
-	_material.diffuse = ArkEngine::ArkDX11::ConvertFloat4(material.diffuse);
-	_material.diffuse = ArkEngine::ArkDX11::ConvertFloat4(material.diffuse);
-	_material.reflect = ArkEngine::ArkDX11::ConvertFloat4(material.reflect);
+	Material newMat;
+
+	newMat.ambient = material.ambient;
+	newMat.diffuse = material.diffuse;
+	newMat.diffuse = material.diffuse;
+	newMat.reflect = material.reflect;
+
+	_material.emplace_back(newMat);
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetReflect(KunrealEngine::KunrealMath::Float4 reflect)
+void ArkEngine::ArkDX11::FBXMesh::SetReflect(DirectX::XMFLOAT4 reflect)
 {
-	_material.reflect = ArkEngine::ArkDX11::ConvertFloat4(reflect);
+	_material.back().reflect = reflect;
+}
+
+const std::vector<std::string> ArkEngine::ArkDX11::FBXMesh::GetDiffuseTextureList()
+{
+	return _diffuseTextureName;
+}
+
+const std::vector<std::string> ArkEngine::ArkDX11::FBXMesh::GetNormalTextureList()
+{
+	return _normalTextureName;
 }
 
 void ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float deltaTime, bool continiousPlay)
 {
 }
 
-void ArkEngine::ArkDX11::FBXMesh::StopAnimation()
+const std::vector<std::string>& ArkEngine::ArkDX11::FBXMesh::GetClipNames()
 {
+	if (_animator != nullptr)
+	{
+		return _animator->GetClipNames();
+	}
 }
 
-void ArkEngine::ArkDX11::FBXMesh::PlayFBXAnimation(float speed, int animIndex, bool continuousPlay)
+void ArkEngine::ArkDX11::FBXMesh::PauseAnimation()
 {
+	if (_animator != nullptr)
+	{
+		_animator->PauseFBXAnimation();
+	}
+}
 
+void ArkEngine::ArkDX11::FBXMesh::ReplayAnimation()
+{
+	if (_animator != nullptr)
+	{
+		_animator->RestartFBXAnimation();
+	}
+}
+
+float ArkEngine::ArkDX11::FBXMesh::GetCurrentFrame()
+{
+	if (_animator != nullptr)
+	{
+		return _animator->GetCurrentFrame();
+	}
+}
+
+float ArkEngine::ArkDX11::FBXMesh::GetMaxFrame()
+{
+	return _animator->GetMaxFrame();
+}
+
+void ArkEngine::ArkDX11::FBXMesh::StopAnimation()
+{
+	//_prevAnimationPlayingState = _isAnimationPlaying;
+	//_isAnimationPlaying = false;
+
+	if (_animator != nullptr)
+	{
+		_animator->StopFBXAnimation();
+	}
+}
+
+bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, int animIndex, bool continuousPlay)
+{
+	_prevAnimationPlayingState = _isAnimationPlaying;
+	_isAnimationPlaying = true;
+
+	if (_animator != nullptr)
+	{
+		if (continuousPlay == true)
+		{
+			auto isPlaying = _animator->PlayAnimationContinuous(speed, deltaTime, animIndex);
+			return isPlaying;
+		}
+		else
+		{
+			auto isPlaying = _animator->PlayAnimationOnce(speed, deltaTime, animIndex);
+			return isPlaying;
+		}
+	}
+}
+
+bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay)
+{
+	_prevAnimationPlayingState = _isAnimationPlaying;
+	_isAnimationPlaying = true;
+
+	if (_animator != nullptr)
+	{
+		if (continuousPlay == true)
+		{
+			auto isPlaying = _animator->PlayAnimationContinuous(speed, deltaTime, animName);
+			return isPlaying;
+		}
+		else
+		{
+			auto isPlaying = _animator->PlayAnimationOnce(speed, deltaTime, animName);
+			return isPlaying;
+		}
+	}
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetEffect()
 {
 	_tech = _effect->GetTechniqueByIndex(0);
 
-	if (_isStaticMesh == false)
+	if (_isAnimationPlaying == true)
 	{
 		_fxBoneTransforms = _effect->GetVariableByName("gBoneTransforms")->AsMatrix();
 	}
@@ -408,22 +548,73 @@ void ArkEngine::ArkDX11::FBXMesh::SetEffect()
 	_fxTexTransform = _effect->GetVariableByName("gTexTransform")->AsMatrix();
 	_fxMaterial = _effect->GetVariableByName("gMaterial");
 
+	// 그림자 매핑용
+	//_fxShadowMap = _effect->GetVariableByName("gShadowMap")->AsShaderResource();
+
 	_diffuseMap = _effect->GetVariableByName("gDiffuseMap")->AsShaderResource();
 	_normalMap = _effect->GetVariableByName("gNormalMap")->AsShaderResource();
+	_emissionMap = _effect->GetVariableByName("gEmissiveMap")->AsShaderResource();
 
 	_cubeMap = _effect->GetVariableByName("gCubeMap")->AsShaderResource();
+
+	_fxColor = _effect->GetVariableByName("gColor")->AsVector();
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetBasicMaterial()
+bool ArkEngine::ArkDX11::FBXMesh::GetPickable()
 {
-	_material.ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
-	_material.diffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
-	_material.specular = { 0.3f, 0.3f, 0.3f, 0.3f };
+	return _isPickable;
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetLight()
+void ArkEngine::ArkDX11::FBXMesh::SetPickable(bool tf)
 {
+	if (tf)
+	{
+		SetHashValue(_objectIndex);
+	}
+	else
+	{
+		_hashValue = 0;
+		for (int i = 0; i < 4; i++)
+		{
+			_color[i] = 0.0f;
+		}
+	}
 
+	_isPickable = tf;
+}
+
+unsigned int ArkEngine::ArkDX11::FBXMesh::GetHashID()
+{
+	return _hashValue;
+}
+
+bool ArkEngine::ArkDX11::FBXMesh::GetInsideFrustumState()
+{
+	return _debugObject->GetRenderingState();
+}
+
+void ArkEngine::ArkDX11::FBXMesh::SetHashValue(unsigned int index)
+{
+	if (_hashValue == 0)
+	{
+		std::hash<int> intHash;
+
+		_hashValue = intHash(index);
+		ConvertHashToRGBA(_hashValue);
+	}
+}
+
+void ArkEngine::ArkDX11::FBXMesh::ConvertHashToRGBA(int hashValue)
+{
+	float a = (hashValue >> 24) & 0xff;
+	float b = (hashValue >> 16) & 0xff;
+	float g = (hashValue >> 8) & 0xff;
+	float r = hashValue & 0xff;
+
+	_color[0] = r / 255.0f;
+	_color[1] = g / 255.0f;
+	_color[2] = b / 255.0f;
+	_color[3] = a / 255.0f;
 }
 
 /// <summary>
@@ -433,132 +624,124 @@ void ArkEngine::ArkDX11::FBXMesh::BuildGeometryBuffersFBX(std::wstring fileName)
 {
 	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_fileName);
 
-	DirectX::XMFLOAT3 minPos = { FLT_MAX, FLT_MAX, FLT_MAX };
-	DirectX::XMFLOAT3 maxPos = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
 	if (buffer == nullptr)
 	{
-		//std::vector<ModelVertexType> vertices;
-		//std::vector<unsigned int> indices;
+		auto modelMesh = new ModelMesh();
+
+		std::vector<ModelMesh*> meshes;
+
+		meshes.emplace_back(modelMesh);
+
+		DirectX::XMFLOAT3 minPos = { FLT_MAX, FLT_MAX, FLT_MAX };
+		DirectX::XMFLOAT3 maxPos = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
 
 		std::wstring fullPath = _modelPath + fileName + L".mesh";
 
-		std::shared_ptr<ArkEngine::FileUtils> file = std::make_shared<ArkEngine::FileUtils>();
+		std::unique_ptr<ArkEngine::FileUtils> file = std::make_unique<ArkEngine::FileUtils>();
 
-		_utils = std::make_unique<ArkEngine::Utils>();
+		std::unique_ptr<ArkEngine::Utils> utils;
 
-		std::shared_ptr<Geometry<ModelVertexType>> geometry = std::make_shared<Geometry<ModelVertexType>>();
+		utils = std::make_unique<ArkEngine::Utils>();
+
 		file->Open(fullPath, FileMode::Read);
 
 		//Bones
+		const UINT boneCount = file->Read<UINT>();
+
+		for (UINT i = 0; i < boneCount; i++)
 		{
-			const UINT count = file->Read<UINT>();
+			modelMesh->bone = std::make_shared<ModelBone>();
+			modelMesh->bone->index = file->Read<int>();
+			modelMesh->bone->name = utils->ToWString(file->Read<std::string>());
+			modelMesh->bone->parentIndex = file->Read<int>();
+			modelMesh->bone->transform = file->Read<Matrix>();
 
-			for (UINT i = 0; i < count; i++)
-			{
-				_root = std::make_shared<ModelBone>();
-				_root->index = file->Read<int>();
-				_root->name = _utils->ToWString(file->Read<std::string>());
-				_root->parentIndex = file->Read<int>();
-				_root->transform = file->Read<Matrix>();
-
-				// offsetTM 추가 값들이 잘 들어가나 봐야한다
-				_root->boneOffsetTM = file->Read<Matrix>();
-
-				_bones.push_back(_root);
-
-				_boneTransforms.push_back(_root->transform);
-
-			}
+			// offsetTM 추가 값들이 잘 들어가나 봐야한다
+			modelMesh->bone->boneOffsetTM = file->Read<Matrix>();
+			modelMesh->_boneList.emplace_back(modelMesh->bone);
 		}
-
-
-
 
 		// Mesh
 		{
 			_meshCount = file->Read<UINT>();
 
+			for (int i = 0; i < _meshCount - 1; i++)
+			{
+				meshes.emplace_back(new ModelMesh());
+			}
+
+			// 메쉬 수 만큼 반복시행
 			for (UINT i = 0; i < _meshCount; i++)
 			{
-				_modelMesh = std::make_shared<ModelMesh>();
+				auto modelMesh = meshes[i];
 
-				_modelMesh->name = _utils->ToWString(file->Read<std::string>());
-				_modelMesh->boneIndex = file->Read<UINT>();
+				modelMesh->name = utils->ToWString(file->Read<std::string>());
+				modelMesh->boneIndex = file->Read<UINT>();
 
 				// Material
-				_modelMesh->materialName = _utils->ToWString(file->Read<std::string>());
+				modelMesh->materialName = utils->ToWString(file->Read<std::string>());
 
 				/// Vertex Data
-				_modelMesh->vertexNum = file->Read<UINT>();
+				modelMesh->vertexNum = file->Read<UINT>();
 
 				// vertex의 개수에 따라 vector의 크기를 조정
-				_modelMesh->vertices.resize(_modelMesh->vertexNum);
+				modelMesh->vertices.resize(modelMesh->vertexNum);
 
 				// 컨테이너에 담신 첫번째 요소를 가리킴
-				void* vertexData = _modelMesh->vertices.data();
+				void* vertexData = modelMesh->vertices.data();
 
 				// 데이터들을 읽어온다
-				file->Read(&vertexData, sizeof(ModelVertexType) * _modelMesh->vertexNum);
-
-				// vertices에 포함된 요소들을 _vertices에라는 다른 벡터에 추가하는 역할을 한다
-				geometry->AddVertices(_modelMesh->vertices);
-
+				file->Read(&vertexData, sizeof(ModelVertexType) * modelMesh->vertexNum);
 
 				/// Index Data
-				_modelMesh->indexNum = file->Read<UINT>();
+				modelMesh->indexNum = file->Read<UINT>();
 
-				_modelMesh->indices.resize(_modelMesh->indexNum);
+				modelMesh->indices.resize(modelMesh->indexNum);
 
-				void* indexData = _modelMesh->indices.data();
-				file->Read(&indexData, sizeof(UINT) * _modelMesh->indexNum);
+				void* indexData = modelMesh->indices.data();
 
-				geometry->AddIndices(_modelMesh->indices);
+				file->Read(&indexData, sizeof(UINT) * modelMesh->indexNum);
 
-				/// 일단 buffer 중복되게 만들지 않기 위해 임시로 이렇게 해놓았는데 
-				/// 위의 _mesh의 정보를 계속 집어넣는 과정도 비효율적
-				/// 리소스 매니저에 넣어놓고 꺼내 쓰도록 해야 함
-				if (buffer == nullptr)
+
+				_newVertexVector.emplace_back();
+				_newIndexVector.emplace_back();
+				// FBXLoader에서 사용하던 구조체를 종화그래픽스엔진의 구조체에 맞게 집어 넣어 준다
+				for (UINT j = 0; j < modelMesh->vertexNum; j++)
 				{
-					// FBXLoader에서 사용하던 구조체를 종화그래픽스엔진의 구조체에 맞게 집어 넣어 준다
-					for (UINT j = 0; j < _modelMesh->vertexNum; j++)
-					{
-						_newVertexVector.emplace_back();
-						_newVertexVector.back().pos = _modelMesh->vertices[j].position;
+					ArkEngine::ArkDX11::Vertex vertex;
 
-						_newVertexVector.back().norm.x = _modelMesh->vertices[j].normal.x;
-						_newVertexVector.back().norm.y = _modelMesh->vertices[j].normal.y;
-						_newVertexVector.back().norm.z = _modelMesh->vertices[j].normal.z;
+					vertex.pos = modelMesh->vertices[j].position;
 
-						_newVertexVector.back().tex.x = _modelMesh->vertices[j].uv.x;
-						_newVertexVector.back().tex.y = -1 * _modelMesh->vertices[j].uv.y;
+					vertex.norm.x = modelMesh->vertices[j].normal.x;
+					vertex.norm.y = modelMesh->vertices[j].normal.y;
+					vertex.norm.z = modelMesh->vertices[j].normal.z;
 
-						_newVertexVector.back().tangent.x = _modelMesh->vertices[j].tangent.x;
-						_newVertexVector.back().tangent.y = _modelMesh->vertices[j].tangent.y;
-						_newVertexVector.back().tangent.z = _modelMesh->vertices[j].tangent.z;
+					vertex.tex.x = modelMesh->vertices[j].uv.x;
+					vertex.tex.y = modelMesh->vertices[j].uv.y;
 
-						_newVertexVector.back().weight = _modelMesh->vertices[j].weight;
-						_newVertexVector.back().boneIndicle = _modelMesh->vertices[j].boneIndices;
-					}
+					vertex.tangent.x = modelMesh->vertices[j].tangent.x;
+					vertex.tangent.y = modelMesh->vertices[j].tangent.y;
+					vertex.tangent.z = modelMesh->vertices[j].tangent.z;
 
-					for (UINT j = 0; j < _modelMesh->indexNum; j++)
-					{
-						_newIndexVector.emplace_back();
-						_newIndexVector.back() = _modelMesh->indices[j];
-					}
+					vertex.weight = modelMesh->vertices[j].weight;
+					vertex.boneIndicle = modelMesh->vertices[j].boneIndices;
+
+					_newVertexVector.back().emplace_back(vertex);
 				}
 
-				_meshes.push_back(_modelMesh);
+				for (UINT j = 0; j < modelMesh->indexNum; j++)
+				{
+					_newIndexVector.back().emplace_back(modelMesh->indices[j]);
+				}
 
+				meshes[i]->vertexNum = modelMesh->vertexNum;
+				meshes[i]->indexNum = modelMesh->indexNum;
 
-				_meshes[i]->vertexNum = _modelMesh->vertexNum;
-				_meshes[i]->indexNum = _modelMesh->indexNum;
-
-				_totalVertexCount += _modelMesh->vertexNum;
-				_totalIndexCount += _modelMesh->indexNum;
+				_totalVertexCount += modelMesh->vertexNum;
+				_totalIndexCount += modelMesh->indexNum;
 
 				// 최소/최대 위치 찾기
-				for (const auto& vertex : _modelMesh->vertices)
+				for (const auto& vertex : modelMesh->vertices)
 				{
 					minPos.x = std::min(minPos.x, vertex.position.x);
 					minPos.y = std::min(minPos.y, vertex.position.y);
@@ -568,264 +751,208 @@ void ArkEngine::ArkDX11::FBXMesh::BuildGeometryBuffersFBX(std::wstring fileName)
 					maxPos.y = std::max(maxPos.y, vertex.position.y);
 					maxPos.z = std::max(maxPos.z, vertex.position.z);
 				}
-			}
 
-
-			// 형변환
-			std::string charFileName = _utils->ToString(fileName);
-
-			// Buffer 생성
-			if (buffer == nullptr)
-			{
-				ArkBuffer* newBuffer = new ArkBuffer(charFileName.c_str(), _totalVertexCount, _newVertexVector, _totalIndexCount, _newIndexVector);
+				ArkBuffer* newBuffer = new ArkBuffer(_fileName.c_str(), modelMesh->vertexNum, _newVertexVector[i], modelMesh->indexNum, _newIndexVector[i]);
 				newBuffer->SetSize(minPos, maxPos);
+
+				ResourceManager::GetInstance()->AddFbxParsingData(_fileName, meshes);
+
+				ResourceManager::GetInstance()->AddArkBuffer(_fileName, newBuffer);
 			}
-
-			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(charFileName);
-
-			_vertexBuffer = buffer->GetVertexBuffer();
-			_indexBuffer = buffer->GetIndexBuffer();
 		}
+	}
 
-		if (_modelMesh->vertices[0].boneIndices.x != 0)
-		{
-			_isStaticMesh = false;
-		}
+	_meshes = ResourceManager::GetInstance()->GetFbxParsingData(_fileName);
+
+	for (auto index : ResourceManager::GetInstance()->GetArkBuffer(_fileName))
+	{
+		_vertexBuffer.emplace_back(index->GetVertexBuffer());
+		_indexBuffer.emplace_back(index->GetIndexBuffer());
+	}
+
+	if (_animator != nullptr)
+	{
+		_animator->_animBones = _meshes[0]->_boneList;
 
 		BindCacheInfo();
 	}
-	else
-	{
-		GetMeshByName(fileName);
-		_vertexBuffer = buffer->GetVertexBuffer();
-		_indexBuffer = buffer->GetIndexBuffer();
-	}
-}
-
-void ArkEngine::ArkDX11::FBXMesh::UpdateAnimationTransforms(unsigned int animationIndex, float frameCount)
-{
-	// 특정 애니메이션 인덱스에 대한 뼈대 변환 행렬을 계산
-	std::vector<Matrix> tempAnimBoneTransforms(250, Matrix::Identity); // 임시 애니메이션 뼈대 행렬 배열
-
-	//std::shared_ptr<ModelAnimation> animation = GetAnimationByIndex(animationIndex);
-	_anim = GetAnimationByIndex(animationIndex);
-
-	//_animations = GetAnimationByIndex(animationIndex);
-	if (_animTransforms.size() <= animationIndex)
-	{
-		_animTransforms.resize(animationIndex + 1);
-	}
-
-	_anim->frameCount;
-	/// 애니메이션 프레임별로 뼈대 변환 행렬 계산
-		// 뼈
-	for (unsigned int b = 0; b < GetBoneCount(); b++)
-	{
-		_modelMesh->bone = GetBoneByIndex(b);
-
-		/// 이쪽부터 프레임 별로 가져오는걸 해놔야 한다
-		// 중요부분
-		// T포즈
-		// toRootMatrix : 현재 뼈에서 루트 뼈까지의 변환행렬
-		// boneOffsetInverse
-		Matrix toRootMatrix = _modelMesh->bone->transform;
-
-
-		// invGloval : 루트 뼈에서 현재뼈까지의 역행렬
-		// Gloval -> Relative
-		//Matrix invGlobal = toRootMatrix.Invert();
-		// offsetTM
-		_invGlobal = toRootMatrix.Invert();
-
-
-
-		// 현재 뼈의 부모 뼈에 대한 인덱스
-		int parentIndex = _modelMesh->bone->parentIndex;
-
-		// Animation
-		// matParent : 부모 뼈의 변환 행렬
-		Matrix matParent = Matrix::Identity;
-		if (parentIndex >= 0)
-			matParent = tempAnimBoneTransforms[parentIndex];
-
-		Matrix matAnimation;
-
-		if (b == 1)
-		{
-			_boneTMList[1] = toRootMatrix.Invert() * matParent;
-			int test = 0;
-		}
-
-		frame = _anim->GetKeyframe(_modelMesh->bone->name);
-		//std::shared_ptr<ModelKeyframe> frame = animation->GetKeyframe(_root->name);
-
-		if (frame != nullptr)
-		{
-			// 특정 뼈의 특정 프레임에 대한 SRT를 가져옴
-			ModelKeyframeData& data = frame->transforms[frameCount];
-
-			Matrix S = Matrix::CreateScale(data.scale.x, data.scale.y, data.scale.z);
-			Matrix R = Matrix::CreateFromQuaternion(data.rotation);
-			Matrix T = Matrix::CreateTranslation(data.translation.x, data.translation.y, data.translation.z);
-
-
-			// SRT 행렬을 합친 애니메이션 행렬 계산
-			// BoneTransform
-			matAnimation = S * R * T;
-		}
-		else
-		{
-			// 프레임에 해당하는 키프레임이 없으면 단위 행렬 사용
-			matAnimation = Matrix::Identity;
-		}
-
-		// matAnimation : 현재 프레임에서의 애니메이션에 대한 변환 행렬
-		// tempAnimBoneTransforms : 현재 뼈에 대한 애니메이션을 적용한 변환 행렬을 계산하여 저장
-		// 뼈대에서 글로벌로 갈려는 변환행렬
-		tempAnimBoneTransforms[b] = matAnimation * matParent;
-
-		// 결론
-		// _animTransforms[index].transforms[f][b] : 모델 애니메이션 행렬 배열에 현재 뼈에 대한 최종 변환 행렬을 저장
-		// 최종적으로는 루트 뼈에서 현재 뼈까지의 전역 변환 행렬을 _animTransforms에 저장한다
-		_animTransforms[animationIndex]._transforms[frameCount][b] = _invGlobal * tempAnimBoneTransforms[b];
-
-		DirectX::XMMATRIX finalBone = DirectX::XMMatrixMultiply(_invGlobal, tempAnimBoneTransforms[b]);
-		if (_boneTMList.size() < GetBoneCount())
-		{
-			DirectX::XMFLOAT4X4 boneTM;
-			DirectX::XMStoreFloat4x4(&boneTM, finalBone);
-
-			_boneTMList.emplace_back(boneTM);
-		}
-		else
-		{
-			DirectX::XMStoreFloat4x4(&_boneTMList[b], finalBone);
-		}
-	}
-}
-
-
-void ArkEngine::ArkDX11::FBXMesh::ReadFBXAnimation(std::wstring fileName)
-{
-	std::wstring fullPath = _modelPath + fileName + L".clip";
-
-	std::shared_ptr<FileUtils> file = std::make_shared<FileUtils>();
-	file->Open(fullPath, FileMode::Read);
-
-	//std::shared_ptr<ModelAnimation> _anim = std::make_shared<ModelAnimation>();
-	_anim = std::make_shared<ModelAnimation>();
-
-	_anim->name = _utils->ToWString(file->Read<std::string>());
-	_anim->duration = file->Read<float>();
-	_anim->frameRate = file->Read<float>();
-	_anim->frameCount = file->Read<unsigned int>();
-
-	unsigned int keyframesCount = file->Read<unsigned int>();
-
-	for (unsigned int i = 0; i < keyframesCount; i++)
-	{
-		std::shared_ptr<ModelKeyframe> keyframe = std::make_shared<ModelKeyframe>();
-		keyframe->boneName = _utils->ToWString(file->Read<std::string>());
-
-		unsigned int size = file->Read<unsigned int>();
-
-		if (size > 0)
-		{
-			keyframe->transforms.resize(size);
-			void* ptr = &keyframe->transforms[0];
-			file->Read(&ptr, sizeof(ModelKeyframeData) * size);
-		}
-
-		_anim->keyframes[keyframe->boneName] = keyframe;
-	}
-	_animations.push_back(_anim);
-}
-
-unsigned int ArkEngine::ArkDX11::FBXMesh::GetAnimationCount()
-{
-	return _animations.size();
-}
-
-std::vector<std::shared_ptr<ModelAnimation>>& ArkEngine::ArkDX11::FBXMesh::GetAnimations()
-{
-	return _animations;
-}
-
-std::shared_ptr<ModelAnimation> ArkEngine::ArkDX11::FBXMesh::GetAnimationByIndex(unsigned int index)
-{
-	// 인덱스가 유효한 범위 내에 있는지 확인합니다.
-	// 만약 인덱스가 유효하지 않으면 nullptr을 반환합니다.
-	return (index < 0 || index >= _animations.size()) ? nullptr : _animations[index];
-}
-
-std::shared_ptr<ModelAnimation> ArkEngine::ArkDX11::FBXMesh::GetAnimationByName(std::wstring name)
-{
-	for (auto& animation : _animations)
-	{
-		if (animation->name == name)
-			return animation;
-	}
-
-	return nullptr;
-}
-
-std::shared_ptr<ModelMesh> ArkEngine::ArkDX11::FBXMesh::GetMeshByIndex(unsigned int index)
-{
-	// 인덱스가 유효한 범위 내에 있는지 확인합니다.
-	// 만약 인덱스가 유효하지 않으면 nullptr을 반환합니다.
-	return (index < 0 || index >= _meshes.size()) ? nullptr : _meshes[index];
-}
-
-std::shared_ptr<ModelMesh> ArkEngine::ArkDX11::FBXMesh::GetMeshByName(std::wstring name)
-{
-	for (auto& mesh : _meshes)
-	{
-		if (mesh->name == name)
-			return mesh;
-	}
-
-	return nullptr;
 }
 
 void ArkEngine::ArkDX11::FBXMesh::BindCacheInfo()
 {
-	// Mesh에 Material 캐싱
-	//for (const auto& mesh : _meshes)
-	//{
-	//	// 이미 찾았으면 스킵
-	//	if (mesh->material != nullptr)
-	//		continue;
-
-	//	mesh->material = GetMaterialByName(mesh->materialName);
-	//}
-
 	// Mesh에 Bone 캐싱
 	for (const auto& mesh : _meshes)
 	{
 		// 이미 찾았으면 스킵
 		if (mesh->bone != nullptr)
 			continue;
-
-		mesh->bone = GetBoneByIndex(mesh->boneIndex);
 	}
 
-	// Bone 계층 정보 채우기
-	if (_modelMesh->bone == nullptr && _bones.size() > 0)
+	for (auto index : _meshes)
 	{
-		_modelMesh->bone = _bones[0];
-
-		for (const auto& bone : _bones)
+		if (index->bone == nullptr && _animator->_animBones.size() > 0)
 		{
-			if (bone->parentIndex >= 0)
+			index->bone = _animator->_animBones[0];
+
+			for (const auto& bone : _animator->_animBones)
 			{
-				bone->parent = _bones[bone->parentIndex];
-				bone->parent->children.push_back(bone);
-			}
-			else
-			{
-				bone->parent = nullptr;
+				if (bone->parentIndex >= 0)
+				{
+					bone->parent = _animator->_animBones[bone->parentIndex];
+					bone->parent->children.push_back(bone);
+				}
+				else
+				{
+					bone->parent = nullptr;
+				}
 			}
 		}
 	}
 }
 
+void ArkEngine::ArkDX11::FBXMesh::ReadMaterial(std::wstring fileName)
+{
+	_diffuseTextureName.resize(_meshes.size());
+	_diffuseMapSRV.resize(_meshes.size());
+	_normalTextureName.resize(_meshes.size());
+	_normalMapSRV.resize(_meshes.size());
+	_emssiveTextureName.resize(_meshes.size());
+	_emissionMapSRV.resize(_meshes.size());
+
+	auto modelMaterialData = ResourceManager::GetInstance()->GetModelMaterial(fileName);
+
+	if (modelMaterialData == nullptr)
+	{
+		ModelMaterial* materialData = new ModelMaterial();
+
+		std::unique_ptr<ArkEngine::Utils> utils;
+
+		std::wstring fullPath = _texturePath + fileName + L".xml";
+
+		auto parentPath = std::filesystem::path(fullPath).parent_path();
+
+		// 파일 경로를 std::string으로 변환
+		std::string utf8Path(fullPath.begin(), fullPath.end());
+
+		// XMLDocument 객체 생성
+		tinyxml2::XMLDocument document;
+
+		// XML 파일 로드
+		if (document.LoadFile(utf8Path.c_str()) == tinyxml2::XML_SUCCESS)
+		{
+			materialData->_diffuseTextureList.resize(_meshes.size());
+			materialData->_normalTextureList.resize(_meshes.size());
+			materialData->_emissiveTextureList.resize(_meshes.size());
+
+			// Materials 엘리먼트 가져오기
+			tinyxml2::XMLElement* materialsElement = document.FirstChildElement("Materials");
+
+			if (materialsElement)
+			{
+				// Material 엘리먼트들 순회
+				int meshIndex = 0;
+				for (tinyxml2::XMLElement* materialElement = materialsElement->FirstChildElement("Material");
+					materialElement; materialElement = materialElement->NextSiblingElement("Material"))
+				{
+					// diffuse 텍스쳐
+					const tinyxml2::XMLElement* diffuseFileElement = materialElement->FirstChildElement("DiffuseFile");
+					if (diffuseFileElement)
+					{
+						const char* diffuseFileText = diffuseFileElement->GetText();
+
+						if (diffuseFileText)
+						{
+							materialData->_diffuseTextureList[meshIndex] = diffuseFileText;
+						}
+					}
+					// normal 텍스쳐
+					const tinyxml2::XMLElement* normalFileElement = materialElement->FirstChildElement("NormalFile");
+					if (normalFileElement)
+					{
+						const char* normalFileText = normalFileElement->GetText();
+
+						if (normalFileText)
+						{
+							materialData->_normalTextureList[meshIndex] = normalFileText;
+						}
+					}
+
+					// emissive 텍스쳐
+					const tinyxml2::XMLElement* emissiveFileElement = materialElement->FirstChildElement("EmissiveFile");
+					if (emissiveFileElement)
+					{
+						const char* emissiveFileText = emissiveFileElement->GetText();
+					
+						if (emissiveFileText)
+						{
+							materialData->_emissiveTextureList[meshIndex] = emissiveFileText;
+						}
+					}
+
+					meshIndex++;
+
+					// Material 엘리먼트의 하위 엘리먼트들에서 데이터 추출
+					Material material;
+
+					material.ambient.x = materialElement->FirstChildElement("Ambient")->FloatAttribute("R");
+					material.ambient.y = materialElement->FirstChildElement("Ambient")->FloatAttribute("G");
+					material.ambient.z = materialElement->FirstChildElement("Ambient")->FloatAttribute("B");
+					material.ambient.w = materialElement->FirstChildElement("Ambient")->FloatAttribute("A");
+
+					material.diffuse.x = materialElement->FirstChildElement("Diffuse")->FloatAttribute("R");
+					material.diffuse.y = materialElement->FirstChildElement("Diffuse")->FloatAttribute("G");
+					material.diffuse.z = materialElement->FirstChildElement("Diffuse")->FloatAttribute("B");
+					material.diffuse.w = materialElement->FirstChildElement("Diffuse")->FloatAttribute("A");
+
+					material.specular.x = materialElement->FirstChildElement("Specular")->FloatAttribute("R");
+					material.specular.y = materialElement->FirstChildElement("Specular")->FloatAttribute("G");
+					material.specular.z = materialElement->FirstChildElement("Specular")->FloatAttribute("B");
+					material.specular.w = materialElement->FirstChildElement("Specular")->FloatAttribute("A");
+
+					material.reflect.x = materialElement->FirstChildElement("Emissive")->FloatAttribute("R");
+					material.reflect.y = materialElement->FirstChildElement("Emissive")->FloatAttribute("G");
+					material.reflect.z = materialElement->FirstChildElement("Emissive")->FloatAttribute("B");
+					material.reflect.w = materialElement->FirstChildElement("Emissive")->FloatAttribute("A");
+
+					// 추출한 데이터를 materials 벡터에 추가
+					materialData->_material.emplace_back(material);
+				}
+			}
+			else
+			{
+				std::cerr << "Error: 'Materials' element not found in the XML file." << std::endl;
+			}
+		}
+		else
+		{
+			std::cerr << "Error: Failed to load XML file." << std::endl;
+		}
+
+		ResourceManager::GetInstance()->AddModelMaterial(fileName, materialData);
+
+		modelMaterialData = materialData;
+	}
+
+	for (int index = 0; index < _meshes.size(); index++)
+	{
+		if (!modelMaterialData->_diffuseTextureList.empty())
+		{
+			std::string diffuseTexturePath = _simpleModelName + "/" + modelMaterialData->_diffuseTextureList[index];
+			SetDiffuseTexture(index, diffuseTexturePath.c_str());
+		}
+
+		if (!modelMaterialData->_normalTextureList.empty())
+		{
+			std::string normalTexturePath = _simpleModelName + "/" + modelMaterialData->_normalTextureList[index];
+			SetNormalTexture(index, normalTexturePath.c_str());
+		}
+
+		if (!modelMaterialData->_emissiveTextureList.empty())
+		{
+			std::string emissiveTexturePath = _simpleModelName + "/" + modelMaterialData->_emissiveTextureList[index];
+			SetEmissiveTexture(index, emissiveTexturePath.c_str());
+		}
+	}
+
+	_material = modelMaterialData->_material;
+}

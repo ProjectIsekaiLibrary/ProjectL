@@ -1,10 +1,10 @@
 #include "TimeManager.h"
 
 KunrealEngine::TimeManager::TimeManager()
-	:m_startTime(std::chrono::high_resolution_clock::now()),
-	m_prevTime(std::chrono::high_resolution_clock::now()),
-	m_deltaTime(0.0),
-	m_timeScale(1.0f)
+	:_startTime(std::chrono::high_resolution_clock::now()),
+	_prevTime(std::chrono::high_resolution_clock::now()),
+	_deltaTime(0.0),
+	_timeScale(1.0f)
 {
 
 }
@@ -19,7 +19,7 @@ void KunrealEngine::TimeManager::Initialize()
 
 }
 
-void KunrealEngine::TimeManager::Finalize()
+void KunrealEngine::TimeManager::Release()
 {
 
 }
@@ -30,14 +30,14 @@ void KunrealEngine::TimeManager::Update()
 	///업데이트가 돌아가면서 currentTime을 계속 업데이트
 	///prevTime과 새로 업데이트한 시간의 차이를 계산해서 델타타임 도출
 	///그리고 prevTime을 currentTime로 업데이트
-	m_currentTime = std::chrono::high_resolution_clock::now();
-	m_deltaTime = std::chrono::duration<float>(m_currentTime - m_prevTime).count() * m_timeScale;
-	m_prevTime = m_currentTime;
+	_currentTime = std::chrono::high_resolution_clock::now();
+	_deltaTime = std::chrono::duration<float>(_currentTime - _prevTime).count() * _timeScale;
+	_prevTime = _currentTime;
 }
 
 float KunrealEngine::TimeManager::GetDeltaTime()
 {
-	return m_deltaTime;
+	return _deltaTime;
 }
 
 void KunrealEngine::TimeManager::SetTimeScale(float scale)
@@ -47,10 +47,10 @@ void KunrealEngine::TimeManager::SetTimeScale(float scale)
 		return;
 	}
 
-	m_timeScale = scale;
+	_timeScale = scale;
 }
 
 float KunrealEngine::TimeManager::GetTimeScale()
 {
-	return m_timeScale;
+	return _timeScale;
 }

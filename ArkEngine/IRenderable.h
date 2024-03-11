@@ -37,12 +37,23 @@ namespace ArkEngine
 		virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) abstract;
-		virtual void SetDiffuseTexture(const char* textureName) abstract;
-		virtual void SetNormalTexture(const char* textureName) abstract;
+		virtual void SetDiffuseTexture(int index, const char* textureName) abstract;
+		virtual void SetNormalTexture(int index, const char* textureName) abstract;
+		virtual void SetEmissiveTexture(int index, const char* textureName) abstract;
+
 		virtual void SetAnimator() abstract;
 
 	public:
 		virtual void PlayAnimation(float deltaTime, bool continiousPlay) abstract;
 		virtual void StopAnimation() abstract;
+
+	public:
+		virtual bool GetPickable() abstract;
+		virtual void SetPickable(bool tf) abstract;
+
+		virtual unsigned int GetHashID() abstract;
+
+	public:
+		virtual bool GetInsideFrustumState() abstract;
 	};
 }

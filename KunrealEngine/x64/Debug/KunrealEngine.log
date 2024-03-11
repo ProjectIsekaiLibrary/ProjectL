@@ -1,34 +1,56 @@
-﻿  pch.cpp
-  Camera.cpp
-  Component.cpp
-  dllmain.cpp
-  EngineCore.cpp
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  GameObject.cpp
-  GraphicsSystem.cpp
-  InputSystem.cpp
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.22000.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-  KunrealAPI.cpp
-  Light.cpp
-  MeshRenderer.cpp
-  PhysicsSystem.cpp
-  Scene.cpp
-  SceneManager.cpp
-  SoundSystem.cpp
-  TimeManager.cpp
-  Transform.cpp
-  코드를 생성하고 있습니다...
-C:\FinalProjeact\ProjectL\KunrealEngine\SoundSystem.cpp(177): warning C4715: 'KunrealEngine::SoundSystem::FindSound': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(87): warning C4715: 'KunrealEngine::MeshRenderer::GetMeshName': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(129): warning C4715: 'KunrealEngine::MeshRenderer::GetNormalName': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(142): warning C4715: 'KunrealEngine::MeshRenderer::GetMaterial': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\MeshRenderer.cpp(158): warning C4715: 'KunrealEngine::MeshRenderer::GetReflect': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(75): warning C4715: 'KunrealEngine::Light::GetLightType': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(140): warning C4715: 'KunrealEngine::Light::GetAmbient': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(177): warning C4715: 'KunrealEngine::Light::GetDiffuse': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(212): warning C4715: 'KunrealEngine::Light::GetSpecular': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\Light.cpp(233): warning C4715: 'KunrealEngine::Light::GetDirection': 모든 제어 경로에서 값을 반환하지는 않습니다.
-C:\FinalProjeact\ProjectL\KunrealEngine\GraphicsSystem.cpp(58): warning C4715: 'KunrealEngine::GraphicsSystem::GetCubeMapList': 모든 제어 경로에서 값을 반환하지는 않습니다.
-     C:\FinalProjeact\ProjectL\Bin\x64\Debug\KunrealEngine.lib 라이브러리 및 C:\FinalProjeact\ProjectL\Bin\x64\Debug\KunrealEngine.exp 개체를 생성하고 있습니다.
-  KunrealEngine.vcxproj -> C:\FinalProjeact\ProjectL\Bin\x64\Debug\KunrealEngine.dll
-  1개 파일이 복사되었습니다.
+﻿  PlayerMove.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(41,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(44,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(47,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(49,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(49,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(7,51): warning C4275: DLL 인터페이스가 아닌 class 'KunrealEngine::Boss'이(가) DLL 인터페이스 class 'KunrealEngine::Kamen'의 기본으로 사용되었습니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(21,8):
+  'KunrealEngine::Boss' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(7,18):
+  'KunrealEngine::Kamen' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(29,29): warning C4251: 'KunrealEngine::Kamen::_testPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(48,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(68,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(28,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(15,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(16,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(17,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(151,68): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(224,68): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  KunrealEngine.vcxproj -> C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\Bin\x64\Debug\KunrealEngine.dll
+  0개 파일이 복사되었습니다.

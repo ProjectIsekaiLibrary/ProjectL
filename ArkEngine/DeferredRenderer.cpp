@@ -17,7 +17,8 @@
 ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight)
 	: _tech(nullptr), _fxDirLightCount(nullptr),_fxPointLightCount(nullptr),
 	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr),
-	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _deferredBuffer(nullptr),
+	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr), _materialMap(nullptr),
+	_deferredBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr)
 {
 	for (int i = 0; i < 4; i++)
@@ -28,22 +29,6 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
 
 	Initailize();
-
-	_material.ambient.x = 0.5f;
-	_material.ambient.y = 0.5f;
-	_material.ambient.z = 0.5f;
-	_material.ambient.w = 1.0f;
-
-	_material.diffuse.x = 0.5f;
-	_material.diffuse.y = 0.5f;
-	_material.diffuse.z = 0.5f;
-	_material.diffuse.w = 1.0f;
-
-	_material.specular.x = 0.9f;
-	_material.specular.y = 0.9f;
-	_material.specular.z = 0.9f;
-	_material.specular.w = 1.0f;
-
 }
 
 ArkEngine::ArkDX11::DeferredRenderer::~DeferredRenderer()
@@ -70,7 +55,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Update(ArkEngine::ICamera* pCamera)
 {
 	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(pCamera);
 
-	_eyePosW = DirectX::XMFLOAT3(camera->GetCameraPosition().x, camera->GetCameraPosition().y, camera->GetCameraPosition().z);
+	_eyePosW = DirectX::XMFLOAT3(camera->GetCameraPos().x, camera->GetCameraPos().y, camera->GetCameraPos().z);
 
 }
 
@@ -89,13 +74,13 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	_fxEyePosW->SetRawValue(&_eyePosW, 0, sizeof(DirectX::XMFLOAT3));
 
-	_fxMaterial->SetRawValue(&_material, 0, sizeof(Material));
-
 	DirectX::XMFLOAT4 tempMaterial = { 0.5f, 0.5f, 0.5f, 0.5f };
 
 	_positionMap->SetResource(_deferredBuffer->GetSRV(0));
 	_diffuseMap->SetResource(_deferredBuffer->GetSRV(1));
 	_normalMap->SetResource(_deferredBuffer->GetSRV(2));
+	_emissionMap->SetResource(_deferredBuffer->GetSRV(3));
+	_materialMap->SetResource(_deferredBuffer->GetSRV(4));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -117,6 +102,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
 	
+	_materialMap = nullptr;
+	_emissionMap = nullptr;
 	_diffuseMap = nullptr;
 	_normalMap = nullptr;
 	_positionMap = nullptr;
@@ -135,7 +122,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 
 void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 {
-	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/finalDeferred.fx");
+	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/finalDeferredToon.fx");
 	auto effect = _arkEffect->GetEffect();
 
 	_tech = effect->GetTechniqueByIndex(0);
@@ -148,12 +135,11 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 
 	_fxEyePosW = effect->GetVariableByName("gEyePosW")->AsVector();
 
-	// юс╫ц 
-	_fxMaterial = effect->GetVariableByName("gMaterial");
-
 	_positionMap = effect->GetVariableByName("PositionTexture")->AsShaderResource();
 	_normalMap = effect->GetVariableByName("BumpedNormalTexture")->AsShaderResource();
 	_diffuseMap = effect->GetVariableByName("DiffuseAlbedoTexture")->AsShaderResource();
+	_emissionMap = effect->GetVariableByName("EmissiveTexture")->AsShaderResource();
+	_materialMap = effect->GetVariableByName("MaterialTexture")->AsShaderResource();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()

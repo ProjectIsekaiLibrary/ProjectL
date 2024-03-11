@@ -19,7 +19,14 @@ KunrealEngine::TimeManager& timeInstance = KunrealEngine::TimeManager::GetInstan
 KunrealEngine::InputSystem* inputInstance = KunrealEngine::InputSystem::GetInstance();
 KunrealEngine::SoundSystem& soundInstance = KunrealEngine::SoundSystem::GetInstance();
 
-//GInterface::GraphicsCamera* testCamera;
+KunrealEngine::GameObject* player;
+KunrealEngine::GameObject* ninaveh;
+KunrealEngine::GameObject* claudia;
+KunrealEngine::GameObject* kamen;
+
+KunrealEngine::GameObject* testCamera;
+
+DirectX::XMFLOAT3 targetPos;
 
 KunrealEngine::EngineCore::EngineCore()
 	:_gInterface(nullptr)
@@ -41,77 +48,17 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	PhysicsSystem::GetInstance().Initialize();
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
 	soundInstance.Initialize(hwnd);
-	soundInstance.AddSound("Resources/Sound/sound01.wav", "Title", 0);
 
-	// camera component test
-	auto ptr = sceneInstance.GetCurrentScene()->CreateObject("testCamera");
-
-	KunrealEngine::KunrealMath::Float3 a = { 0.0f, 5.0f, -30.0f };
-	KunrealEngine::KunrealMath::Float3 b = { 0.0f, 0.0f, 0.0f };
-
-	ptr->AddComponent<KunrealEngine::Camera>();
-	ptr->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(a.x, a.y, a.z);
-	ptr->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(b.x, b.y, b.z);
-
-	ptr->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
-	ptr->GetComponent<KunrealEngine::Camera>()->RotateCamera(0.f, 0.f);
-
-
-	// mesh renderer component test
-	auto modelTest = sceneInstance.GetCurrentScene()->CreateObject("modelTest");
-	modelTest->AddComponent<MeshRenderer>();
-	modelTest->GetComponent<MeshRenderer>()->SetMeshObject("Kachujin/Kachujin");
-	modelTest->GetComponent<Transform>()->SetPosition(-20, 0, 0);
-	modelTest->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
-	modelTest->GetComponent<MeshRenderer>()->SetActive(true);
-	KunrealEngine::KunrealMath::Float4 reflect = { 0.9f, 0.9f, 0.9f, 0.9f };
-	sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<MeshRenderer>()->SetDiffuseTexture("Resources/Textures/Kachujin/Kachujin_diffuse.png");
-	sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<MeshRenderer>()->SetReflect(reflect.x, reflect.y, reflect.z, reflect.w);
-
-	// Plane
-	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
-	plane->AddComponent<MeshRenderer>();
-	plane->AddComponent<MeshRenderer>();
-	plane->GetComponent<MeshRenderer>()->SetMeshObject("plane/plane", "Resources/Textures/bricks.dds", false);
-	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture("asdf");
-	plane->GetComponent<Transform>()->SetRotation(90.0f, 0 ,0);
-	plane->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-
-	// cube map test
-	GRAPHICS->CreateCubeMap("test", "Resources/Textures/CubeMaps/GodJaeHak.dds", true);
-	auto list = GRAPHICS->GetCubeMapList();
-	GRAPHICS->SetMainCubeMap(list.back());
-
-	// light test
-	KunrealEngine::KunrealMath::Float4 ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
-	KunrealEngine::KunrealMath::Float4 diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-	KunrealEngine::KunrealMath::Float4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-	KunrealEngine::KunrealMath::Float3 direction = { 0.707f, 0.707f, 0.0f };
-
-
-	auto lightTest = sceneInstance.GetCurrentScene()->CreateObject("lightTest");
-	lightTest->AddComponent<Light>();
-	lightTest->GetComponent<Light>()->CreateDirectionalLight(ambient, diffuse, specular, direction);
-	lightTest->GetComponent<Light>()->SetAmbient(1.f, 1.f, 1.f, 1.f); 
-	lightTest->SetActive(false);
-
-	// PointLight 예시
-	auto pointLight = sceneInstance.GetCurrentScene()->CreateObject("pointLightTest");
-	pointLight->AddComponent<Light>();
-	pointLight->GetComponent<Transform>()->SetPosition(0.f, 0.f, 0.f);
-	pointLight->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
-	pointLight->GetComponent<Light>()->SetDiffuse(1.0f, 1.0f, 1.0f, 1.0f);
-	pointLight->GetComponent<Light>()->SetPointRange(10.f);
-	pointLight->GetComponent<Light>()->SetPointRange(100.0f);
-	pointLight->SetActive(true);
+	/// 니들 맘대로 해
+	PlayGround();
 }
 
-void KunrealEngine::EngineCore::Finalize()
+void KunrealEngine::EngineCore::Release()
 {
-	sceneInstance.Finalize();
-	timeInstance.Finalize();
-	KunrealEngine::GraphicsSystem::GetInstance().Finalize();
-	/// 나머지들 finalize 할 것들 추가
+	sceneInstance.Release();
+	timeInstance.Release();
+	KunrealEngine::GraphicsSystem::GetInstance().Release();
+	/// 나머지들 release 할 것들 추가
 }
 
 void KunrealEngine::EngineCore::FixedUpdate()
@@ -120,52 +67,130 @@ void KunrealEngine::EngineCore::FixedUpdate()
 	sceneInstance.FixedUpdateScene(sceneInstance.GetCurrentScene());
 }
 
+bool moveTo = true;
+
 void KunrealEngine::EngineCore::Update()
 {
+	inputInstance->Update(GetDeltaTime());
+	inputInstance->UpdateEditorMousePos(_editorMousepos);
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
-	//inputInstance->Update(GetDeltaTime());
-	
-	soundInstance.Loop(soundInstance.FindIndexOfSound("Title"));
+	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
 
-	//testObject3->PlayAnimation(1000.0f * TimeManager::GetInstance().GetDeltaTime(), false);
+	CheckMousePosition();
 
-	GRAPHICS->DrawDebugText(100, 100, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
-	GRAPHICS->DrawDebugText(100, 300, "%s", sceneInstance.GetCurrentScene()->GetSceneName().c_str());
+	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
+	//GRAPHICS->DrawDebugText(100, 100, 20, "1610배마owner정기훈 : %f", sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<Transform>()->GetPosition().x);
+	//GRAPHICS->DrawDebugText(100, 300, 30, "%s", sceneInstance.GetCurrentScene()->GetSceneName().c_str());
 
-	// 카메라 테스트
+	// 물리 정보 교환 테스트
+	BoxCollider* colA = sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<BoxCollider>();
+	BoxCollider* colB = sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<BoxCollider>();
+	BoxCollider* playerCol = sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<BoxCollider>();
 
-	if (GetAsyncKeyState('A'))
+	Transform* trr = sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>();
+
+	if (trr->GetPosition().x > 20.f)
 	{
-		GRAPHICS->GetMainCamera()->Strafe(-10.0f * TimeManager::GetInstance().GetDeltaTime());
+		moveTo = false;
 	}
-	else if (GetAsyncKeyState('D'))
+
+	if (trr->GetPosition().x < -20.f)
 	{
-		GRAPHICS->GetMainCamera()->Strafe(10.0f * TimeManager::GetInstance().GetDeltaTime());
+		moveTo = true;
 	}
-	else if (GetAsyncKeyState('W'))
+
+	if (moveTo)
 	{
-		GRAPHICS->GetMainCamera()->Walk(10.0f * TimeManager::GetInstance().GetDeltaTime());
+		trr->SetPosition(trr->GetPosition().x + 0.11f, 5.f, 0.f);
 	}
-	else if (GetAsyncKeyState('S'))
+	else
 	{
-		GRAPHICS->GetMainCamera()->Walk(-10.0f * TimeManager::GetInstance().GetDeltaTime());
+		trr->SetPosition(trr->GetPosition().x - 0.11f, 5.f, 0.f);
 	}
-	else if (GetAsyncKeyState('Q'))
+	//sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->GetPosition().x + 0.1f, 0.f, 0.f);
+
+	sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->GetPosition().x + 0.1f, 5.f, 0.f);
+
+
+
+	if (playerCol->GetTargetObject() != nullptr)
 	{
-		GRAPHICS->GetMainCamera()->UpDown(-10.0f * TimeManager::GetInstance().GetDeltaTime());
+		GRAPHICS->DrawDebugText(800, 50, 60, "%s%s", "TargetObj : ", playerCol->GetTargetObject()->GetObjectName().c_str());
 	}
-	else if (GetAsyncKeyState('E'))
+	else
 	{
-		GRAPHICS->GetMainCamera()->UpDown(10.0f * TimeManager::GetInstance().GetDeltaTime());
+		GRAPHICS->DrawDebugText(800, 50, 60, "%s", "TargetObj : None");
 	}
-	else if (GetAsyncKeyState('R'))
+
+	auto x = testCamera->GetComponent<Transform>()->GetPosition().x;
+	auto y = testCamera->GetComponent<Transform>()->GetPosition().y;
+	auto z = testCamera->GetComponent<Transform>()->GetPosition().z;
+
+
+
+	if (inputInstance->KeyInput(KEY::B))
 	{
-		GRAPHICS->GetMainCamera()->RotateCamera({0,  -20.0f * TimeManager::GetInstance().GetDeltaTime()});
 	}
-	else if (GetAsyncKeyState('T'))
+	else if (inputInstance->KeyInput(KEY::N))
+	{
+	}
+	else if (inputInstance->KeyInput(KEY::A))
+	{
+		testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(-10.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
+	}
+	else if (inputInstance->KeyInput(KEY::D))
+	{
+		testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(10.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
+	}
+	else if (inputInstance->KeyInput(KEY::W))
+	{
+		testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y, z + 10.0f * TimeManager::GetInstance().GetDeltaTime());
+	}
+	else if (inputInstance->KeyInput(KEY::S))
+	{
+		testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y, z - 10.0f * TimeManager::GetInstance().GetDeltaTime());
+	}
+	else if (inputInstance->KeyInput(KEY::Q))
+	{
+		testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y - 10.0f * TimeManager::GetInstance().GetDeltaTime(), z);
+	}
+	else if (inputInstance->KeyInput(KEY::E))
+	{
+		testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y + 10.0f * TimeManager::GetInstance().GetDeltaTime(), z);
+	}
+	else if (inputInstance->KeyInput(KEY::R))
+	{
+		GRAPHICS->GetMainCamera()->RotateCamera({ 0,  -20.0f * TimeManager::GetInstance().GetDeltaTime() });
+	}
+	else if (inputInstance->KeyInput(KEY::T))
 	{
 		GRAPHICS->GetMainCamera()->RotateCamera({ 0,  20.0f * TimeManager::GetInstance().GetDeltaTime() });
 	}
+
+	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
+
+	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
+	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
+
+	// 플레이어 상태
+	if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::IDLE)
+	{
+		GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : IDLE");
+	}
+	else if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::WALK)
+	{
+		GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : WALK");
+	}
+	else if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::DASH)
+	{
+		GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : DASH");
+	}
+	else
+	{
+		GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : Idontknow");
+	}
+
+	//Updatecoroutine();
 }
 
 void KunrealEngine::EngineCore::LateUpdate()
@@ -188,30 +213,204 @@ void KunrealEngine::EngineCore::Render()
 	GRAPHICS->Render();
 }
 
-void* KunrealEngine::EngineCore::GetRenderingImage()
+void KunrealEngine::EngineCore::SetEditorMousePos(POINT position)
 {
-	return GRAPHICS->GetRenderingImage();
+	_editorMousepos = position;
+	return;
 }
 
-void* KunrealEngine::EngineCore::GetDevice()
+void KunrealEngine::EngineCore::PlayGround()
 {
-	return GRAPHICS->GetDevice();
+	int soundindex = soundInstance.AddSound("Resources/Sound/soundch2.wav", 70);
+	//soundInstance.Loop(soundindex);
+
+	// Camera
+	KunrealEngine::KunrealMath::Float3 cameraPos = { 0.0f, 30.0f, -55.0f };
+	//KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
+	KunrealEngine::KunrealMath::Float3 targetPos = { 0.0f, -15.0f, 0.0f };
+	testCamera = sceneInstance.GetCurrentScene()->CreateObject("testCamera");
+	testCamera->AddComponent<Camera>();
+	testCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+	testCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+	//testCamera->GetComponent<Camera>()->RotateCamera(5.f, 0.f);
+	testCamera->GetComponent<Camera>()->SetMainCamera();
+	
+	//testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
+	//testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
+
+	// Player
+	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
+	player->AddComponent<MeshRenderer>();
+	player->GetComponent<MeshRenderer>()->SetMeshObject("Kachujin/Kachujin");
+	player->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
+	player->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
+	player->GetComponent<MeshRenderer>()->SetActive(true);
+	player->GetComponent<MeshRenderer>()->SetPickableState(true);
+	KunrealEngine::KunrealMath::Float4 reflect = { 0.9f, 0.9f, 0.9f, 0.9f };
+	//sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<MeshRenderer>()->SetDiffuseTexture("Resources/Textures/Kachujin/Kachujin_diffuse.png");
+	sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<MeshRenderer>()->SetReflect(reflect.x, reflect.y, reflect.z, reflect.w);
+	player->AddComponent<BoxCollider>();
+	player->GetComponent<BoxCollider>()->SetBoxSize(3.0f, 8.0f, 5.0f);
+	player->AddComponent<Player>();
+
+	ninaveh = sceneInstance.GetCurrentScene()->CreateObject("Nineveh");
+	ninaveh->AddComponent<MeshRenderer>();
+	ninaveh->GetComponent<MeshRenderer>()->SetMeshObject("Nineveh/Nineveh");
+	ninaveh->AddComponent<BoxCollider>();
+	ninaveh->GetComponent<BoxCollider>()->SetBoxSize(10.f, 10.f, 10.f);
+	ninaveh->GetComponent<BoxCollider>()->SetOffset(0, 10.f, 0);
+	ninaveh->GetComponent<Transform>()->SetPosition(10.0f, 0.0f, -20.0f);
+	ninaveh->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
+	ninaveh->GetComponent<Transform>()->SetRotation(-270.f, -45.f, -180.f);
+
+	claudia = sceneInstance.GetCurrentScene()->CreateObject("Claudia");
+	claudia->AddComponent<MeshRenderer>();
+	claudia->GetComponent<MeshRenderer>()->SetMeshObject("Claudia/Claudia");
+	claudia->GetComponent<Transform>()->SetPosition(-23.0f, 0.0f, 6.0f);
+	claudia->GetComponent<Transform>()->SetScale(0.2f, 0.2f, 0.2f);
+	claudia->GetComponent<Transform>()->SetRotation(-270.f, -45.f, -180.f);
+
+	kamen = sceneInstance.GetCurrentScene()->CreateObject("Kamen");
+	kamen->AddComponent<MeshRenderer>();
+	kamen->GetComponent<MeshRenderer>()->SetMeshObject("Kachujin/Kachujin");
+	kamen->GetComponent<Transform>()->SetPosition(-50.0f, 0.0f, 10.0f);
+	kamen->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
+	kamen->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
+	kamen->AddComponent<Kamen>();
+	//kamen->GetComponent<Kamen>()->SetPlayer(modelTest);
+
+	// Plane 
+	auto plane = sceneInstance.GetCurrentScene()->CreateObject("cube");
+	plane->AddComponent<MeshRenderer>();
+	plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
+	plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
+	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
+	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
+
+	// cube map test
+	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
+	auto list = GRAPHICS->GetCubeMapList();
+	GRAPHICS->SetMainCubeMap(list.back());
+
+	// light test
+	DirectX::XMFLOAT4 diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT4 ambient = { 0.3f, 0.3f, 0.3f, 1.0f };
+	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 direction = { 0.5f, -0.5f, 0.5f };
+
+	auto lightTest = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
+	lightTest->AddComponent<Light>();
+	lightTest->GetComponent<Light>()->CreateDirectionalLight(ambient, diffuse, specular, direction);
+	lightTest->GetComponent<Light>()->SetActive(true);
+	lightTest->SetActive(true);
+
+	// PointLight 예시
+	auto pointLight = sceneInstance.GetCurrentScene()->CreateObject("pointLightTest");
+	pointLight->AddComponent<Light>();
+	pointLight->GetComponent<Transform>()->SetPosition(0.f, 0.f, 0.f);
+	pointLight->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+	pointLight->GetComponent<Light>()->SetAmbient(1.0f, 1.0f, 1.0f, 1.0f);
+	pointLight->GetComponent<Light>()->SetPointRange(10.f);
+	pointLight->GetComponent<Light>()->SetPointRange(100.0f);
+	pointLight->SetActive(false);
+
+	auto pointLight2 = sceneInstance.GetCurrentScene()->CreateObject("pointLightTest2");
+	pointLight2->AddComponent<Light>();
+	pointLight2->GetComponent<Transform>()->SetPosition(-70.f, 0.f, 50.f);
+	pointLight2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 0.0f);
+	pointLight2->GetComponent<Light>()->SetAmbient(1.0f, 1.0f, 1.0f, 1.0f);
+	pointLight2->GetComponent<Light>()->SetPointRange(50.f);
+	pointLight2->SetActive(false);
+
+	// 충돌체크
+	auto c1 = sceneInstance.GetCurrentScene()->CreateObject("Knife");
+	auto c2 = sceneInstance.GetCurrentScene()->CreateObject("Rock");
+
+
+	c1->AddComponent<BoxCollider>();
+	c1->GetComponent<BoxCollider>()->SetBoxSize(5.f, 10.f, 10.f);
+	c1->AddComponent<MeshRenderer>();
+	c1->GetComponent<Transform>()->SetPosition(-20.f, 9.f, 0.f);
+	c1->GetComponent<Transform>()->SetScale(0.3f, 0.3f, 0.3f);
+	c1->GetComponent<MeshRenderer>()->SetMeshObject("Sword/Sword", "bricks.dds");
+	c1->GetComponent<MeshRenderer>()->SetPickableState(true);
+
+	c2->AddComponent<BoxCollider>();
+	c2->GetComponent<BoxCollider>()->SetBoxSize(11.f, 11.f, 11.f);
+	c2->AddComponent<MeshRenderer>();
+	c2->GetComponent<Transform>()->SetPosition(-40.f, 15.f, 0.f);
+	c2->GetComponent<Transform>()->SetScale(5.f, 5.f, 5.f);
+	//c2->GetComponent<MeshRenderer>()->SetMeshObject("Kachujin/Kachujin", "Kachujin/Kachujin_diffuse.png");
+	c2->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", "bricks.dds");
+	c2->GetComponent<MeshRenderer>()->SetPickableState(true);
+
+	targetPos = { 0.0f ,0.0f ,0.0f };
+
+	auto imageTest = sceneInstance.GetCurrentScene()->CreateObject("ImageTest1");
+	imageTest->AddComponent<ImageRenderer>();
+	imageTest->GetComponent<ImageRenderer>()->SetImage("MenuQuitButton.dds");
+	imageTest->GetComponent<ImageRenderer>()->SetImageStatus(true);
+	imageTest->GetComponent<ImageRenderer>()->SetPosition(500.f, 400.f);
+	imageTest->GetComponent<ImageRenderer>()->SetImageStatus(false);
+
+	cursorimage = GRAPHICS->CreateImage("Resources/Textures/floor.dds");
+	cursorimage->SetPosition(500.0f);
+	cursorimage->SetRenderingState(false);
+
+
+	// Test
+	for (int i = 0; i < 10; i++)
+	{
+		std::string name = "rightCube" + std::to_string(i);
+		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
+		cube1->AddComponent<MeshRenderer>();
+		cube1->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+		cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
+		cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
+		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+		cube1->GetComponent<Transform>()->SetPosition(40.0f, 2.0f, 50.0f - 10.0f * i);
+
+		if (i % 2 == 0)
+		{
+			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
+		}
+	}
+
+	for (int i = 0; i < 10; i++)
+	{
+		std::string name = "leftCube" + std::to_string(i);
+		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
+		cube1->AddComponent<MeshRenderer>();
+		cube1->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+		cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
+		//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
+		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+		cube1->GetComponent<Transform>()->SetPosition(-40.0f, 2.0f, 50.0f - 10.0f * i);
+
+		if (i % 2 == 1)
+		{
+			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
+		}
+	}
 }
 
-void* KunrealEngine::EngineCore::GetDeviceContext()
+void KunrealEngine::EngineCore::CheckMousePosition()
 {
-	return GRAPHICS->GetDeviceContext();
-}
+	// 에디터로 실행하지 않았을 경우
+	if (_editorMousepos.x == -1 && _editorMousepos.y == -1)
+	{
+		{
+			_finalMousePosition.x = _ingameMouseX;
+			_finalMousePosition.y = _ingameMouseY;
+		}
+	}
 
-void* KunrealEngine::EngineCore::GetRenderTargetView()
-{
-	return GRAPHICS->GetRenderTargetView();
+	else
+	{
+		_finalMousePosition = _editorMousepos;
+	}
 }
-
-// KunrealEngine::SceneManager& KunrealEngine::EngineCore::GetSceneManager()
-// {
-// 	return sceneInstance;
-// }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
 {

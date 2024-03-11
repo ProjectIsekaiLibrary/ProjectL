@@ -12,11 +12,14 @@
 #include "DataControlWindow.h"
 #include "GraphicWindow.h"
 #include "GameWindow.h"
+
 #include "IWindow.h"
 #include "FileLoad.h"
 #include "../ArkEngine/ArkDevice.h"
 #include "EngineCore.h"
 #include "KunrealAPI.h"
+
+#include <ImGuizmo.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
 
@@ -35,7 +38,7 @@ static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
 
 EpicTool::MainTool::MainTool()
     :_resourceWindow(nullptr), _graphicWindow(nullptr), _saveloadWindow(nullptr), _gameWindow(nullptr), _windowManager(nullptr), _toolClose(false), _hwnd(nullptr),
-    wc(), _core(nullptr), _console()
+    wc(), _core(nullptr), _console(), _selectedObjectIndex(-1)
 {
 
 }
@@ -48,7 +51,7 @@ EpicTool::MainTool::~MainTool()
 HRESULT EpicTool::MainTool::Initialize()
 {
 	_console = GetConsoleWindow();
-	ShowWindow(_console, SW_HIDE);
+	ShowWindow(_console, SW_SHOW);
 
      wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
     ::RegisterClassExW(&wc);
@@ -59,11 +62,15 @@ HRESULT EpicTool::MainTool::Initialize()
     _eHwnd = ::CreateWindowW(ewc.lpszClassName, L"Kunreal Editor", WS_OVERLAPPEDWINDOW, 100, 100, 1280, 800, nullptr, nullptr, ewc.hInstance, nullptr);
 
 	// 엔진 생성
-	_core = KunrealEngine::CreateEngine();
-	_core->Initialize(_hwnd, wc.hInstance, 1200, 800);
+    int screenWidth = 1920;
+    int screenHeight = 1080;
 
-	FileLoad* fileLoad = new FileLoad();
-	fileLoad->Initialize();
+	_core = KunrealEngine::CreateEngine();
+	_core->Initialize(_hwnd, wc.hInstance, screenWidth, screenHeight);
+
+    /// 로드 구현중 
+	//FileLoad* fileLoad = new FileLoad();
+	//fileLoad->Initialize();
 
     // Show the window
 	::ShowWindow(_hwnd, SW_SHOW);
@@ -81,6 +88,8 @@ HRESULT EpicTool::MainTool::Initialize()
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform W
 
+    //io.ConfigDockingAlwaysTabBar = true;
+
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
 
@@ -95,12 +104,9 @@ HRESULT EpicTool::MainTool::Initialize()
     }
 
     // Setup Platform/Renderer backends
-    
-
-
     // 일단 임시로 여기다 넘김 더 필요한거있으면 바로 말해줘
-	g_pd3dDevice = static_cast<ID3D11Device*>(_core->GetDevice());
-    g_pd3dDeviceContext = static_cast<ID3D11DeviceContext*>(_core->GetDeviceContext());
+	g_pd3dDevice = static_cast<ID3D11Device*>(GRAPHICS->GetDevice());
+    g_pd3dDeviceContext = static_cast<ID3D11DeviceContext*>(GRAPHICS->GetDeviceContext());
    // g_mainRenderTargetView = static_cast<ID3D11RenderTargetView*>(_core->GetRenderTargetView());
 
 
@@ -110,6 +116,7 @@ HRESULT EpicTool::MainTool::Initialize()
 
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
+   
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
@@ -118,9 +125,11 @@ HRESULT EpicTool::MainTool::Initialize()
     _windowManager->Initialize();
 
     _resourceWindow = new ResourceWindow();
-    _graphicWindow = new GraphicWindow();
+    _graphicWindow = new GraphicWindow(screenWidth, screenHeight);
     _saveloadWindow = new DataControlWindow();
+
     _gameWindow = new GameWindow();
+   
 
     return 1;
 }
@@ -141,13 +150,16 @@ void EpicTool::MainTool::Loop()
                 _toolClose = true;
         }
         if (_toolClose)
+        {
             break;
+        }
 
         // Start the Dear ImGui frame
         ImGui_ImplDX11_NewFrame();
         ImGui_ImplWin32_NewFrame();
 
         ImGui::NewFrame();
+        IMGUIZMO_NAMESPACE::BeginFrame();
 
         UpdateAll();
         RenderAll(io);
@@ -162,9 +174,9 @@ void EpicTool::MainTool::Loop()
 
 }
 
-void EpicTool::MainTool::Finalize()
+void EpicTool::MainTool::Release()
 {
-    _core->Finalize();
+    _core->Release();
 }
 
 LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
@@ -173,13 +185,17 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
     {
         case WM_SIZE:
             if (wParam == SIZE_MINIMIZED)
+            {
                 return 0;
+            }
             g_ResizeWidth = (UINT)LOWORD(lParam); // Queue resize // 이 부분이 리사이징 중요부분
             g_ResizeHeight = (UINT)HIWORD(lParam);
             return 0;
         case WM_SYSCOMMAND:
             if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            { 
                 return 0;
+            }
             break;
         case WM_DESTROY:
             ::PostQuitMessage(0);
@@ -197,20 +213,26 @@ LRESULT CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 
 LRESULT CALLBACK EditorWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam)
 {
-	if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    if (ImGui_ImplWin32_WndProcHandler(hWnd, msg, wParam, lParam))
+    {
 		return true;
+    }
 
 	switch (msg)
 	{
 		case WM_SIZE:
-			if (wParam == SIZE_MINIMIZED)
+            if (wParam == SIZE_MINIMIZED)
+            {
 				return 0;
+            }
 			g_ResizeWidth = (UINT)LOWORD(lParam); // Queue resize // 이 부분이 리사이징 중요부분
 			g_ResizeHeight = (UINT)HIWORD(lParam);
 			return 0;
 		case WM_SYSCOMMAND:
-			if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
-				return 0;
+            if ((wParam & 0xfff0) == SC_KEYMENU) // Disable ALT application menu
+            {
+                return 0;
+            }
 			break;
 		case WM_DESTROY:
 			::PostQuitMessage(0);
@@ -228,72 +250,6 @@ LRESULT CALLBACK EditorWndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam
 
 bool EpicTool::MainTool::CreateSwapChain()
 {
-	//DXGI_SWAP_CHAIN_DESC1 sd{};
-	//sd.BufferCount = 2;
-	//sd.Width = 0;
-	//sd.Height = 0;
-	//sd.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	//sd.Stereo = FALSE;
-	//sd.SampleDesc.Count = 1;
-	//sd.SampleDesc.Quality = 0;
-
-	//sd.BufferUsage = DXGI_USAGE_BACK_BUFFER | DXGI_USAGE_RENDER_TARGET_OUTPUT;
-	//sd.Scaling = DXGI_SCALING_STRETCH;
-	//sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-	//sd.AlphaMode = DXGI_ALPHA_MODE_UNSPECIFIED;
-	//sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-
-	//IDXGIDevice* dxgiDevice;
-	//auto result1 = g_pd3dDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice));
-
-	//IDXGIAdapter* dxgiAdapter;
-	//auto result2 = dxgiDevice->GetAdapter(&dxgiAdapter);
-
-	//IDXGIFactory2* dxgifactory = nullptr;
-	//auto result3 = dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgifactory));
-	//dxgiAdapter->Release();
-
-	//auto result4 = dxgifactory->CreateSwapChainForHwnd(g_pd3dDevice, _hwnd, &sd, nullptr, nullptr, &g_pSwapChain);
-
-	//dxgifactory->Release();
-
-// 
-// 	CreateRenderTarget();
-// 
-// 	DXGI_SWAP_CHAIN_DESC sd{};
-// 	sd.BufferCount = 2;
-// 	sd.BufferDesc.Width = 0;
-// 	sd.BufferDesc.Height = 0;
-// 	sd.BufferDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-// 	sd.BufferDesc.RefreshRate.Numerator = 60;
-// 	sd.BufferDesc.RefreshRate.Denominator = 1;
-// 	sd.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
-// 	sd.OutputWindow = _hwnd;
-// 	sd.SampleDesc.Count = 1;
-// 	sd.SampleDesc.Quality = 0;
-// 	sd.Windowed = TRUE;
-// 
-// 	sd.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL;
-// 	sd.Flags = DXGI_SWAP_CHAIN_FLAG_ALLOW_MODE_SWITCH | DXGI_SWAP_CHAIN_FLAG_ALLOW_TEARING;
-// 
-// 	IDXGIDevice* dxgiDevice;
-// 	auto result1 = g_pd3dDevice->QueryInterface(IID_PPV_ARGS(&dxgiDevice));
-// 
-// 	IDXGIAdapter* dxgiAdapter;
-// 	auto result2 = dxgiDevice->GetAdapter(&dxgiAdapter);
-// 
-// 	IDXGIFactory2* dxgifactory = nullptr;
-// 	auto result3 = dxgiAdapter->GetParent(IID_PPV_ARGS(&dxgifactory));
-// 	dxgiAdapter->Release();
-// 
-// 	IDXGISwapChain* swapChain;
-// 	auto result4 = dxgifactory->CreateSwapChain(g_pd3dDevice, &sd, &swapChain);
-// 	g_pSwapChain = static_cast<IDXGISwapChain1*>(swapChain);
-// 
-// 	dxgifactory->Release();
-// 
-// 	CreateRenderTarget();
-
 	DXGI_SWAP_CHAIN_DESC sd{};
  	sd.BufferCount = 2;
  	sd.BufferDesc.Width = 0;
@@ -364,27 +320,39 @@ void EpicTool::MainTool::CreateRenderTarget()
 
 void EpicTool::MainTool::CleanupRenderTarget()
 {
-    if (g_mainRenderTargetView) { g_mainRenderTargetView->Release(); g_mainRenderTargetView = nullptr; }
+    if (g_mainRenderTargetView)
+    { 
+        g_mainRenderTargetView->Release();
+        g_mainRenderTargetView = nullptr;
+    }
 }
 
 void EpicTool::MainTool::CleanupSwapChain()
 {
     CleanupRenderTarget();
-    if (g_pSwapChain) { g_pSwapChain->Release(); g_pSwapChain = nullptr; }
+    if (g_pSwapChain)
+    { 
+        g_pSwapChain->Release(); g_pSwapChain = nullptr;
+    }
 }
 
 void EpicTool::MainTool::ShowWindowFunction()
 {
-	auto textureSRV = _core->GetRenderingImage();
-	_graphicWindow->ShowWindow(textureSRV);
+    auto textureSRV = GRAPHICS->GetRenderingImage();
 
-	_windowManager->ShowWindow();
+	_graphicWindow->ShowWindow(textureSRV, _selectedObjectIndex);
+
+    _core->SetEditorMousePos(_graphicWindow->GetMousePosition());
+
+	_windowManager->ShowWindow(_selectedObjectIndex);
 
 	_resourceWindow->ShowWindow();
 
 	_gameWindow->ShowWindow();
     
 	_saveloadWindow->ShowWindow(_toolClose);
+
+  
 }
 
 void EpicTool::MainTool::LoopImGuiRender(ImGuiIO& io)

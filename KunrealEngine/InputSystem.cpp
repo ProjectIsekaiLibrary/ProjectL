@@ -1,12 +1,11 @@
 #include <iostream>
 #include <windows.h>
+#include <windowsx.h>
 #include <functional>
 #include <assert.h>
-
-#include "InputSystemStruct.h"
 #include "InputSystem.h"
 
-#define ASsert(formula, message) assert(formula && message)
+#define Assert(formula, message) assert(formula && message)
 #define Assert(message) assert(0 && message)
 
 #define KEYDOWN(name, key) ((name[key] & 0x80) ? true : false)
@@ -16,11 +15,17 @@ namespace KunrealEngine
 {
 	InputSystem::InputSystem()
 		:_input(nullptr), _keyboard(nullptr), _mouse(nullptr)
-		/*,_screenHeight(0), _screenWidth(0)*/, _mouseX(0), _mouseY(0)
+		,_windowsHeight(0), _windowsWidth(0), _mouseX(0), _mouseY(0)
 		, _mouseWheelData(0), _prevmouseWheelData(0)
-		, _mouseState(), _cKey(), _hWnd()
+		, _mouseState(), _cKey()
 	{
+		_screenWidth = GetSystemMetrics(SM_CXSCREEN);
+		_screenHeight = GetSystemMetrics(SM_CYSCREEN);
 
+		HDC screen = GetDC(0);
+		dpiX = GetDeviceCaps(screen, LOGPIXELSX);
+		dpiY = GetDeviceCaps(screen, LOGPIXELSY);
+		ReleaseDC(0, screen);
 	}
 
 	InputSystem::~InputSystem()
@@ -41,8 +46,8 @@ namespace KunrealEngine
 
 	bool InputSystem::Initialize(HINSTANCE instance, HWND hwnd, int screenHeight, int screenWidth)
 	{
-		//_screenHeight = screenHeight;
-		//_screenWidth = screenWidth;
+		_windowsHeight = screenHeight;
+		_windowsWidth = screenWidth;
 		_hWnd = hwnd;
 
 		// 만약 이 함수에 문제가 발생했다면 3단계로 확인 할것.
@@ -65,7 +70,7 @@ namespace KunrealEngine
 		}
 
 
-		if (FAILED(hr = _keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
+		if (FAILED(hr = _keyboard->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
 		{
 			Assert("FAILED SetCooperativeLevel");
 			return false;
@@ -96,7 +101,7 @@ namespace KunrealEngine
 			return false;
 		}
 
-		if (FAILED(hr = _mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_EXCLUSIVE)))
+		if (FAILED(hr = _mouse->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
 		{
 			Assert("FAILED SetCooperativeLevel(Mouse)");
 			return false;
@@ -108,6 +113,24 @@ namespace KunrealEngine
 			return false;
 		}
 		////////////////////// 여기까지 마우스 초기화 //////////////////////
+		// 마우스 커서 위치 잡기.
+		// 마우스 커서는 (스크린 기준)
+ 		POINT curspos = {};
+ 		GetClientRect(_hWnd, &_clientRect);	// 클라이언트의 윈도우 크기를 받아오기
+ 		GetCursorPos(&curspos);	// 마우스의 현재위치를 받아오기
+ 		ScreenToClient(_hWnd, &curspos);	// 받아온 마우스의 현재 위치를 클라 기준으로 변경
+		
+		// 클라이언트의 중앙을 저장
+ 		_centerpos.x = _clientRect.right / 2;
+		_centerpos.y = _clientRect.bottom / 2;
+		_mouseX = _centerpos.x;					// 클라이언트의 마우스 좌표도 거기로 옮기기
+		_mouseY = _centerpos.y;
+
+		ClientToScreen(_hWnd, &_centerpos);	// 그 좌표를 스크린 기준으로 변경
+		SetCursorPos(_centerpos.x, _centerpos.y);	// 그곳에 마우스 커서를 가져다 두기
+		
+		_windowsHeight = screenHeight;
+		_windowsWidth = screenWidth;
 
 		return true;
 	}
@@ -146,7 +169,7 @@ namespace KunrealEngine
 	{
 		HRESULT hr;
 
-		if (GetFocus())
+		if (!GetFocus())
 		{
 			return;
 		}
@@ -179,9 +202,60 @@ namespace KunrealEngine
 		_prevmouseWheelData = _mouseWheelData;
 
 		// 프레임마다 마우스의 위치를 갱신
-		_mouseX += _mouseState.lX;
-		_mouseY += _mouseState.lY;
-		_mouseWheelData += _mouseState.lZ;
+		POINT curspos = {};
+		GetCursorPos(&curspos);				// 마우스의 현재위치를 받아오기
+		ScreenToClient(_hWnd, &curspos);	// 받아온 마우스의 현재 위치를 클라 기준으로 변경 
+
+		_mouseX = curspos.x;
+		_mouseY = curspos.y;
+ 		_mouseWheelData += _mouseState.lZ;
+
+		/////////////////////////////////////////////////////////////////
+		//////////	  스크린 밖으로 안나가게 클램프 거는 부분	   //////////
+// 		if (_mouseX > _windowsWidth)
+// 		{
+// 			_mouseX = _windowsWidth;
+// 		}
+// 
+// 		else if (_mouseX < 0)
+// 		{
+// 			_mouseX = 0;
+// 		}
+// 
+// 		if (_mouseY < 0)
+// 		{
+// 			_mouseY = 0;
+// 		}
+// 
+// 		else if (_mouseY > _windowsHeight)
+// 		{
+// 			_mouseY = _windowsHeight;
+// 		}
+
+		///////////////////////////////////////////////////////////////////
+		/////	현프레임의 키의 다운과 업을 판단하고 저장 해주는 부분	   ////
+		for (int fornum = 0; fornum < 4; fornum++)
+		{
+			_mdown[fornum] = MBDown(fornum);
+			_mup[fornum] = MBUp(fornum);
+		}
+
+		for (int fornum = 0; fornum < 256; fornum++)
+		{
+			_kdown[fornum] = KDown((KEY)fornum);
+			_kup[fornum] = KUp((KEY)fornum);
+		}
+		////////////////////////////////////////////////////////////////////
+	}
+
+	void InputSystem::UpdateEditorMousePos(POINT pos)
+	{
+		this->_editorMousePos = pos;
+	}
+
+	POINT InputSystem::GetEditorMousePos()
+	{
+		return this->_editorMousePos;
 	}
 
 	bool WINAPI InputSystem::KeyInput(KEY keycode)
@@ -198,46 +272,12 @@ namespace KunrealEngine
 
 	bool WINAPI InputSystem::KeyUp(KEY keycode)
 	{
-		int key = (int)keycode;
-
-		if (KEYUP(_keybuffer, key) && KEYDOWN(_prevkeybuffer, key))
-		{
-			_prevkeybuffer[key] = _keybuffer[key];
-			return true;
-		}
-
-		else if (KEYDOWN(_keybuffer, key) && KEYUP(_prevkeybuffer, key))
-		{
-			return false;
-		}
-
-		else
-		{
-			_prevkeybuffer[key] = _keybuffer[key];
-			return false;
-		}
+		return _kup[(int)keycode];
 	}
 
 	bool WINAPI InputSystem::KeyDown(KEY keycode)
 	{
-		int key = (int)keycode;
-
-		if (KEYDOWN(_keybuffer, key) && KEYUP(_prevkeybuffer, key))
-		{
-			_prevkeybuffer[key] = _keybuffer[key];
-			return true;
-		}
-
-		else if (KEYUP(_keybuffer, key) && KEYDOWN(_prevkeybuffer, key))
-		{
-			return false;
-		}
-
-		else
-		{
-			_prevkeybuffer[key] = _keybuffer[key];
-			return false;
-		}
+		return _kdown[(int)keycode];
 	}
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
@@ -255,42 +295,12 @@ namespace KunrealEngine
 
 	bool __stdcall InputSystem::MouseButtonUp(int button)
 	{
-		if (KEYUP(_mouseState.rgbButtons, button) && KEYDOWN(_prevrgbButtons, button))
-		{
-			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
-			return true;
-		}
-
-		else if (KEYDOWN(_mouseState.rgbButtons, button) && KEYUP(_prevrgbButtons, button))
-		{
-			return false;
-		}
-
-		else
-		{
-			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
-			return false;
-		}
+		return _mup[button];
 	}
 
 	bool __stdcall InputSystem::MouseButtonDown(int button)
 	{
-		if (KEYDOWN(_mouseState.rgbButtons, button) && KEYUP(_prevrgbButtons, button))
-		{
-			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
-			return true;
-		}
-
-		else if (KEYUP(_mouseState.rgbButtons, button) && KEYDOWN(_prevrgbButtons, button))
-		{
-			return false;
-		}
-
-		else
-		{
-			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
-			return false;
-		}
+		return _mdown[button];
 	}
 
 	bool __stdcall InputSystem::WheelUp()
@@ -329,5 +339,94 @@ namespace KunrealEngine
 	int InputSystem::GetWheelState()
 	{
 		return _mouseWheelData;
+	}
+
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+	////////////////////////////////////////////////////////////////////////////////////////
+
+	bool InputSystem::MBUp(int button)
+{
+		if (KEYUP(_mouseState.rgbButtons, button) && KEYDOWN(_prevrgbButtons, button))
+		{
+			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
+			return true;
+		}
+
+		else if (KEYDOWN(_mouseState.rgbButtons, button) && KEYUP(_prevrgbButtons, button))
+		{
+			return false;
+		}
+
+		else
+		{
+			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
+			return false;
+		}
+	}
+
+	bool InputSystem::MBDown(int button)
+{
+		if (KEYDOWN(_mouseState.rgbButtons, button) && KEYUP(_prevrgbButtons, button))
+		{
+			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
+			return true;
+		}
+
+		else if (KEYUP(_mouseState.rgbButtons, button) && KEYDOWN(_prevrgbButtons, button))
+		{
+			return false;
+		}
+
+		else
+		{
+			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
+			return false;
+		}
+	}
+
+//////////////////////////////////////////////////////////////////////////////////////////////////
+
+	bool InputSystem::KUp(KEY keycode)
+	{
+		int key = (int)keycode;
+
+		if (KEYUP(_keybuffer, key) && KEYDOWN(_prevkeybuffer, key))
+		{
+			_prevkeybuffer[key] = _keybuffer[key];
+			return true;
+		}
+
+		else if (KEYDOWN(_keybuffer, key) && KEYUP(_prevkeybuffer, key))
+		{
+			return false;
+		}
+
+		else
+		{
+			_prevkeybuffer[key] = _keybuffer[key];
+			return false;
+		}
+	}
+	bool InputSystem::KDown(KEY keycode)
+	{
+		int key = (int)keycode;
+
+		if (KEYDOWN(_keybuffer, key) && KEYUP(_prevkeybuffer, key))
+		{
+			_prevkeybuffer[key] = _keybuffer[key];
+			return true;
+		}
+
+		else if (KEYUP(_keybuffer, key) && KEYDOWN(_prevkeybuffer, key))
+		{
+			return false;
+		}
+
+		else
+		{
+			_prevkeybuffer[key] = _keybuffer[key];
+			return false;
+		}
 	}
 }

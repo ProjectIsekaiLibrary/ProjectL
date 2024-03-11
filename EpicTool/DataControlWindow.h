@@ -10,11 +10,13 @@
 /// 2023.10.19 배성근
 /// </summary>
 
-class Object;
 class FileSave;
+
 
 namespace EpicTool
 {
+    class Serialize;
+
     class DataControlWindow : public IWindow
     {
     public:
@@ -39,6 +41,7 @@ namespace EpicTool
 
     private:
         FileSave* _fileSave; // 파일 저장용 객체
+        Serialize* _serialize; // 파일 저장용 객체
         std::string _saveFilePath; // 파일의 경로 저장 , 초기화 하지말아봐
 
         // 각 도구창을 관리하는 변수들
@@ -46,5 +49,6 @@ namespace EpicTool
         bool _save_Scene;
         bool _new_Scene;
         bool _opt_padding;
+
     };
 }

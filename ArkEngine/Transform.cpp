@@ -58,6 +58,13 @@ const DirectX::XMMATRIX ArkEngine::ArkDX11::Transform::GetTranslationMatrix() co
 	return translationMatirx;
 }
 
+const DirectX::XMVECTOR ArkEngine::ArkDX11::Transform::GetTranslationVector() const
+{
+	DirectX::XMVECTOR translationVector = DirectX::XMVectorSet(_translation._41, _translation._42, _translation._43, _translation._44);
+	
+	return translationVector;
+}
+
 const DirectX::XMMATRIX ArkEngine::ArkDX11::Transform::GetRotatinMatrix() const
 {
 	DirectX::XMMATRIX XrotationMatirx = DirectX::XMLoadFloat4x4(&_rotationX);

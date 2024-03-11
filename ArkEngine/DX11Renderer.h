@@ -34,7 +34,6 @@ namespace ArkEngine
 
 	namespace ArkDX11
 	{
-		class DXTKFont;
 		class Camera;
 		class DeferredRenderer;
 	}
@@ -80,8 +79,15 @@ namespace ArkEngine
 			virtual void Finalize() override;
 
 		public:
-			virtual GInterface::GraphicsRenderable* CreateRenderable(const char* fileName, const char* textureName, bool isSold) override;
+			virtual GInterface::GraphicsRenderable* CreateRenderable(const char* fileName, bool isSold) override;
 			virtual void DeleteRenderable(GInterface::GraphicsRenderable* renderable) override;
+			virtual GInterface::GraphicsRenderable* GetPickedRenderable(int mouseX, int mouseY) override;
+
+		public:
+			virtual GInterface::GraphicsDebug* CreateDebugCube(const char* objectName, float width, float height, float depth) override;
+			virtual GInterface::GraphicsDebug* CreateDebugSphere(const char* objectName, float radius) override;
+
+			virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) override;
 
 		public:
 			virtual void CreateCubeMap(const char* cubeMapName, const char* textureName, bool isCube) override;
@@ -90,18 +96,24 @@ namespace ArkEngine
 			virtual void SetMainCubeMap(std::string cubeMapName) override;
 
 		public:
-			virtual GInterface::GraphicsCamera* CreateCamera(KunrealEngine::KunrealMath::Float3 cameraPosition, KunrealEngine::KunrealMath::Float3 targetPosition) override;
+			virtual GInterface::GraphicsImage* CreateImage(const char* imageName) override;
+			virtual void DeleteImage(GInterface::GraphicsImage* image) override;
+			virtual GInterface::GraphicsImage* GetPickedImage(int mouseX, int mouseY) override;
+
+		public:
+			virtual GInterface::GraphicsCamera* CreateCamera(DirectX::XMFLOAT3 cameraPosition, DirectX::XMFLOAT3 targetPosition) override;
 			virtual void DeleteCamera(GInterface::GraphicsCamera* camera) override;
 			virtual GInterface::GraphicsCamera* GetMainCamera() override;
 			virtual void SetMainCamera(GInterface::GraphicsCamera* camera) override;
 
 		public:
-			virtual GInterface::GraphicsDirLight* CreateDirectionalLight(KunrealEngine::KunrealMath::Float4 ambient, KunrealEngine::KunrealMath::Float4 diffuse, KunrealEngine::KunrealMath::Float4 specular, KunrealEngine::KunrealMath::Float3 direction) override;
-			virtual GInterface::GraphicsPointLight* CreatePointLight(KunrealEngine::KunrealMath::Float4 ambient, KunrealEngine::KunrealMath::Float4 diffuse, KunrealEngine::KunrealMath::Float4 specular, KunrealEngine::KunrealMath::Float3 position, float range) override;
+			virtual GInterface::GraphicsDirLight* CreateDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction) override;
+			virtual GInterface::GraphicsPointLight* CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range) override;
 
 		public:
 			// End 키를 눌렀을때 활성화되는 텍스트
-			virtual void DrawDebugText(int posX, int posY, const char* text, ...) override;
+			virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) override;
+			virtual void DrawColorText(int posX, int posY, int fontSize, DirectX::XMFLOAT4 color, const char* text, ...) override;
 
 		public:
 			virtual void* GetRenderingImage() override;
@@ -116,9 +128,15 @@ namespace ArkEngine
 
 			virtual const std::vector<std::string> GetTextureNameList() override;
 
-		private:
-			// 아직 미완
-			void DrawColorText(int posX, int posY, float color[4], const char* fontName, const char* text, ...);
+		public:
+			virtual DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) override;
+
+		public:
+			// IMGUIZMO를 사용하기 위해 메인 카메라의 View행렬을 반환
+			virtual const DirectX::XMFLOAT4X4& GetViewMatrix() override;
+
+			// IMGUIZMO를 사용하기 위해 메인 카메라의 Proj행렬을 반환
+			virtual const DirectX::XMFLOAT4X4& GetProjMatrix() override;
 
 		private:
 			void BeginRender();
@@ -148,13 +166,20 @@ namespace ArkEngine
 
 		private:
 			void InitializeAssimpTool();
+			
+		private:
+			void InitializeWIC();
 
 		private:
 			float GetAspectRatio();
 
 		private:
 			void CreateDirLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction);
-			void CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range);
+			void CreatePoLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range);
+
+		private:
+			void SetPickingTexture();
+			UINT Picking(int mouseX, int mouseY);
 
 		private:
 			Microsoft::WRL::ComPtr<ID3D11Device> _device;
@@ -180,7 +205,7 @@ namespace ArkEngine
 			float _backGroundColor[4];
 
 		private:
-			std::unique_ptr<ArkEngine::ArkDX11::DXTKFont> _font;
+			std::unique_ptr<ArkEngine::ArkDX11::DWFont> _font;
 
 			ArkEngine::ICamera* _mainCamera;
 
@@ -201,11 +226,14 @@ namespace ArkEngine
 		private:
 			std::unique_ptr<ArkEngine::ArkDX11::DeferredRenderer> _deferredRenderer;
 
-		/// <summary>
-		/// 김현재 추가
-		/// </summary>
+			/// <summary>
+			/// 김현재 추가
+			/// </summary>
 		private:
 			std::unique_ptr<ArkEngine::FBXLoader::AssimpTool> _assimpTool;
+
+		private:
+			ID3D11Texture2D* _colorTexture;
 		};
 	}
 }

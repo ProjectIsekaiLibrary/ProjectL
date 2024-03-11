@@ -1,63 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Materials>
     <Material>
-        <Name>Material.001</Name>
-        <DiffuseFile></DiffuseFile>
-        <SpecularFile></SpecularFile>
-        <NormalFile></NormalFile>
-        <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
-        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="0"/>
-        <Emissive R="0" G="0" B="0" A="1"/>
-    </Material>
-    <Material>
-        <Name>Material.002</Name>
-        <DiffuseFile></DiffuseFile>
-        <SpecularFile></SpecularFile>
-        <NormalFile></NormalFile>
-        <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
-        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="0"/>
-        <Emissive R="0" G="0" B="0" A="1"/>
-    </Material>
-    <Material>
-        <Name>Material.003</Name>
-        <DiffuseFile></DiffuseFile>
-        <SpecularFile></SpecularFile>
-        <NormalFile></NormalFile>
-        <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
-        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="0"/>
-        <Emissive R="0" G="0" B="0" A="1"/>
-    </Material>
-    <Material>
-        <Name>light_front</Name>
-        <DiffuseFile></DiffuseFile>
-        <SpecularFile></SpecularFile>
-        <NormalFile></NormalFile>
-        <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
-        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="0"/>
-        <Emissive R="0" G="0" B="0" A="1"/>
-    </Material>
-    <Material>
-        <Name>light_rear</Name>
-        <DiffuseFile></DiffuseFile>
-        <SpecularFile></SpecularFile>
-        <NormalFile></NormalFile>
-        <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
-        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="0"/>
-        <Emissive R="0" G="0" B="0" A="1"/>
-    </Material>
-    <Material>
         <Name>EYES</Name>
         <DiffuseFile>Dragon_Bump_Col2.jpg</DiffuseFile>
         <SpecularFile>Dragon_Bump_Col2.jpg</SpecularFile>
         <NormalFile>Dragon_Nor_mirror2.jpg</NormalFile>
+        <EmissiveFile>Dragon_Bump_Col2.jpg</EmissiveFile>
         <Ambient R="0" G="0" B="0" A="1"/>
         <Diffuse R="0.80000001" G="0.80000001" B="0.80000001" A="1"/>
-        <Specular R="1" G="1" B="1" A="9.6078434"/>
+        <Specular R="0.80000001" G="0.80000001" B="0.80000001" A="9.6078424"/>
         <Emissive R="0" G="0" B="0" A="1"/>
     </Material>
     <Material>
@@ -65,9 +16,10 @@
         <DiffuseFile>Dragon_Bump_Col2.jpg</DiffuseFile>
         <SpecularFile>Dragon_Bump_Col2.jpg</SpecularFile>
         <NormalFile>Dragon_Nor_mirror2.jpg</NormalFile>
+        <EmissiveFile></EmissiveFile>
         <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.1229924" G="0.041593131" B="0.017175352" A="1"/>
-        <Specular R="1" G="1" B="1" A="7.647059"/>
+        <Diffuse R="0.25962466" G="0.087798938" B="0.036255449" A="1"/>
+        <Specular R="0.25962466" G="0.087798938" B="0.036255449" A="7.6470604"/>
         <Emissive R="0" G="0" B="0" A="1"/>
     </Material>
     <Material>
@@ -75,9 +27,10 @@
         <DiffuseFile>Dragon_Bump_Col2.jpg</DiffuseFile>
         <SpecularFile>Dragon_Bump_Col2.jpg</SpecularFile>
         <NormalFile>Dragon_Nor_mirror2.jpg</NormalFile>
+        <EmissiveFile></EmissiveFile>
         <Ambient R="0" G="0" B="0" A="1"/>
-        <Diffuse R="0.165674" G="0.165674" B="0.165674" A="1"/>
-        <Specular R="1" G="1" B="1" A="7.647059"/>
+        <Diffuse R="0.58282977" G="0.58282977" B="0.58282977" A="1"/>
+        <Specular R="0.58282977" G="0.58282977" B="0.58282977" A="7.6470604"/>
         <Emissive R="0" G="0" B="0" A="1"/>
     </Material>
 </Materials>

@@ -10,21 +10,16 @@ namespace KunrealEngine
     class Transform;
     class MeshRenderer;
     class Compoent;
-
+    class ImageRenderer;
+    //class SoundPlayer;
 }
 
 
 namespace EpicTool
 {
-
-	enum LightType
-	{
-		DirectionalLight,
-		PointLight,
-		SpotLight,
-		None
-	};
-
+    class DebugWindow;
+    class GraphicWindow;
+    enum DebugType;
 
     class InspectorWindow : public IWindow
     {
@@ -55,22 +50,33 @@ namespace EpicTool
 
         void SetMeshObjectEditor(std::vector<std::string> & meshList, int selectedItem);
       
-        void ComboMeshControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected, const char* name);
+        template<typename ComponentType>
+        void ComboControl(std::vector<std::string> list, std::vector<std::string> listEditor, int& selected, const char* name, ComponentType* instance);
 
-        void ComboLightControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected);
+
+        //void ComboControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected, const char* name);
+
+      //  void ComboControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected);
+
+    public:
+        void GetDebugType(DebugType& instance);
+
+        void GetDeleteComponentName(std::string& componentName);
 
     private:
         void ListToRemove(std::vector<std::string>& list, std::vector<std::string>& listEditor, const std::string stringToRemove);
 
-        void ListStrToRemove(std::string& listStr , const std::string removeString);
+        void StringRemove(std::string& listStr , const std::string removeString);
+   
+    private: 
+        void RenderListBoxVector(const char* label, int* current_item, std::vector<std::string>& items);
+
     private:
         std::vector<KunrealEngine::GameObject*> _gameObjectlist;
 
         std::vector<KunrealEngine::Component*> _compoenetList;
 
         std::vector<std::string> _lightList;
-
-        std::string _lightSelect;
 
         int _selectedObjectIndex;
 
@@ -88,6 +94,12 @@ namespace EpicTool
 
         KunrealEngine::Light* _light;
 
+        KunrealEngine::ImageRenderer* _image;
+
+        KunrealEngine::GraphicsSystem* _graphicsSystem;
+
+       //std::vector<KunrealEngine::SoundPlayer*> _soundPlayerlist;
+
         bool _meshState;
 
         bool _cameraFix; // 카메라
@@ -96,7 +108,7 @@ namespace EpicTool
 
         //int _selectedMesh = -1; // 메쉬 선택을 보여줄 변수
 
-        int _selectedNormal;
+        //int _selectedNormal;
 
 
     private:
@@ -109,6 +121,8 @@ namespace EpicTool
 
         int _comboLightSelect;
 
+        int _comboImageSelect;
+
        std::string _selectObjectName;
         int _selectObjectNumber;
 
@@ -120,6 +134,30 @@ namespace EpicTool
         bool _isLightActive;
 
         bool _isCameraActive;
+
+        bool _isImageActive;
+
+        // 피킹을 판단할 변수
+        bool _isPickedObject;
+
+        bool _IsSetPisckable;
+
+        std::string _isPickedObjectName;
+
+        // 메쉬에서 Diffuse와 Normal을 관리
+
+        int _selectedDiffuse; // 언젠가 내가 이미 만들어뒀다 무엇인ㄴ
+
+
+        int _selectedNormal;
+
+        std::vector<std::string> _diffuseName;
+
+        std::vector<std::string> _normalName;
+
+        bool isDiffuseMax;
+
+        bool isNormalMax;
 
     private:
         // 그래픽스에서 받아온 목록을 저장
@@ -154,5 +192,27 @@ namespace EpicTool
        float _pointRange;
 
        bool _lightGet;
+
+       DirectX::XMFLOAT4 _quaternion;
+
+    private:
+		DebugWindow* _debugWindow;  // 디버그 테스트용 객체
+		DebugType _DebugType;
+
+		std::string _deleteComponentName;
+
+        GraphicWindow* _graphicWindow;
+
+        // 애니메이터를 관리할 변수
+    private:
+        float _animationSpeed;
+        float _animationProgress;
+
+        // 콜라이더를 관리할 변수
+    private:
+        float _offset[3];
+        float _boxSize[3];
     };
+
+
 }

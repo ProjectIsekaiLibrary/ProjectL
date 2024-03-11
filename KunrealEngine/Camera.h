@@ -1,6 +1,7 @@
 #pragma once
+
+#include <DirectXMath.h>
 #include "Component.h"
-#include "../KunrealMath/MathHeaders.h"
 
 namespace GInterface
 {
@@ -15,12 +16,14 @@ namespace KunrealEngine
 
 	class _DECLSPEC Camera : public Component
 	{
-	public:
+		friend class GameObject;
+	private:
 		Camera();
+	public:
 		~Camera();
 
 		virtual void Initialize() override;
-		virtual void Finalize() override;
+		virtual void Release() override;
 
 		virtual void FixedUpdate() override;
 		virtual void Update() override;
@@ -40,13 +43,13 @@ namespace KunrealEngine
 		Transform* _transform;
 
 		// 타겟 포지션
-		KunrealMath::Float3 _targetPosition;
+		DirectX::XMFLOAT3 _targetPosition;
 
 		// 그래픽스 엔진 카메라의 strafe, walk등의 움직임을 위한 변수
-		KunrealMath::Float3 _prevPosition;
+		DirectX::XMFLOAT3 _prevPosition;
 
 		// 그래픽스 엔진 카메라의 Rotate를 위한 변수
-		KunrealMath::Float3 _prevRotation;
+		DirectX::XMFLOAT4 _prevRotation;
 
 		// 카메라 움직이는 방식
 		// 타겟을 계속 바라볼 것이냐 포지션만 움직일 것이냐
@@ -93,6 +96,7 @@ namespace KunrealEngine
 	public:
 		// 이 컴포넌트가 들고있는 카메라를 메인 카메라로 설정함
 		void SetMainCamera();
+
 	};
 }
 

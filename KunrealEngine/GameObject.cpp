@@ -2,11 +2,7 @@
 #include "Component.h"
 #include "SceneManager.h"
 #include "Scene.h"
-#include "Transform.h"
-
-#include "../KunrealMath/MathHeaders.h"
-
-#pragma comment(lib,"../Bin/x64/Debug/KunrealMath.lib")
+#include "ComponentHeaders.h"
 
 KunrealEngine::GameObject::GameObject()
 	:_isActivated(true), _objectName(""), _layer(0), _parent(nullptr), _transform(nullptr)
@@ -91,7 +87,10 @@ void KunrealEngine::GameObject::Update()
 	{
 		for (auto& components : _componentContainer)
 		{
-			if (components->GetActivated()) components->Update();
+			if (components->GetActivated())
+			{
+				components->Update();
+			}
 		}
 	}
 }
@@ -102,7 +101,10 @@ void KunrealEngine::GameObject::LateUpdate()
 	{
 		for (auto& components : _componentContainer)
 		{
-			if (components->GetActivated()) components->LateUpdate();
+			if (components->GetActivated())
+			{
+				components->LateUpdate();
+			}
 		}
 	}
 }
@@ -112,7 +114,7 @@ void KunrealEngine::GameObject::OnDisable()
 
 }
 
-void KunrealEngine::GameObject::Finalize()
+void KunrealEngine::GameObject::Release()
 {
 	ClearComponent();
 }
@@ -148,9 +150,40 @@ void KunrealEngine::GameObject::SetActive(bool active)
 {
 	this->_isActivated = active;
 
-	for (auto& components : _componentContainer)
+	/// 오브젝트가 Active여도 컴포넌트가 active 상태가 아니면 작동 안되게 해야함
+	//for (auto& components : _componentContainer)
+	//{
+	//	components->SetActive(active);
+	//}
+
+	// 그래픽스쪽에 Render 관련 업데이트가 있어서 어쩔 수 없었다
+	// 오브젝트가 비활성화 되어 있을 때
+	if (!_isActivated)
 	{
-		components->SetActive(active);
+		// 그래픽스 관련 된 컴포넌트가 있는지 확인
+		if (this->GetComponent<MeshRenderer>() != nullptr)
+		{
+			// 있다면 비활성화
+			this->GetComponent<MeshRenderer>()->SetRenderingState(false);
+		}
+
+		if (this->GetComponent<Light>() != nullptr)
+		{
+			this->GetComponent<Light>()->SetLightState(false);
+		}
+	}
+	else
+	{
+		if (this->GetComponent<MeshRenderer>() != nullptr)
+		{
+			// 오브젝트가 비활성화 상태가 아니라면 해당 컴포넌트의 active 상태를 따라감
+			this->GetComponent<MeshRenderer>()->SetRenderingState(this->GetComponent<MeshRenderer>()->GetActivated());
+		}
+
+		if (this->GetComponent<Light>() != nullptr)
+		{
+			this->GetComponent<Light>()->SetLightState(this->GetComponent<Light>()->GetActivated());
+		}
 	}
 }
 
@@ -210,7 +243,7 @@ void KunrealEngine::GameObject::DeleteComponent(Component* component)
 
 	if (iter != _componentContainer.end())			// 찾는게 있으면
 	{
-		(*iter)->Finalize();						// 컴포넌트에서 해제할게 있으면 해주고
+		(*iter)->Release();							// 컴포넌트에서 해제할게 있으면 해주고
 		delete* iter;								// 해당 컴포넌트를 삭제
 		_componentContainer.erase(iter);			// 컨테이너에서 비워줌
 	}
@@ -220,7 +253,7 @@ void KunrealEngine::GameObject::ClearComponent()
 {
 	for (Component* component : _componentContainer)
 	{
-		component->Finalize();						// 해제할 내용이 있으면 먼저 해제해주고
+		component->Release();						// 해제할 내용이 있으면 먼저 해제해주고
 		delete component;							// clear하기전에 delete 다 해줘야함
 	}
 

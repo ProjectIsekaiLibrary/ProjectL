@@ -18,7 +18,10 @@ cbuffer cbPerObject
 // Nonnumeric values cannot be added to a cbuffer.
 Texture2D gDiffuseMap;
 Texture2D gNormalMap;
+Texture2D gEmissiveMap;
+
 TextureCube gCubeMap;
+float4 gColor;
 
 SamplerState samAnisotropic
 {
@@ -51,7 +54,10 @@ struct PSOut
     float4 Position : SV_Target0;
     float4 Diffuse : SV_Target1;
     float4 BumpedNormal : SV_Target2;
-    float4 Depth : SV_Target3;
+    float4 Emissive : SV_Target3;
+    float4 Depth : SV_Target4;
+    float4 Material : SV_Target5;
+    float4 Color : SV_Target6;
 };
 
 VertexOut VS(VertexIn vin)
@@ -62,7 +68,7 @@ VertexOut VS(VertexIn vin)
     vout.PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
     vout.NormalW = mul(vin.NormalL, (float3x3) gWorldInvTranspose);
     vout.TangentW = mul(vin.TangentL, (float3x3) gWorld);
-	// Transform to homogeneous clip space.
+	// Transform to homogeneous clip space.    
     vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
 	
 	// Output vertex attributes for interpolation across triangle.
@@ -83,6 +89,8 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     float3 normalMap = gNormalMap.Sample(samAnisotropic, pin.Tex).xyz;
     
     float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
+
+    float3 emissive = gEmissiveMap.Sample(samAnisotropic, pin.Tex).xyz;
     
     float4 orthonormalizedTangent;
     
@@ -91,7 +99,10 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.Position = float4(pin.PosW, 1.0f);
     output.Diffuse = float4(diffuse, 1.0f);
     output.BumpedNormal = bumpedNormal;
+    output.Emissive = float4(emissive, 1.0f);
     output.Depth = float4(pin.PosH.zzz, 1.0f);
+    output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
+    output.Color = gColor;
     
     return output;
 }

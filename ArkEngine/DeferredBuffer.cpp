@@ -62,6 +62,11 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRV(int index)
 	return _shaderResourceViewArray[index];
 }
 
+ID3D11Texture2D* ArkEngine::ArkDX11::deferredBuffer::GetTextrue(int index)
+{
+	return _renderTargetTextureArray[index];
+}
+
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture(ArkEngine::ArkDX11::ArkDevice* pDeivce)
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
@@ -80,6 +85,13 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture(ArkEngine::Ar
 
 	for (int i = 0; i < static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT); i++)
 	{
+		// Picking을 위한 해쉬 ID 생성 로직때문에 가장 뒤의 렌더타겟인
+		// Color버퍼는 DXGI_FORMAT_R8G8B8A8_UNORM로 처리해야함
+		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT) - 1)
+		{
+			textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
 		HRESULT result = pDeivce->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArray[i]);
 	}
 }
@@ -94,6 +106,13 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetView(ArkEngine::ArkDX
 
 	for (int i = 0; i < static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT); i++)
 	{
+		// Picking을 위한 해쉬 ID 생성 로직때문에 가장 뒤의 렌더타겟인
+		// Color버퍼는 DXGI_FORMAT_R8G8B8A8_UNORM로 처리해야함
+		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT) - 1)
+		{
+			renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
 		HRESULT result = pDeivce->GetDevice()->CreateRenderTargetView(_renderTargetTextureArray[i], &renderTagetViewDesc, &_renderTargetViewArray[i]);
 	}
 }
@@ -109,7 +128,13 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceView(ArkEngine::Ark
 
 	for (int i = 0; i < static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT); i++)
 	{
+		// Picking을 위한 해쉬 ID 생성 로직때문에 가장 뒤의 렌더타겟인
+		// Color버퍼는 DXGI_FORMAT_R8G8B8A8_UNORM로 처리해야함
+		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT) - 1)
+		{
+			shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+
 		HRESULT result = pDeivce->GetDevice()->CreateShaderResourceView(_renderTargetTextureArray[i], &shaderResourceViewDesc, &_shaderResourceViewArray[i]);
 	}
 }
-

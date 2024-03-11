@@ -2,6 +2,15 @@
 #include "GameObject.h"
 #include "Transform.h"
 #include "GraphicsSystem.h"
+#include "SceneManager.h"
+#include "Scene.h"
+
+///
+#include "InputSystem.h"
+#include "TimeManager.h"
+//KunrealEngine::InputSystem* inputInstance = KunrealEngine::InputSystem::GetInstance();
+///
+
 
 KunrealEngine::Camera::Camera()
 	:_camera(nullptr), _transform(nullptr), _fixTarget(false)
@@ -20,7 +29,7 @@ void KunrealEngine::Camera::Initialize()
 	_transform = GetOwner()->GetComponent<KunrealEngine::Transform>();
 }
 
-void KunrealEngine::Camera::Finalize()
+void KunrealEngine::Camera::Release()
 {
 	_camera->Delete();
 }
@@ -68,7 +77,7 @@ void KunrealEngine::Camera::OnTriggerExit()
 /// 아직 메인카메라가 꺼지는 기능은 없음
 void KunrealEngine::Camera::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 GInterface::GraphicsCamera* KunrealEngine::Camera::GetCamera()
@@ -86,7 +95,7 @@ void KunrealEngine::Camera::SetCameraPosition(float posX, float posY, float posZ
 
 void KunrealEngine::Camera::SetTargetPosition(float posX, float posY, float posZ)
 {
-	KunrealMath::Float3 targetPos(posX, posY, posZ);
+	DirectX::XMFLOAT3 targetPos(posX, posY, posZ);
 
 	_targetPosition = targetPos;
 	_camera->SetTargetPosition(targetPos);
@@ -94,7 +103,7 @@ void KunrealEngine::Camera::SetTargetPosition(float posX, float posY, float posZ
 
 void KunrealEngine::Camera::RotateCamera(float pitch, float yaw)
 {
-	KunrealMath::Float2 angle(pitch, yaw);
+	DirectX::XMFLOAT2 angle(pitch, yaw);
 
 	_camera->RotateCamera(angle);
 }
@@ -116,14 +125,16 @@ void KunrealEngine::Camera::CameraUpDown(float deltaTime)
 
 void KunrealEngine::Camera::MoveCamera()
 {
-	_camera->Strafe(_transform->GetPosition().x - _prevPosition.x);
-	_prevPosition.x = _transform->GetPosition().x;
+	_camera->SetCameraPosition(_transform->GetPosition());
 
-	_camera->UpDown(_transform->GetPosition().y - _prevPosition.y);
-	_prevPosition.y = _transform->GetPosition().y;
-
-	_camera->Walk(_transform->GetPosition().z - _prevPosition.z);
-	_prevPosition.z = _transform->GetPosition().z;
+	//_camera->Strafe(_transform->GetPosition().x - _prevPosition.x);
+	//_prevPosition.x = _transform->GetPosition().x;
+	//
+	//_camera->UpDown(_transform->GetPosition().y - _prevPosition.y);
+	//_prevPosition.y = _transform->GetPosition().y;
+	//
+	//_camera->Walk(_transform->GetPosition().z - _prevPosition.z);
+	//_prevPosition.z = _transform->GetPosition().z;
 
 	RotateCamera(_transform->GetRotation().x - _prevRotation.x, _transform->GetRotation().y -_prevRotation.y);
 	_prevRotation = _transform->GetRotation();
@@ -155,4 +166,5 @@ void KunrealEngine::Camera::FixCamera()
 void KunrealEngine::Camera::SetMainCamera()
 {
 	GRAPHICS->SetMainCamera(_camera);
+	SceneManager::GetInstance().GetCurrentScene()->SetMainCamera(this->GetOwner());
 }

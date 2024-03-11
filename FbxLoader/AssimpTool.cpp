@@ -8,8 +8,11 @@ ArkEngine::FBXLoader::AssimpTool::AssimpTool()
 	: _skinMeshNameList(), _animationNameList()
 {
 	auto parsingList = FindAllAssets("Resources/Models", "mesh");
+	auto aseetList = FindAllAssets("Resources/Assets", "fbx");
+	
+	//Initialize();
 
-	if (parsingList.size() == 0)
+	if (parsingList.size() != aseetList.size())
 	{
 		Initialize();
 	}

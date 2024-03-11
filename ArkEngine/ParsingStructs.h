@@ -1,6 +1,7 @@
 #pragma once
 #include <iostream>
 #include <vector>
+#include "CommonStruct.h"
 #include "../FbxLoader/Types.h"
 #include "../FbxLoader/VertexDatas.h"
 #include "Geometry.h"
@@ -28,34 +29,37 @@ struct ModelBone
 
 };
 
-struct ModelMesh
+struct ModelMaterial
 {
-	void CreateBuffers();
-
-	std::wstring name;
-
-	// Mesh
-	std::shared_ptr<Geometry<ModelVertexType>> _geometry = std::make_shared<Geometry<ModelVertexType>>();
-
-	unsigned int vertexNum = 0;
-	unsigned int indexNum = 0;
-
-	std::vector<ModelVertexType> vertices;
-	std::vector<unsigned int> indices;
-
-	// Material 
-	std::wstring materialName = L"";
-	//std::shared_ptr<Material> material;	// Cache
-
-	// Bones
-	int boneIndex;
-	std::shared_ptr<ModelBone> bone; // Cache
-
-	bool isBone;
-
-	// 계층 구조
-	std::shared_ptr<ModelMesh> parentMesh; // 계층 구조에서 부모 메쉬
-	std::vector<std::shared_ptr<ModelMesh>> childMeshes; // 계층 구조에서 자식 메쉬들
+	std::vector<std::string> _diffuseTextureList;
+	std::vector<std::string> _normalTextureList;
+	std::vector<std::string> _emissiveTextureList;
+	std::vector<ArkEngine::ArkDX11::Material> _material;
 };
 
+struct ModelMesh
+{
+	// Bones
+	std::shared_ptr<ModelBone> bone;
+	std::vector<std::shared_ptr<ModelBone>> _boneList;
+
+
+	// Mesh
+	std::wstring name = L"";
+	int boneIndex = 0;
+
+	unsigned int vertexNum = 0;
+	std::vector<ModelVertexType> vertices;
+
+	std::shared_ptr<Geometry<ModelVertexType>> _geometry = std::make_shared<Geometry<ModelVertexType>>();
+
+	unsigned int indexNum = 0;
+
+	std::vector<unsigned int> indices;
+
+	
+	// Material
+	std::wstring materialName = L"";
+	std::unique_ptr<ModelMaterial> material;
+};
 

@@ -1,8 +1,9 @@
 #include "GraphicsSystem.h"
-#include "../GraphicsInterface/GraphicsHeaders.h"
+#include "InputSystem.h"
+#include "MeshRenderer.h"
 
 KunrealEngine::GraphicsSystem::GraphicsSystem()
-	:_graphics(nullptr)
+	:_graphics(nullptr), _pickedObject(nullptr)
 {
 
 }
@@ -24,7 +25,12 @@ void KunrealEngine::GraphicsSystem::Initialize(HWND hwnd, int screenWidth, int s
 	_graphics->Initialize(reinterpret_cast<long long>(hwnd), screenWidth, screenHeight);
 }
 
-void KunrealEngine::GraphicsSystem::Finalize()
+void KunrealEngine::GraphicsSystem::Update(int x, int y)
+{
+	SetPickedObject(x, y);
+}
+
+void KunrealEngine::GraphicsSystem::Release()
 {
 	ReleaseGraphicsEngine(_graphics);
 }
@@ -54,6 +60,66 @@ const std::vector<std::string> KunrealEngine::GraphicsSystem::GetCubeMapList()
 	if (!_graphics->GetCubeMapList().empty())
 	{
 		return this->_graphics->GetCubeMapList();
+	}
+}
+
+void KunrealEngine::GraphicsSystem::SetPickedObject(int mouseX, int mouseY)
+{
+	// 마우스 좌표가 0, 0 보다 클 때
+	if (mouseX >= 0 && mouseY >= 0)
+	{
+		// 마우스 왼클릭 시
+		if (InputSystem::GetInstance()->MouseButtonInput(0))
+		{
+			GInterface::GraphicsRenderable* picked = this->_graphics->GetPickedRenderable(mouseX, mouseY);
+
+			if (picked != nullptr)
+			{
+				// 디버그용	// 실사용시에는 삭제
+				//this->_graphics->DrawColorText(900, 50, 40, gpSkyBlueColor, "PICK");
+
+				// 해당 renderable 객체가 있는 지 탐색 후 일치하면 반환
+				for (auto obj : _pickableList)
+				{
+					if (obj->GetComponent<MeshRenderer>()->GetMeshObject() == this->_graphics->GetPickedRenderable(mouseX, mouseY))
+					{
+						this->_pickedObject = obj;
+					}
+				}
+			}
+			else
+			{
+				// 클릭한 것이 pick 가능한게 아니면 null로
+				this->_pickedObject = nullptr;
+
+				// 디버그용	// 실사용시에는 삭제
+				//this->_graphics->DrawColorText(900, 50, 40, gpPinkColor, "FAIL");
+			}
+		}
+	}
+}
+
+KunrealEngine::GameObject* KunrealEngine::GraphicsSystem::GetPickedObject()
+{
+	if (this->_pickedObject != nullptr)
+	{
+		return this->_pickedObject;
+	}
+	else
+	{
+		return nullptr;
+	}
+}
+
+const std::vector<KunrealEngine::GameObject*> KunrealEngine::GraphicsSystem::GetPickableList()
+{
+	if (!_pickableList.empty())
+	{
+		return this->_pickableList;
+	}
+	else
+	{
+		return std::vector<GameObject*>();
 	}
 }
 

@@ -14,7 +14,7 @@ EpicTool::ResourceWindow::~ResourceWindow()
 
 void EpicTool::ResourceWindow::ShowWindow()
 {
-    ImGui::Begin("Resource Window");
+    ImGui::Begin("Resource Window", NULL, ImGuiWindowFlags_NoMove);
 
     ImGui::Text("Resource List");
 

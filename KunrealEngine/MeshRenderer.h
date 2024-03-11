@@ -1,8 +1,8 @@
 #pragma once
+
+#include <DirectXMath.h>
 #include "Component.h"
 #include "GraphicsSystem.h"
-#include "../KunrealMath/MathHeaders.h"
-
 
 namespace GInterface
 {
@@ -18,13 +18,15 @@ namespace KunrealEngine
 
 	class _DECLSPEC MeshRenderer : public Component
 	{
-	public:
+		friend class GameObject;
+	private:
 		MeshRenderer();
+	public:
 		~MeshRenderer();
 
 	public:
 		virtual void Initialize() override;
-		virtual void Finalize() override;
+		virtual void Release() override;
 
 		virtual void FixedUpdate() override;
 		virtual void Update() override;
@@ -40,25 +42,37 @@ namespace KunrealEngine
 		GInterface::GraphicsRenderable* _mesh;
 		Transform* _transform;
 
+		// picking 가능 여부
+		bool _isPickable;
+
+	private:
 		// 그림을 그리기 위한 정보들
 		// 에디터에 수치를 띄워주기 위해 데이터를 멤버로 가지고 있음
-	private:
 		std::string _meshFileName;
 		std::string _textureName;
 		std::string _normalName;
-		KunrealMath::Float4 _reflect;
+		DirectX::XMFLOAT4 _reflect;
 
 	public:
 		// 처음 컴포넌트를 생성한 후 실행해줘야함
 		// 매개변수로 mesh 파일 이름, 텍스처 이름 -> 텍스처는 default 매개변수로 nullptr 가지고 있음
-		void SetMeshObject(const char* fileName, const char* textureName = nullptr, bool isSolid = true);
+		void SetMeshObject(const char* fileName, bool isSolid = true);
+
+		// mesh 오브젝트 포인터를 반환	// 그래픽스 시스템에서 보유중인 오브젝트를 반환하는데 사용
+		GInterface::GraphicsRenderable* GetMeshObject();
 		std::string GetMeshName();
 
 		// 이미 mesh를 무언가 가지고 있을 때 교체하는 함수
 		void ChangeMeshObject(const char* fileName);
 
-		// 그림을 그릴 지 여부 결정
+		// Picking 가능 여부 설정
+		void SetPickableState(bool param);
+
+		// Picking 가능 여부 반환
+		bool GetPickableState();
+
 	private:
+		// 그림을 그릴 지 여부 결정
 		void SetRenderingState(bool flag);
 
 	public:
@@ -66,12 +80,18 @@ namespace KunrealEngine
 
 		// 텍스처
 		// 처음 만들 때 같이 넣어줬으면 안해도 됌		//교체용으로도 사용 가능
-		void SetDiffuseTexture(const char* textureName);
+		void SetDiffuseTexture(int index, const char* textureName);
 		std::string GetTextureName();
 
+		// 텍스처 컨테이너를 반환
+		std::vector<std::string> GetTextures();
+
 		// 노말
-		void SetNormalTexture(const char* textureName);
+		void SetNormalTexture(int index, const char* textureName);
 		std::string GetNormalName();
+
+		// 노말맵 컨테이너를 반환
+		std::vector<std::string> GetNormals();
 
 		// 매터리얼
 		void SetMaterial(GInterface::Material material);
@@ -79,7 +99,7 @@ namespace KunrealEngine
 
 		// 리플렉트		// 반사계수
 		void SetReflect(float x, float y, float z, float w);
-		KunrealMath::Float4 GetReflect();
+		DirectX::XMFLOAT4 GetReflect();
 
 		// _mesh가 null일때, 즉 아무것도 안 들어있을 때 false 아니면 true
 		// 이 컴포넌트는 처음에 SetMeshObject를 실행해서 mesh 파일을 넣어줘야한다

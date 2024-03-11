@@ -46,6 +46,7 @@ namespace ArkEngine
 		std::string diffuseFile = "";
 		std::string specularFile = "";
 		std::string normalFile = "";
+		std::string emissiveFile = "";
 	};
 
 	// Animation

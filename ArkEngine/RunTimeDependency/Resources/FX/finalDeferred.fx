@@ -15,14 +15,13 @@ cbuffer cbPerFrame
     PointLight gPointLights[10];
     
     float3 gEyePosW;
-    
-    Material gMaterial;
 };
 
 Texture2D PositionTexture : register(t0);
 Texture2D DiffuseAlbedoTexture : register(t1);
 Texture2D BumpedNormalTexture : register(t2);
-Texture2D DepthTexture : register(t3);
+Texture2D EmissiveTexture : register(t3);
+Texture2D MaterialTexture : register(t5);
 
 TextureCube gCubeMap;
 
@@ -49,13 +48,17 @@ struct VertexOut
     float2 Tex : TEXCOORD;
 };
 
-void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo)
+void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material)
 {
     position = PositionTexture.Sample(samAnisotropic, texCoord).xyz;
-    
+
     diffuseAlbedo = DiffuseAlbedoTexture.Sample(samAnisotropic, texCoord).xyz;
-    
+
     normal = BumpedNormalTexture.Sample(samAnisotropic, texCoord).xyz;
+
+    emissive = EmissiveTexture.Sample(samAnisotropic, texCoord).xyz;
+
+    material = MaterialTexture.Sample(samAnisotropic, texCoord);
 }
 
 VertexOut VS(VertexIn vin)
@@ -73,8 +76,10 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float3 normal;
     float3 position;
     float3 diffuseAlbedo;
+    float3 emissive;
+    float4 material;
     
-    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo);
+    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material);
     
     float3 toEye = gEyePosW - position;
     
@@ -91,6 +96,12 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
+    Material nowMat;
+    nowMat.Ambient = float4(material.x, material.x, material.x, 1.0f);
+    nowMat.Diffuse = float4(material.y, material.y, material.y, 1.0f);
+    nowMat.Specular = float4(material.z, material.z, material.z, material.w);
+    nowMat.Reflect = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    
     if (gDirLightCount > 0)
     {
 		// Sum the light contribution from each light source.  
@@ -99,7 +110,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         {
             float4 A, D, S;
         
-            ComputeDirectionalLight(gMaterial, gDirLights[i], normal, toEye,
+            ComputeDirectionalLight(nowMat, gDirLights[i], normal, toEye,
 				A, D, S);
         
             ambient += A;
@@ -114,7 +125,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         {
             float4 A, D, S;
         
-            ComputePointLight(gMaterial, gPointLights[j], position, normal, toEye,
+            ComputePointLight(nowMat, gPointLights[j], position, normal, toEye,
 				A, D, S);
         
             ambient += A;
@@ -125,6 +136,9 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
 	// Modulate with late add.
     litColor = texColor * (ambient + diffuse) + spec;
+
+    float4 emissiveColor = float4(emissive, 1.0f);
+    litColor += emissiveColor;
 
     return litColor;
 }

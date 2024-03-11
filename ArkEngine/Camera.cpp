@@ -1,18 +1,30 @@
 #include <DirectXMath.h>
 #include "ResourceManager.h"
 #include "MathHeaders.h"
-#include "MathConverter.h"
 #include "Camera.h"
 
 ArkEngine::ArkDX11::Camera::Camera(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& target, DirectX::XMFLOAT3& worldUp)
-	: _positionVector(pos), _targetVector(target), _lookVector(), _rightVector(), _upVector(), _viewMatrix(), _projectionMatrix(), _isMain(false)
+	: _positionVector(pos), _targetVector(target), _lookVector(), _rightVector(), _upVector(), _viewMatrix(), _projectionMatrix(),
+	_isMain(false), _frustumPlanes()
 {
 	LookAt(pos, target, worldUp);
+
+	for (int i = 0; i < 6; i++)
+	{
+		_frustumPlanes.emplace_back();
+	}
+
+	UpdateFrustum();
 }
 
 ArkEngine::ArkDX11::Camera::~Camera()
 {
+	_frustumPlanes.clear();
+}
 
+void ArkEngine::ArkDX11::Camera::Update()
+{
+	UpdateFrustum();
 }
 
 bool ArkEngine::ArkDX11::Camera::GetMain()
@@ -79,25 +91,36 @@ void ArkEngine::ArkDX11::Camera::UpDown(float deltaTime)
 	UpdateViewMatrix();
 }
 
-void ArkEngine::ArkDX11::Camera::SetCameraPosition(KunrealEngine::KunrealMath::Float3 position)
+std::vector<DirectX::XMFLOAT4>& ArkEngine::ArkDX11::Camera::GetFrstum()
 {
-	_positionVector = ArkEngine::ArkDX11::ConvertFloat3(position);
-	
+	return _frustumPlanes;
+}
+
+DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetCameraPosition()
+{
+	return _positionVector;
+}
+
+void ArkEngine::ArkDX11::Camera::SetCameraPosition(DirectX::XMFLOAT3 position)
+{
+	_positionVector = position;
+
 	DirectX::XMFLOAT3 upVector = { 0.0f, 1.0f, 0.0f };
-	
+
+	UpdateViewMatrix();
+	//LookAt(_positionVector, _targetVector, upVector);
+}
+
+void ArkEngine::ArkDX11::Camera::SetTargetPosition(DirectX::XMFLOAT3 position)
+{
+	_targetVector = position;
+
+	DirectX::XMFLOAT3 upVector = { 0.0f, 1.0f, 0.0f };
+
 	LookAt(_positionVector, _targetVector, upVector);
 }
 
-void ArkEngine::ArkDX11::Camera::SetTargetPosition(KunrealEngine::KunrealMath::Float3 position)
-{
-	_targetVector = ArkEngine::ArkDX11::ConvertFloat3(position);
-
-	DirectX::XMFLOAT3 upVector = { 0.0f, 1.0f, 0.0f };
-
-	LookAt(_positionVector, _targetVector, upVector);
-}
-
-void ArkEngine::ArkDX11::Camera::RotateCamera(KunrealEngine::KunrealMath::Float2 angle)
+void ArkEngine::ArkDX11::Camera::RotateCamera(DirectX::XMFLOAT2 angle)
 {
 	float Pitch_X = DirectX::XMConvertToRadians(angle.x);
 	float Yaw_y = DirectX::XMConvertToRadians(angle.y);
@@ -157,6 +180,83 @@ void ArkEngine::ArkDX11::Camera::UpdateViewMatrix()
 	_viewMatrix._41 = right;			   _viewMatrix._42 = up;			   _viewMatrix._43 = look;				 _viewMatrix._44 = 1.0f;
 }
 
+void ArkEngine::ArkDX11::Camera::UpdateFrustum()
+{
+	DirectX::XMFLOAT4X4 view, proj;
+	DirectX::XMStoreFloat4x4(&view, this->GetViewMatrix());
+	DirectX::XMStoreFloat4x4(&proj, this->GetProjMatrix());
+
+	float zMinimum = -proj._43 / proj._33;
+	float r = 1000.0f / (1000.0f - zMinimum);
+	proj._33 = r;
+	proj._43 = -r * zMinimum;
+
+	DirectX::XMMATRIX tempMatrix = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&view), DirectX::XMLoadFloat4x4(&proj));
+
+	DirectX::XMFLOAT4X4 matrix;
+	DirectX::XMStoreFloat4x4(&matrix, tempMatrix);
+
+	// Calculate near plane of frustum.
+	_frustumPlanes[0].x = matrix._14 + matrix._13;
+	_frustumPlanes[0].y = matrix._24 + matrix._23;
+	_frustumPlanes[0].z = matrix._34 + matrix._33;
+	_frustumPlanes[0].w = matrix._44 + matrix._43;
+
+	DirectX::XMVECTOR nearPlane = DirectX::XMLoadFloat4(&_frustumPlanes[0]);
+	DirectX::XMPlaneNormalize(nearPlane);
+	DirectX::XMStoreFloat4(&_frustumPlanes[0], nearPlane);
+
+	// Calculate far plane of frustum.
+	_frustumPlanes[1].x = matrix._14 - matrix._13;
+	_frustumPlanes[1].y = matrix._24 - matrix._23;
+	_frustumPlanes[1].z = matrix._34 - matrix._33;
+	_frustumPlanes[1].w = matrix._44 - matrix._43;
+
+	DirectX::XMVECTOR farPlane = DirectX::XMLoadFloat4(&_frustumPlanes[1]);
+	DirectX::XMPlaneNormalize(farPlane);
+	DirectX::XMStoreFloat4(&_frustumPlanes[1], farPlane);
+
+	// Calculate left plane of frustum.
+	_frustumPlanes[2].x = matrix._14 + matrix._11;
+	_frustumPlanes[2].y = matrix._24 + matrix._21;
+	_frustumPlanes[2].z = matrix._34 + matrix._31;
+	_frustumPlanes[2].w = matrix._44 + matrix._41;
+
+	DirectX::XMVECTOR leftPlane = DirectX::XMLoadFloat4(&_frustumPlanes[2]);
+	DirectX::XMPlaneNormalize(leftPlane);
+	DirectX::XMStoreFloat4(&_frustumPlanes[2], leftPlane);
+
+	// Calculate right plane of frustum.
+	_frustumPlanes[3].x = matrix._14 - matrix._11;
+	_frustumPlanes[3].y = matrix._24 - matrix._21;
+	_frustumPlanes[3].z = matrix._34 - matrix._31;
+	_frustumPlanes[3].w = matrix._44 - matrix._41;
+
+	DirectX::XMVECTOR rightPlane = DirectX::XMLoadFloat4(&_frustumPlanes[3]);
+	DirectX::XMPlaneNormalize(rightPlane);
+	DirectX::XMStoreFloat4(&_frustumPlanes[3], rightPlane);
+
+	// Calculate top plane of frustum.
+	_frustumPlanes[4].x = matrix._14 - matrix._12;
+	_frustumPlanes[4].y = matrix._24 - matrix._22;
+	_frustumPlanes[4].z = matrix._34 - matrix._32;
+	_frustumPlanes[4].w = matrix._44 - matrix._42;
+
+	DirectX::XMVECTOR topPlane = DirectX::XMLoadFloat4(&_frustumPlanes[4]);
+	DirectX::XMPlaneNormalize(topPlane);
+	DirectX::XMStoreFloat4(&_frustumPlanes[4], topPlane);
+
+	// Calculate bottom plane of frustum.
+	_frustumPlanes[5].x = matrix._14 + matrix._12;
+	_frustumPlanes[5].y = matrix._24 + matrix._22;
+	_frustumPlanes[5].z = matrix._34 + matrix._32;
+	_frustumPlanes[5].w = matrix._44 + matrix._42;
+
+	DirectX::XMVECTOR bottomPlane = DirectX::XMLoadFloat4(&_frustumPlanes[5]);
+	DirectX::XMPlaneNormalize(bottomPlane);
+	DirectX::XMStoreFloat4(&_frustumPlanes[5], bottomPlane);
+}
+
 const DirectX::XMMATRIX ArkEngine::ArkDX11::Camera::GetViewMatrix()
 {
 	DirectX::XMMATRIX view = DirectX::XMLoadFloat4x4(&_viewMatrix);
@@ -171,7 +271,7 @@ const DirectX::XMMATRIX ArkEngine::ArkDX11::Camera::GetProjMatrix()
 	return proj;
 }
 
-const DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetCameraPosition()
+const DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetCameraPos()
 {
 	return _positionVector;
 }

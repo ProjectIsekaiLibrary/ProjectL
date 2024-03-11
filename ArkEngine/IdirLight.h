@@ -22,13 +22,13 @@ namespace ArkEngine
 
 	public:
 		// ambinet 값 설정
-		virtual void SetAmbient(KunrealEngine::KunrealMath::Float4 ambient) override;
+		virtual void SetAmbient(DirectX::XMFLOAT4 ambient) override;
 		// diffuse 값 설정
-		virtual void SetDiffuse(KunrealEngine::KunrealMath::Float4 diffuse) override;
+		virtual void SetDiffuse(DirectX::XMFLOAT4 diffuse) override;
 		// specular 값 설정
-		virtual void SetSpecular(KunrealEngine::KunrealMath::Float4 specular) override;
+		virtual void SetSpecular(DirectX::XMFLOAT4 specular) override;
 		// direction 값 설정
-		virtual void SetDirection(KunrealEngine::KunrealMath::Float3 direction) override;
+		virtual void SetDirection(DirectX::XMFLOAT3 direction) override;
 
 	public:
 		virtual bool GetActive() override;

@@ -11,6 +11,14 @@
 
 namespace ArkEngine
 {
+	namespace ArkDX11
+	{
+		class DebugObject;
+	}
+}
+
+namespace ArkEngine
+{
 	class IPointLight : public GInterface::GraphicsPointLight
 	{
 	public:
@@ -22,13 +30,13 @@ namespace ArkEngine
 
 	public:
 		// ambient 값 설정
-		virtual void SetAmbient(KunrealEngine::KunrealMath::Float4 ambient) override;
+		virtual void SetAmbient(DirectX::XMFLOAT4 ambient) override;
 		// diffuse 값 설정
-		virtual void SetDiffuse(KunrealEngine::KunrealMath::Float4 diffuse) override;
+		virtual void SetDiffuse(DirectX::XMFLOAT4 diffuse) override;
 		// specular 값 설정
-		virtual void SetSpecular(KunrealEngine::KunrealMath::Float4 specular) override;
+		virtual void SetSpecular(DirectX::XMFLOAT4 specular) override;
 		// position 값 설정
-		virtual void SetPosition(KunrealEngine::KunrealMath::Float3 position) override;
+		virtual void SetPosition(DirectX::XMFLOAT3 position) override;
 		// ragne 값 설정
 		virtual void SetRange(float range) override;
 
@@ -41,6 +49,9 @@ namespace ArkEngine
 		int GetActiveIndex();
 		void MinusIndex();
 		void MinusActiveIndex();
+
+	private:
+		ArkEngine::ArkDX11::DebugObject* _debugObject;
 
 	private:
 		unsigned int _index;

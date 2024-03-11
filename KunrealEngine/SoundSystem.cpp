@@ -1,12 +1,13 @@
 #include "SoundSystem.h"
 #include <assert.h>
 #include <algorithm>
+#include <typeinfo>
 
 #define ASsert(formula, message) assert(formula && message)
 #define Assert(message) assert(0 && message)
 
 namespace KunrealEngine
-{
+{ 
 	SoundSystem::SoundSystem()
 	{
 	}
@@ -51,7 +52,38 @@ namespace KunrealEngine
 
 		DSBUFFERDESC bufferDesc;
 		bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-		bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME;
+		bufferDesc.dwFlags = DSBCAPS_PRIMARYBUFFER | DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
+		bufferDesc.dwBufferBytes = 0;
+		bufferDesc.dwReserved = 0;
+		bufferDesc.lpwfxFormat = NULL;
+		bufferDesc.guid3DAlgorithm = GUID_NULL;
+
+		if (FAILED(_directSound->CreateSoundBuffer(&bufferDesc, &_primaryBuffer, NULL)))
+		{
+			return false;
+		}
+
+		// Set the wave format of secondary buffer that this wave file will be loaded onto.
+		WAVEFORMATEX waveFormat;
+		waveFormat.wFormatTag = WAVE_FORMAT_PCM;
+		waveFormat.nSamplesPerSec = 44100;
+		waveFormat.wBitsPerSample = 16;
+		waveFormat.nChannels = 2;
+		waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+		waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+		waveFormat.cbSize = 0;
+
+		if (FAILED(_primaryBuffer->SetFormat(&waveFormat)))
+		{
+			return false;
+		}
+
+		if (FAILED(_primaryBuffer->QueryInterface(IID_IDirectSound3DListener8, (LPVOID*)&_listener)))
+		{
+			return false;
+		}
+
+		_listener->SetPosition(0.0f, 0.0f, 0.0f, DS3D_IMMEDIATE);
 
 		return true;
 	}
@@ -59,6 +91,12 @@ namespace KunrealEngine
 	void SoundSystem::Terminate()
 	{
 		ClearAllSound();
+
+		if (_listener)
+		{
+			_listener->Release();
+			_listener = 0;
+		}
 
 		if (_primaryBuffer)
 		{
@@ -71,7 +109,7 @@ namespace KunrealEngine
 	/////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////
 
-	void SoundSystem::AddSound(std::string filename, std::string soundname, int volume)
+	int SoundSystem::AddSound(std::string filename, int volume)
 	{
 		int soundvolume = 0;
 		if (volume > 100 || volume < 0)
@@ -88,23 +126,62 @@ namespace KunrealEngine
 		LoadWaveFile(filename, &tempsound);
 
 		soundstruct->fileName = filename;
-		soundstruct->soundName = soundname;
 		soundstruct->soundBuffer = tempsound;
 		soundstruct->volume = soundvolume;
 
 		if (FAILED(tempsound->SetCurrentPosition(0)))
 		{
 			Assert("PlayWaveFile function -> SetCurrentPosition 01 is failed");
-			return;
 		}
 
 		if (FAILED(tempsound->SetVolume(soundvolume)))
 		{
 			Assert("PlayWaveFile function -> SetVolume 01 is failed");
-			return;
 		}
 
 		_soundBuffer.push_back(soundstruct);
+		int returnValue = FindIndex(_soundBuffer, soundstruct);
+		return returnValue;
+	}
+
+	int SoundSystem::Add3DSound(std::string filename, int volume, int xpos /*= 0*/, int ypos /*= 0*/, int zpos /*= 0*/)
+	{
+		int soundvolume = 0;
+		if (volume > 100 || volume < 0)
+		{
+			Assert("volume setting failed. volume is set over 100 or under 0");
+		}
+		else
+		{
+			soundvolume = (100 - volume) * -100;
+		}
+
+		Sound* soundstruct = new Sound;
+		IDirectSound3DBuffer8* temp3DSound;
+		IDirectSoundBuffer8* tempsound;
+		Load3DWaveFile(filename, &tempsound, &temp3DSound);
+
+		soundstruct->fileName = filename;
+		soundstruct->soundBuffer = tempsound;
+		soundstruct->sound3DBuffer = temp3DSound;
+		soundstruct->volume = soundvolume;
+
+		if (FAILED(tempsound->SetCurrentPosition(0)))
+		{
+			Assert("PlayWaveFile function -> SetCurrentPosition 01 is failed");
+		}
+
+		if (FAILED(tempsound->SetVolume(soundvolume)))
+		{
+			Assert("PlayWaveFile function -> SetVolume 01 is failed");
+		}
+
+		soundstruct->sound3DBuffer->SetPosition(xpos, ypos, zpos, DS3D_IMMEDIATE);
+
+		_soundBuffer.push_back(soundstruct);
+		int returnValue = FindIndex(_soundBuffer, soundstruct);
+
+		return returnValue;
 	}
 
 	void SoundSystem::RemoveSound(int index)
@@ -143,37 +220,14 @@ namespace KunrealEngine
 		}
 	}
 
-	/////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////
-
-	int SoundSystem::FindIndexOfSound(std::string soundname)
+	void SoundSystem::updateSoundPosition(int index, float x, float y, float z)
 	{
-		int index = 0;
-
-		for (auto sound : _soundBuffer)
-		{
-			if (sound->fileName.compare(soundname))
-			{
-				return index;
-			}
-			index++;
-
-		}
-
-		return 0;
+		_soundBuffer[index]->sound3DBuffer->SetPosition(x, y, z, DS3D_IMMEDIATE);
 	}
 
-	Sound& SoundSystem::FindSound(std::string soundname)
+	void SoundSystem::updateListenerPosition(float x, float y, float z)
 	{
-		for (auto sound : _soundBuffer)
-		{
-			if (sound->fileName.compare(soundname))
-			{
-				return *sound;
-			}
-		}
-		Assert("FindSound function -> sound cannot find");
+		_listener->SetPosition(x, y, z, DS3D_IMMEDIATE);
 	}
 
 	/////////////////////////////////////////////////////////////////////
@@ -182,25 +236,23 @@ namespace KunrealEngine
 
 	void SoundSystem::Play(int index)
 	{
-		if (FAILED(_soundBuffer[index]->soundBuffer->Play(0, 0, 0)))
-		{
-			Assert("PlayWaveFile function -> Play 01 is failed");
-			return;
-		}
+		_soundBuffer[index]->soundBuffer->Play(0, 0, 0);
+	}
+
+	void SoundSystem::PlayWithPos(int index, int xpos, int ypos, int zpos)
+	{
+		_soundBuffer[index]->sound3DBuffer->SetPosition(xpos, ypos, zpos, DS3D_IMMEDIATE);
+		_soundBuffer[index]->soundBuffer->Play(0, 0, 0);
 	}
 
 	void SoundSystem::Loop(int index)
 	{
-		if (FAILED(_soundBuffer[index]->soundBuffer->Play(0, 0, DSBPLAY_LOOPING)))
-		{
-			Assert("PlayWaveFile function -> Play 01 is failed");
-			return;
-		}
+		_soundBuffer[index]->soundBuffer->Play(0, 0, DSBPLAY_LOOPING);
 	}
 
 	void SoundSystem::Pause(int index)
 	{
-		// 사운드 일시 중지
+		// 사운드 정지
 		_soundBuffer[index]->soundBuffer->Stop();
 	}
 
@@ -217,7 +269,7 @@ namespace KunrealEngine
 	/////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////
 
-	bool SoundSystem::LoadWaveFile(std::string filename, IDirectSoundBuffer8** secondaryBuffer)
+	bool SoundSystem::LoadWaveFile(std::string filename, IDirectSoundBuffer8** secondaryBuffer, bool is3D)
 	{
 		// Open the wave file in binary.
 		FILE* filePtr = nullptr;
@@ -289,21 +341,16 @@ namespace KunrealEngine
 			return false;
 		}
 
-		// Check that the wave file was recorded in stereo format.
-		if (waveFileHeader.numChannels != 2)
+		if (waveFileHeader.sampleRate != 48000 && waveFileHeader.sampleRate != 44100)
 		{
+			Assert("해당 .wav 파일의 샘플레이트는 지원 하지 않습니다. \n48000 혹은 44100으로 맞춰주세요.");
 			return false;
 		}
-
-		// Check that the wave file was recorded at a sample rate of 44.1 KHz.
-// 		if (waveFileHeader.sampleRate != 48000)
-// 		{
-// 			return false;
-// 		}
 
 		// Ensure that the wave file was recorded in 16 bit format.
 		if (waveFileHeader.bitsPerSample != 16)
 		{
+			Assert("해당 .wav 파일의 샘플 당 비트를 지원하지 않습니다. \n16bit만 지원합니다.");
 			return false;
 		}
 
@@ -317,25 +364,62 @@ namespace KunrealEngine
 		// Set the wave format of secondary buffer that this wave file will be loaded onto.
 		WAVEFORMATEX waveFormat;
 		waveFormat.wFormatTag = WAVE_FORMAT_PCM;
-		waveFormat.nSamplesPerSec = 44100;
+		if (waveFileHeader.sampleRate == 48000)
+			waveFormat.nSamplesPerSec = 48000;
+		else if (waveFileHeader.sampleRate == 44100)
+			waveFormat.nSamplesPerSec = 44100;
 		waveFormat.wBitsPerSample = 16;
-		waveFormat.nChannels = 2;
-		waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
-		waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
 		waveFormat.cbSize = 0;
 
 		// Set the buffer description of the secondary sound buffer that the wave file will be loaded onto.
 		DSBUFFERDESC bufferDesc;
 		bufferDesc.dwSize = sizeof(DSBUFFERDESC);
-		bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
 		bufferDesc.dwBufferBytes = waveFileHeader.dataSize;
 		bufferDesc.dwReserved = 0;
 		bufferDesc.lpwfxFormat = &waveFormat;
 		bufferDesc.guid3DAlgorithm = GUID_NULL;
 
+		//Check that the wave file was recorded in stereo format.
+		if (waveFileHeader.numChannels == 2 && (is3D == false))
+		{
+			waveFormat.nChannels = 2;
+			bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+			waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+			waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+		}
+
+		else if (waveFileHeader.numChannels == 2 && (is3D == true))
+		{
+			Assert("This .wav file is not possible to play in 3D. \n check channel of .wav ");
+		}
+
+		else if (waveFileHeader.numChannels == 1 && (is3D == false))
+		{
+			waveFormat.nChannels = 1;
+			bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME;
+			waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+			waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+		}
+
+		else if (waveFileHeader.numChannels == 1 && (is3D == true))
+		{
+			waveFormat.nChannels = 1;
+			bufferDesc.dwFlags = DSBCAPS_CTRLVOLUME | DSBCAPS_CTRL3D;
+			waveFormat.nBlockAlign = (waveFormat.wBitsPerSample / 8) * waveFormat.nChannels;
+			waveFormat.nAvgBytesPerSec = waveFormat.nSamplesPerSec * waveFormat.nBlockAlign;
+		}
+
+		else
+		{
+			Assert("this sound is not 2 or 1 channels");
+			return false;
+		}
+
+		HRESULT hr;
+
 		// Create a temporary sound buffer with the specific buffer settings.
 		IDirectSoundBuffer* tempBuffer = nullptr;
-		if (FAILED(_directSound->CreateSoundBuffer(&bufferDesc, &tempBuffer, NULL)))
+		if (FAILED(hr = _directSound->CreateSoundBuffer(&bufferDesc, &tempBuffer, NULL)))
 		{
 			Assert("LoadWaveFile function -> CreateSoundBuffer is failed");
 			return false;
@@ -364,7 +448,7 @@ namespace KunrealEngine
 		}
 
 		// Read in the wave file data into the newly created buffer.
-		count = (unsigned int)fread(waveData, 1, waveFileHeader.dataSize, filePtr);
+		count = fread(waveData, 1, waveFileHeader.dataSize, filePtr);
 		if (count != waveFileHeader.dataSize)
 		{
 			Assert("LoadWaveFile function -> fread is failed");
@@ -405,14 +489,43 @@ namespace KunrealEngine
 		return true;
 	}
 
+	bool SoundSystem::Load3DWaveFile(std::string filename, IDirectSoundBuffer8** secondaryBuffer, IDirectSound3DBuffer8** secondary3DBuffer)
+	{
+		HRESULT hr;
+		LoadWaveFile(filename, secondaryBuffer, true);
+
+		if (FAILED(hr = (*secondaryBuffer)->QueryInterface(IID_IDirectSound3DBuffer8, (void**)&*secondary3DBuffer)))
+		{
+			return false;
+		}
+
+		return true;
+	}
+
 	void SoundSystem::TerminateWaveFile(Sound* index)
 	{
-		if (index->soundBuffer)
+		if (index != 0)
 		{
-			(index->soundBuffer)->Release();
-			index->soundBuffer = 0;
+			index->soundBuffer->Release();
+			index->sound3DBuffer->Release();
 		}
 
 		delete index;
+	}
+
+	int SoundSystem::FindIndex(const std::vector<Sound*>& vec, Sound* value)
+	{
+		auto it = std::find(vec.begin(), vec.end(), value);
+
+		if (it != vec.end())
+		{
+			// 해당 값이 벡터 내에서 찾아진 경우
+			return std::distance(vec.begin(), it);
+		}
+		else
+		{
+			// 해당 값이 벡터 내에서 찾아지지 않은 경우, 예외 처리 등을 수행할 수 있음
+			return -1; // 또는 다른 값을 사용하여 실패를 나타낼 수 있음
+		}
 	}
 }

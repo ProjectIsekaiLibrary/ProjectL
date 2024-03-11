@@ -66,7 +66,7 @@ namespace ArkEngine
 		class ASEMesh : public ArkEngine::IRenderable, public GInterface::GraphicsRenderable
 		{
 		public:
-			ASEMesh(const std::string& fileName, const std::string& textureName);
+			ASEMesh(const std::string& fileName, const std::string& textureName = "");
 			~ASEMesh();
 
 		public:
@@ -83,22 +83,41 @@ namespace ArkEngine
 			virtual void SetRenderingState(bool tf) override;
 
 		public:
-			virtual void SetTransform(KunrealEngine::KunrealMath::Matrix4x4 matrix) override;
+			virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) override;
 			virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) override;
 			virtual void SetModel(const char* fileName) override;
-			virtual void SetDiffuseTexture(const char* textureName) override;
-			virtual void SetNormalTexture(const char* textureName) override;
+			virtual void SetDiffuseTexture(int index, const char* textureName) override;
+			virtual void SetNormalTexture(int index, const char* textureName) override;
+			virtual void SetEmissiveTexture(int index, const char* textureName) override;
 			virtual void SetAnimator() override;
 			virtual const GInterface::Material GetMaterial() override;
 			virtual void SetMaterial(GInterface::Material material) override;
-			virtual void SetReflect(KunrealEngine::KunrealMath::Float4 reflect) override;
+			virtual void SetReflect(DirectX::XMFLOAT4 reflect) override;
+
+		public:
+			virtual const std::vector<std::string> GetDiffuseTextureList() override;
+			virtual const std::vector<std::string> GetNormalTextureList() override;
 
 		public:
 			virtual void PlayAnimation(float deltaTime, bool continiousPlay) override;
 			virtual void StopAnimation() override;
-			virtual void PlayFBXAnimation(float speed, int animIndex, bool continuousPlay) override;
+			virtual void PlayAnimation(float speed, float deltaTime, int animIndex, bool continuousPlay) override;
+			virtual void PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay) override;
+			virtual const std::vector<std::string>& GetClipNames() override;
+			virtual void PauseAnimation() override;
+			virtual void ReplayAnimation() override;
+			virtual float GetCurrentFrame() override;
+
+		public:
+			virtual bool GetPickable() override;
+			virtual void SetPickable(bool tf) override;
+
+			virtual unsigned int GetHashID() override;
+
+		public:
+			virtual bool GetInsideFrustumState() override;
 
 		private:
 			void SetEffect();
@@ -151,8 +170,6 @@ namespace ArkEngine
 
 		private:
 			ArkEngine::ArkDX11::Material _material;
-
-			DirectX::XMFLOAT3 _eyePosW;
 
 		private:
 			ArkEngine::ArkDX11::ArkDevice* _arkDevice;

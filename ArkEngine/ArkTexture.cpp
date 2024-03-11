@@ -1,6 +1,6 @@
 #include <filesystem>
 #include "DDSTextureLoader.h"
-#include "IL/il.h"
+#include "DXTK/DirectXTex.h"
 #include "ResourceManager.h"
 #include "ArkDevice.h"
 #include "ArkTexture.h"
@@ -13,6 +13,10 @@ ArkEngine::ArkDX11::ArkTexture::ArkTexture(const char* textureName)
 	if (tempString.find("dds") != std::string::npos)
 	{
 		CreateDDSTexture(textureName);
+	}
+	else if (tempString.find("tga") != std::string::npos)
+	{
+		CreateTGATexture(textureName);
 	}
 	else
 	{
@@ -68,67 +72,116 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTexture(const char* textureName)
 
 	const wchar_t* wcharPtr = wideStr.c_str();
 
-	ilInit();
-	ilEnable(IL_ORIGIN_SET);
-	ilOriginFunc(IL_ORIGIN_LOWER_LEFT);
-
-	ILuint imageID;
-	ilGenImages(1, &imageID);
-	ilBindImage(imageID);
-
-	ILboolean success = ilLoadImage(wcharPtr);
-	if (!success) {
-		ilDeleteImages(1, &imageID);
+	// 텍스처 로드에 사용할 이미지를 로드합니다.
+	DirectX::TexMetadata metadata;
+	DirectX::ScratchImage scratchImage;
+	HRESULT hr = DirectX::LoadFromWICFile(
+		wcharPtr, // 파일 경로
+		DirectX::WIC_FLAGS_NONE,
+		&metadata,
+		scratchImage
+	);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
 	}
 
-	ILubyte* imageData = ilGetData();
-	ILint width = ilGetInteger(IL_IMAGE_WIDTH);
-	ILint height = ilGetInteger(IL_IMAGE_HEIGHT);
-	ILenum format = ilGetInteger(IL_IMAGE_FORMAT);
-	ILenum type = ilGetInteger(IL_IMAGE_TYPE);
+	// 텍스처 설명 생성
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = metadata.width;
+	textureDesc.Height = metadata.height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = metadata.format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
 
-	if (width < 4096 && height < 4096)
-	{
-		D3D11_TEXTURE2D_DESC textureDesc = {};
-		textureDesc.Width = width;
-		textureDesc.Height = height;
-		textureDesc.MipLevels = 1;
-		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-		textureDesc.SampleDesc.Count = 1;
-		textureDesc.Usage = D3D11_USAGE_DEFAULT;
-		textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-		textureDesc.CPUAccessFlags = 0;
-		textureDesc.MiscFlags = 0;
-
-		D3D11_SUBRESOURCE_DATA initData = {};
-		initData.pSysMem = imageData;
-
-		if (format == IL_RGBA)
-		{
-			initData.SysMemPitch = width * 4;
-		}
-		else if (format == IL_RGB)
-		{
-			initData.SysMemPitch = width * 3;
-		}
-
-		ID3D11Texture2D* texture;
-		device->CreateTexture2D(&textureDesc, &initData, &texture);
-
-		D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc = {};
-		srvDesc.Format = textureDesc.Format;
-		srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-		srvDesc.Texture2D.MipLevels = 1;
-		srvDesc.Texture2D.MostDetailedMip = 0;
-
-		if (texture != nullptr)
-		{
-			device->CreateShaderResourceView(texture, &srvDesc, &_diffuseMapSRV);
-		}
-
-		texture->Release();
-
-		Load(textureName);
+	// 텍스처 생성
+	ID3D11Resource* texture;
+	hr = DirectX::CreateTexture(device, scratchImage.GetImages(), scratchImage.GetImageCount(), metadata, &texture);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
 	}
+
+	// SRV 생성
+	ID3D11ShaderResourceView* srv;
+	hr = device->CreateShaderResourceView(texture, nullptr, &srv);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
+	}
+
+	// 텍스처 해제
+	texture->Release();
+
+	// 생성된 SRV를 사용하도록 설정
+	_diffuseMapSRV = srv;
+
+	// 나머지 로드 및 초기화 코드
+	Load(textureName);
+}
+
+void ArkEngine::ArkDX11::ArkTexture::CreateTGATexture(const char* textureName)
+{
+	auto device = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device")->GetDevice();
+
+	std::string tempString = textureName;
+	std::wstring wideStr = std::filesystem::path(tempString).wstring();
+
+	const wchar_t* wcharPtr = wideStr.c_str();
+
+	// 텍스처 로드에 사용할 이미지를 로드합니다.
+	DirectX::TexMetadata metadata;
+	DirectX::ScratchImage scratchImage;
+	HRESULT hr = DirectX::LoadFromTGAFile(
+		wcharPtr, // 파일 경로
+		&metadata,
+		scratchImage
+	);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
+	}
+
+	// 텍스처 설명 생성
+	D3D11_TEXTURE2D_DESC textureDesc = {};
+	textureDesc.Width = metadata.width;
+	textureDesc.Height = metadata.height;
+	textureDesc.MipLevels = 1;
+	textureDesc.ArraySize = 1;
+	textureDesc.Format = metadata.format;
+	textureDesc.SampleDesc.Count = 1;
+	textureDesc.Usage = D3D11_USAGE_DEFAULT;
+	textureDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	textureDesc.CPUAccessFlags = 0;
+	textureDesc.MiscFlags = 0;
+
+	// 텍스처 생성
+	ID3D11Resource* texture;
+	hr = DirectX::CreateTexture(device, scratchImage.GetImages(), scratchImage.GetImageCount(), metadata, &texture);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
+	}
+
+	// SRV 생성
+	ID3D11ShaderResourceView* srv;
+	hr = device->CreateShaderResourceView(texture, nullptr, &srv);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
+	}
+
+	// 텍스처 해제
+	texture->Release();
+
+	// 생성된 SRV를 사용하도록 설정
+	_diffuseMapSRV = srv;
+
+	// 나머지 로드 및 초기화 코드
+	Load(textureName);
 }

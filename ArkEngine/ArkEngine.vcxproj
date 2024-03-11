@@ -151,7 +151,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableUAC>false</EnableUAC>
-      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;d3dx11effect.lib;ASEParser.lib;KunrealMath.lib;FbxLoader.lib;assimp-vc143-mtd.lib;DevIL.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>d3d11.lib;DirectXTK.lib;d3dx11effect.lib;ASEParser.lib;KunrealMath.lib;FbxLoader.lib;assimp-vc143-mtd.lib;DevIL.lib;d2d1.lib;dwrite.lib;DirectXTex.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(Projectdir)RunTimeDependency" "$(targetdir)" /D /E /C /Q /H /R /Y /K
@@ -198,6 +198,7 @@
     <ClInclude Include="DeferredBuffer.h" />
     <ClInclude Include="DeferredRenderer.h" />
     <ClInclude Include="DirectionalLight.h" />
+    <ClInclude Include="DWFont.h" />
     <ClInclude Include="DX11Renderer.h" />
     <ClInclude Include="DXTKFont.h" />
     <ClInclude Include="FBXAnimator.h" />
@@ -214,16 +215,18 @@
     <ClInclude Include="IResource.h" />
     <ClInclude Include="BasicLight.h" />
     <ClInclude Include="IdirLight.h" />
+    <ClInclude Include="IUIImage.h" />
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="MathConverter.h" />
-    <ClInclude Include="ASEMesh.h" />
     <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ParsingStructs.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ResourceManager.h" />
+    <ClInclude Include="Shadow.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="UIImage.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Animator.cpp" />
@@ -240,6 +243,7 @@
     <ClCompile Include="DeferredRenderer.cpp" />
     <ClCompile Include="DirectionalLight.cpp" />
     <ClCompile Include="dllmain.cpp" />
+    <ClCompile Include="DWFont.cpp" />
     <ClCompile Include="DX11Renderer.cpp" />
     <ClCompile Include="DXTKFont.cpp" />
     <ClCompile Include="FBXAnimator.cpp" />
@@ -250,14 +254,15 @@
     <ClCompile Include="IdirLight.cpp" />
     <ClCompile Include="IPointLight.cpp" />
     <ClCompile Include="LightManager.cpp" />
-    <ClCompile Include="ASEMesh.cpp" />
     <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ParsingStructs.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
+    <ClCompile Include="Shadow.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="UIImage.cpp" />
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="RunTimeDependency\Resources\FX\BasicTex.fx">
@@ -275,6 +280,18 @@
     <FxCompile Include="RunTimeDependency\Resources\FX\finalDeferred.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\finalDeferredToon.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\LightHelper.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="RunTimeDependency\Resources\FX\Skinning.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
@@ -289,6 +306,15 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\SkinningToonShader.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\UIImage.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

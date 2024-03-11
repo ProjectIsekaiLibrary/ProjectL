@@ -1,3 +1,4 @@
+#include <DirectXMath.h>
 #include "IdirLight.h"
 #include "IPointLight.h"
 #include "DirectionalLight.h"

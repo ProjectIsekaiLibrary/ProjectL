@@ -1,5 +1,4 @@
 #include <DirectXMath.h>
-#include "MathConverter.h"
 #include "DirectionalLight.h"
 
 ArkEngine::ArkDX11::DirectionalLight::DirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction)

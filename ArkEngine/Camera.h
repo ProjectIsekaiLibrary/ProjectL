@@ -6,6 +6,7 @@
 /// </summary>
 
 #pragma once
+#include <vector>
 #include "ICamera.h"
 #include "GraphicsCamera.h"
 
@@ -15,15 +16,6 @@ namespace DirectX
 	struct XMFLOAT4;
 	struct XMFLOAT4X4;
 	struct XMMATRIX;
-}
-
-namespace KunrealEngine
-{
-	namespace KunrealMath
-	{
-		struct Float2;
-		struct Float3;
-	}
 }
 
 namespace ArkEngine
@@ -37,6 +29,9 @@ namespace ArkEngine
 		public:
 			Camera(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& target, DirectX::XMFLOAT3& worldUp);
 			~Camera();
+
+		public:
+			virtual void Update() override;
 
 		public:
 			virtual bool GetMain() override;
@@ -59,20 +54,24 @@ namespace ArkEngine
 			virtual void UpDown(float deltaTime) override;
 
 		public:
-			virtual void SetCameraPosition(KunrealEngine::KunrealMath::Float3 position) override;
-			virtual void SetTargetPosition(KunrealEngine::KunrealMath::Float3 position) override;
-			virtual void RotateCamera(KunrealEngine::KunrealMath::Float2 angle) override;
+			virtual std::vector<DirectX::XMFLOAT4>& GetFrstum() override;
+
+		public:
+			virtual DirectX::XMFLOAT3 GetCameraPosition() override;
+			virtual void SetCameraPosition(DirectX::XMFLOAT3 position) override;
+			virtual void SetTargetPosition(DirectX::XMFLOAT3 position) override;
+			virtual void RotateCamera(DirectX::XMFLOAT2 angle) override;
 
 
 		public:
 			// View 행렬 가져오기
-			const DirectX::XMMATRIX GetViewMatrix();
+			virtual const DirectX::XMMATRIX GetViewMatrix() override;
 
 			// 투영 행렬 가져오기
-			const DirectX::XMMATRIX GetProjMatrix();
+			virtual const DirectX::XMMATRIX GetProjMatrix() override;
 
 			// 카메라의 위치 가져오기
-			const DirectX::XMFLOAT3 GetCameraPosition();
+			virtual const DirectX::XMFLOAT3 GetCameraPos() override;
 
 		private:
 			// pos, target, worldUp을 통해 look, right, up 백터를 설정 후 view 행렬 업데이트
@@ -80,6 +79,9 @@ namespace ArkEngine
 			
 			// 설저된 look, right, up 백터를 사용하여 view 행렬 업데이트
 			void UpdateViewMatrix();
+
+			// 프러스텀 업데이트
+			void UpdateFrustum();
 			
 		private:
 			DirectX::XMFLOAT3 _positionVector;
@@ -94,6 +96,7 @@ namespace ArkEngine
 
 		private:
 			bool _isMain;
+			std::vector<DirectX::XMFLOAT4> _frustumPlanes;
 		};
 	}
 }

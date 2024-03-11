@@ -1,5 +1,7 @@
 #pragma once
 #include "../GraphicsInterface/GraphicsRenderable.h"
+#include "../GraphicsInterface/GraphicsDebug.h"
+#include "../GraphicsInterface/GraphicsImage.h"
 #include "../GraphicsInterface/GraphicsInterface.h"
 #include "../GraphicsInterface/GraphicsCamera.h"
 #include "../GraphicsInterface/GraphicsLight.h"

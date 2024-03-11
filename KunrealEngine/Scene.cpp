@@ -1,14 +1,15 @@
 #include "Scene.h"
 #include "GameObject.h"
+#include "ComponentHeaders.h"
 
 KunrealEngine::Scene::Scene()
-	:_sceneName("")
+	:_sceneName(""), _mainCamera(nullptr)
 {
 
 }
 
 KunrealEngine::Scene::Scene(std::string sceneName)
-	:_sceneName(sceneName)
+	:_sceneName(sceneName), _mainCamera(nullptr)
 {
 	
 }
@@ -31,11 +32,11 @@ void KunrealEngine::Scene::Initialize()
 	}
 }
 
-void KunrealEngine::Scene::Finalize()
+void KunrealEngine::Scene::Release()
 {
 	for (auto objects : _objectList)
 	{
-		objects->Finalize();
+		objects->Release();
 		delete objects;
 	}
 
@@ -86,7 +87,17 @@ void KunrealEngine::Scene::LateUpdate()
 
 void KunrealEngine::Scene::Render()
 {
-	/// 그래픽스와 이야기해서 수정 예정
+	/// 비효율적인 코드 공사해야한다
+	if (!_objectList.empty())
+	{
+		for (auto& objects : _objectList)
+		{
+			if (!objects->GetActivated())
+			{
+				
+			}
+		}
+	}
 }
 
 KunrealEngine::GameObject* KunrealEngine::Scene::CreateObject()
@@ -126,7 +137,7 @@ void KunrealEngine::Scene::DeleteGameObject(std::string objectName)
 
 	if (iter != _objectList.end())
 	{
-		(*iter)->Finalize();						// 컴포넌트를 비워주고
+		(*iter)->Release();							// 컴포넌트를 비워주고
 		delete* iter;								// 삭제하고
 		_objectList.erase(iter);					// 컨테이너에서 빼준다
 	}
@@ -143,7 +154,7 @@ void KunrealEngine::Scene::DeleteGameObject(GameObject* obj)
 
 	if (iter != _objectList.end())
 	{
-		obj->Finalize();
+		obj->Release();
 		delete* iter;
 		_objectList.erase(iter);
 	}
@@ -185,7 +196,12 @@ KunrealEngine::GameObject* KunrealEngine::Scene::GetGameObject(std::string objec
 
 void KunrealEngine::Scene::SetMainCamera(GameObject* obj)
 {
-	/// 그래픽스의 카메라를 받은 후 구현 예정
+	_mainCamera = obj;
+}
+
+KunrealEngine::GameObject* KunrealEngine::Scene::GetMainCamera()
+{
+	return this->_mainCamera;
 }
 
 void KunrealEngine::Scene::SortObjects()

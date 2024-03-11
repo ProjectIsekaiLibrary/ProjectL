@@ -17,13 +17,16 @@ cbuffer cbPerObject
 
 cbuffer cbSkinned
 {
-    float4x4 gBoneTransforms[96];
+    float4x4 gBoneTransforms[250];
 };
 
 // Nonnumeric values cannot be added to a cbuffer.
 Texture2D gDiffuseMap;
 Texture2D gNormalMap;
+Texture2D gEmissiveMap;
+
 TextureCube gCubeMap;
+float4 gColor;
 
 SamplerState samAnisotropic
 {
@@ -60,7 +63,10 @@ struct PSOut
     float4 Position : SV_Target0;
     float4 Diffuse : SV_Target1;
     float4 BumpedNormal : SV_Target2;
-    float4 Depth : SV_Target3;
+    float4 Emissive : SV_Target3;
+    float4 Depth : SV_Target4;
+    float4 Material : SV_Target5;
+    float4 Color : SV_Target6;
 };
 
 VertexOut VS(VertexIn vin)
@@ -111,17 +117,24 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     // Interpolating normal can unnormalize it, so normalize it.
     pin.NormalW = normalize(pin.NormalW);
 
-    float3 normalMap = gNormalMap.Sample(samAnisotropic, pin.Tex).rgb;
+    float3 normalMap = gNormalMap.Sample(samAnisotropic, pin.Tex).xyz;
 
-    float4 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+    float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
 
-    float3 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW);
-    
+    float3 emissive = gEmissiveMap.Sample(samAnisotropic, pin.Tex).xyz;
+
+    float4 orthonormalizedTangent;
+
+    float4 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW, orthonormalizedTangent);
+
     output.Position = float4(pin.PosW, 1.0f);
-    output.Diffuse = diffuse;
-    output.BumpedNormal = float4(bumpedNormal.xyz, 1.0f);
+    output.Diffuse = float4(diffuse, 1.0f);
+    output.BumpedNormal = bumpedNormal;
+    output.Emissive = float4(emissive, 1.0f);
     output.Depth = float4(pin.PosH.zzz, 1.0f);
-
+    output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
+    output.Color = gColor;
+    
     return output;
 }
 

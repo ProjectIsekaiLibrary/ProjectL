@@ -43,5 +43,11 @@
     <ClInclude Include="GraphicsPointLight.h">
       <Filter>GraphicsInterface</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsDebug.h">
+      <Filter>GraphicsInterface</Filter>
+    </ClInclude>
+    <ClInclude Include="GraphicsImage.h">
+      <Filter>GraphicsInterface</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

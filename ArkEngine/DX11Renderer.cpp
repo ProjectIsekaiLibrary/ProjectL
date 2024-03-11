@@ -1,28 +1,30 @@
 #include <d3d11.h>
 #include <dxgi.h>
+#include <wincodec.h>
 #include <assert.h>
 #include <windows.h>
 #include <filesystem>
 #include "ArkDevice.h"
 #include "ArkEffect.h"
 #include "ArkTexture.h"
-#include "DXTKFont.h"
 #include "ASEParser.h"
 #include "ResourceManager.h"
 #include "ICamera.h"
 #include "Camera.h"
 #include "GraphicsRenderable.h"
+#include "GraphicsDebug.h"
+#include "DebugObject.h"
 #include "IRenderable.h"
-#include "ASEMesh.h"
 #include "ICubeMap.h"
 #include "CubeMap.h"
-#include "MathConverter.h"
 #include "LightManager.h"
 #include "GraphicsDirLight.h"
 #include "FBXMesh.h"
 #include "../FbxLoader/AssimpTool.h"
 #include "deferredRenderer.h"
 #include "deferredBuffer.h"
+#include "UIImage.h"
+#include "DWFont.h"
 
 #include "DX11Renderer.h"
 
@@ -43,7 +45,7 @@ ArkEngine::ArkDX11::DX11Renderer::DX11Renderer()
 	_swapChain(nullptr), _renderTargetView(nullptr), _depthStencilView(nullptr),
 	_solidRS(nullptr), _wireRS(nullptr), _depthStencilState(nullptr), _depthStencilStateDisable(nullptr),
 	_font(nullptr), _mainCamera(nullptr), _mainCubeMap(nullptr),
-	_clientWidth(0), _clientHeight(0), _isDebugMode(false), _renderingImageView(nullptr)
+	_clientWidth(0), _clientHeight(0), _isDebugMode(true), _renderingImageView(nullptr), _colorTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -58,7 +60,11 @@ ArkEngine::ArkDX11::DX11Renderer::~DX11Renderer()
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight)
 {
+	HRESULT hrCoInit = CoInitialize(nullptr);
+
 	InitializeAssimpTool();
+
+	InitializeWIC();
 
 	_clientWidth = clientWidth;
 	_clientHeight = clientHeight;
@@ -79,13 +85,15 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	CreateFont();
 	CreateEffect();
-	CreateASEParser();
+	//CreateASEParser();
 
 	// 여기서 이름 다가져오는데 위치 옮겨서 이거 주석해도 동작하도록 변경해야함.
 
 	CreateTexture();
 
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight);
+
+	SetPickingTexture();
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
@@ -100,28 +108,32 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 void ArkEngine::ArkDX11::DX11Renderer::Update()
 {
+	_mainCamera->Update();
+
 	if (_mainCubeMap != nullptr)
 	{
 		_mainCubeMap->Update(_mainCamera);
-	}
-
-	for (auto index : ResourceManager::GetInstance()->GetRenderableList())
-	{
-		// 일단은 그려질 것만 업데이트
-		if (index->GetRenderingState())
-		{
-			index->Update(_mainCamera);
-		}
 	}
 
 	if (_isDebugMode)
 	{
 		for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
 		{
-			if (index->GetRenderingState())
+			// Frustum culling을 위해 그리지 않아도 업데이트 시키도록 변경
+
+			//if (index->GetRenderingState())
 			{
 				index->Update(_mainCamera);
 			}
+		}
+	}
+
+	for (auto index : ResourceManager::GetInstance()->GetRenderableList())
+	{
+		// 일단은 그려질 것만 업데이트
+		if (index->GetRenderingState() && index->GetInsideFrustumState())
+		{
+			index->Update(_mainCamera);
 		}
 	}
 
@@ -159,6 +171,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		testdef = 3;
 	}
 
+	if (GetAsyncKeyState(VK_F6))
+	{
+		testdef = 6;
+	}
+	if (GetAsyncKeyState(VK_F7))
+	{
+		testdef = 5;
+	}
 	if (GetAsyncKeyState(VK_F9))
 	{
 		testdef = 9;
@@ -167,13 +187,26 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
 {
+	int testCullingNum = 0;
+
 	BeginRender();
 
 	for (auto index : ResourceManager::GetInstance()->GetRenderableList())
 	{
+		if (index->GetRenderingState() && index->GetInsideFrustumState())
+		{
+			testCullingNum++;
+			index->Render();
+		}
+	}
+
+	DrawDebugText(1500, 0, 40, "Rendered Object : %d", testCullingNum);
+
+	for (auto index : ResourceManager::GetInstance()->GetUIImageList())
+	{
 		if (index->GetRenderingState())
 		{
-			index->Render();
+			index->Render(false);
 		}
 	}
 
@@ -188,14 +221,23 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	if (_isDebugMode)
 	{
-		_font->Draw();
-
 		for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
 		{
 			if (index->GetRenderingState())
 			{
 				index->Render();
 			}
+		}
+	
+	}
+
+	_font->Render();
+
+	for (auto index : ResourceManager::GetInstance()->GetUIImageList())
+	{
+		if (index->GetRenderingState())
+		{
+			index->Render(true);
 		}
 	}
 
@@ -205,12 +247,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	{
 		_deviceContext->PSSetShaderResources(i, 1, &srv);
 	}
-
+	
 	EndRender();
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Finalize()
 {
+	_colorTexture->Release();
+
 	_deferredRenderer->Finalize();
 
 	if (_renderingImageView != nullptr)
@@ -234,23 +278,19 @@ void ArkEngine::ArkDX11::DX11Renderer::Finalize()
 	}
 }
 
-GInterface::GraphicsRenderable* ArkEngine::ArkDX11::DX11Renderer::CreateRenderable(const char* fileName, const char* textureName, bool isSold)
+GInterface::GraphicsRenderable* ArkEngine::ArkDX11::DX11Renderer::CreateRenderable(const char* fileName, bool isSold)
 {
-	if (textureName == nullptr)
-	{
-		textureName = "";
-	}
 	std::string tempString = fileName;
 
 	ArkEngine::IRenderable* newObject = nullptr;
 
-	if (tempString.find("ASEFile") != std::string::npos)
+	//if (tempString.find("ASEFile") != std::string::npos)
+	//{
+	//	newObject = new ASEMesh(fileName);
+	//}
+	//else
 	{
-		newObject = new ASEMesh(fileName, textureName);
-	}
-	else
-	{
-		newObject = new FBXMesh(fileName, textureName, isSold);
+		newObject = new FBXMesh(fileName, isSold);
 	}
 
 	ResourceManager::GetInstance()->AddRenderable(newObject);
@@ -263,6 +303,50 @@ GInterface::GraphicsRenderable* ArkEngine::ArkDX11::DX11Renderer::CreateRenderab
 void ArkEngine::ArkDX11::DX11Renderer::DeleteRenderable(GInterface::GraphicsRenderable* renderable)
 {
 	renderable->Delete();
+}
+
+GInterface::GraphicsRenderable* ArkEngine::ArkDX11::DX11Renderer::GetPickedRenderable(int mouseX, int mouseY)
+{
+	auto pickingID = Picking(mouseX, mouseY);
+
+	auto renderableList = ResourceManager::GetInstance()->GetRenderableList();
+
+	for (auto index : renderableList)
+	{
+		if (index->GetPickable() == true)
+		{
+			if (pickingID == index->GetHashID())
+			{
+				GInterface::GraphicsRenderable* tempObject = dynamic_cast<GInterface::GraphicsRenderable*>(index);
+				return tempObject;
+			}
+		}
+	}
+	
+	return nullptr;
+}
+
+GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::CreateDebugCube(const char* objectName, float width, float height, float depth)
+{
+	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+	GInterface::GraphicsDebug* debugObject = new DebugObject(objectName, width, height, depth, color);
+
+	return debugObject;
+}
+
+GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::CreateDebugSphere(const char* objectName, float radius)
+{
+	float center = radius / 2;
+	DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f);
+
+	GInterface::GraphicsDebug* debugObject = new DebugObject(objectName, center, radius, color);
+
+	return debugObject;
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDebug* debugObject)
+{
+	delete debugObject;
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateCubeMap(const char* cubeMapName, const char* textureName, bool isCube)
@@ -305,15 +389,41 @@ void ArkEngine::ArkDX11::DX11Renderer::SetMainCubeMap(std::string cubeMapName)
 	}
 }
 
-GInterface::GraphicsCamera* ArkEngine::ArkDX11::DX11Renderer::CreateCamera(KunrealEngine::KunrealMath::Float3 cameraPosition, KunrealEngine::KunrealMath::Float3 targetPosition)
+GInterface::GraphicsImage* ArkEngine::ArkDX11::DX11Renderer::CreateImage(const char* imageName)
+{	
+	GInterface::GraphicsImage* image =  new UIImage(imageName, _clientWidth, _clientHeight);
+
+	return image;
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteImage(GInterface::GraphicsImage* image)
 {
-	DirectX::XMFLOAT3 pos = ArkEngine::ArkDX11::ConvertFloat3(cameraPosition);
+	image->Delete();
+}
 
-	DirectX::XMFLOAT3 target = ArkEngine::ArkDX11::ConvertFloat3(targetPosition);
+GInterface::GraphicsImage* ArkEngine::ArkDX11::DX11Renderer::GetPickedImage(int mouseX, int mouseY)
+{
+	auto pickingID = Picking(mouseX, mouseY);
 
+	auto uiList = ResourceManager::GetInstance()->GetUIImageList();
+
+	for (auto index : uiList)
+	{
+		if (pickingID == index->GetHashID())
+		{
+			GInterface::GraphicsImage* tempImage = dynamic_cast<GInterface::GraphicsImage*>(index);
+			return tempImage;
+		}
+	}
+
+	return nullptr;
+}
+
+GInterface::GraphicsCamera* ArkEngine::ArkDX11::DX11Renderer::CreateCamera(DirectX::XMFLOAT3 cameraPosition, DirectX::XMFLOAT3 targetPosition)
+{
 	DirectX::XMFLOAT3 worldUp = { 0.0f, 1.0f, 0.0f };
 
-	ArkEngine::ArkDX11::Camera* newCamera = new ArkEngine::ArkDX11::Camera(pos, target, worldUp);
+	ArkEngine::ArkDX11::Camera* newCamera = new ArkEngine::ArkDX11::Camera(cameraPosition, targetPosition, worldUp);
 	ICamera* iCamera = newCamera;
 
 	iCamera->SetProjectionMatrix(0.25f * DirectX::XM_PI, GetAspectRatio(), 1.0f, 1000.0f, true);
@@ -355,28 +465,77 @@ void ArkEngine::ArkDX11::DX11Renderer::SetMainCamera(GInterface::GraphicsCamera*
 	_mainCamera->SetMain(true);
 }
 
-GInterface::GraphicsDirLight* ArkEngine::ArkDX11::DX11Renderer::CreateDirectionalLight(KunrealEngine::KunrealMath::Float4 ambient, KunrealEngine::KunrealMath::Float4 diffuse, KunrealEngine::KunrealMath::Float4 specular, KunrealEngine::KunrealMath::Float3 direction)
+GInterface::GraphicsDirLight* ArkEngine::ArkDX11::DX11Renderer::CreateDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction)
 {
-	DirectX::XMFLOAT4 amb = ArkEngine::ArkDX11::ConvertFloat4(ambient);
-	DirectX::XMFLOAT4 dif = ArkEngine::ArkDX11::ConvertFloat4(diffuse);
-	DirectX::XMFLOAT4 spec = ArkEngine::ArkDX11::ConvertFloat4(specular);
-	DirectX::XMFLOAT3 dir = ArkEngine::ArkDX11::ConvertFloat3(direction);
+	DirectX::XMFLOAT4 amb = ambient;
+	DirectX::XMFLOAT4 dif = diffuse;
+	DirectX::XMFLOAT4 spec = specular;
+	DirectX::XMFLOAT3 dir = direction;
 
 	CreateDirLight(amb, dif, spec, dir);
 
 	return LightManager::GetInstance()->GetDirLightInterface();
 }
 
-GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(KunrealEngine::KunrealMath::Float4 ambient, KunrealEngine::KunrealMath::Float4 diffuse, KunrealEngine::KunrealMath::Float4 specular, KunrealEngine::KunrealMath::Float3 position, float range)
+GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range)
 {
-	DirectX::XMFLOAT4 amb = ArkEngine::ArkDX11::ConvertFloat4(ambient);
-	DirectX::XMFLOAT4 dif = ArkEngine::ArkDX11::ConvertFloat4(diffuse);
-	DirectX::XMFLOAT4 spec = ArkEngine::ArkDX11::ConvertFloat4(specular);
-	DirectX::XMFLOAT3 pos = ArkEngine::ArkDX11::ConvertFloat3(position);
+	DirectX::XMFLOAT4 amb = ambient;
+	DirectX::XMFLOAT4 dif = diffuse;
+	DirectX::XMFLOAT4 spec = specular;
+	DirectX::XMFLOAT3 pos = position;
 
-	CreatePointLight(amb, dif, spec, pos, range);
+	CreatePoLight(amb, dif, spec, pos, range);
 
 	return LightManager::GetInstance()->GetPointLightInterface();
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::SetPickingTexture()
+{
+	D3D11_TEXTURE2D_DESC texCopyDesc;
+	ZeroMemory(&texCopyDesc, sizeof(texCopyDesc));
+	texCopyDesc.Width = 1;
+	texCopyDesc.Height = 1;
+	texCopyDesc.MipLevels = 1;
+	texCopyDesc.ArraySize = 1;
+	texCopyDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	texCopyDesc.SampleDesc.Count = 1;
+	texCopyDesc.SampleDesc.Quality = 0;
+	texCopyDesc.Usage = D3D11_USAGE_STAGING;
+	texCopyDesc.BindFlags = 0;
+	texCopyDesc.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE | D3D11_CPU_ACCESS_READ;
+	texCopyDesc.MiscFlags = 0;
+
+	_device->CreateTexture2D(&texCopyDesc, NULL, &_colorTexture);
+}
+
+UINT ArkEngine::ArkDX11::DX11Renderer::Picking(int mouseX, int mouseY)
+{
+	D3D11_BOX newBox;
+	newBox.left = mouseX;
+	newBox.right = mouseX + 1;
+	newBox.top = mouseY;
+	newBox.bottom = mouseY + 1;
+	newBox.front = 0;
+	newBox.back = 1;
+
+	auto originColorTexture = _deferredRenderer->GetDeferredBuffer()->GetTextrue(static_cast<int>(eBUFFERTYPE::GBUFFER_COLOR));
+
+	_deviceContext->CopySubresourceRegion(_colorTexture, 0, 0, 0, 0, originColorTexture, 0, &newBox);
+
+	D3D11_MAPPED_SUBRESOURCE mappedResource;
+	ZeroMemory(&mappedResource, sizeof(D3D11_MAPPED_SUBRESOURCE));
+
+	_deviceContext->Map(_colorTexture, 0, D3D11_MAP_READ, 0, &mappedResource);
+
+	if (mappedResource.pData != nullptr)
+	{
+		auto objectID = ((UINT*)mappedResource.pData)[0];
+
+		_deviceContext->Unmap(_colorTexture, 0);
+
+		return objectID;
+	}
+	else return 0;
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::BeginRender()
@@ -403,7 +562,7 @@ void ArkEngine::ArkDX11::DX11Renderer::EndRender()
 	_swapChain->Present(0, 0);
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::DrawDebugText(int posX, int posY, const char* text, ...)
+void ArkEngine::ArkDX11::DX11Renderer::DrawDebugText(int posX, int posY, int fontSize, const char* text, ...)
 {
 	va_list vl;
 	// text의 위치를 기반으로 가변인자를 생성
@@ -413,8 +572,28 @@ void ArkEngine::ArkDX11::DX11Renderer::DrawDebugText(int posX, int posY, const c
 	char buffer[256];
 	vsnprintf(buffer, sizeof(buffer), text, vl);
 
+	std::string result(buffer);
+
 	// 넘긴 문자열을 출력
-	_font->DrawBasicText(posX, posY, buffer);
+	_font->RenderText(posX, posY, result, fontSize);
+
+	va_end(vl);
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::DrawColorText(int posX, int posY, int fontSize, DirectX::XMFLOAT4 color, const char* text, ...)
+{
+	va_list vl;
+	// text의 위치를 기반으로 가변인자를 생성
+	va_start(vl, text);
+
+	// 가변인자를 매개변수로 넘겨줄 수 없기에 문자열 배열에 담아서 저장
+	char buffer[256];
+	vsnprintf(buffer, sizeof(buffer), text, vl);
+
+	std::string result(buffer);
+
+	// 넘긴 문자열을 출력
+	_font->RenderText(posX, posY, result, fontSize, color);
 
 	va_end(vl);
 }
@@ -491,20 +670,50 @@ const std::vector<std::string> ArkEngine::ArkDX11::DX11Renderer::GetTextureNameL
 	return ResourceManager::GetInstance()->GetTextureNameList();
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::DrawColorText(int posX, int posY, float color[4], const char* fontName, const char* text, ...)
+
+DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::ScreenToWorldPoint(int mouseX, int mouseY)
 {
-	va_list vl;
-	// text의 위치를 기반으로 가변인자를 생성
-	va_start(vl, text);
+	// screen 좌표계를 ndc로 변환
+	float normalizedX = ((float) mouseX / (float) _clientWidth) * 2 - 1;
+	float normalizedY = 1 - ((float) mouseY / (float) _clientHeight) * 2;
 
-	// 가변인자를 매개변수로 넘겨줄 수 없기에 문자열 배열에 담아서 저장
-	char buffer[256];
-	vsnprintf(buffer, sizeof(buffer), text, vl);
+	// ndc에 proj 역행렬을 곱해 view 공간으로 변환
+	float viewX = normalizedX / _mainCamera->GetProjMatrix().r[0].m128_f32[0];
+	float viewY = normalizedY / _mainCamera->GetProjMatrix().r[1].m128_f32[1];
 
+	DirectX::XMVECTOR rayDir = DirectX::XMVectorSet(viewX, viewY, 1.0f, 1.0f);
+	rayDir = DirectX::XMVector3Normalize(rayDir);
 
-	_font->DrawColorText(posX, posY, color, fontName, buffer);
+	DirectX::XMMATRIX invView = DirectX::XMMatrixInverse(nullptr, _mainCamera->GetViewMatrix());
 
-	va_end(vl);
+	DirectX::XMVECTOR rayOrigin = DirectX::XMVectorSet(_mainCamera->GetCameraPos().x, _mainCamera->GetCameraPos().y, _mainCamera->GetCameraPos().z, 1.0f);
+
+	// view 공간에 view 행렬의 역행렬을 곱해 world 공간으로 변환
+	DirectX::XMVECTOR rayDirToWorld = DirectX::XMVector3TransformCoord(rayDir, invView);
+
+	DirectX::XMVECTOR intersectionPoint = DirectX::XMPlaneIntersectLine(
+		DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f),        // 평면의 방정식 계수
+		rayOrigin,		// 라인의 시작점 (카메라 위치)
+		rayDirToWorld   // 라인의 방향
+	);
+
+	return DirectX::XMFLOAT3(intersectionPoint.m128_f32[0], intersectionPoint.m128_f32[1], intersectionPoint.m128_f32[2]);
+}
+
+const DirectX::XMFLOAT4X4& ArkEngine::ArkDX11::DX11Renderer::GetViewMatrix()
+{
+	DirectX::XMFLOAT4X4 viewMatrix;
+	DirectX::XMStoreFloat4x4(&viewMatrix, _mainCamera->GetViewMatrix());
+
+	return viewMatrix;
+}
+
+const DirectX::XMFLOAT4X4& ArkEngine::ArkDX11::DX11Renderer::GetProjMatrix()
+{
+	DirectX::XMFLOAT4X4 projMatrix;
+	DirectX::XMStoreFloat4x4(&projMatrix, _mainCamera->GetProjMatrix());
+
+	return projMatrix;
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateDevice()
@@ -512,7 +721,7 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDevice()
 	// 디버그 모드 빌드에서 디버그 계층을 활성화하기 위해 플래그 설정
 #if defined(DEBUG) || defined(_DEBUG)
 	UINT createDeviceFlags = 0;
-	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG;
+	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #endif
 
 	/// DEVICE와 DEVICECONTEXT 동시에 생성하려면 D3D11CreateDeviceAndSwapChain을 사용해야 함
@@ -753,13 +962,11 @@ void ArkEngine::ArkDX11::DX11Renderer::SetViewport()
 	_deviceContext->RSSetViewports(1, &vp);
 
 	// 카메라 생성
-	DirectX::XMFLOAT3 pos = { -20.0f, 0.0f, -20.0f };
+	DirectX::XMFLOAT3 pos = { 0.0f, 0.0f, 0.0f };
 	DirectX::XMFLOAT3 target = { 0.0f, 0.0f, 0.0f };
-	DirectX::XMFLOAT3 worldUp = { 0.0f, 1.0f, 0.0f };
+	DirectX::XMFLOAT3 worldUp = { 0.0f, 0.0f, 0.0f };
 
 	CreateDefaultCamera(pos, target, worldUp);
-
-	_mainCamera->SetProjectionMatrix(0.25f * DirectX::XM_PI, 1, 1.0f, 1000.0f, true);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateRenderState()
@@ -833,7 +1040,7 @@ void ArkEngine::ArkDX11::DX11Renderer::SetResourceManager()
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateFont()
 {
-	_font = std::make_unique<ArkEngine::ArkDX11::DXTKFont>(_device.Get(), _solidRS.Get(), _depthStencilState.Get());
+	_font = std::make_unique<ArkEngine::ArkDX11::DWFont>(_swapChain.Get());
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateEffect()
@@ -870,6 +1077,14 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateTexture()
 	auto jpgVec = ResourceManager::GetInstance()->FindSpecificResources("Resources/Textures", "jpg");
 
 	for (auto index : jpgVec)
+	{
+		ArkTexture* newTexture = new ArkTexture(index.c_str());
+		ResourceManager::GetInstance()->SetTextureNameList(index);
+	}
+
+	auto tgaVec = ResourceManager::GetInstance()->FindSpecificResources("Resources/Textures", "tga");
+
+	for (auto index : tgaVec)
 	{
 		ArkTexture* newTexture = new ArkTexture(index.c_str());
 		ResourceManager::GetInstance()->SetTextureNameList(index);
@@ -964,6 +1179,27 @@ void ArkEngine::ArkDX11::DX11Renderer::InitializeAssimpTool()
 	_assimpTool = std::make_unique<ArkEngine::FBXLoader::AssimpTool>();
 }
 
+void ArkEngine::ArkDX11::DX11Renderer::InitializeWIC()
+{
+	CoInitialize(nullptr);
+
+	// WIC Factory 생성
+	IWICImagingFactory* pWICFactory = nullptr;
+
+	HRESULT hrCreateFactory = CoCreateInstance(
+		CLSID_WICImagingFactory,
+		nullptr,
+		CLSCTX_INPROC_SERVER,
+		IID_PPV_ARGS(&pWICFactory)
+	);
+
+	if (FAILED(hrCreateFactory) || !pWICFactory)
+	{
+		// WIC Factory 생성 실패 처리
+		CoUninitialize(); // 초기화 해제
+	}
+}
+
 float ArkEngine::ArkDX11::DX11Renderer::GetAspectRatio()
 {
 	return static_cast<float>((float)_clientWidth / (float)_clientHeight);
@@ -974,7 +1210,7 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDirLight(DirectX::XMFLOAT4 ambient,
 	ArkEngine::LightManager::GetInstance()->AddDirectionalLight(ambient, diffuse, specular, direction);
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range)
+void ArkEngine::ArkDX11::DX11Renderer::CreatePoLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range)
 {
 	ArkEngine::LightManager::GetInstance()->AddPointLight(ambient, diffuse, specular, position, range);
 }

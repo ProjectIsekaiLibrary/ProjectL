@@ -36,6 +36,9 @@ namespace ArkEngine
 			void CreateTexture(const char* textureName);
 
 		private:
+			void CreateTGATexture(const char* textureName);
+
+		private:
 			ID3D11ShaderResourceView* _diffuseMapSRV;
 		};
 	}

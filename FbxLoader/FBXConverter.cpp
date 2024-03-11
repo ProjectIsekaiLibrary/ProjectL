@@ -139,10 +139,20 @@ void ArkEngine::FBXConverter::ExportMaterialData(std::wstring savePath)
 
 void ArkEngine::FBXConverter::ExportAnimationData(std::wstring savePath, unsigned int index)
 {
+	std::unique_ptr<Utils> utils = std::make_unique<Utils>();
+
 	std::wstring finalPath = _modelPath + savePath + L".clip";
 	assert(index < _scene->mNumAnimations);
 
-	std::shared_ptr<asAnimation> animation = ReadAnimationData(_scene->mAnimations[index]);
+	std::wstring animName = L"";
+
+	size_t found = savePath.find(L'/');
+	if (found != std::wstring::npos)
+	{
+		animName = savePath.substr(found + 1);
+	}
+
+	std::shared_ptr<asAnimation> animation = ReadAnimationData(_scene->mAnimations[index], utils->ToString(animName));
 	WriteAnimationData(animation, finalPath);
 }
 
@@ -188,20 +198,21 @@ void ArkEngine::FBXConverter::ReadMeshData(aiNode* node, int bone)
 	if (node->mNumMeshes < 1)
 		return;
 
-	std::shared_ptr<asMesh> _mesh = std::make_shared<asMesh>();
-	_mesh->name = node->mName.C_Str();
-	_mesh->boneIndex = bone;
-
 	for (unsigned int i = 0; i < node->mNumMeshes; i++)
 	{
+		std::shared_ptr<asMesh> mesh = std::make_shared<asMesh>();
+		mesh->name = node->mName.C_Str();
+		mesh->boneIndex = bone;
+
 		unsigned int index = node->mMeshes[i];
-		const aiMesh* srcMesh = _scene->mMeshes[index];
+		aiMesh* srcMesh = _scene->mMeshes[index];
+		mesh->mesh = srcMesh;
 
 		// Material Name
 		const aiMaterial* material = _scene->mMaterials[srcMesh->mMaterialIndex];
-		_mesh->materialName = material->GetName().C_Str();
+		mesh->materialName = material->GetName().C_Str();
 
-		const unsigned int startVertex = _mesh->vertices.size();
+		const unsigned int startVertex = mesh->vertices.size();
 
 		for (unsigned int v = 0; v < srcMesh->mNumVertices; v++)
 		{
@@ -227,7 +238,7 @@ void ArkEngine::FBXConverter::ReadMeshData(aiNode* node, int bone)
 				::memcpy(&vertex.tangent, &srcMesh->mTangents[v], sizeof(Vec3));
 			}
 
-			_mesh->vertices.push_back(vertex);
+			mesh->vertices.push_back(vertex);
 		}
 
 		// Index
@@ -237,12 +248,12 @@ void ArkEngine::FBXConverter::ReadMeshData(aiNode* node, int bone)
 
 			for (unsigned int k = 0; k < face.mNumIndices; k++)
 			{
-				_mesh->indices.push_back(face.mIndices[k] + startVertex);
+				mesh->indices.push_back(face.mIndices[k] + startVertex);
 			}
 		}
-	}
 
-	_meshes.push_back(_mesh);
+		_meshes.push_back(mesh);
+	}
 }
 
 void ArkEngine::FBXConverter::ReadSkinData()
@@ -347,35 +358,59 @@ void ArkEngine::FBXConverter::ReadMaterialData()
 		aiColor3D color;
 
 		// Ambient
-		srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color);
-		material->ambient = Color(color.r, color.g, color.b, 1.0f);
+		if (srcMaterial->Get(AI_MATKEY_COLOR_AMBIENT, color) == AI_SUCCESS) 
+		{
+			material->ambient = Color(color.r, color.g, color.b, 1.0f);
+		}
 
 		// Diffuse
-		srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color);
-		material->diffuse = Color(color.r, color.g, color.b, 1.0f);
+		if (srcMaterial->Get(AI_MATKEY_COLOR_DIFFUSE, color) == AI_SUCCESS) 
+		{
+			material->diffuse = Color(color.r, color.g, color.b, 1.0f);
+		}
 
 		// Specular
-		srcMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color);
-		material->specular = Color(color.r, color.g, color.b, 1.0f);
-		srcMaterial->Get(AI_MATKEY_SHININESS, material->specular.w);
+		if (srcMaterial->Get(AI_MATKEY_COLOR_SPECULAR, color) == AI_SUCCESS) 
+		{
+			material->specular = Color(color.r, color.g, color.b, 1.0f);
+			srcMaterial->Get(AI_MATKEY_SHININESS, material->specular.w);
+		}
 
 		// Emissive
-		srcMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, color);
-		material->emissive = Color(color.r, color.g, color.b, 1.0f);
+		if (srcMaterial->Get(AI_MATKEY_COLOR_EMISSIVE, color) == AI_SUCCESS) 
+		{
+			material->emissive = Color(color.r, color.g, color.b, 1.0f);
+		}
 
 		aiString file;
 
 		// Diffuse Texture
-		srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
-		material->diffuseFile = file.C_Str();
+		if (srcMaterial->GetTextureCount(aiTextureType_DIFFUSE) > 0) 
+		{
+			srcMaterial->GetTexture(aiTextureType_DIFFUSE, 0, &file);
+			material->diffuseFile = file.C_Str();
+		}
 
 		// Specular Texture
-		srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
-		material->specularFile = file.C_Str();
+		if (srcMaterial->GetTextureCount(aiTextureType_SPECULAR) > 0) 
+		{
+			srcMaterial->GetTexture(aiTextureType_SPECULAR, 0, &file);
+			material->specularFile = file.C_Str();
+		}
 
 		// Normal Texture
-		srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
-		material->normalFile = file.C_Str();
+		if (srcMaterial->GetTextureCount(aiTextureType_NORMALS) > 0) 
+		{
+			srcMaterial->GetTexture(aiTextureType_NORMALS, 0, &file);
+			material->normalFile = file.C_Str();
+		}
+
+		// Emissive Texture
+		if (srcMaterial->GetTextureCount(aiTextureType_EMISSIVE) > 0) 
+		{
+			srcMaterial->GetTexture(aiTextureType_EMISSIVE, 0, &file);
+			material->emissiveFile = file.C_Str();
+		}
 
 		_materials.push_back(material);
 	}
@@ -421,6 +456,10 @@ void ArkEngine::FBXConverter::WriteMaterialData(std::wstring finalPath)
 
 		element = document->NewElement("NormalFile");
 		element->SetText(WriteTexture(folder, material->normalFile).c_str());
+		node->LinkEndChild(element);
+
+		element = document->NewElement("EmissiveFile");
+		element->SetText(WriteTexture(folder, material->emissiveFile).c_str());
 		node->LinkEndChild(element);
 
 		element = document->NewElement("Ambient");
@@ -494,10 +533,10 @@ std::string ArkEngine::FBXConverter::WriteTexture(std::string saveFolder, std::s
 	return fileName;
 }
 
-std::shared_ptr<ArkEngine::asAnimation> ArkEngine::FBXConverter::ReadAnimationData(aiAnimation* srcAnimation)
+std::shared_ptr<ArkEngine::asAnimation> ArkEngine::FBXConverter::ReadAnimationData(aiAnimation* srcAnimation, std::string animName)
 {
 	std::shared_ptr<ArkEngine::asAnimation> animation = std::make_shared<ArkEngine::asAnimation>();
-	animation->name = srcAnimation->mName.C_Str();
+	animation->name = animName;
 	animation->frameRate = (float)srcAnimation->mTicksPerSecond;
 	animation->frameCount = (unsigned int)srcAnimation->mDuration + 1;
 

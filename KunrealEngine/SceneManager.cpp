@@ -24,11 +24,11 @@ void KunrealEngine::SceneManager::Initialize()
 	ChangeScene("Main");
 }
 
-void KunrealEngine::SceneManager::Finalize()
+void KunrealEngine::SceneManager::Release()
 {
 	for (Scene* scenes : _sceneList)
 	{
-		scenes->Finalize();						// 먼저 finalize를 해주고
+		scenes->Release();						// 먼저 release를 해주고
 		delete scenes;							// 그 다음에 삭제
 	}
 
@@ -154,7 +154,7 @@ void KunrealEngine::SceneManager::DeleteScene(std::string sceneName)
 
 	if (iter != _sceneList.end())			// 찾는게 있으면
 	{
-		(*iter)->Finalize();				// 해제할 것들 해제해주고
+		(*iter)->Release();				// 해제할 것들 해제해주고
 		_sceneList.erase(iter);				// scene 목록에서 삭제한다
 	}
 	else

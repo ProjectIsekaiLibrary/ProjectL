@@ -1,5 +1,6 @@
 #include <DirectXMath.h>
 #include <vector>
+#include "ResourceManager.h"
 #include "CommonStruct.h"
 #include "ArkBuffer.h"
 #include "GeometryGenerator.h"
@@ -308,104 +309,69 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateSphere(const char* geometryNam
 	ArkBuffer* newbuffer = new ArkBuffer(geometryName, totalVertexCount, vertexList, totalIndexCount, indexList);
 }
 
-void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryName, float minPos, float width, float height, float depth, DirectX::XMFLOAT4 color)
+void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryName, DirectX::XMFLOAT3 centerPos, float width, float height, float depth, DirectX::XMFLOAT4 color)
 {
 	std::vector<PosColor> vertexList;
 	std::vector<unsigned int> indexList;
-	
-	unsigned int totalVertexCount = 24;
+
+	unsigned int totalVertexCount = 8;
 	unsigned int totalIndexCount = 36;
-	
+
 	float halfWidth = width * 0.5f;
 	float halfHeight = height * 0.5f;
 	float halfDepth = depth * 0.5f;
-	
+
 	vertexList.resize(totalVertexCount);
-	
-	for (int i = 0; i < 24; i++)
+
+	for (int i = 0; i < 8; ++i)
 	{
 		vertexList[i].color = color;
 	}
-	// front face
-	vertexList[0].pos = { -halfWidth, minPos, -halfDepth };
-	
-	vertexList[1].pos = { -halfWidth, minPos+height, -halfDepth };
-	
-	vertexList[2].pos = { +halfWidth, minPos+height, -halfDepth };
-	
-	vertexList[3].pos = { +halfWidth, minPos, -halfDepth };
-	
-	// back face
-	vertexList[4].pos = { -halfWidth, minPos, +halfDepth };
-	
-	vertexList[5].pos = { +halfWidth, minPos, +halfDepth };
-	
-	vertexList[6].pos = { +halfWidth, minPos+height, +halfDepth };
-	
-	vertexList[7].pos = { -halfWidth, minPos+height, +halfDepth };
-	
-	// top face
-	vertexList[8].pos = { -halfWidth, minPos+height, -halfDepth };
-	
-	vertexList[9].pos = { -halfWidth, minPos+height, +halfDepth };
-	
-	vertexList[10].pos = { +halfWidth, minPos+height, +halfDepth };
-	
-	vertexList[11].pos = { +halfWidth, minPos+height, -halfDepth };
-	
-	// bottom face
-	vertexList[12].pos = { -halfWidth, minPos, -halfDepth };
-	
-	vertexList[13].pos = { +halfWidth, minPos, -halfDepth };
-	
-	vertexList[14].pos = { +halfWidth, minPos, +halfDepth };
-	
-	vertexList[15].pos = { -halfWidth, minPos, +halfDepth };
-	
-	// left face
-	vertexList[16].pos = { -halfWidth, minPos, +halfDepth };
-	
-	vertexList[17].pos = { -halfWidth, minPos+height, +halfDepth };
-	
-	vertexList[18].pos = { -halfWidth, minPos+height, -halfDepth };
-	
-	vertexList[19].pos = { -halfWidth, minPos, -halfDepth };
-	
-	// right face
-	vertexList[20].pos = { +halfWidth, minPos, -halfDepth };
-	
-	vertexList[21].pos = { +halfWidth, minPos+height, -halfDepth };
-	
-	vertexList[22].pos = { +halfWidth, minPos+height, +halfDepth };
-	
-	vertexList[23].pos = { +halfWidth, minPos, +halfDepth };
-	
+
+	// Define 8 unique vertices
+	vertexList[0].pos = { centerPos.x-halfWidth, centerPos.y, centerPos.z - halfDepth };
+	vertexList[1].pos = { centerPos.x-halfWidth, centerPos.y + height, centerPos.z - halfDepth };
+	vertexList[2].pos = { centerPos.x+halfWidth, centerPos.y + height, centerPos.z -halfDepth };
+	vertexList[3].pos = { centerPos.x+halfWidth, centerPos.y, centerPos.z -halfDepth };
+	vertexList[4].pos = { centerPos.x-halfWidth, centerPos.y, centerPos.z +halfDepth };
+	vertexList[5].pos = { centerPos.x-halfWidth, centerPos.y + height, centerPos.z +halfDepth };
+	vertexList[6].pos = { centerPos.x+halfWidth, centerPos.y + height, centerPos.z +halfDepth };
+	vertexList[7].pos = { centerPos.x+halfWidth, centerPos.y, centerPos.z +halfDepth };
+
 	indexList.resize(totalIndexCount);
-	
+
+	// Front face
 	indexList[0] = 0; indexList[1] = 1; indexList[2] = 2;
 	indexList[3] = 0; indexList[4] = 2; indexList[5] = 3;
-	
-	// Fill in the back face index data
-	indexList[6] = 4; indexList[7] = 5;  indexList[8] = 6;
-	indexList[9] = 4; indexList[10] = 6; indexList[11] = 7;
-	
-	// Fill in the top face index data
-	indexList[12] = 8; indexList[13] = 9;  indexList[14] = 10;
-	indexList[15] = 8; indexList[16] = 10; indexList[17] = 11;
-	
-	// Fill in the bottom face index data
-	indexList[18] = 12; indexList[19] = 13; indexList[20] = 14;
-	indexList[21] = 12; indexList[22] = 14; indexList[23] = 15;
-	
-	// Fill in the left face index data
-	indexList[24] = 16; indexList[25] = 17; indexList[26] = 18;
-	indexList[27] = 16; indexList[28] = 18; indexList[29] = 19;
-	
-	// Fill in the right face index data
-	indexList[30] = 20; indexList[31] = 21; indexList[32] = 22;
-	indexList[33] = 20; indexList[34] = 22; indexList[35] = 23;
+
+	// Back face
+	indexList[6] = 4; indexList[7] = 6; indexList[8] = 5;
+	indexList[9] = 4; indexList[10] = 7; indexList[11] = 6;
+
+	// Top face
+	indexList[12] = 1; indexList[13] = 5; indexList[14] = 6;
+	indexList[15] = 1; indexList[16] = 6; indexList[17] = 2;
+
+	// Bottom face
+	indexList[18] = 4; indexList[19] = 0; indexList[20] = 3;
+	indexList[21] = 4; indexList[22] = 3; indexList[23] = 7;
+
+	// Left face
+	indexList[24] = 4; indexList[25] = 5; indexList[26] = 1;
+	indexList[27] = 4; indexList[28] = 1; indexList[29] = 0;
+
+	// Right face
+	indexList[30] = 3; indexList[31] = 2; indexList[32] = 6;
+	indexList[33] = 3; indexList[34] = 6; indexList[35] = 7;
 
 	ArkBuffer* newbuffer = new ArkBuffer(geometryName, totalVertexCount, vertexList, totalIndexCount, indexList);
+
+	std::vector<DirectX::XMFLOAT3> vertexPosList;
+
+	for (int i = 0; i < vertexList.size(); i++)
+	{
+		vertexPosList.emplace_back(vertexList[i].pos);
+	}
 }
 
 void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugSphere(const char* geometryName, float minPos, float range, DirectX::XMFLOAT4 color)

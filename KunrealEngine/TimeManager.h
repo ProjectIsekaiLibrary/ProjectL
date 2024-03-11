@@ -32,7 +32,7 @@ namespace KunrealEngine
 
 	public:
 		void Initialize();
-		void Finalize();
+		void Release();
 		void Update();
 
 		//클라이언트에 넘겨줄 함수들
@@ -46,12 +46,12 @@ namespace KunrealEngine
 		// 이 함수를 통해 오브젝트가 각기 다른 타임스케일을 가지게 될 수 있음
 		float GetTimeScale();
 	private:
-		std::chrono::high_resolution_clock::time_point m_startTime;		// 타이머의 시작시간
-		std::chrono::high_resolution_clock::time_point m_prevTime;		//
-		std::chrono::high_resolution_clock::time_point m_currentTime;	// 델타타임을 계산하기 위해, 시간 차 계산을 위한 변수들
+		std::chrono::high_resolution_clock::time_point _startTime;		// 타이머의 시작시간
+		std::chrono::high_resolution_clock::time_point _prevTime;		//
+		std::chrono::high_resolution_clock::time_point _currentTime;	// 델타타임을 계산하기 위해, 시간 차 계산을 위한 변수들
 
-		float m_deltaTime;			// 델타타임
-		float m_timeScale;			// 타임스케일 혹시 오브젝트나 씬마다 흐르는 시간을 다르게 주고 싶을 수도 있으니	
+		float _deltaTime;			// 델타타임
+		float _timeScale;			// 타임스케일 혹시 오브젝트나 씬마다 흐르는 시간을 다르게 주고 싶을 수도 있으니	
 	};
 }
 

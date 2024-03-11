@@ -126,6 +126,14 @@ D3D11_INPUT_ELEMENT_DESC* ArkEngine::ArkDX11::ArkEffect::GetInputDesc(const char
 		vertexDesc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 
 		_vertexDescIndex = 1;
+	}
+	else if (stringEffect.find("UI") != std::string::npos)
+	{
+		vertexDesc = new D3D11_INPUT_ELEMENT_DESC[2];
+		vertexDesc[0] = { "POSITION", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 0, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+		vertexDesc[1] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 };
+
+		_vertexDescIndex = 2;
 	};
 
 	return vertexDesc;

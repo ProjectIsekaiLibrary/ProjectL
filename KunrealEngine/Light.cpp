@@ -20,7 +20,7 @@ void KunrealEngine::Light::Initialize()
 	this->_transform = this->GetOwner()->GetComponent<Transform>();
 }
 
-void KunrealEngine::Light::Finalize()
+void KunrealEngine::Light::Release()
 {
 	if (_light != nullptr)
 	{
@@ -64,6 +64,8 @@ void KunrealEngine::Light::SetActive(bool active)
 	{
 		_light->SetActive(active);
 	}
+
+	this->_isActivated = active;
 }
 
 KunrealEngine::LightType KunrealEngine::Light::GetLightType()
@@ -86,7 +88,15 @@ bool KunrealEngine::Light::GetLightStatus()
 	}
 }
 
-void KunrealEngine::Light::CreateDirectionalLight(KunrealMath::Float4 ambient /*= { 0.f, 0.f, 0.f, 0.f }*/, KunrealMath::Float4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, KunrealMath::Float4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, KunrealMath::Float3 direction /*= { 0.f, 0.f, 0.f }*/)
+void KunrealEngine::Light::SetLightState(bool flag)
+{
+	if (_light != nullptr)
+	{
+		_light->SetActive(flag);
+	}
+}
+
+void KunrealEngine::Light::CreateDirectionalLight(DirectX::XMFLOAT4 ambient /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT3 direction /*= { 0.f, 0.f, 0.f }*/)
 {
 	if (_light != nullptr)
 	{
@@ -101,7 +111,27 @@ void KunrealEngine::Light::CreateDirectionalLight(KunrealMath::Float4 ambient /*
 	_direction = direction;
 
 	_type = LightType::DirectionalLight;
+}
 
+void KunrealEngine::Light::SetDirection(float x, float y, float z)
+{
+	if (_light != nullptr && _type == LightType::DirectionalLight)
+	{
+		DirectX::XMFLOAT3 direction(x, y, z);
+
+		auto _castedLight = dynamic_cast<GInterface::GraphicsDirLight*>(_light);
+		_castedLight->SetDirection(direction);
+
+		_direction = direction;
+	}
+}
+
+DirectX::XMFLOAT3 KunrealEngine::Light::GetDirection()
+{
+	if (_light != nullptr)
+	{
+		return this->_direction;
+	}
 }
 
 void KunrealEngine::Light::SetAmbient(float x, float y, float z, float w)
@@ -111,7 +141,7 @@ void KunrealEngine::Light::SetAmbient(float x, float y, float z, float w)
 		return;
 	}
 
-	KunrealMath::Float4 ambient(x, y, z, w);
+	DirectX::XMFLOAT4 ambient(x, y, z, w);
 
 	if (_type == LightType::DirectionalLight)
 	{
@@ -131,7 +161,7 @@ void KunrealEngine::Light::SetAmbient(float x, float y, float z, float w)
 	_ambient = ambient;
 }
 
-KunrealEngine::KunrealMath::Float4 KunrealEngine::Light::GetAmbient()
+DirectX::XMFLOAT4 KunrealEngine::Light::GetAmbient()
 {
 	if (_light != nullptr)
 	{
@@ -146,7 +176,7 @@ void KunrealEngine::Light::SetDiffuse(float x, float y, float z, float w)
 		return;
 	}
 
-	KunrealMath::Float4 diffuse(x, y, z, w);
+	DirectX::XMFLOAT4 diffuse(x, y, z, w);
 
 	if (_type == LightType::DirectionalLight)
 	{
@@ -166,14 +196,12 @@ void KunrealEngine::Light::SetDiffuse(float x, float y, float z, float w)
 	_diffuse = diffuse;
 }
 
-KunrealEngine::KunrealMath::Float4 KunrealEngine::Light::GetDiffuse()
+DirectX::XMFLOAT4 KunrealEngine::Light::GetDiffuse()
 {
 	if (_light != nullptr)
 	{
 		return this->_diffuse;
 	}
-
-
 }
 
 void KunrealEngine::Light::SetSpecular(float x, float y, float z, float w)
@@ -183,7 +211,7 @@ void KunrealEngine::Light::SetSpecular(float x, float y, float z, float w)
 		return;
 	}
 
-	KunrealMath::Float4 specular(x, y, z, w);
+	DirectX::XMFLOAT4 specular(x, y, z, w);
 
 	if (_type == LightType::DirectionalLight)
 	{
@@ -203,7 +231,7 @@ void KunrealEngine::Light::SetSpecular(float x, float y, float z, float w)
 	_specular = specular;
 }
 
-KunrealEngine::KunrealMath::Float4 KunrealEngine::Light::GetSpecular()
+DirectX::XMFLOAT4 KunrealEngine::Light::GetSpecular()
 {
 	if (_light != nullptr)
 	{
@@ -211,28 +239,7 @@ KunrealEngine::KunrealMath::Float4 KunrealEngine::Light::GetSpecular()
 	}
 }
 
-void KunrealEngine::Light::SetDirection(float x, float y, float z)
-{
-	if (_light != nullptr && _type == LightType::DirectionalLight)
-	{
-		KunrealMath::Float3 direction(x, y, z);
-
-		auto _castedLight = dynamic_cast<GInterface::GraphicsDirLight*>(_light);
-		_castedLight->SetDirection(direction);
-
-		_direction = direction;
-	}
-}
-
-KunrealEngine::KunrealMath::Float3 KunrealEngine::Light::GetDirection()
-{
-	if (_light != nullptr)
-	{
-		return this->_direction;
-	}
-}
-
-void KunrealEngine::Light::CreatePointLight(KunrealEngine::KunrealMath::Float4 ambient /*= {0.f, 0.f, 0.f, 0.f}*/, KunrealEngine::KunrealMath::Float4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, KunrealEngine::KunrealMath::Float4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, float range /*= 0.f*/)
+void KunrealEngine::Light::CreatePointLight(DirectX::XMFLOAT4 ambient /*= {0.f, 0.f, 0.f, 0.f}*/, DirectX::XMFLOAT4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, float range /*= 0.f*/)
 {
 	if (_light != nullptr)
 	{

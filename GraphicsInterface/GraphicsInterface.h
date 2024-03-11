@@ -13,14 +13,6 @@
 #include <string>
 #include <vector>
 
-namespace KunrealEngine
-{
-	namespace KunrealMath
-	{
-		struct Float3;
-	}
-}
-
 namespace DirectX
 {
 	struct XMFLOAT3;
@@ -39,6 +31,8 @@ namespace GInterface
 	class GraphicsCamera;
 	class GraphicsDirLight;
 	class GraphicsPointLight;
+	class GraphicsDebug;
+	class GraphicsImage;
 
 	class GraphicsInterface
 	{
@@ -59,9 +53,26 @@ namespace GInterface
 
 	public:
 		// 렌더러블 오브젝트를 생성 후 이를 반환
-		virtual GInterface::GraphicsRenderable* CreateRenderable(const char* fileName, const char* textureName = nullptr, bool isSold = true) abstract;
+		virtual GInterface::GraphicsRenderable* CreateRenderable(const char* fileName, bool isSold = true) abstract;
 		// 렌더러블 오브젝트 삭제
 		virtual void DeleteRenderable(GInterface::GraphicsRenderable* renderable) abstract;
+		// 피킹된 렌더러블 오브젝트 반환
+		virtual GInterface::GraphicsRenderable* GetPickedRenderable(int mouseX, int mouseY) abstract;
+
+	public:
+		// 디버그 큐브 생성 후 반환 ** 꼭 실제 오브젝트 모양대로 이름 만들기!**
+		virtual GInterface::GraphicsDebug* CreateDebugCube(const char* objectName, float width, float height, float depth) abstract;
+		virtual GInterface::GraphicsDebug* CreateDebugSphere(const char* objectName, float radius) abstract;
+		
+		virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) abstract;
+
+	public:
+		// UI Image 오브젝트 생성 후 반환
+		virtual GInterface::GraphicsImage* CreateImage(const char* imageName) abstract;
+		// UI Image 오브젝트 삭제
+		virtual void DeleteImage(GInterface::GraphicsImage* image) abstract;
+		// 피킹된 UI Image 오브젝트 반환
+		virtual GInterface::GraphicsImage* GetPickedImage(int mouseX, int mouseY) abstract;
 
 	public:
 		// 큐브맵 생성
@@ -75,7 +86,7 @@ namespace GInterface
 
 	public:
 		// 카메라를 생성 후 반환
-		virtual GInterface::GraphicsCamera* CreateCamera(KunrealEngine::KunrealMath::Float3 cameraPosition = { 0.0f, 0.0f, 0.0f }, KunrealEngine::KunrealMath::Float3 targetPosition = { 0.0f, 0.0f, 0.0f }) abstract;
+		virtual GInterface::GraphicsCamera* CreateCamera(DirectX::XMFLOAT3 cameraPosition = { 0.0f, 0.0f, 0.0f }, DirectX::XMFLOAT3 targetPosition = { 0.0f, 0.0f, 0.0f }) abstract;
 		// 카메라 객체를 삭제
 		virtual void DeleteCamera(GInterface::GraphicsCamera* camera) abstract;
 		// 현재 렌더링하고 있는 메인 카메라 가져오기
@@ -85,13 +96,15 @@ namespace GInterface
 
 	public:
 		// Directional Light 생성
-		virtual GInterface::GraphicsDirLight* CreateDirectionalLight(KunrealEngine::KunrealMath::Float4 ambient, KunrealEngine::KunrealMath::Float4 diffuse, KunrealEngine::KunrealMath::Float4 specular, KunrealEngine::KunrealMath::Float3 direction) abstract;
-		virtual GInterface::GraphicsPointLight* CreatePointLight(KunrealEngine::KunrealMath::Float4 ambient, KunrealEngine::KunrealMath::Float4 diffuse, KunrealEngine::KunrealMath::Float4 specular, KunrealEngine::KunrealMath::Float3 position, float range) abstract;
+		virtual GInterface::GraphicsDirLight* CreateDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction) abstract;
+		virtual GInterface::GraphicsPointLight* CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range) abstract;
 
 
 	public:
 		// End 키를 통해 텍스트 출력 활성화 / 비활성화
-		virtual void DrawDebugText(int posX, int posY, const char* text, ...) abstract;
+		virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) abstract;
+		// 색깔이 입혀진 텍스트 출력 (RGBA 0~255)
+		virtual void DrawColorText(int posX, int posY, int fontSize, DirectX::XMFLOAT4 color, const char* text, ...) abstract;
 
 	public:
 		// IMGUI에서 렌더링시키기 위해 이미지를 넘겨줌
@@ -111,38 +124,16 @@ namespace GInterface
 
 		// IMGUI에 그릴 수 있는 파싱된 텍스쳐의 파일명을 넘겨주기 위함
 		virtual const std::vector<std::string> GetTextureNameList() abstract;
-	};
 
-	//public:
-	//	//그래픽스 엔진 초기화
-	//	virtual void Initialize(long long hWnd, int width, int height) abstract;
-	//	//배경색까지 포함한 초기화
-	//	//카메라에 따라서 배경색을 다르게?
-	//	virtual void Initialize(long long hWnd, int width, int height, float bgColor[4]) abstract;
-	//
-	//	//그린다
-	//	virtual void BeginRender() abstract;
-	//	virtual void EndRender() abstract;
-	//
-	//	//그래픽스 엔진에 자료를 넘겨줘야한다 매개변수는 임시
-	//	//가만히 있는 오브젝트인데도 계속 넘겨준다? 비효율 이를 위한거 하나 더 만들자
-	//	//넘겨줄 구조체를 생각해보자 나중에 분리하더라도
-	//	virtual void SetMeshData(DirectX::XMMATRIX worldTM) abstract;
-	//	virtual void SetSkinnedMeshData(DirectX::XMMATRIX worldTM) abstract;
-	//
-	//	virtual void 그려줘() abstract;
-	//
-	//	//큐브 그려줘
-	//	//이렇게 하나하나 다 하지말고 넘겨줄 구조체를 구상해서 그에 맞게 렌더가 되도록
-	//	//일단 그려보고
-	//	virtual void DrawMesh(DirectX::XMMATRIX worldTM, float 무엇인가들어갈것입니다) abstract;
-	//
-	//	//MeshObject
-	//	//파일 이름을 적는게 아니라 파일이 있는 폴더 경로를 입력
-	//	//??
-	//	virtual ArkEngine::IRenderable* CreateRenderable(const char* fbxPath) abstract;
-	//
-	//	virtual void Finalize() abstract;
+		// screen 마우스 좌표를 world 좌표로 변환
+		virtual DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) abstract;
+
+		// IMGUIZMO를 사용하기 위해 메인 카메라의 View행렬을 반환
+		virtual const DirectX::XMFLOAT4X4& GetViewMatrix() abstract;
+
+		// IMGUIZMO를 사용하기 위해 메인 카메라의 Proj행렬을 반환
+		virtual const DirectX::XMFLOAT4X4& GetProjMatrix() abstract;
+	};
 };
 
 	// 그래픽스 엔진을 생성한 후 반환

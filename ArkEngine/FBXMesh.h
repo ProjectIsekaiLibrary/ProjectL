@@ -5,9 +5,6 @@
 /// 김현재
 /// </summary>
 
-#define MAX_MODEL_TRANSFORMS 96
-#define MAX_MODEL_KEYFRAMES 500
-
 #pragma once
 #include <string>
 #include <array>
@@ -20,23 +17,9 @@
 #include "tinyxml2.h"
 #include "ParsingStructs.h"
 
-struct AnimTransform
-{
-	// 250개의 관절정보를 담을 수 있다
-	using TransformArrayType = std::array<Matrix, MAX_MODEL_TRANSFORMS>;
-
-	// 2차 배열
-	std::array<TransformArrayType, MAX_MODEL_KEYFRAMES> _transforms;
-};
-
-struct BoneDesc
-{
-	Matrix transforms[96];
-};
-
 namespace DirectX
 {
-	struct XMFLOAT3;
+	struct XMFLOAT4;
 	struct XMFLOAT4X4;
 }
 
@@ -54,17 +37,10 @@ namespace ArkEngine
 
 		struct Material;
 
-		class DirectionalLight;
+		class FBXAnimator;
 	}
 }
 
-namespace KunrealEngine
-{
-	namespace KunrealMath
-	{
-		struct Matrix4x4;
-	}
-}
 
 struct ID3DX11Effect;
 struct ID3DX11EffectTechnique;
@@ -78,27 +54,7 @@ struct ID3DX11EffectShaderResourceVariable;
 struct ID3D11ShaderResourceView;
 
 /// 김현재 추가
-namespace ArkEngine
-{
-	namespace FBXLoader
-	{
-		class AssimpTool;
-	}
-
-	class FileUtils;
-	class Utils;
-}
-struct ModelBone;
 struct ModelMesh;
-struct ModelAnimation;
-struct ModelKeyframe;
-
-enum FileMode : unsigned int;
-
-template<typename T>
-class Geometry;
-
-class FBXAnimator;
 
 namespace ArkEngine
 {
@@ -107,8 +63,7 @@ namespace ArkEngine
 		class FBXMesh : public ArkEngine::IRenderable, public GInterface::GraphicsRenderable
 		{
 		public:
-			FBXMesh(const std::string& fileName, const std::string& textureName, bool isSolid = true);
-			FBXMesh();
+			FBXMesh(const std::string& fileName, bool isSolid = true);
 			~FBXMesh();
 
 		public:
@@ -125,37 +80,63 @@ namespace ArkEngine
 			virtual void SetRenderingState(bool tf) override;
 
 		public:
-			virtual void SetTransform(KunrealEngine::KunrealMath::Matrix4x4 matrix) override;
+			virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) override;
 			virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) override;
 			virtual void SetModel(const char* fileName) override;
-			virtual void SetDiffuseTexture(const char* textureName) override;
-			virtual void SetNormalTexture(const char* textureName) override;
+			virtual void SetDiffuseTexture(int index, const char* textureName) override;
+			virtual void SetNormalTexture(int index, const char* textureName) override;
+			virtual void SetEmissiveTexture(int index, const char* textureName) override;
 			virtual void SetAnimator() override;
 			virtual const GInterface::Material GetMaterial() override;
 			virtual void SetMaterial(GInterface::Material material) override;
-			virtual void SetReflect(KunrealEngine::KunrealMath::Float4 reflect) override;
+			virtual void SetReflect(DirectX::XMFLOAT4 reflect) override;
+
+		public:
+			virtual const std::vector<std::string> GetDiffuseTextureList() override;
+			virtual const std::vector<std::string> GetNormalTextureList() override;
 
 		public:
 			virtual void PlayAnimation(float deltaTime, bool continiousPlay) override;
 			virtual void StopAnimation() override;
-			virtual void PlayFBXAnimation(float speed, int animIndex, bool continuousPlay) override;
+			virtual bool PlayAnimation(float speed, float deltaTime, int animIndex, bool continuousPlay) override;
+			virtual bool PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay) override;
+			virtual const std::vector<std::string>& GetClipNames() override;
+			virtual void PauseAnimation() override;
+			virtual void ReplayAnimation() override;
+			virtual float GetCurrentFrame() override;
+			virtual float GetMaxFrame() override;
+
+
+		public:
+			virtual bool GetPickable() override;
+			virtual void SetPickable(bool tf) override;
+
+			virtual unsigned int GetHashID() override;
+
+		public:
+			virtual bool GetInsideFrustumState() override;
+
 		private:
 			void SetEffect();
-			void BuildGeometryBuffers();
-		private:
-			void SetBasicMaterial();
+
+		public:
 
 		private:
-			void SetLight();
+			void SetHashValue(unsigned int index);
 
 		private:
+			void ConvertHashToRGBA(int hashValue);
+
+		private:
+			std::string _simpleModelName;
 			std::string _fileName;
 			std::string _effectName;
-			std::string _textureName;
+			std::vector<std::string> _diffuseTextureName;
+			std::vector<std::string> _normalTextureName;
+			std::vector<std::string> _emssiveTextureName;
 
-			DirectX::XMFLOAT4X4 _transform;
 
 			ID3DX11Effect* _effect;
 			ID3DX11EffectTechnique* _tech;
@@ -166,21 +147,26 @@ namespace ArkEngine
 			ID3DX11EffectMatrixVariable* _fxWorldViewProj;
 			ID3DX11EffectMatrixVariable* _fxTexTransform;
 			ID3DX11EffectVariable* _fxMaterial;
-
-
+			// ShadowMapping
+			ID3DX11EffectShaderResourceVariable* _fxShadowMap;
 			// cbSkinned
 			ID3DX11EffectMatrixVariable* _fxBoneTransforms;
 
-
 			ID3DX11EffectShaderResourceVariable* _diffuseMap;
 
-			ID3D11ShaderResourceView* _diffuseMapSRV;
+			std::vector<ID3D11ShaderResourceView*> _diffuseMapSRV;
 
 			ID3DX11EffectShaderResourceVariable* _normalMap;
 
-			ID3D11ShaderResourceView* _normalMapSRV;
+			std::vector<ID3D11ShaderResourceView*> _normalMapSRV;
+
+			ID3DX11EffectShaderResourceVariable* _emissionMap;
+
+			std::vector<ID3D11ShaderResourceView*> _emissionMapSRV;
 
 			ID3DX11EffectShaderResourceVariable* _cubeMap;
+
+			ID3DX11EffectVectorVariable* _fxColor;
 
 			std::vector<DirectX::XMFLOAT4X4> _boneTMList;
 
@@ -188,13 +174,11 @@ namespace ArkEngine
 			DirectX::XMFLOAT4X4 _view;
 			DirectX::XMFLOAT4X4 _proj;
 
-			ID3D11Buffer* _vertexBuffer;
-			ID3D11Buffer* _indexBuffer;
+			std::vector<ID3D11Buffer*> _vertexBuffer;
+			std::vector<ID3D11Buffer*> _indexBuffer;
 
 		private:
-			ArkEngine::ArkDX11::Material _material;
-
-			DirectX::XMFLOAT3 _eyePosW;
+			std::vector<ArkEngine::ArkDX11::Material> _material;
 
 		private:
 			ArkEngine::ArkDX11::ArkDevice* _arkDevice;
@@ -207,15 +191,18 @@ namespace ArkEngine
 			IDebugObject* _debugObject;
 
 		private:
-			std::vector<unsigned int> _indexBufferSize;
-
-		private:
-			bool _isStaticMesh;
+			bool _prevAnimationPlayingState;
+			bool _isAnimationPlaying;
 			bool _isRendering;
 
 			bool _isSolid;
 
-			int _myIndex;
+		private:
+			bool _isPickable;
+			UINT _hashValue;
+			unsigned int _objectIndex;
+
+			float _color[4];
 
 			/// <summary>
 			/// 김현재가 추가한 것들
@@ -223,61 +210,33 @@ namespace ArkEngine
 		private:
 			/// FBX 추가 김현재
 			void BuildGeometryBuffersFBX(std::wstring fileName);
-			void UpdateAnimationTransforms(unsigned int animationIndex,float frame);
 			void BindCacheInfo();
+			
+			/// Materials
+			void ReadMaterial(std::wstring fileName);
 
-		public:
-
-			std::shared_ptr<ModelBone> GetBoneByIndex(unsigned int index) { return (index < 0 || index >= _bones.size() ? nullptr : _bones[index]); }
-			unsigned int GetBoneCount() { return _bones.size(); }
-
-
-			/// Animation 함수
-			void ReadFBXAnimation(std::wstring fileName);
-			unsigned int GetAnimationCount();
-			std::vector<std::shared_ptr<ModelAnimation>>& GetAnimations();
-			std::shared_ptr<ModelAnimation> GetAnimationByIndex(unsigned int index);
-			std::shared_ptr<ModelAnimation> GetAnimationByName(std::wstring name);
-
-			std::shared_ptr<ModelMesh> GetMeshByIndex(unsigned int index);
-			std::shared_ptr<ModelMesh> GetMeshByName(std::wstring name);
-		private:
-			float _currentTime;
-			float _animationSpeed;
-			float _deltaTime;
-
-			std::unique_ptr<ArkEngine::Utils> _utils;
-
-			// .mesh 경로 
+			// .mesh, .clip 경로 
 			std::wstring _modelPath;
-			// .xml 경로
+			// xml 경로
 			std::wstring _texturePath;
 
-			std::shared_ptr<ModelBone> _root;
-
-			std::shared_ptr<ModelMesh> _modelMesh;
-			std::vector<std::shared_ptr<ModelMesh>> _meshes;
-
-			//std::shared_ptr<ModelAnimation> _anim;
-		public:
-			std::vector<std::shared_ptr<ModelBone>> _bones;
-			std::shared_ptr<ModelKeyframe> frame;
-			Matrix _invGlobal;
-			std::vector<AnimTransform> _animTransforms;
 		private:
-			std::vector<std::shared_ptr<ModelAnimation>> _animations;
-			std::shared_ptr<ModelAnimation> _anim;
+			std::vector<ModelMesh*> _meshes;
 
+			// Material
+			std::vector<ModelMaterial*> _materials;
+		private:
 			UINT _meshCount;
-			//UINT _vertexNum;
-			//UINT _indexNum;
+
 			UINT _boneIndexNum;
 
-			std::vector<Vertex> _newVertexVector;
-			std::vector<unsigned int> _newIndexVector;
+			std::vector<std::vector<Vertex>> _newVertexVector;
+			std::vector<std::vector<unsigned int>> _newIndexVector;
 
 			std::vector<Matrix> _boneTransforms;
 
+			/// Animator
+			std::unique_ptr<FBXAnimator> _animator;
 		};
 	}
 }

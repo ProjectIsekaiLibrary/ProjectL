@@ -8,15 +8,6 @@
 #pragma once
 #include "BasicLight.h"
 
-namespace ArkEngine
-{
-	namespace ArkDX11
-	{
-		class DebugObject;
-	}
-}
-
-
 namespace DirectX
 {
 	struct XMFLOAT3;
@@ -36,7 +27,6 @@ namespace ArkEngine
 		public:
 			void SetPosition(DirectX::XMFLOAT3 position);
 			void SetRange(float radius);
-			void DeleteDebugObject();
 
 		private:
 			DirectX::XMFLOAT3 _position;
@@ -44,9 +34,6 @@ namespace ArkEngine
 
 			DirectX::XMFLOAT3 _att;
 			float _pad;
-
-		private:
-			ArkEngine::ArkDX11::DebugObject* _debugObject;
 		};
 	}
 }

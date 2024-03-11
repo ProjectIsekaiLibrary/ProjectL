@@ -120,6 +120,15 @@
     <Filter Include="ArkEngine\ArkDX11\DebugObject">
       <UniqueIdentifier>{b3c36873-9054-4e2c-b3e4-78c7a36c5210}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ArkEngine\ArkDX11\Resources\Font">
+      <UniqueIdentifier>{eb92cbc8-58cf-4525-9e2d-28f3a824f84c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UI">
+      <UniqueIdentifier>{b62d0a71-b7a6-46eb-b557-8bb6888a9b21}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Shadow">
+      <UniqueIdentifier>{06261cdf-bb5a-4005-b38b-ef61a8df4f4f}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -160,9 +169,6 @@
     </ClInclude>
     <ClInclude Include="ArkDevice.h">
       <Filter>ArkEngine\ArkDX11\Resources\Device</Filter>
-    </ClInclude>
-    <ClInclude Include="ASEMesh.h">
-      <Filter>Mesh</Filter>
     </ClInclude>
     <ClInclude Include="CommonStruct.h">
       <Filter>CommonStruct</Filter>
@@ -245,6 +251,18 @@
     <ClInclude Include="IDebugObject.h">
       <Filter>ArkEngine\ArkDX11\DebugObject</Filter>
     </ClInclude>
+    <ClInclude Include="DWFont.h">
+      <Filter>ArkEngine\ArkDX11\Resources\Font</Filter>
+    </ClInclude>
+    <ClInclude Include="UIImage.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="IUIImage.h">
+      <Filter>UI</Filter>
+    </ClInclude>
+    <ClInclude Include="Shadow.h">
+      <Filter>Shadow</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -288,9 +306,6 @@
     </ClCompile>
     <ClCompile Include="GeometryGenerator.cpp">
       <Filter>GeometryGenerator</Filter>
-    </ClCompile>
-    <ClCompile Include="ASEMesh.cpp">
-      <Filter>Mesh</Filter>
     </ClCompile>
     <ClCompile Include="Animator.cpp">
       <Filter>Animator</Filter>
@@ -343,6 +358,15 @@
     <ClCompile Include="DebugObject.cpp">
       <Filter>ArkEngine\ArkDX11\DebugObject</Filter>
     </ClCompile>
+    <ClCompile Include="DWFont.cpp">
+      <Filter>ArkEngine\ArkDX11\Resources\Font</Filter>
+    </ClCompile>
+    <ClCompile Include="UIImage.cpp">
+      <Filter>UI</Filter>
+    </ClCompile>
+    <ClCompile Include="Shadow.cpp">
+      <Filter>Shadow</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="RunTimeDependency\Resources\FX\Skinning.fx">
@@ -364,6 +388,18 @@
       <Filter>FX</Filter>
     </FxCompile>
     <FxCompile Include="RunTimeDependency\Resources\FX\color.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\UIImage.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\SkinningToonShader.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\finalDeferredToon.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\LightHelper.fx">
       <Filter>FX</Filter>
     </FxCompile>
   </ItemGroup>

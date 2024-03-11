@@ -75,6 +75,9 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _positionMap;
 			ID3DX11EffectShaderResourceVariable* _normalMap;
 			ID3DX11EffectShaderResourceVariable* _diffuseMap;
+			ID3DX11EffectShaderResourceVariable* _emissionMap;
+			ID3DX11EffectShaderResourceVariable* _materialMap;
+
 
 
 		private:
@@ -87,11 +90,6 @@ namespace ArkEngine
 			ArkEngine::ArkDX11::ArkDevice* _arkDevice;
 			ArkEngine::ArkDX11::ArkEffect* _arkEffect;
 			ArkEngine::ArkDX11::ArkBuffer* _arkBuffer;
-
-			// юс╫ц
-		private:
-			ID3DX11EffectVariable* _fxMaterial;
-			ArkEngine::ArkDX11::Material _material;
 
 
 		private:

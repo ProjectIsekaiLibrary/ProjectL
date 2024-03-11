@@ -27,7 +27,7 @@ namespace KunrealEngine
 
 		// scene이 담고 있는 오브젝트들을 삭제해주고
 		// scene 자체에 대한 메모리 해제는 SceneManager에서 해준다
-		void Finalize();
+		void Release();
 		void FixedUpdate();
 		void Update();
 		void LateUpdate();
@@ -37,6 +37,7 @@ namespace KunrealEngine
 	private:
 		std::vector<GameObject*> _objectList;	// 현재 scene에 담긴 오브젝트들
 		std::string _sceneName;					// scene을 구분지을 이름
+		GameObject* _mainCamera;
 
 	public:
 		// scene에 오브젝트를 만들어주는 함수
@@ -63,7 +64,9 @@ namespace KunrealEngine
 		GameObject* GetGameObject(std::string objectName);
 
 		// 카메라 오브젝트 중 전달받은 오브젝트를 메인 카메라로 설정
+
 		void SetMainCamera(GameObject* obj);
+		GameObject* GetMainCamera();
 
 	private:
 		// 오브젝트가 가진 Layer값을 기준으로 scene에 존재하는 오브젝트들을 정렬
