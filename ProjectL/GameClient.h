@@ -57,8 +57,12 @@ namespace GameClient
 		// 모든 업데이트를 포함, 메세지 상태에 따라 루프
 		void GameLoop();
 
-		// 게임 클라이언트 finalize
-		void Finalize();
+		// 게임 클라이언트 메모리 해제
+		void Release();
+
+		// 클라이언트 창과 윈도우 사이의 크기 조절
+		void SetWindowSize();
+		void RecalculateWindowSize();
 
 	private:
 		// 게임엔진의 라이프사이클을 돌려줌

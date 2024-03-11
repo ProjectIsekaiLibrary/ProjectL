@@ -15,6 +15,50 @@ GameClient::GameClient::~GameClient()
 
 }
 
+void GameClient::GameClient::SetWindowSize()
+{
+	RECT nowRect;
+	DWORD _style = (DWORD)GetWindowLong(_hWnd, GWL_STYLE);
+	DWORD _exstyle = (DWORD)GetWindowLong(_hWnd, GWL_EXSTYLE);
+
+	GetWindowRect(_hWnd, &nowRect);
+
+	RECT newRect{};
+	newRect.left = 0;
+	newRect.top = 0; 
+	newRect.right = _screenWidth;
+	newRect.bottom = _screenHeight;
+
+	AdjustWindowRectEx(&newRect, _style, NULL, _exstyle);
+
+	// 클라이언트 영역보다 윈도 크기는 더 커야 한다. (외곽선, 타이틀 등)
+	int _newWidth = (newRect.right - newRect.left);
+	int _newHeight = (newRect.bottom - newRect.top);
+
+	SetWindowPos(_hWnd, HWND_NOTOPMOST, nowRect.left, nowRect.top,
+		_newWidth, _newHeight, SWP_SHOWWINDOW);
+}
+
+void GameClient::GameClient::RecalculateWindowSize()
+{
+	RECT screen;
+	GetClientRect(_hWnd, &screen);
+
+	// 크기가 바뀌었다면
+	if (_screenWidth != screen.right)
+	{
+		// 바뀐 크기로 변수 업데이트
+		_screenWidth = screen.right;
+		_screenHeight = screen.bottom;
+
+		SetWindowSize();
+	}
+	else
+	{
+		int a = 10;
+	}
+}
+
 HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 {
 	/// Win32 관련
@@ -53,20 +97,13 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 	ShowWindow(_hWnd, SW_SHOWNORMAL );
 	UpdateWindow(_hWnd);
 
+	// 클라이언트의 영역이 원하는 게임 해상도가 되도록 리사이즈
+	SetWindowSize();
+
 	//여기에 게임엔진 객체 생성 및 초기화
 
 	engineInstance->Initialize(_hWnd, hInstance, _screenWidth, _screenHeight);
-	KunrealEngine::CreateScene("JEONG");
-	KunrealEngine::CreateScene("KI");
-	KunrealEngine::CreateScene("HOON");
-
-	std::vector<KunrealEngine::Scene*>* _inner = KunrealEngine::GetSceneLists();
-
-	//KunrealEngine::GetCurrentScene()->CreateObject("JINSOOMAN");
-
-	std::string jinsoo = KunrealEngine::GetCurrentScene()->GetSceneName();
-
-	KunrealEngine::ChangeScene("HOON");
+	KunrealEngine::ChangeScene("Main");
 
 	return S_OK;
 }
@@ -146,13 +183,14 @@ void GameClient::GameClient::GameLoop()
 		}
 		else
 		{
+			RecalculateWindowSize();
 			UpdateAll();
 		}
 	}
 }
 
-void GameClient::GameClient::Finalize()
+void GameClient::GameClient::Release()
 {
-	//메모리 해제할 부분들 엔진의 Finalize도 여기에
-	engineInstance->Finalize();
+	//메모리 해제할 부분들 엔진의 Release도 여기에
+	engineInstance->Release();
 }
