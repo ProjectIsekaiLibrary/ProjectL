@@ -24,6 +24,8 @@ namespace GInterface
 		virtual void SetRenderingState(bool tf) abstract;
 
 	public:
+		virtual const std::string& GetImageName() abstract;
+
 		// 디버그 객체의 트랜스폼 설정	
 		virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) abstract;
 		// 디버그 객체의 위치값 설정

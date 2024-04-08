@@ -9,14 +9,16 @@ KunrealEngine::GameObject::GameObject()
 {
 	SceneManager& smInstance = SceneManager::GetInstance();
 	int objectCount = 0;
-	_objectName = "GameObject";		// 아무 이름도 지정해주지 않았을 경우 GameObject라는 이름으로 생성
+	std::string originalName = "GameObject";	// 기본 이름 저장용
+	this->_objectName = "GameObject";			// 아무 이름도 지정해주지 않았을 경우 GameObject라는 이름으로 생성
+	this->_originalName = "GameObject";
 
 	for (auto object : smInstance.GetCurrentScene()->GetObjectList())
 	{
-		if (_objectName == object->GetObjectName())		// 중복 확인
+		if (this->_objectName == object->GetObjectName())		// 중복 확인
 		{
 			objectCount++;			// 이름이 중복될 경우 뒤에 괄호와 숫자를 붙여 다른 이름으로 생성
-			_objectName = _objectName + " (" + std::to_string(objectCount) + ")";
+			this->_objectName = originalName + " (" + std::to_string(objectCount) + ")";
 		}
 	}
 }
@@ -24,16 +26,16 @@ KunrealEngine::GameObject::GameObject()
 KunrealEngine::GameObject::GameObject(std::string name)
 	:_isActivated(true), _objectName(name), _layer(0), _parent(nullptr), _transform(nullptr)
 {
-	SceneManager& smInstance = SceneManager::GetInstance();
+	this->_objectName = name;
+	this->_originalName = name;
 	int objectCount = 0;
 
-	// 중복 체크 알고리즘은 위와 동일
-	for (auto object : smInstance.GetCurrentScene()->GetObjectList())
+	for (auto object : SceneManager::GetInstance().GetCurrentScene()->GetObjectList())
 	{
-		if (_objectName == object->GetObjectName())
+		if (this->_objectName == object->GetObjectName() && object != this)
 		{
 			objectCount++;
-			_objectName = _objectName + " (" + std::to_string(objectCount) + ")";
+			this->_objectName = name + " (" + std::to_string(objectCount) + ")";
 		}
 	}
 }
@@ -47,7 +49,7 @@ void KunrealEngine::GameObject::Initialize()
 {
 	// 오브젝트가 생성되자마자 트랜스폼을 만들어서 넣어줌
 	AddComponent<Transform>();
-	_transform = GetComponent<Transform>();
+	this->_transform = GetComponent<Transform>();
 }
 
 void KunrealEngine::GameObject::Awake()
@@ -69,9 +71,9 @@ void KunrealEngine::GameObject::FixedUpdate()
 {
 	/// if안에 반복문안에 if문.. 비효율적이다
 	/// 오브젝트들의 상태를 체크 후 각각을 컨테이너로 나눠서 반복문을 돌리는 방법 구상중
-	if (_isActivated)
+	if (this->_isActivated)
 	{
-		for (auto& components : _componentContainer)
+		for (auto& components : this->_componentContainer)
 		{
 			if (components->GetActivated())
 			{
@@ -83,9 +85,9 @@ void KunrealEngine::GameObject::FixedUpdate()
 
 void KunrealEngine::GameObject::Update()
 {
-	if (_isActivated)
+	if (this->_isActivated)
 	{
-		for (auto& components : _componentContainer)
+		for (auto& components : this->_componentContainer)
 		{
 			if (components->GetActivated())
 			{
@@ -97,9 +99,9 @@ void KunrealEngine::GameObject::Update()
 
 void KunrealEngine::GameObject::LateUpdate()
 {
-	if (_isActivated)
+	if (this->_isActivated)
 	{
-		for (auto& components : _componentContainer)
+		for (auto& components : this->_componentContainer)
 		{
 			if (components->GetActivated())
 			{
@@ -124,14 +126,41 @@ std::string KunrealEngine::GameObject::GetObjectName()
 	return this->_objectName;
 }
 
+std::string KunrealEngine::GameObject::GetObjectOriginalName()
+{
+	return this->_originalName;
+}
+
 void KunrealEngine::GameObject::SetObjectName(const std::string& name)
 {
 	this->_objectName = name;
+	int objectCount = 0;
+
+	for (auto object : SceneManager::GetInstance().GetCurrentScene()->GetObjectList())
+	{
+		if (this->_objectName == object->GetObjectName() && object != this)
+		{
+			objectCount++;
+			this->_objectName = name + " (" + std::to_string(objectCount) + ")";
+		}
+	}
+
+	this->_originalName = name;
 }
 
 void KunrealEngine::GameObject::SetParent(GameObject* obj)
 {
-	this->_parent = obj;
+	if (this->_parent == nullptr || this->_parent != obj)
+	{
+		this->_parent = obj;
+		obj->_childContainer.emplace_back(this);
+
+		this->_transform->RecalculateTransform();
+	}
+	else
+	{
+		return;
+	}
 }
 
 KunrealEngine::GameObject* KunrealEngine::GameObject::GetParent()
@@ -146,19 +175,30 @@ KunrealEngine::GameObject* KunrealEngine::GameObject::GetParent()
 	}
 }
 
+bool KunrealEngine::GameObject::CheckChild()
+{
+	if (_childContainer.empty())
+	{
+		return false;
+	}
+	else
+	{
+		return true;
+	}
+}
+
+std::vector<KunrealEngine::GameObject*> KunrealEngine::GameObject::GetChilds()
+{
+	return this->_childContainer;
+}
+
 void KunrealEngine::GameObject::SetActive(bool active)
 {
 	this->_isActivated = active;
 
-	/// 오브젝트가 Active여도 컴포넌트가 active 상태가 아니면 작동 안되게 해야함
-	//for (auto& components : _componentContainer)
-	//{
-	//	components->SetActive(active);
-	//}
-
 	// 그래픽스쪽에 Render 관련 업데이트가 있어서 어쩔 수 없었다
 	// 오브젝트가 비활성화 되어 있을 때
-	if (!_isActivated)
+	if (!this->_isActivated)
 	{
 		// 그래픽스 관련 된 컴포넌트가 있는지 확인
 		if (this->GetComponent<MeshRenderer>() != nullptr)
@@ -170,6 +210,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		if (this->GetComponent<Light>() != nullptr)
 		{
 			this->GetComponent<Light>()->SetLightState(false);
+		}
+
+		if (this->GetComponent<ImageRenderer>() != nullptr)
+		{
+			this->GetComponent<ImageRenderer>()->SetImageStatus(false);
 		}
 	}
 	else
@@ -184,6 +229,22 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		{
 			this->GetComponent<Light>()->SetLightState(this->GetComponent<Light>()->GetActivated());
 		}
+
+		if (this->GetComponent<ImageRenderer>() != nullptr)
+		{
+			this->GetComponent<ImageRenderer>()->SetImageStatus(this->GetComponent<ImageRenderer>()->GetActivated());
+		}
+	}
+
+	// 자식 오브젝트들도 이 함수의 영향을 받음
+	if (this->_childContainer.empty())
+	{
+		return;
+	}
+
+	for (auto obj : this->_childContainer)
+	{
+		obj->SetActive(active);
 	}
 }
 
@@ -239,25 +300,26 @@ std::string KunrealEngine::GameObject::GetOriginalTypeName(std::string name)
 
 void KunrealEngine::GameObject::DeleteComponent(Component* component)
 {
-	auto iter = find(_componentContainer.begin(), _componentContainer.end(), component);
+	auto iter = find(this->_componentContainer.begin(), this->_componentContainer.end(), component);
 
 	if (iter != _componentContainer.end())			// 찾는게 있으면
 	{
 		(*iter)->Release();							// 컴포넌트에서 해제할게 있으면 해주고
 		delete* iter;								// 해당 컴포넌트를 삭제
-		_componentContainer.erase(iter);			// 컨테이너에서 비워줌
+		this->_componentContainer.erase(iter);			// 컨테이너에서 비워줌
 	}
 }
 
 void KunrealEngine::GameObject::ClearComponent()
 {
-	for (Component* component : _componentContainer)
+	for (Component* component : this->_componentContainer)
 	{
 		component->Release();						// 해제할 내용이 있으면 먼저 해제해주고
 		delete component;							// clear하기전에 delete 다 해줘야함
 	}
 
-	_componentContainer.clear();
+	this->_componentContainer.clear();
+	this->_componentContainer.shrink_to_fit();
 }
 
 std::vector<KunrealEngine::Component*> KunrealEngine::GameObject::GetComponentList()

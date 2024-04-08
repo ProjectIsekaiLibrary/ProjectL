@@ -49,7 +49,7 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _prevPosition;
 
 		// 그래픽스 엔진 카메라의 Rotate를 위한 변수
-		DirectX::XMFLOAT4 _prevRotation;
+        DirectX::XMFLOAT3 _prevRotation;
 
 		// 카메라 움직이는 방식
 		// 타겟을 계속 바라볼 것이냐 포지션만 움직일 것이냐
@@ -97,6 +97,8 @@ namespace KunrealEngine
 		// 이 컴포넌트가 들고있는 카메라를 메인 카메라로 설정함
 		void SetMainCamera();
 
+		/// 디버깅용 카메라 움직임 함수 릴리즈버전에서는 없어야함
+		void MoveToDebug();
 	};
 }
 

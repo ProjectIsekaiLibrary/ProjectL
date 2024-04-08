@@ -32,6 +32,9 @@ namespace ArkEngine
 		virtual void UpDown(float deltaTime) abstract;
 
 	public:
+		virtual void SetCameraPos(DirectX::XMFLOAT3 targetPos, DirectX::XMFLOAT3 direction, float scaleFactor) abstract;
+
+	public:
 		// View 행렬 가져오기
 		virtual const DirectX::XMMATRIX GetViewMatrix() abstract;
 

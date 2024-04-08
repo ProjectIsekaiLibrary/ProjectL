@@ -42,11 +42,13 @@ namespace EpicTool
 
         virtual void ShowWindow(int& selectedObjectIndex); // 창을 출력
 
+        void GetGameObjetcList(std::vector<KunrealEngine::GameObject*>& instance);
+
     private:
 
         // 각 윈도우의 객체 설정
         InspectorWindow* _inspector;
-        HierarchyWindow* _Hierarchy;
+        HierarchyWindow* _hierarchy;
 
         DebugWindow* _debugWindow;
 
@@ -59,5 +61,8 @@ namespace EpicTool
 
     private:
         Serialize* _serialize;
+
+    private:
+        std::vector<KunrealEngine::GameObject*> _getGameObjectList;
     };
 }

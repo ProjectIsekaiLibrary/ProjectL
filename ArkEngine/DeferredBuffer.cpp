@@ -44,7 +44,14 @@ void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargets()
 {
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
-	arkDevice->GetDeviceContext()->OMSetRenderTargets(static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT), _renderTargetViewArray, arkDevice->GetDepthStecilView());
+	arkDevice->GetDeviceContext()->OMSetRenderTargets(static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT), _renderTargetViewArray, arkDevice->GetDepthStencilView());
+}
+
+void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargets(ID3D11DepthStencilView* dsv)
+{
+	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+
+	arkDevice->GetDeviceContext()->OMSetRenderTargets(static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT), _renderTargetViewArray, dsv);
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(float color[4])
@@ -57,6 +64,13 @@ void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(float color[4])
 	}
 }
 
+void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(int index, float color[4])
+{
+	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+
+	arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArray[index], color);
+}
+
 ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRV(int index)
 {
 	return _shaderResourceViewArray[index];
@@ -65,6 +79,11 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRV(int index)
 ID3D11Texture2D* ArkEngine::ArkDX11::deferredBuffer::GetTextrue(int index)
 {
 	return _renderTargetTextureArray[index];
+}
+
+ID3D11RenderTargetView* ArkEngine::ArkDX11::deferredBuffer::GetRenderTargetView(int index)
+{
+	return _renderTargetViewArray[index];
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture(ArkEngine::ArkDX11::ArkDevice* pDeivce)
@@ -87,7 +106,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture(ArkEngine::Ar
 	{
 		// Picking을 위한 해쉬 ID 생성 로직때문에 가장 뒤의 렌더타겟인
 		// Color버퍼는 DXGI_FORMAT_R8G8B8A8_UNORM로 처리해야함
-		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT) - 1)
+		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COLOR))
 		{
 			textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
@@ -108,7 +127,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetView(ArkEngine::ArkDX
 	{
 		// Picking을 위한 해쉬 ID 생성 로직때문에 가장 뒤의 렌더타겟인
 		// Color버퍼는 DXGI_FORMAT_R8G8B8A8_UNORM로 처리해야함
-		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT) - 1)
+		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COLOR))
 		{
 			renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
@@ -130,7 +149,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceView(ArkEngine::Ark
 	{
 		// Picking을 위한 해쉬 ID 생성 로직때문에 가장 뒤의 렌더타겟인
 		// Color버퍼는 DXGI_FORMAT_R8G8B8A8_UNORM로 처리해야함
-		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT) - 1)
+		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COLOR))
 		{
 			shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		}

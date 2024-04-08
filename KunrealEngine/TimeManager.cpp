@@ -37,6 +37,13 @@ void KunrealEngine::TimeManager::Update()
 
 float KunrealEngine::TimeManager::GetDeltaTime()
 {
+	// 처음에 데이터들이 전부 로드되지 않은 동안에는 델타타임이 빠르게 돈다
+	// 캐릭터가 지구를 벗어나는 일이 없도록 조정
+	if (_deltaTime > 0.1f)
+	{
+		_deltaTime = 0.001f;
+	}
+
 	return _deltaTime;
 }
 

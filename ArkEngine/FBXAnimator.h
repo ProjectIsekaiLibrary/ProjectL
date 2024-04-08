@@ -62,12 +62,19 @@ namespace ArkEngine
 			void SetCurrentFrame(int frame);
 			float GetCurrentFrame();
 			float GetMaxFrame();
+			const std::string& GetAnimationName();
+			const int GetIndexOfBone(const std::string& boneName);
+			const DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName);
+			const DirectX::XMFLOAT4X4 GetBoneTransform(int boneIndex);
+			const DirectX::XMFLOAT4X4 GetBoneAnimation(int boneIndex);
+
 
 		private:
 			// BoneTransform에 필요한 함수들
 			std::shared_ptr<ModelBone> GetBonesByIndex(unsigned int index);
+			std::shared_ptr<ModelBone> GetBonesByName(const std::string& name);
 			std::shared_ptr<ModelAnimation> GetAnimationByIndex(unsigned int index);
-			std::shared_ptr<ModelAnimation> GetAnimationByName(std::string animName);
+			std::shared_ptr<ModelAnimation> GetAnimationByName(const std::string& animName);
 			unsigned int GetBoneCount();
 
 			// Matrix 계산용 함수들

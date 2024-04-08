@@ -67,6 +67,16 @@ namespace GInterface
 		virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) abstract;
 
 	public:
+		// 두 버텍스로 원하는 컬러로 라인을 생성
+		virtual void CreateDebugLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT4 color) abstract;
+		// 만들어놓은 순서대로 index가 부여, 그 index를 통해 라인을 삭제
+		virtual void DeleteLine(int index) abstract;
+		// 만들어놓은 라인과 일치하는 버텍스를 지닌 라인을 삭제
+		virtual void DeleteLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2) abstract;
+		// 모든 라인을 제거
+		virtual void DeleteAllLine() abstract;
+
+	public:
 		// UI Image 오브젝트 생성 후 반환
 		virtual GInterface::GraphicsImage* CreateImage(const char* imageName) abstract;
 		// UI Image 오브젝트 삭제
@@ -133,6 +143,15 @@ namespace GInterface
 
 		// IMGUIZMO를 사용하기 위해 메인 카메라의 Proj행렬을 반환
 		virtual const DirectX::XMFLOAT4X4& GetProjMatrix() abstract;
+
+
+		// 특정 본을 따라가도록 하는 Transform 행렬 반환
+		virtual const DirectX::XMFLOAT4X4& GetTransform(GInterface::GraphicsRenderable* renderable, const std::string& boneName) abstract;
+
+		// 네비 메쉬를 위한 모든 메쉬들의 버텍스의 월드좌표 반환
+		virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> GetAllMeshVertex() abstract;
+		// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
+		virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() abstract;
 	};
 };
 

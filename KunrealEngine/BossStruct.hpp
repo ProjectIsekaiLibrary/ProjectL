@@ -5,11 +5,13 @@
 // 보스의 상태
 enum class BossStatus
 {
-	IDLE,				// 조우시, 다음 공격 패턴을 정함
+	ENTER,				// 조우 시 플레이어 마주치기 전
+	IDLE,				// 다음 공격 패턴을 정함
 
 	CHASE,				// 플레이어 추적
 
 	STAGGERED,			// 보스 무력화
+	OFF_STAGGRED,
 	DEAD,				// 사망
 
 	BASIC_ATTACK,		// 기본 공격
@@ -22,37 +24,48 @@ enum class BossStatus
 struct BossBasicInfo
 {
 	BossBasicInfo()
-		: _hp(0.0f), _phase(0), _armor(0.0f), _damage(0.0f), _moveSpeed(0.0f), _staggeredGauge(0.0f)
+		: _hp(0.0f), _phase(0), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(0.0f), _staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f)
 	{};
 
-	BossBasicInfo& SetHp(float hp) { _hp = hp;  return *this; };
+	BossBasicInfo& SetHp(float hp) { _maxHp = hp; _hp = hp;   return *this; };
 	BossBasicInfo& SetPhase(unsigned int phase) { _phase = phase;  return *this; };
 	BossBasicInfo& SetArmor(float armor) { _armor = armor;  return *this; };
 	BossBasicInfo& SetDamage(float damage) { _damage = damage;  return *this; };
+	BossBasicInfo& SetAttackRange(float attackRange) { _attackRange = attackRange;  return *this; };
 	BossBasicInfo& SetMoveSpeed(float moveSpeed) { _moveSpeed = moveSpeed;  return *this; };
-	BossBasicInfo& SetsStaggeredGauge(float staggeredGauge) { _staggeredGauge = staggeredGauge;  return *this; };
+	BossBasicInfo& SetsStaggeredGauge(float staggeredGauge) { _maxStaggeredGauge = staggeredGauge; _staggeredGauge = staggeredGauge;  return *this; };
+
+	float GetMaxHP() { return _maxHp; };
+	float GetMaxStaggeredGauage() { return _maxStaggeredGauge; };
 
 	float _hp;				// 체력
 	unsigned int _phase;	// 체력 비례 페이즈
 
 	float _armor;			// 방어력
 	float _damage;			// 데미지
+	float _attackRange;		// 기본 공격 범위
 
 	float _moveSpeed;		// 이동속도
 
 	float _staggeredGauge;	// 무력화 게이지
+
+private:
+	float _maxHp;				// 최대 체력
+	float _maxStaggeredGauge;	// 무력화 게이지 최대치
+
+	// 데미지 감소율
 };
 
 struct BossPattern
 {
 	BossPattern()
 		: _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f), 
-		_coolDown(0.0f), _isActive(true),
+		_coolDown(0.0f), _isActive(true), _maxColliderOnCount(1),
 		_logic(nullptr)
 	{
 	}
 
-	void Play() { if (_logic!= nullptr) _logic(); }		// 패턴 실행 함수
+	bool Play() { if (_logic!= nullptr) return _logic(); }		// 패턴 실행 함수
 
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };
@@ -64,7 +77,8 @@ struct BossPattern
 	BossPattern& SetTriggerHp(float hp) { _triggerHp = hp; return *this; };
 	BossPattern& SetCoolDown(float coolDown) { _triggerHp = coolDown; return *this; };
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
-	BossPattern& SetLogic(std::function<void()> logic) { _logic = logic; return *this; };
+	BossPattern& SetActive(unsigned int count) { _maxColliderOnCount = count; return *this; };
+	BossPattern& SetLogic(std::function<bool()> logic) { _logic = logic; return *this; };
 
 	std::string _animName;			// 패턴 애니메이션 이름
 									
@@ -87,5 +101,7 @@ struct BossPattern
 
 	bool _isActive;					// 패턴 활성화 여부
 
-	std::function<void()> _logic;	// 패턴 로직
+	std::function<bool()> _logic;	// 패턴 로직
+
+	unsigned int _maxColliderOnCount; // 패턴 중 콜라이더가 켜지는 횟수 지정 (기본 1)
 };

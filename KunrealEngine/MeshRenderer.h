@@ -104,6 +104,14 @@ namespace KunrealEngine
 		// _mesh가 null일때, 즉 아무것도 안 들어있을 때 false 아니면 true
 		// 이 컴포넌트는 처음에 SetMeshObject를 실행해서 mesh 파일을 넣어줘야한다
 		bool GetMeshStatus();
+
+	public:
+		void SetParentBone(GameObject* model, const std::string& boneName);
+		void DeleteParentBone();
+
+		// 그림자 활성화 여부
+		void SetShadowState(bool tf);
+		bool GetShadowState();
 	};
 }
 

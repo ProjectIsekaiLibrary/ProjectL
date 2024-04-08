@@ -6,6 +6,9 @@
 
 #include "ComponentHeaders.h"
 #include "GraphicsSystem.h"
+#include "SoundSystem.h"
+#include "PhysicsSystem.h"
+#include "InputSystem.h"
 
 /// <summary>
 /// 특정 클래스 자체는 클라에 넘겨주고 싶지 않은데 그 클래스의 함수는 꼭 호출할 필요가 있을때

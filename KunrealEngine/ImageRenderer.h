@@ -44,6 +44,9 @@ namespace KunrealEngine
 		// 어떤 이미지를 출력할 것인지 설정
 		void SetImage(std::string imageName);
 
+		// 출력 중인 이미지 이름 반환
+		const std::string& GetImageName();
+
 		// 이미지 위치 이동
 		void SetPosition(float x, float y);
 
@@ -58,6 +61,9 @@ namespace KunrealEngine
 
 		// 이미지가 그려지고 있는 상태인지 확인
 		bool GetImageStatus();
+
+		// 클릭이 됐는지
+		bool IsPicked(int mouseX, int mouseY);
 
 	};
 }

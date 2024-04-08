@@ -20,7 +20,10 @@ void KunrealEngine::ImageRenderer::Initialize()
 
 void KunrealEngine::ImageRenderer::Release()
 {
-	_image->Delete();
+	if (_image != nullptr)
+	{
+		_image->Delete();
+	}
 }
 
 void KunrealEngine::ImageRenderer::FixedUpdate()
@@ -80,6 +83,14 @@ void KunrealEngine::ImageRenderer::SetImage(std::string imageName)
 	_image = GRAPHICS->CreateImage(imageName.c_str());
 }
 
+const std::string& KunrealEngine::ImageRenderer::GetImageName()
+{
+	if (_image != nullptr)
+	{
+		return _image->GetImageName();
+	}
+}
+
 void KunrealEngine::ImageRenderer::SetPosition(float x, float y)
 {
 	_transform->SetPosition(x, y, 0.f);
@@ -97,7 +108,7 @@ void KunrealEngine::ImageRenderer::SetScale(float x, float y)
 
 void KunrealEngine::ImageRenderer::SetImageStatus(bool flag)
 {
-	_image->SetRenderingState(flag);
+ 	_image->SetRenderingState(flag);
 }
 
 bool KunrealEngine::ImageRenderer::GetImageStatus()
@@ -105,5 +116,22 @@ bool KunrealEngine::ImageRenderer::GetImageStatus()
 	if (_image != nullptr)
 	{
 		return _image->GetRenderingState();
+	}
+}
+
+bool KunrealEngine::ImageRenderer::IsPicked(int mouseX, int mouseY)
+{
+	if ((mouseX == -1) || (mouseY == -1))
+	{
+		return false;
+	}
+
+	if (_image != nullptr && GRAPHICS->GetPickedImage(mouseX, mouseY) == _image)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
 	}
 }

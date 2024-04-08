@@ -43,6 +43,7 @@ namespace ArkEngine
 
 		public:
 			std::vector<DirectX::XMFLOAT3> GetVertexPosList();
+			std::vector<unsigned int> GetIndexList();
 
 			DirectX::XMFLOAT3 GetMaxPos();
 			DirectX::XMFLOAT3 GetMinPos();
@@ -71,6 +72,8 @@ namespace ArkEngine
 			DirectX::XMFLOAT3 _maxPos;
 
 			std::vector<DirectX::XMFLOAT3> _vertexPosList;
+			std::vector<unsigned int> _indexList;
+
 		};
 	}
 }

@@ -4,7 +4,7 @@
 namespace KunrealEngine
 {
 	std::vector<KunrealEngine::Coroutine::Coroutine_type*> KunrealEngine::Coroutine::_coroutines;
-	std::map<int, void*> KunrealEngine::Coroutine::_AddedCoroutines; // 코루틴의 주소를 저장하는 집합
+	std::map<int, std::function<KunrealEngine::Coroutine::Coroutine_type()>> KunrealEngine::Coroutine::_AddedCoroutines; // 코루틴의 주소를 저장하는 집합
 	int KunrealEngine::Coroutine::idexKey;
 
 	Coroutine::Coroutine()
@@ -130,12 +130,12 @@ namespace KunrealEngine
 	/////////////StartCoroutine///////////
 	//////////////////////////////////////
 
-	void Coroutine::StartCoroutine(Coroutine_type(*coro)())
+	void Coroutine::StartCoroutine(std::function<Coroutine_type()> coro)
 	{
 		// 이미 추가된 코루틴인지 확인
 		for (auto& coron : _AddedCoroutines)
 		{
-			if (coron.second == coro)
+			if (coron.second.target_type() == coro.target_type())
 			{
 				return;
 			}
@@ -146,7 +146,7 @@ namespace KunrealEngine
 		idexKey++;
 		coroutineInstance->mapKey = idexKey;
 
-		_AddedCoroutines.insert(std::make_pair(idexKey, reinterpret_cast<void*>(coro)));
+		_AddedCoroutines.insert(std::make_pair(idexKey, coro));
 	}
 
 	////////////////////////////////////////

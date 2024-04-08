@@ -28,6 +28,8 @@ namespace ArkEngine
 		public:
 			void SetDir(DirectX::XMFLOAT3 direction);
 
+			DirectX::XMFLOAT3 GetDir();
+		
 		private:
 			DirectX::XMFLOAT3 _direction;
 			float _pad;

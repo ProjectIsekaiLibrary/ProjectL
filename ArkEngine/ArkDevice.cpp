@@ -1,14 +1,15 @@
 #include "ResourceManager.h"
 #include "ArkDevice.h"
 
-ArkEngine::ArkDX11::ArkDevice::ArkDevice(ID3D11Device* p_device, ID3D11DeviceContext* p_deviceContext, ID3D11DepthStencilView* p_depthStencilView, ID3D11RasterizerState* p_SolidRS, ID3D11RasterizerState* P_WireRS)
-	: _device(p_device), _deviceContext(p_deviceContext), _depthStencilView(p_depthStencilView), _solidRS(p_SolidRS), _wireRS(P_WireRS)
+ArkEngine::ArkDX11::ArkDevice::ArkDevice(ID3D11Device* p_device, ID3D11DeviceContext* p_deviceContext, ID3D11DepthStencilView* p_depthStencilView, ID3D11RasterizerState* p_SolidRS, ID3D11RasterizerState* P_WireRS, ID3D11RasterizerState* P_ShadowRS)
+	: _device(p_device), _deviceContext(p_deviceContext), _depthStencilView(p_depthStencilView), _solidRS(p_SolidRS), _wireRS(P_WireRS), _shadowRS(P_ShadowRS)
 {
 
 }
 
 ArkEngine::ArkDX11::ArkDevice::~ArkDevice()
 {
+	_shadowRS = nullptr;
 	_solidRS = nullptr;
 	_wireRS = nullptr;
 	_depthStencilView = nullptr;
@@ -36,7 +37,7 @@ ID3D11DeviceContext* ArkEngine::ArkDX11::ArkDevice::GetDeviceContext()
 	return _deviceContext;
 }
 
-ID3D11DepthStencilView* ArkEngine::ArkDX11::ArkDevice::GetDepthStecilView()
+ID3D11DepthStencilView* ArkEngine::ArkDX11::ArkDevice::GetDepthStencilView()
 {
 	return _depthStencilView;
 }
@@ -49,4 +50,9 @@ ID3D11RasterizerState* ArkEngine::ArkDX11::ArkDevice::GetSolidRS()
 ID3D11RasterizerState* ArkEngine::ArkDX11::ArkDevice::GetWireRS()
 {
 	return _wireRS;
+}
+
+ID3D11RasterizerState* ArkEngine::ArkDX11::ArkDevice::GetShadowRS()
+{
+	return _shadowRS;
 }

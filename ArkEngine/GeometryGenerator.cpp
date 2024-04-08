@@ -329,14 +329,79 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryN
 	}
 
 	// Define 8 unique vertices
-	vertexList[0].pos = { centerPos.x-halfWidth, centerPos.y, centerPos.z - halfDepth };
-	vertexList[1].pos = { centerPos.x-halfWidth, centerPos.y + height, centerPos.z - halfDepth };
-	vertexList[2].pos = { centerPos.x+halfWidth, centerPos.y + height, centerPos.z -halfDepth };
-	vertexList[3].pos = { centerPos.x+halfWidth, centerPos.y, centerPos.z -halfDepth };
-	vertexList[4].pos = { centerPos.x-halfWidth, centerPos.y, centerPos.z +halfDepth };
-	vertexList[5].pos = { centerPos.x-halfWidth, centerPos.y + height, centerPos.z +halfDepth };
-	vertexList[6].pos = { centerPos.x+halfWidth, centerPos.y + height, centerPos.z +halfDepth };
-	vertexList[7].pos = { centerPos.x+halfWidth, centerPos.y, centerPos.z +halfDepth };
+	vertexList[0].pos = { centerPos.x - halfWidth, centerPos.y, centerPos.z - halfDepth };
+	vertexList[1].pos = { centerPos.x - halfWidth, centerPos.y + height, centerPos.z - halfDepth };
+	vertexList[2].pos = { centerPos.x + halfWidth, centerPos.y + height, centerPos.z - halfDepth };
+	vertexList[4].pos = { centerPos.x - halfWidth, centerPos.y, centerPos.z + halfDepth };
+	vertexList[3].pos = { centerPos.x + halfWidth, centerPos.y, centerPos.z - halfDepth };
+	vertexList[5].pos = { centerPos.x - halfWidth, centerPos.y + height, centerPos.z + halfDepth };
+	vertexList[6].pos = { centerPos.x + halfWidth, centerPos.y + height, centerPos.z + halfDepth };
+	vertexList[7].pos = { centerPos.x + halfWidth, centerPos.y, centerPos.z + halfDepth };
+
+	indexList.resize(totalIndexCount);
+
+	// Front face
+	indexList[0] = 0; indexList[1] = 1; indexList[2] = 2;
+	indexList[3] = 0; indexList[4] = 2; indexList[5] = 3;
+
+	// Back face
+	indexList[6] = 4; indexList[7] = 6; indexList[8] = 5;
+	indexList[9] = 4; indexList[10] = 7; indexList[11] = 6;
+
+	// Top face
+	indexList[12] = 1; indexList[13] = 5; indexList[14] = 6;
+	indexList[15] = 1; indexList[16] = 6; indexList[17] = 2;
+
+	// Bottom face
+	indexList[18] = 4; indexList[19] = 0; indexList[20] = 3;
+	indexList[21] = 4; indexList[22] = 3; indexList[23] = 7;
+
+	// Left face
+	indexList[24] = 4; indexList[25] = 5; indexList[26] = 1;
+	indexList[27] = 4; indexList[28] = 1; indexList[29] = 0;
+
+	// Right face
+	indexList[30] = 3; indexList[31] = 2; indexList[32] = 6;
+	indexList[33] = 3; indexList[34] = 6; indexList[35] = 7;
+
+	ArkBuffer* newbuffer = new ArkBuffer(geometryName, totalVertexCount, vertexList, totalIndexCount, indexList);
+
+	std::vector<DirectX::XMFLOAT3> vertexPosList;
+
+	for (int i = 0; i < vertexList.size(); i++)
+	{
+		vertexPosList.emplace_back(vertexList[i].pos);
+	}
+}
+
+void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugPhysXBox(const char* geometryName, DirectX::XMFLOAT3 centerPos, float width, float height, float depth, DirectX::XMFLOAT4 color)
+{
+	std::vector<PosColor> vertexList;
+	std::vector<unsigned int> indexList;
+
+	unsigned int totalVertexCount = 8;
+	unsigned int totalIndexCount = 36;
+
+	float halfWidth = width * 0.5f;
+	float halfHeight = height * 0.5f;
+	float halfDepth = depth * 0.5f;
+
+	vertexList.resize(totalVertexCount);
+
+	for (int i = 0; i < 8; ++i)
+	{
+		vertexList[i].color = color;
+	}
+
+	// Define 8 unique vertices
+	vertexList[0].pos = { centerPos.x - halfWidth, centerPos.y - halfHeight, centerPos.z - halfDepth };
+	vertexList[1].pos = { centerPos.x - halfWidth, centerPos.y + halfHeight, centerPos.z - halfDepth };
+	vertexList[2].pos = { centerPos.x + halfWidth, centerPos.y + halfHeight, centerPos.z - halfDepth };
+	vertexList[4].pos = { centerPos.x - halfWidth, centerPos.y - halfHeight, centerPos.z + halfDepth };
+	vertexList[3].pos = { centerPos.x + halfWidth, centerPos.y - halfHeight, centerPos.z - halfDepth };
+	vertexList[5].pos = { centerPos.x - halfWidth, centerPos.y + halfHeight, centerPos.z + halfDepth };
+	vertexList[6].pos = { centerPos.x + halfWidth, centerPos.y + halfHeight, centerPos.z + halfDepth };
+	vertexList[7].pos = { centerPos.x + halfWidth, centerPos.y - halfHeight, centerPos.z + halfDepth };
 
 	indexList.resize(totalIndexCount);
 

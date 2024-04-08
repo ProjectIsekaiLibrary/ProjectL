@@ -17,3 +17,10 @@ void ArkEngine::ArkDX11::DirectionalLight::SetDir(DirectX::XMFLOAT3 direction)
 	_direction = direction;
 }
 
+DirectX::XMFLOAT3 ArkEngine::ArkDX11::DirectionalLight::GetDir()
+{
+	return _direction;
+}
+
+
+

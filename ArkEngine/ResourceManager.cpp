@@ -112,6 +112,21 @@ void ArkEngine::ResourceManager::DeleteDebugObject(ArkEngine::IDebugObject* obje
 	_debugList.erase(std::remove(_debugList.begin(), _debugList.end(), object), _debugList.end());
 }
 
+const std::vector<ArkEngine::ILineObject*> ArkEngine::ResourceManager::GetLineObjectList()
+{
+	return _lineList;
+}
+
+void ArkEngine::ResourceManager::AddLineObject(ArkEngine::ILineObject* object)
+{
+	_lineList.emplace_back(object);
+}
+
+void ArkEngine::ResourceManager::DeleteLineObject(ArkEngine::ILineObject* object)
+{
+	_lineList.erase(std::remove(_lineList.begin(), _lineList.end(), object), _lineList.end());
+}
+
 const std::vector<ArkEngine::IUIImage*> ArkEngine::ResourceManager::GetUIImageList()
 {
 	return _uiImageList;
@@ -186,6 +201,16 @@ void ArkEngine::ResourceManager::AddCamera(ArkEngine::ICamera* camera)
 	_cameraList.emplace_back(camera);
 }
 
+std::vector<ArkEngine::ICamera*> ArkEngine::ResourceManager::GetShadowCamera()
+{
+	return _shadowCamera;
+}
+
+void ArkEngine::ResourceManager::SetShadowCamera(ArkEngine::ICamera* camera)
+{
+	_shadowCamera.emplace_back(camera);
+}
+
 void ArkEngine::ResourceManager::DeleteCamera(ArkEngine::ICamera* camera)
 {
 	if (camera->GetMain() == false)
@@ -194,7 +219,6 @@ void ArkEngine::ResourceManager::DeleteCamera(ArkEngine::ICamera* camera)
 		
 		delete camera;
 	}
-
 }
 
 const std::unordered_map<TextPosition, std::string>& ArkEngine::ResourceManager::GetTextList()

@@ -9,6 +9,7 @@
 struct ID3D11Texture2D;
 struct ID3D11RenderTargetView;
 struct ID3D11ShaderResourceView;
+struct ID3D11DepthStencilView;
 
 
 // GBuffer에 들어갈 요소들
@@ -18,7 +19,6 @@ enum class eBUFFERTYPE
 	GBUFFER_DIFFUSE,
 	GBUFFER_NORMALMAP,
 	GBUFFER_EMISSIONMAP,
-	GBUFFER_DEPTH,
 	GBUFFER_MATERIAL,
 	GBUFFER_COLOR,
 	// G버퍼 요소의 총 갯수
@@ -43,11 +43,14 @@ namespace ArkEngine
 
 		public:
 			void SetRenderTargets();
+			void SetRenderTargets(ID3D11DepthStencilView* dsv);
 			void ClearRenderTargets(float color[4]);
+			void ClearRenderTargets(int index, float color[4]);
 
 		public:
 			ID3D11ShaderResourceView* GetSRV(int index);
 			ID3D11Texture2D* GetTextrue(int index);
+			ID3D11RenderTargetView* GetRenderTargetView(int index);
 
 		private:
 			void CreateRenderTargetTexture(ArkEngine::ArkDX11::ArkDevice* pDeivce);

@@ -12,20 +12,49 @@
 #include "LightManager.h"
 #include "DirectionalLight.h"
 #include "PointLight.h"
+#include "ShadowBuffer.h"
 #include "deferredRenderer.h"
+#include "DeferredBuffer.h"
+#include "ShadowMap.h"
+
 
 ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight)
 	: _tech(nullptr), _fxDirLightCount(nullptr),_fxPointLightCount(nullptr),
-	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr),
-	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr), _materialMap(nullptr),
-	_deferredBuffer(nullptr),
-	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr)
+	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr), _fxLightView(nullptr), _fxLightProj(nullptr),
+	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr),
+	_materialMap(nullptr),
+	_shadowDepthMap(nullptr),
+	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
+	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
+	_shadowWidth(clientWidth), _shadowHeight(clientHeight)
 {
 	for (int i = 0; i < 4; i++)
 	{
 		_backGroundColor[i] = 1.0f;
 	}
 
+	_shadowBuffer = new ShadowBuffer(_shadowWidth, _shadowHeight);
+	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
+
+	Initailize();
+}
+
+ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight, int shadowWidth, int shadowHeight)
+	: _tech(nullptr), _fxDirLightCount(nullptr), _fxPointLightCount(nullptr),
+	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr), _fxLightView(nullptr), _fxLightProj(nullptr),
+	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr),
+	_materialMap(nullptr),
+	_shadowDepthMap(nullptr),
+	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
+	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
+	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		_backGroundColor[i] = 1.0f;
+	}
+
+	_shadowBuffer = new ShadowBuffer(_shadowWidth, _shadowHeight);
 	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
 
 	Initailize();
@@ -45,9 +74,21 @@ void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
 	BuildQuadBuffers();
 }
 
+void ArkEngine::ArkDX11::DeferredRenderer::BeginRenderShadowDepth()
+{
+	_shadowBuffer->SetDepthStencilView();
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::BeginShadowRender()
+{
+	_shadowBuffer->SetDepthStencilView();
+}
+
 void ArkEngine::ArkDX11::DeferredRenderer::BeginRender()
 {
+	// Ãß°¡ 
 	_deferredBuffer->SetRenderTargets();
+	
 	_deferredBuffer->ClearRenderTargets(_backGroundColor);
 }
 
@@ -67,6 +108,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	deviceContext->RSSetState(_arkDevice->GetSolidRS());
+	
+
 
 	SetDirLight();
 
@@ -74,13 +117,28 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	_fxEyePosW->SetRawValue(&_eyePosW, 0, sizeof(DirectX::XMFLOAT3));
 
-	DirectX::XMFLOAT4 tempMaterial = { 0.5f, 0.5f, 0.5f, 0.5f };
+	auto lightIndexList = LightManager::GetInstance()->GetActiveIndexList();
 
-	_positionMap->SetResource(_deferredBuffer->GetSRV(0));
-	_diffuseMap->SetResource(_deferredBuffer->GetSRV(1));
-	_normalMap->SetResource(_deferredBuffer->GetSRV(2));
-	_emissionMap->SetResource(_deferredBuffer->GetSRV(3));
-	_materialMap->SetResource(_deferredBuffer->GetSRV(4));
+	if (lightIndexList.empty() == false)
+	{
+		auto lightView = ResourceManager::GetInstance()->GetShadowCamera()[lightIndexList[0]]->GetViewMatrix();
+		auto lightProj = ResourceManager::GetInstance()->GetShadowCamera()[lightIndexList[0]]->GetProjMatrix();
+		
+		_fxLightView->SetMatrix(reinterpret_cast<float*>(&lightView));
+		_fxLightProj->SetMatrix(reinterpret_cast<float*>(&lightProj));
+
+		_shadowDepthMap->SetResource(_shadowBuffer->GetDepthSRV());
+	}
+	else
+	{
+		_shadowDepthMap->SetResource(nullptr);
+	}
+
+	_positionMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_POSITION)));
+	_diffuseMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_DIFFUSE)));
+	_normalMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_NORMALMAP)));
+	_emissionMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_EMISSIONMAP)));
+	_materialMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_MATERIAL)));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -102,6 +160,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
 	
+	_shadowDepthMap = nullptr;
 	_materialMap = nullptr;
 	_emissionMap = nullptr;
 	_diffuseMap = nullptr;
@@ -116,8 +175,12 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_fxDirLights->Release();
 
 	_fxEyePosW->Release();
+	_fxLightView->Release();
+	_fxLightProj->Release();
 
 	delete _deferredBuffer;
+
+	delete _shadowBuffer;
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
@@ -132,14 +195,18 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 
 	_fxPointLights = effect->GetVariableByName("gPointLights");
 	_fxPointLightCount = effect->GetVariableByName("gPointLightCount")->AsScalar();
-
+	
 	_fxEyePosW = effect->GetVariableByName("gEyePosW")->AsVector();
+
+	_fxLightView = effect->GetVariableByName("gLightView")->AsMatrix();
+	_fxLightProj = effect->GetVariableByName("gLightProj")->AsMatrix();
 
 	_positionMap = effect->GetVariableByName("PositionTexture")->AsShaderResource();
 	_normalMap = effect->GetVariableByName("BumpedNormalTexture")->AsShaderResource();
 	_diffuseMap = effect->GetVariableByName("DiffuseAlbedoTexture")->AsShaderResource();
 	_emissionMap = effect->GetVariableByName("EmissiveTexture")->AsShaderResource();
 	_materialMap = effect->GetVariableByName("MaterialTexture")->AsShaderResource();
+	_shadowDepthMap = effect->GetVariableByName("gShadowDepthMapTexture")->AsShaderResource();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()
@@ -212,4 +279,19 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetPointLight()
 ArkEngine::ArkDX11::deferredBuffer* ArkEngine::ArkDX11::DeferredRenderer::GetDeferredBuffer()
 {
 	return _deferredBuffer;
+}
+
+ArkEngine::ArkDX11::ShadowBuffer* ArkEngine::ArkDX11::DeferredRenderer::GetShadowBuffer()
+{
+	return _shadowBuffer;
+}
+
+int ArkEngine::ArkDX11::DeferredRenderer::GetShadowMapWidth()
+{
+	return _shadowWidth;
+}
+
+int ArkEngine::ArkDX11::DeferredRenderer::GetShadowMapHeight()
+{
+	return _shadowHeight;
 }

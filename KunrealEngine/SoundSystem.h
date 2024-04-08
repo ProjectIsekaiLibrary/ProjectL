@@ -8,13 +8,15 @@
 #include <vector>
 #include <string>
 
+#include "CommonHeader.h"
+
 #pragma comment(lib, "dsound.lib")
 #pragma comment(lib, "dxguid")
 #pragma comment(lib, "winmm.lib")
 
 namespace KunrealEngine
 {
-	struct WaveHeaderType
+	struct _DECLSPEC WaveHeaderType
 	{
 		char chunkId[4];
 		unsigned long chunkSize;
@@ -31,7 +33,7 @@ namespace KunrealEngine
 		unsigned long dataSize;
 	};
 
-	struct Sound
+	struct _DECLSPEC Sound
 	{
 		virtual ~Sound() {}
 		std::string fileName;
@@ -40,7 +42,7 @@ namespace KunrealEngine
 		IDirectSound3DBuffer8* sound3DBuffer = nullptr;
 	};
 
-	class SoundSystem
+	class _DECLSPEC SoundSystem
 	{
 	public:
 		// 싱글턴 형태의 반환
@@ -48,14 +50,18 @@ namespace KunrealEngine
 
 		//사운드 초기화
 		bool Initialize(HWND hWnd);
-		void Terminate();
+		void Release();
 
 		//사운드 관리
-		int AddSound(std::string filename, int volume);
-		int Add3DSound(std::string filename, int volume, int xpos = 0, int ypos = 0, int zpos = 0);
-		void RemoveSound(int index);
-		void ClearAllSound();
+		int AddSound(std::string filename, int volume, int index = -1);					// 이걸로도 3D 사운드 추가 가능. 다만 소리는 0,0,0에 고정
+		int Add3DSound(std::string filename, int volume, int index = -1, int xpos = 0, int ypos = 0, int zpos = 0);	// 위와 동일. 소리의 pos 값 설정 가능
+		void RemoveSound(int index);									// index의 소리를 지운다.
+		void ClearAllSound();											// 소리를 전부다 지운다
 		void Setvolume(int index, int volume);
+		int Change3DorMono(int index);									// 인덱스의 소리를 3D, 혹은 모노로 바꾼다.
+		int GetSoundListSize();
+
+		std::vector<std::string> GetSoundPathList();
 
 		//3D 사운드에서 위치 조정 관련
 		void updateSoundPosition(int index, float x, float y, float z);	// 사운드의 위치를 변경
@@ -68,6 +74,7 @@ namespace KunrealEngine
 		void Loop(int index);											// 소리를 반복하여 재생
 		void Pause(int index);											// 소리를 일시정지
 		void Stop(int index);											// 소리를 정지
+
 
 	private:
 		SoundSystem();

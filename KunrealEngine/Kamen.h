@@ -1,6 +1,7 @@
 #pragma once
 #include "KunrealAPI.h"
 #include "Boss.h"
+#include "Coroutine.h"
 
 namespace KunrealEngine
 {
@@ -23,9 +24,22 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
-		void TestPattern1();
+		virtual void CreateSubObject() override;
+		virtual void SetMesh() override;
+		virtual void SetCollider() override;
+		virtual void SetBossTransform() override;
 
 	private:
-		std::vector<BossPattern*> _testPattern;
+		void CreateTestPattern1();
+
+
+		Coroutine_Func(function)
+		{
+			Kamen* kamen = this;
+
+			Waitforsecond(0.5f);
+			kamen->_status = BossStatus::IDLE;
+			kamen->_patternIndex = -1;
+		};
 	};
 }

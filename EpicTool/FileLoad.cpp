@@ -23,75 +23,7 @@ void EpicTool::FileLoad::Initialize()  // 아래 부분은 이후에 반복적으로 호출 될 
 {
     //json파일 중에 앞서 저장해둔 파일을 읽어옴
    std::ifstream inputFile("output.json");
-   if (inputFile.is_open())
-   {
-	   nlohmann::json jsonData;
-	   inputFile >> jsonData;
-	   inputFile.close();
-	   // json에 따라 오브젝트를 설정함
-	   for (const auto& jsonItem : jsonData)
-	   {
-		   std::string objectName = jsonItem["POD"]["name"];
-		   KunrealEngine::GetCurrentScene()->CreateObject(objectName);
-
-		   KunrealEngine::GameObject* object = KunrealEngine::GetCurrentScene()->GetGameObject(objectName);
-		   std::vector<KunrealEngine::GameObject*> objectIndex = KunrealEngine::GetCurrentScene()->
-			   GetObjectList();
-
-		   if (object)
-		   {
-			   KunrealEngine::Transform* trans = object->GetComponent<KunrealEngine::Transform>();
-
-			   trans->SetPosition(jsonItem["POD"]["position_x"], jsonItem["POD"]["position_y"], jsonItem["POD"]["position_z"]);
-			   trans->SetRotation(jsonItem["POD"]["rotation_x"], jsonItem["POD"]["rotation_y"], jsonItem["POD"]["rotation_z"]);
-			   trans->SetScale(jsonItem["POD"]["scale_x"], jsonItem["POD"]["scale_y"], jsonItem["POD"]["scale_z"]);
-
-
-			   // 메쉬 관련
-			   auto meshRenderer = jsonItem["POD"].find("meshRenderer");
-			   auto diffuse = jsonItem["POD"]["meshRenderer"].find("Diffuse");
-			   auto mesh = jsonItem["POD"]["meshRenderer"].find("Mesh");
-			   auto normal = jsonItem["POD"]["meshRenderer"].find("Normal");
-			   auto renderingState = jsonItem["POD"]["meshRenderer"].find("RenderingState");
-
-			   if (meshRenderer != jsonItem["POD"].end() && !jsonItem["POD"]["meshRenderer"].empty())
-			   {
-				   object->AddComponent<KunrealEngine::MeshRenderer>();
-				   KunrealEngine::MeshRenderer* meshRenderer = object->GetComponent<KunrealEngine::MeshRenderer>();
-
-				   if (diffuse != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Diffuse"].empty()))
-				   {
-					   object->GetComponent<KunrealEngine::MeshRenderer>()->SetDiffuseTexture(0, jsonItem["POD"]["meshRenderer"]["Diffuse"].get<std::string>().c_str());
-				   }
-				   if (mesh != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Mesh"].empty()))
-				   {
-					   object->GetComponent<KunrealEngine::MeshRenderer>()->SetMeshObject(jsonItem["POD"]["meshRenderer"]["Mesh"].get<std::string>().c_str());
-				   }
-				   if (normal != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Normal"].empty()))
-				   {
-					   // 노멀은 디퓨즈와 같은 이유로 보류
-				   }
-				   //if (renderingState != jsonItem["POD"]["meshRenderer"].end() && jsonItem["POD"]["meshRenderer"]["RenderingState"] == "\u0001")
-				   //{
-					  // object->GetComponent<KunrealEngine::MeshRenderer>()->
-					  // 기본적으로 true라고 생각
-				   //}
-
-			   }
-
-
-			   // 라이트
-
-			   // 이미지
-
-			   // 커스텀컴포넌트
-
-			   // 애니메이션 프레임 (애니메이션 쪽이 ui 미구현이 많음)
-
-		   }
-	   }
-
-   }
+   
 
 				//	auto meshRenderer = jsonItem["MeshData"].find("MeshRenderer");
 				//	auto textureRenderer = jsonItem["MeshData"].find("TextureRenderer");

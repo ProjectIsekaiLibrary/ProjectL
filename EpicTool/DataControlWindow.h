@@ -16,6 +16,7 @@ class FileSave;
 namespace EpicTool
 {
     class Serialize;
+    class ExportObj;
 
     class DataControlWindow : public IWindow
     {
@@ -34,15 +35,16 @@ namespace EpicTool
 
         // 저장을 담당
         void SaveToFile(const std::string& filePath);
-
-    private:
-        //void SaveButton();
-
+        void LoadToFile(const std::string& filePath);
+        void ExportToObj(const std::string& filename); // obj 파일 출력을 위해 버텍스와 인덱스 버퍼를 
 
     private:
         FileSave* _fileSave; // 파일 저장용 객체
         Serialize* _serialize; // 파일 저장용 객체
         std::string _saveFilePath; // 파일의 경로 저장 , 초기화 하지말아봐
+        std::string _loadFilePath; // 파일의 경로 저장 , 초기화 하지말아봐
+
+        ExportObj* _exportObj;
 
         // 각 도구창을 관리하는 변수들
         bool _show_save_editor;

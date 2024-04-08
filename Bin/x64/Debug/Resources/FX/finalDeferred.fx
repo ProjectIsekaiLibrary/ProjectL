@@ -21,6 +21,7 @@ Texture2D PositionTexture : register(t0);
 Texture2D DiffuseAlbedoTexture : register(t1);
 Texture2D BumpedNormalTexture : register(t2);
 Texture2D EmissiveTexture : register(t3);
+texture2D ShadowMap : register(t4);
 Texture2D MaterialTexture : register(t5);
 
 TextureCube gCubeMap;
@@ -36,6 +37,22 @@ SamplerState samAnisotropic
     AddressW = CLAMP;
 };
 
+// 그림자용
+SamplerComparisonState samShadow
+{
+    Filter = MIN_MAG_LINEAR_MIP_POINT;
+
+	// 그림자를 드리울 광원의 시야 절두체 바깥에
+	// 있는 점에 대해서는 0을 돌려준다
+    AddressU = BORDER;
+    AddressV = BORDER;
+    AddressW = BORDER;
+
+    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
+    ComparisonFunc = LESS_EQUAL;
+};
+
 struct VertexIn
 {
     float3 Pos : POSITION;
@@ -46,6 +63,7 @@ struct VertexOut
 {
     float4 Pos : SV_POSITION;
     float2 Tex : TEXCOORD;
+
 };
 
 void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material)
@@ -96,11 +114,15 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
+    float3 shadow = float3(1.0f, 1.0f, 1.0f);
+    //shadow[0] = CalcShadowFactor(samShadow, ShadowMap,spec);
+    
     Material nowMat;
     nowMat.Ambient = float4(material.x, material.x, material.x, 1.0f);
     nowMat.Diffuse = float4(material.y, material.y, material.y, 1.0f);
     nowMat.Specular = float4(material.z, material.z, material.z, material.w);
     nowMat.Reflect = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    
     
     if (gDirLightCount > 0)
     {

@@ -8,6 +8,8 @@
 #pragma once
 #include <vector>
 #include "BossStruct.hpp"
+#include "Coroutine.h"
+#include "CommonHeader.h"
 
 namespace DirectX
 {
@@ -17,8 +19,9 @@ namespace DirectX
 namespace KunrealEngine
 { 
 	class GameObject;
+	class BoxCollider;
 
-	class Boss
+	class _DECLSPEC Boss
 	{
 	public:
 		Boss();
@@ -29,41 +32,66 @@ namespace KunrealEngine
 		void Initialize(GameObject* boss);
 		// 반드시 호출
 		void Update();
-		
+
+	public:
+		// 하위 오브젝트를 설정
+		virtual void CreateSubObject() abstract;
+		// 어떠한 모델로 렌더링 할 것인지를 지정
+		virtual void SetMesh() abstract;
+		// 콜라이더를 어떻게 입힐지를 지정
+		virtual void SetCollider() abstract;
+
+	public:
+		// 보스의 포지션 지정
+		virtual void SetBossTransform();
 
 	// 상태에 따른 함수들
 	public:
+		virtual void Enter();
 		virtual void Idle();
 		virtual void Chase();
 		virtual void Hit();
+		virtual void Attack();
 		virtual void Staggred();
+		virtual void OffStaggred();
 		virtual void Dead();
 		virtual void BasicAttack();
 		virtual void CoreAttack();
 		virtual void PatternEnd();
 
 	public:
-		void SetInfo(BossBasicInfo info);
+		// 보스의 정보 넣기
+		void SetInfo(BossBasicInfo& info);
+
 		// 기본 패턴 만든 목록을 넣기
 		void SetBasicPatternList(std::vector<BossPattern*>* basicPatternList);
+		
 		// 코어 패턴 만든 목록을 넣기
 		void SetCorePatternList(std::vector<BossPattern*>* corePatternList);
 
+		// 현재 보스의 상태 가져오기
+		const BossStatus& GetStatus();
+
+		// 데미지 체크용 콜라이더 활성화 여부
+		void SetColliderState(bool tf);
+
 	private:
+		void SetParentToSubObject();
+
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
-		void PutCorePatternInQueue();
+		void SortCorePattern();
 
 	private:
-		float CaculateDistance(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
-
-		int GetRandomNumber(int maxNum);
+		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 
 		bool MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
 
 		void TeleportToPlayer();
 
-		void LookAtPlayer();
+		bool LookAtPlayer(float agnle, float rotateSpeed);
+
+		void RegisterCollider();
 
 	protected:
 		BossStatus _status;
@@ -73,14 +101,47 @@ namespace KunrealEngine
 
 		GameObject* _player;
 
-		std::vector<BossPattern*>* _basicPattern;
-		std::vector<BossPattern*>* _corePattern;
+		std::vector<BossPattern*> _basicPattern;
+		std::vector<BossPattern*> _corePattern;
+
+		std::vector<KunrealEngine::BoxCollider*> _subColliderList;
 
 		int _patternIndex;
 
 		float _distance;
 
+		// 무기, 장신구 등 메쉬나 콜라이더 처리할 것들
+		std::vector<GameObject*> _subObjectList;
+
+		// 한 패턴 내에 콜라이더가 켜지는 수 
+		unsigned int _maxColliderOnCount;
+
 	private:
 		bool _isCorePattern;
+
+	private:
+		bool _isStart;
+		bool _isHit;
+
+	private:
+		Coroutine_Func(patternEnd)
+		{
+			Boss* boss = this;
+
+			Waitforsecond(0.5);
+
+			if (boss->_isCorePattern)
+			{
+				(boss->_corePattern).pop_back();
+
+				boss->_isCorePattern = false;
+			}
+
+			boss->_boss->GetComponent<Animator>()->Stop();
+
+			boss->_status = BossStatus::IDLE;
+
+			boss->_patternIndex = -1;
+		};
 	};
 }

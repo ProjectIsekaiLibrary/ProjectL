@@ -112,6 +112,33 @@
     <Filter Include="Source Files\Component\Script\Boss\Kamen">
       <UniqueIdentifier>{44e74c94-a775-4927-a3d8-e78c29af6972}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\System\Util">
+      <UniqueIdentifier>{e89e9740-bb28-4900-bc75-ca12ee781f0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\Player\PlayerAbility\Head">
+      <UniqueIdentifier>{7f63fe16-8104-4539-8f73-139eb829d706}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\Player\PlayerAbility\AbilityClass">
+      <UniqueIdentifier>{93127057-e5d8-408d-849b-4c8555016c23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\NPC">
+      <UniqueIdentifier>{51ce79cd-a78f-4c0a-844c-95994064eb1d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\NPC\Npc_core">
+      <UniqueIdentifier>{4e4a3ad8-2cf4-499e-aa8b-1243ddc09fc3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\NPC\zeolight">
+      <UniqueIdentifier>{6a19b9a4-b5a9-461d-bbd3-7f17ebe802ab}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\EventManager">
+      <UniqueIdentifier>{a02bd693-bb8a-4c3f-9be3-4e3e49bcef20}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Script\Player\PlayerAbility\Projectile">
+      <UniqueIdentifier>{d8a69ffa-e56a-4ee2-8537-ca31ba1d6b1a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\System\ButtonSystem">
+      <UniqueIdentifier>{9cc9c8b5-064e-471f-84c5-f64a038267b7}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -195,9 +222,6 @@
     <ClInclude Include="Coroutine.h">
       <Filter>API\Coroutine</Filter>
     </ClInclude>
-    <ClInclude Include="PlayerAbility.h">
-      <Filter>Source Files\Component\Script\Player\PlayerAbility</Filter>
-    </ClInclude>
     <ClInclude Include="Player.h">
       <Filter>Source Files\Component\Script\Player\Core</Filter>
     </ClInclude>
@@ -212,6 +236,42 @@
     </ClInclude>
     <ClInclude Include="Kamen.h">
       <Filter>Source Files\Component\Script\Boss\Kamen</Filter>
+    </ClInclude>
+    <ClInclude Include="ToolBox.h">
+      <Filter>Source Files\System\Util</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerAbility.h">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\Head</Filter>
+    </ClInclude>
+    <ClInclude Include="Ability.h">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityClass</Filter>
+    </ClInclude>
+    <ClInclude Include="Zeolight.h">
+      <Filter>Source Files\Component\Script\NPC\zeolight</Filter>
+    </ClInclude>
+    <ClInclude Include="NpcCore.h">
+      <Filter>Source Files\Component\Script\NPC\Npc_core</Filter>
+    </ClInclude>
+    <ClInclude Include="EventManager.h">
+      <Filter>Source Files\Component\Script\EventManager</Filter>
+    </ClInclude>
+    <ClInclude Include="AbilityGenerator.h">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityClass</Filter>
+    </ClInclude>
+    <ClInclude Include="Projectile.h">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\Projectile</Filter>
+    </ClInclude>
+    <ClInclude Include="InputGeom.h">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="ChunkyTriMesh.h">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="MeshLoaderObj.h">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClInclude>
+    <ClInclude Include="ButtonSystem.h">
+      <Filter>Source Files\System\ButtonSystem</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -290,9 +350,6 @@
     <ClCompile Include="Coroutine.cpp">
       <Filter>API\Coroutine</Filter>
     </ClCompile>
-    <ClCompile Include="PlayerAbility.cpp">
-      <Filter>Source Files\Component\Script\Player\PlayerAbility</Filter>
-    </ClCompile>
     <ClCompile Include="Player.cpp">
       <Filter>Source Files\Component\Script\Player\Core</Filter>
     </ClCompile>
@@ -301,6 +358,45 @@
     </ClCompile>
     <ClCompile Include="Kamen.cpp">
       <Filter>Source Files\Component\Script\Boss\Kamen</Filter>
+    </ClCompile>
+    <ClCompile Include="ToolBox.cpp">
+      <Filter>Source Files\System\Util</Filter>
+    </ClCompile>
+    <ClCompile Include="PlayerAbility.cpp">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\Head</Filter>
+    </ClCompile>
+    <ClCompile Include="Ability.cpp">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Zeolight.cpp">
+      <Filter>Source Files\Component\Script\NPC\zeolight</Filter>
+    </ClCompile>
+    <ClCompile Include="NpcCore.cpp">
+      <Filter>Source Files\Component\Script\NPC\Npc_core</Filter>
+    </ClCompile>
+    <ClCompile Include="EventManager.cpp">
+      <Filter>Source Files\Component\Script\EventManager</Filter>
+    </ClCompile>
+    <ClCompile Include="AbilityGeneratorcpp.cpp">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityClass</Filter>
+    </ClCompile>
+    <ClCompile Include="Projectile.cpp">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\Projectile</Filter>
+    </ClCompile>
+    <ClCompile Include="InputGeom.cpp">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="ChunkyTriMesh.cpp">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshLoaderObj.cpp">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="ButtonSystem.cpp">
+      <Filter>Source Files\System\ButtonSystem</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Inc\Recast\fastlz.c">
+      <Filter>Source Files\System\Navigation</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

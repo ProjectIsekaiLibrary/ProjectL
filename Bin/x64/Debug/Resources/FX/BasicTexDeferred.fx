@@ -55,9 +55,13 @@ struct PSOut
     float4 Diffuse : SV_Target1;
     float4 BumpedNormal : SV_Target2;
     float4 Emissive : SV_Target3;
-    float4 Depth : SV_Target4;
-    float4 Material : SV_Target5;
-    float4 Color : SV_Target6;
+    float4 Material : SV_Target4;
+    float4 Color : SV_Target5;
+};
+
+struct PSOut2
+{
+    float4 Color : SV_Target0;
 };
 
 VertexOut VS(VertexIn vin)
@@ -100,10 +104,17 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.Diffuse = float4(diffuse, 1.0f);
     output.BumpedNormal = bumpedNormal;
     output.Emissive = float4(emissive, 1.0f);
-    output.Depth = float4(pin.PosH.zzz, 1.0f);
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
     output.Color = gColor;
     
+    return output;
+}
+
+PSOut2 PS2(VertexOut pin)
+{
+    PSOut2 output;
+    output.Color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
     return output;
 }
 
@@ -114,6 +125,13 @@ technique11 Light
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PS(false, false)));
+    }
+
+    pass P1
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS2()));
     }
 }
 

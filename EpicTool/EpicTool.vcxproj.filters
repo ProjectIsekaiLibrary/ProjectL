@@ -22,9 +22,6 @@
     <Filter Include="Layer\Window\Hierarchy">
       <UniqueIdentifier>{8ee42ab5-6684-4c90-9fda-b8b809183158}</UniqueIdentifier>
     </Filter>
-    <Filter Include="DataControl">
-      <UniqueIdentifier>{63014e03-42fe-40c3-896e-066d1c090750}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Serialize">
       <UniqueIdentifier>{284601e3-ba99-41c2-a567-7b4f28a4e7ce}</UniqueIdentifier>
     </Filter>
@@ -43,6 +40,9 @@
     <Filter Include="Serialize\TemplateData">
       <UniqueIdentifier>{2c0ef25a-66f5-4b0d-8144-e43c2fb050f6}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Export">
+      <UniqueIdentifier>{c2d8607f-197a-434a-80aa-293cb605667b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GraphicWindow.h">
@@ -50,12 +50,6 @@
     </ClInclude>
     <ClInclude Include="DataControlWindow.h">
       <Filter>Layer\Window</Filter>
-    </ClInclude>
-    <ClInclude Include="FileSave.h">
-      <Filter>DataControl</Filter>
-    </ClInclude>
-    <ClInclude Include="FileLoad.h">
-      <Filter>DataControl</Filter>
     </ClInclude>
     <ClInclude Include="ShowWindowManager.h">
       <Filter>Layer\Window</Filter>
@@ -258,6 +252,12 @@
     <ClInclude Include="ITemplateData.h">
       <Filter>Serialize\TemplateData</Filter>
     </ClInclude>
+    <ClInclude Include="Deserialize.h">
+      <Filter>Serialize</Filter>
+    </ClInclude>
+    <ClInclude Include="ExportObj.h">
+      <Filter>Export</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -268,12 +268,6 @@
     </ClCompile>
     <ClCompile Include="DataControlWindow.cpp">
       <Filter>Layer\Window</Filter>
-    </ClCompile>
-    <ClCompile Include="FileSave.cpp">
-      <Filter>DataControl</Filter>
-    </ClCompile>
-    <ClCompile Include="FileLoad.cpp">
-      <Filter>DataControl</Filter>
     </ClCompile>
     <ClCompile Include="ShowWindowManager.cpp">
       <Filter>Layer\Window</Filter>
@@ -337,6 +331,12 @@
     </ClCompile>
     <ClCompile Include="Storable.cpp">
       <Filter>Serialize</Filter>
+    </ClCompile>
+    <ClCompile Include="Deserialize.cpp">
+      <Filter>Serialize</Filter>
+    </ClCompile>
+    <ClCompile Include="ExportObj.cpp">
+      <Filter>Export</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

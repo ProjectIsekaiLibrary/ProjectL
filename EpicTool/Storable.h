@@ -1,5 +1,4 @@
 #pragma once
-
 #include <string>
 #include <unordered_map>
 #include <vector>
@@ -38,19 +37,6 @@ namespace EpicTool
 		}
 		return data;
 	}
-
-	/*template<int N, typename T>
-	const json& FieldPreDecoding(T& classInstance, const json& data)
-	{
-		if constexpr (N == 0)
-		{
-			return data;
-		}
-		else
-		{
-
-		}
-	}*/
 
 	class Storable
 	{

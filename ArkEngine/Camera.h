@@ -62,6 +62,8 @@ namespace ArkEngine
 			virtual void SetTargetPosition(DirectX::XMFLOAT3 position) override;
 			virtual void RotateCamera(DirectX::XMFLOAT2 angle) override;
 
+		public:
+			virtual void SetCameraPos(DirectX::XMFLOAT3 targetPos, DirectX::XMFLOAT3 direction, float scaleFactor) override;
 
 		public:
 			// View 행렬 가져오기

@@ -6,6 +6,11 @@
 #include "Transform.h"
 #include "GraphicsSystem.h"
 
+namespace physx
+{
+	class PxShape;
+}
+
 namespace KunrealEngine
 {
 	class _DECLSPEC BoxCollider : public Component
@@ -43,6 +48,9 @@ namespace KunrealEngine
 		// PhysX에 넘겨줄 Transform
 		DirectX::XMFLOAT3 _position;
 
+		// physX에 넘겨줄 Quaternion
+		DirectX::XMFLOAT4 _quaternion;
+
 		// 오브젝트의 Transform으로부터 얼마나 차이가 날 것인지
 		DirectX::XMFLOAT3 _offset;
 
@@ -54,6 +62,9 @@ namespace KunrealEngine
 
 		// 어떤 오브젝트와 충돌했는지
 		GameObject* _targetObj;
+
+		// physx에서 가지고 있는 collider의 shape변수
+		physx::PxShape* _shape;
 
 	public:
 		// 충돌여부 반환
@@ -77,6 +88,9 @@ namespace KunrealEngine
 		// Collider의 포지션 반환
 		DirectX::XMFLOAT3 GetColliderPos();
 
+		// Collider의 쿼터니언 반환
+		DirectX::XMFLOAT4 GetColliderQuat();
+
 		// Debug Object 설정
 		void SetDebugMeshData();
 
@@ -86,6 +100,20 @@ namespace KunrealEngine
 
 		// 움직이는 물체로 설정
 		void SetDynamic();
+
+		/// Mesh Render없이 콜라이더를 특정 본에 붙이기 위한 Test
+	public:
+		// 부모, 부모의 본을 설정하면 그 본을 부모로 두고 따라 다니게됨
+		void SetTransform(GameObject* renderable, std::string boneName);
+		// 부모가 있다면 분리하여 부모를 갖지 않도록 함
+		void SeperateFromParent();
+
+	private:
+		void CalculateParentBone();
+
+	private:
+		GameObject* _parentObject;
+		std::string _parentBoneName;
 	};
 }
 

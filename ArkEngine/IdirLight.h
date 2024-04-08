@@ -36,6 +36,7 @@ namespace ArkEngine
 		virtual void SetActive(bool ox) override;
 
 	public:
+		int GetIndex();
 		int GetActiveIndex();
 		void MinusIndex();
 		void MinusActiveIndex();

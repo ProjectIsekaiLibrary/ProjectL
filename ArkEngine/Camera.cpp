@@ -145,6 +145,25 @@ void ArkEngine::ArkDX11::Camera::RotateCamera(DirectX::XMFLOAT2 angle)
 	UpdateViewMatrix();
 }
 
+void ArkEngine::ArkDX11::Camera::SetCameraPos(DirectX::XMFLOAT3 targetPos, DirectX::XMFLOAT3 direction, float scaleFactor)
+{
+	DirectX::XMVECTOR myPos = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), DirectX::XMLoadFloat3(&direction));
+
+	auto newVec = DirectX::XMVectorScale(myPos, scaleFactor);
+
+	DirectX::XMFLOAT3 myPosition;
+	DirectX::XMStoreFloat3(&myPosition, newVec);
+
+	_positionVector = myPosition;
+
+	_targetVector = targetPos;
+
+	DirectX::XMFLOAT3 upVector = { 0.0f, 1.0f, 0.0f };
+
+	UpdateViewMatrix();
+	LookAt(_positionVector, _targetVector, upVector);
+}
+
 void ArkEngine::ArkDX11::Camera::LookAt(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& target, DirectX::XMFLOAT3& worldUp)
 {
 	DirectX::XMVECTOR posVector = DirectX::XMLoadFloat3(&pos);

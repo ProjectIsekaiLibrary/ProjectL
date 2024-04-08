@@ -19,7 +19,7 @@ namespace ArkEngine
 		class ArkDevice : public ArkEngine::IResource
 		{
 		public:
-			ArkDevice(ID3D11Device* p_device, ID3D11DeviceContext* p_deviceContext, ID3D11DepthStencilView* p_depthStencilView, ID3D11RasterizerState* p_SolidRS, ID3D11RasterizerState* P_WireRS);
+			ArkDevice(ID3D11Device* p_device, ID3D11DeviceContext* p_deviceContext, ID3D11DepthStencilView* p_depthStencilView, ID3D11RasterizerState* p_SolidRS, ID3D11RasterizerState* P_WireRS, ID3D11RasterizerState* P_ShadowRS);
 			~ArkDevice();
 
 		public:
@@ -29,9 +29,11 @@ namespace ArkEngine
 		public:
 			ID3D11Device* GetDevice();
 			ID3D11DeviceContext* GetDeviceContext();
-			ID3D11DepthStencilView* GetDepthStecilView();
+			ID3D11DepthStencilView* GetDepthStencilView();
 			ID3D11RasterizerState* GetSolidRS();
 			ID3D11RasterizerState* GetWireRS();
+			ID3D11RasterizerState* GetShadowRS();
+
 
 		private:
 			ID3D11Device* _device;
@@ -40,6 +42,7 @@ namespace ArkEngine
 
 			ID3D11RasterizerState* _solidRS;
 			ID3D11RasterizerState* _wireRS;
+			ID3D11RasterizerState* _shadowRS;
 		};
 	}
 }

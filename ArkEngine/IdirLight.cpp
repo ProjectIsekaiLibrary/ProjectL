@@ -1,6 +1,8 @@
 #include <DirectXMath.h>
 #include "DirectionalLight.h"
+#include "ResourceManager.h"
 #include "LightManager.h"
+#include "ICamera.h"
 #include "IdirLight.h"
 
 ArkEngine::IdirLight::IdirLight(unsigned int lightIndex)
@@ -16,6 +18,8 @@ ArkEngine::IdirLight::~IdirLight()
 
 void ArkEngine::IdirLight::Delete()
 {
+	ResourceManager::GetInstance()->GetShadowCamera()[_index]->Delete();
+
 	auto& iLightList = ArkEngine::LightManager::GetInstance()->GetIDirLightList();
 
 	if (_isActive == true)
@@ -24,7 +28,7 @@ void ArkEngine::IdirLight::Delete()
 
 		activeLightList.erase(activeLightList.begin() + _activeIndex);
 
-		for (auto index : iLightList)
+		for (const auto& index : iLightList)
 		{
 			if (index->GetActiveIndex() > _activeIndex)
 			{
@@ -87,6 +91,11 @@ void ArkEngine::IdirLight::SetDirection(DirectX::XMFLOAT3 direction)
 	{
 		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetDir(direction);
 	}
+
+	auto iCamera = ResourceManager::GetInstance()->GetShadowCamera()[_index];
+
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
+	iCamera->SetCameraPos(targetPos, direction, 200.0f);
 }
 
 bool ArkEngine::IdirLight::GetActive()
@@ -105,6 +114,8 @@ void ArkEngine::IdirLight::SetActive(bool ox)
 		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList().emplace_back(dirLight);
 
 		_activeIndex = (unsigned int)ArkEngine::LightManager::GetInstance()->GetActiveDirLightList().size() - 1;
+
+		ArkEngine::LightManager::GetInstance()->GetActiveIndexList().emplace_back(_index);
 	}
 
 	else if (_isActive == true && ox == false)
@@ -117,7 +128,7 @@ void ArkEngine::IdirLight::SetActive(bool ox)
 
 		auto& iLightList = ArkEngine::LightManager::GetInstance()->GetIDirLightList();
 
-		for (auto index : iLightList)
+		for (const auto& index : iLightList)
 		{
 			if (index->GetActiveIndex() > _activeIndex)
 			{
@@ -126,7 +137,23 @@ void ArkEngine::IdirLight::SetActive(bool ox)
 		}
 
 		_activeIndex = -1;
+
+		auto& vec = ArkEngine::LightManager::GetInstance()->GetActiveIndexList();
+
+		for (int i = 0; i < vec.size(); i++)
+		{
+			if (vec[i] == _index)
+			{
+				vec.erase(vec.begin() + i);
+				break;
+			}
+		}
 	}
+}
+
+int ArkEngine::IdirLight::GetIndex()
+{
+	return _index;
 }
 
 int ArkEngine::IdirLight::GetActiveIndex()

@@ -14,6 +14,11 @@ ArkEngine::ArkDX11::FBXAnimator::FBXAnimator()
 	_isPause(false)
 {
 	_boneTransformMatrix.resize(150);
+
+	for (auto& index : _boneTransformMatrix)
+	{
+		DirectX::XMStoreFloat4x4(&index, DirectX::XMMatrixIdentity());
+	}
 }
 
 ArkEngine::ArkDX11::FBXAnimator::~FBXAnimator()
@@ -78,8 +83,9 @@ bool ArkEngine::ArkDX11::FBXAnimator::PlayAnimationOnce(float speed, float delta
 		return false;
 	}
 
+	_isPause = false;
 	UpdateAnimTransforms(speed, deltaTime, animIndex);
-
+	
 	return true;
 }
 
@@ -96,6 +102,8 @@ bool ArkEngine::ArkDX11::FBXAnimator::PlayAnimationOnce(float speed, float delta
 	{
 		return false;
 	}
+
+	_isPause = false;
 
 	UpdateAnimTransforms(speed, deltaTime, animName);
 
@@ -174,6 +182,48 @@ float ArkEngine::ArkDX11::FBXAnimator::GetMaxFrame()
 	return _anim->duration;
 }
 
+const std::string& ArkEngine::ArkDX11::FBXAnimator::GetAnimationName()
+{
+	if (_anim != nullptr)
+	{
+		return _anim->name;
+	}
+}
+
+const int ArkEngine::ArkDX11::FBXAnimator::GetIndexOfBone(const std::string& boneName)
+{
+	auto bone = GetBonesByName(boneName);
+
+	auto it = std::find(_animBones.begin(), _animBones.end(), bone);
+
+	if (it == _animBones.end())
+	{
+		return -1;
+	}
+	else
+	{
+		auto index = std::distance(_animBones.begin(), it);
+		return index;
+	}
+}
+
+const DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXAnimator::GetBoneTransform(const std::string& boneName)
+{
+	auto index = GetIndexOfBone(boneName);
+
+	return _animBones[index]->transform;
+}
+
+const DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXAnimator::GetBoneAnimation(int boneIndex)
+{
+	return _boneTransformMatrix[boneIndex];
+}
+
+const DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXAnimator::GetBoneTransform(int boneIndex)
+{
+	return _animBones[boneIndex]->transform;
+}
+
 void ArkEngine::ArkDX11::FBXAnimator::PauseFBXAnimation()
 {
 	_isPause = true;
@@ -236,6 +286,8 @@ void ArkEngine::ArkDX11::FBXAnimator::ReadAnimData(std::wstring fileName)
 
 void ArkEngine::ArkDX11::FBXAnimator::UpdateAnimTransforms(float speed, float deltaTime, unsigned int animIndex)
 {
+	//_isPlaying = true;
+
 	if (_isPause == true)
 	{
 		speed = 0;
@@ -246,7 +298,6 @@ void ArkEngine::ArkDX11::FBXAnimator::UpdateAnimTransforms(float speed, float de
 		_frameCount += speed * deltaTime;
 		_frameCount = min(_frameCount, _anim->duration);
 	}
-
 
 	// 이전 프레임과 다음 프레임 인덱스 계산
 	unsigned int prevFrameIndex = static_cast<unsigned int>(_frameCount);
@@ -355,6 +406,8 @@ void ArkEngine::ArkDX11::FBXAnimator::UpdateAnimTransforms(float speed, float de
 
 void ArkEngine::ArkDX11::FBXAnimator::UpdateAnimTransforms(float speed, float deltaTime, std::string animName)
 {
+	//_isPlaying = true;
+
 	if (_isPause == true)
 	{
 		speed = 0;
@@ -365,7 +418,6 @@ void ArkEngine::ArkDX11::FBXAnimator::UpdateAnimTransforms(float speed, float de
 		_frameCount += speed * deltaTime;
 		_frameCount = min(_frameCount, _anim->duration);
 	}
-
 
 	// 이전 프레임과 다음 프레임 인덱스 계산
 	unsigned int prevFrameIndex = static_cast<unsigned int>(_frameCount);
@@ -537,7 +589,7 @@ std::shared_ptr<ModelAnimation> ArkEngine::ArkDX11::FBXAnimator::GetAnimationByI
 	return (index < 0 || index >= _animationIndex.size()) ? nullptr : _animationIndex[index];
 }
 
-std::shared_ptr<ModelAnimation> ArkEngine::ArkDX11::FBXAnimator::GetAnimationByName(std::string animName)
+std::shared_ptr<ModelAnimation> ArkEngine::ArkDX11::FBXAnimator::GetAnimationByName(const std::string& animName)
 {
 	for (auto index : _animationIndex)
 	{
@@ -553,6 +605,21 @@ std::shared_ptr<ModelAnimation> ArkEngine::ArkDX11::FBXAnimator::GetAnimationByN
 std::shared_ptr<ModelBone> ArkEngine::ArkDX11::FBXAnimator::GetBonesByIndex(unsigned int index)
 {
 	return (index < 0 || index >= _animBones.size() ? nullptr : _animBones[index]);
+}
+
+std::shared_ptr<ModelBone> ArkEngine::ArkDX11::FBXAnimator::GetBonesByName(const std::string& boneName)
+{
+	auto name = std::wstring(boneName.begin(), boneName.end());
+
+	for (auto index : _animBones)
+	{
+		if (index->name == name)
+		{
+			return index;
+		}
+	}
+	
+	return nullptr;
 }
 
 unsigned int ArkEngine::ArkDX11::FBXAnimator::GetBoneCount()

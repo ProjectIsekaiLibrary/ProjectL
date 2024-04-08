@@ -41,7 +41,7 @@ struct PSOut
 
 struct PSOut2
 {
-    float4 Color : SV_Target4;
+    float4 Color : SV_Target6;
 };
 
 VertexOut VS(VertexIn vin)

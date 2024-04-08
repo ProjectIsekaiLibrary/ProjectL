@@ -93,6 +93,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)Inc\Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -115,6 +116,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)Inc\Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -160,6 +162,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalIncludeDirectories>$(SolutionDir)Inc\Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <LanguageStandard>stdcpp20</LanguageStandard>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -174,68 +177,87 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="Ability.h" />
+    <ClInclude Include="AbilityGenerator.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossStruct.hpp" />
     <ClInclude Include="BoxCollider.h" />
+    <ClInclude Include="ButtonSystem.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentHeaders.h" />
     <ClInclude Include="Coroutine.h" />
     <ClInclude Include="EngineCore.h" />
+    <ClInclude Include="EventManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GraphicsSystem.h" />
     <ClInclude Include="ImageRenderer.h" />
+    <ClInclude Include="InputGeom.h" />
     <ClInclude Include="InputSystem.h" />
     <ClInclude Include="InputSystemStruct.h" />
     <ClInclude Include="Kamen.h" />
     <ClInclude Include="KunrealAPI.h" />
     <ClInclude Include="Light.h" />
+    <ClInclude Include="MeshLoaderObj.h" />
     <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="Navigation.h">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClInclude>
+    <ClInclude Include="NpcCore.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="PhysicsEvent.h" />
     <ClInclude Include="PhysicsSystem.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="PlayerAbility.h" />
     <ClInclude Include="PlayerMove.h" />
+    <ClInclude Include="Projectile.h" />
+    <ClInclude Include="ChunkyTriMesh.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="SoundSystem.h" />
     <ClInclude Include="TimeManager.h" />
+    <ClInclude Include="ToolBox.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="Zeolight.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\Inc\Recast\fastlz.c" />
+    <ClCompile Include="Ability.cpp" />
+    <ClCompile Include="AbilityGeneratorcpp.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
+    <ClCompile Include="ButtonSystem.cpp" />
     <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Coroutine.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EngineCore.cpp" />
+    <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />
     <ClCompile Include="ImageRenderer.cpp" />
+    <ClCompile Include="InputGeom.cpp" />
     <ClCompile Include="InputSystem.cpp" />
     <ClCompile Include="Kamen.cpp" />
     <ClCompile Include="KunrealAPI.cpp" />
     <ClCompile Include="Light.cpp" />
+    <ClCompile Include="MeshLoaderObj.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="Navigation.cpp">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">false</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</ExcludedFromBuild>
     </ClCompile>
+    <ClCompile Include="NpcCore.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
@@ -247,12 +269,16 @@
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="PlayerAbility.cpp" />
     <ClCompile Include="PlayerMove.cpp" />
+    <ClCompile Include="Projectile.cpp" />
+    <ClCompile Include="ChunkyTriMesh.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="SoundSystem.cpp" />
     <ClCompile Include="TimeManager.cpp" />
+    <ClCompile Include="ToolBox.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="Zeolight.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

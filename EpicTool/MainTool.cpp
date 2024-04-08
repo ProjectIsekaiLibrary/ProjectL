@@ -18,7 +18,9 @@
 #include "../ArkEngine/ArkDevice.h"
 #include "EngineCore.h"
 #include "KunrealAPI.h"
+#include "Deserialize.h"
 
+#include <nfd.h>
 #include <ImGuizmo.h>
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
@@ -38,7 +40,7 @@ static ID3D11RenderTargetView* g_mainRenderTargetView = nullptr;
 
 EpicTool::MainTool::MainTool()
     :_resourceWindow(nullptr), _graphicWindow(nullptr), _saveloadWindow(nullptr), _gameWindow(nullptr), _windowManager(nullptr), _toolClose(false), _hwnd(nullptr),
-    wc(), _core(nullptr), _console(), _selectedObjectIndex(-1)
+    wc(), _core(nullptr), _console(), _selectedObjectIndex(-1), _loadSuccess(true)
 {
 
 }
@@ -68,9 +70,7 @@ HRESULT EpicTool::MainTool::Initialize()
 	_core = KunrealEngine::CreateEngine();
 	_core->Initialize(_hwnd, wc.hInstance, screenWidth, screenHeight);
 
-    /// 로드 구현중 
-	//FileLoad* fileLoad = new FileLoad();
-	//fileLoad->Initialize();
+
 
     // Show the window
 	::ShowWindow(_hwnd, SW_SHOW);
@@ -87,8 +87,6 @@ HRESULT EpicTool::MainTool::Initialize()
     io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
     io.ConfigFlags |= ImGuiConfigFlags_DockingEnable;         // Enable Docking
     io.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;       // Enable Multi-Viewport / Platform W
-
-    //io.ConfigDockingAlwaysTabBar = true;
 
     // Setup Dear ImGui style
     ImGui::StyleColorsDark();
@@ -116,20 +114,24 @@ HRESULT EpicTool::MainTool::Initialize()
 
     ImGui_ImplDX11_Init(g_pd3dDevice, g_pd3dDeviceContext);
 
-   
-
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
+
+	/// 로드 구현중 
+
+    //LoadData(); // 로드 부분 구현되었으나 임시 주석
 
     _windowManager = new ShowWindowManager;
     _windowManager->Initialize();
 
     _resourceWindow = new ResourceWindow();
-    _graphicWindow = new GraphicWindow(screenWidth, screenHeight);
-    _saveloadWindow = new DataControlWindow();
 
-    _gameWindow = new GameWindow();
-   
+    _graphicWindow = new GraphicWindow(screenWidth, screenHeight);
+
+    _saveloadWindow = new DataControlWindow();
+	_saveloadWindow->Initialize();
+
+    _gameWindow = new GameWindow();   
 
     return 1;
 }
@@ -293,13 +295,8 @@ bool EpicTool::MainTool::CreateSwapChain()
 
 void EpicTool::MainTool::CreateRenderTarget()
 {
-// 	ID3D11Texture2D* pBackBuffer;
-// 	g_pSwapChain->GetBuffer(0, IID_PPV_ARGS(&pBackBuffer));
-// 	g_pd3dDevice->CreateRenderTargetView(pBackBuffer, nullptr, &g_mainRenderTargetView);
-// 	pBackBuffer->Release();
-
 	// ID3D11Texture2D : 구조화된 메모리인 텍셀 데이터를 관리
-// 텍스처는 파이프라인에 직접 바인딩할 수 없으며 뷰를 생성하고 바인딩 해야 함
+    // 텍스처는 파이프라인에 직접 바인딩할 수 없으며 뷰를 생성하고 바인딩 해야 함
 	ID3D11Texture2D* backBuffer;
 
 	// 첫 매개변수는 후면 버퍼의 색인 -> 후면 버퍼가 하나이므로 0을 지정
@@ -340,16 +337,20 @@ void EpicTool::MainTool::ShowWindowFunction()
 {
     auto textureSRV = GRAPHICS->GetRenderingImage();
 
-	_graphicWindow->ShowWindow(textureSRV, _selectedObjectIndex);
 
     _core->SetEditorMousePos(_graphicWindow->GetMousePosition());
 
 	_windowManager->ShowWindow(_selectedObjectIndex);
 
+    _windowManager->GetGameObjetcList(_gameObjectlist);
+
+	_graphicWindow->ShowWindow(textureSRV, _selectedObjectIndex);
+	_graphicWindow->SetGameObjectList(_gameObjectlist);
+
 	_resourceWindow->ShowWindow();
 
 	_gameWindow->ShowWindow();
-    
+
 	_saveloadWindow->ShowWindow(_toolClose);
 
   
@@ -385,6 +386,36 @@ void EpicTool::MainTool::RenderAll(ImGuiIO& io)
 {
     LoopImGuiRender(io);
     _core->Render();  
+}
+
+void EpicTool::MainTool::LoadData()
+{
+    while (_loadSuccess)
+    {
+    	nfdchar_t* outPath = NULL;
+    	nfdresult_t result = NFD_OpenDialog("json", NULL, &outPath);
+    
+    	if (result == NFD_OKAY) 
+        {
+    		if (outPath)
+            {
+    			std::string chosenPath = outPath;
+    
+    			_loadFilePath = chosenPath;
+    
+    			free(outPath);
+
+    			Deserialize* _deserialize = new Deserialize();
+    			_deserialize->Initialize(_loadFilePath);
+    			_loadSuccess = false;
+    		}
+		}
+		else
+        {
+			break;
+		}
+    }
+    
 }
 
 extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);

@@ -97,6 +97,11 @@ void ArkEngine::ArkDX11::UIImage::SetRenderingState(bool tf)
 	_isRendering = tf;
 }
 
+const std::string& ArkEngine::ArkDX11::UIImage::GetImageName()
+{
+	return _imageName;
+}
+
 void ArkEngine::ArkDX11::UIImage::SetTransform(DirectX::XMFLOAT4X4 matrix)
 {
 	_meshTransform->SetTransformMatrix(matrix);

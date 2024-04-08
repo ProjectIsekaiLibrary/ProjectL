@@ -14,7 +14,9 @@
 #include "BoxCollider.h"
 #include "SoundPlayer.h"
 
+#include "Zeolight.h"
 
-
+#include "Player.h"
 #include "PlayerMove.h"
+
 #include "Kamen.h"

@@ -11,7 +11,8 @@ namespace KunrealEngine
     class MeshRenderer;
     class Compoent;
     class ImageRenderer;
-    //class SoundPlayer;
+    class SoundPlayer;
+    struct SoundPlayer::SoundInfo;
 }
 
 
@@ -20,6 +21,7 @@ namespace EpicTool
     class DebugWindow;
     class GraphicWindow;
     enum DebugType;
+ 
 
     class InspectorWindow : public IWindow
     {
@@ -53,15 +55,22 @@ namespace EpicTool
         template<typename ComponentType>
         void ComboControl(std::vector<std::string> list, std::vector<std::string> listEditor, int& selected, const char* name, ComponentType* instance);
 
+        void ComboControlSound(std::vector<KunrealEngine::SoundPlayer::SoundInfo> list, std::vector<KunrealEngine::SoundPlayer::SoundInfo> listEditor, int& selected, const char* name);
 
-        //void ComboControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected, const char* name);
+        // 사운드 임포를 조절하는 함수
 
-      //  void ComboControl(std::vector<std::string> list, std::vector<std::string> listEditor, int selected);
+        void SetSoundInfo(KunrealEngine::SoundPlayer::SoundInfo& instance);
+
+        void SoundCreate();
 
     public:
         void GetDebugType(DebugType& instance);
 
         void GetDeleteComponentName(std::string& componentName);
+
+        // 하이어라키의 리스트와 연동
+    public:
+        void SetGameObjectList(std::vector<KunrealEngine::GameObject*>& intance);
 
     private:
         void ListToRemove(std::vector<std::string>& list, std::vector<std::string>& listEditor, const std::string stringToRemove);
@@ -98,6 +107,8 @@ namespace EpicTool
 
         KunrealEngine::GraphicsSystem* _graphicsSystem;
 
+        KunrealEngine::SoundPlayer* _soundPlayer;
+
        //std::vector<KunrealEngine::SoundPlayer*> _soundPlayerlist;
 
         bool _meshState;
@@ -122,6 +133,10 @@ namespace EpicTool
         int _comboLightSelect;
 
         int _comboImageSelect;
+
+        int _comboSoundSelect;
+
+        int _comboNewSoundSelect;
 
        std::string _selectObjectName;
         int _selectObjectNumber;
@@ -212,6 +227,30 @@ namespace EpicTool
     private:
         float _offset[3];
         float _boxSize[3];
+
+     private:
+		int _currentNormal = 0;
+		int _currentDiffuse = 0;
+
+     private:
+        bool _isSound3DEditor;
+        bool _isLoopSoundEditor;
+        int _soundVolEditor;
+
+        KunrealEngine::SoundPlayer::SoundInfo _controlSoundInfo;
+
+        // 사운드 생성 할때 필요한 매개를 저장할 변수
+
+        std::vector<std::string> _isNewSoundPathList;
+
+        std::vector<std::string> _isNewSoundPathListEditor;
+
+        std::string _newSoundName;
+
+        bool _isNewSound3D;
+        bool _isNewSoundLoop;
+        int _isNewSoundVol;
+
     };
 
 

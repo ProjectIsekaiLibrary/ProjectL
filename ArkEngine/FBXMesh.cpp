@@ -20,6 +20,8 @@
 #include "../FbxLoader/FileUtils.h"
 #include "../FbxLoader/Utils.h"
 #include "FBXAnimator.h"
+#include "DWFont.h"
+
 #include "FBXMesh.h"
 
 ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
@@ -33,12 +35,14 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_boneTMList(), _world(), _view(), _proj(), _vertexBuffer(), _indexBuffer(),
 	_arkDevice(nullptr), _arkEffect(nullptr), _totalVertexCount(0), _totalIndexCount(0), _meshTransform(nullptr),
 	_debugObject(nullptr),
-	_prevAnimationPlayingState(true), _isAnimationPlaying(false), _isRendering(true), _isSolid(isSolid),
-	_isPickable(false), _hashValue(0), _objectIndex(0), _color(),
+	_havePlayedAnimation(false), _isAnimationPlaying(false), _isRendering(true), _isSolid(isSolid),
+	_isPickable(false), _hashValue(0), _objectIndex(0), _color(), _haveShadow(true),
 	_modelPath(L"Resources/Models/"), _texturePath(L"Resources/Textures/"),
 	_meshCount(0), _boneIndexNum(0),
 	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
-	_animator(nullptr)
+	_animator(nullptr),
+	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent(),
+	_mainCamera(nullptr)
 {
 	Initialize();
 }
@@ -55,6 +59,8 @@ void ArkEngine::ArkDX11::FBXMesh::Initialize()
 	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>(_effectName);
 	_effect = _arkEffect->GetEffect();
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+
+
 
 	size_t pos = _fileName.find_last_of("/");
 
@@ -80,6 +86,10 @@ void ArkEngine::ArkDX11::FBXMesh::Initialize()
 	// 이쪽에서 무슨 모델 띄울건지 정해준다
 	BuildGeometryBuffersFBX(utils->ToWString(_fileName));
 	ReadMaterial(utils->ToWString(_fileName));
+	//if (_diffuseTextureName.back().find("png") == std::string::npos)
+	//{
+	//	SetDiffuseTexture(_meshes.size()-1, "Resources/Textures/fox.dds");
+	//}
 
 	if (_animator->CheckClipFile(_fileName) == false)
 	{
@@ -90,32 +100,30 @@ void ArkEngine::ArkDX11::FBXMesh::Initialize()
 
 	SetEffect();
 
+	// 그림자 맵용 추가
+	//_shadowMap = new ShadowMap(_arkDevice->GetDevice(), 2048, 2048);
+	//_shadowMap->BindDsvAndSetNullRenderTarget(_arkDevice->GetDeviceContext());
+
+
 	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Cube);
 }
 
 void ArkEngine::ArkDX11::FBXMesh::Update(ArkEngine::ICamera* p_Camera)
 {
-	if (_prevAnimationPlayingState != _isAnimationPlaying)
+	if (_havePlayedAnimation)
 	{
-		if (_isAnimationPlaying == true)
-		{
-			_effectName = "Resources/FX/SkinningDeferred.fx";
-		}
-		else
-		{
-			_effectName = "Resources/FX/BasicTexDeferred.fx";
-		}
+		_effectName = "Resources/FX/SkinningDeferred.fx";
 
 		_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>(_effectName);
 		_effect = _arkEffect->GetEffect();
 		SetEffect();
 	}
 
-	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
-
-	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
-	DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
-	DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
+	//auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
+	//
+	//DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
+	//DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
+	//DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
 }
 
 void ArkEngine::ArkDX11::FBXMesh::Render()
@@ -138,6 +146,7 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 	UINT offset = 0;
 
 	auto nowCubeMap = ResourceManager::GetInstance()->GetNowCubeMap();
+
 
 	if (nowCubeMap != nullptr)
 	{
@@ -174,6 +183,18 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 			auto nowMesh = _meshes[i];
 			{
 				DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
+				if (_parentMesh != nullptr)
+				{
+					auto parentOriginWorld = _parentBoneTrasnform;
+					auto parentBoneAnim = _parentMesh->_animator->GetBoneAnimation(_parentBoneIndex);
+
+					auto transform = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&parentOriginWorld), DirectX::XMLoadFloat4x4(&parentBoneAnim));
+					world = DirectX::XMMatrixMultiply(transform, world);
+
+					DirectX::XMStoreFloat4x4(&_transformEffectedByParent, world);
+
+					_debugObject->SetWorld(_transformEffectedByParent);
+				}
 
 				DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
 				DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
@@ -193,7 +214,7 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 				/// </summary>
 				/// Animation 부분
 
-				if (_isAnimationPlaying == true)
+				//if (_havePlayedAnimation == true)
 				{
 					if (_animator != nullptr)
 					{
@@ -208,8 +229,119 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 	}
 }
 
+void ArkEngine::ArkDX11::FBXMesh::Render(int passIndex)
+{
+	auto deviceContext = _arkDevice->GetDeviceContext();
+
+	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	if (passIndex == 1)
+	{
+		deviceContext->RSSetState(_arkDevice->GetShadowRS());
+	}
+
+	else
+	{
+		if (_isSolid)
+		{
+			deviceContext->RSSetState(_arkDevice->GetSolidRS());
+		}
+		else
+		{
+			deviceContext->RSSetState(_arkDevice->GetWireRS());
+		}
+	}
+
+	UINT stride = sizeof(ArkEngine::ArkDX11::Vertex);
+	UINT offset = 0;
+
+	auto nowCubeMap = ResourceManager::GetInstance()->GetNowCubeMap();
+
+
+	if (nowCubeMap != nullptr)
+	{
+		auto cubeTexture = ResourceManager::GetInstance()->GetResource<ArkTexture>(nowCubeMap->GetTextureName());
+		_cubeMap->SetResource(cubeTexture->GetDiffuseMapSRV());
+	}
+
+	DirectX::XMMATRIX texTransform = DirectX::XMMatrixIdentity();
+	_fxTexTransform->SetMatrix(reinterpret_cast<float*>(&texTransform));
+
+	_fxColor->SetFloatVector(_color);
+
+	for (int i = 0; i < _vertexBuffer.size(); i++)
+	{
+		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer[i], &stride, &offset);
+		deviceContext->IASetIndexBuffer(_indexBuffer[i], DXGI_FORMAT_R32_UINT, 0);
+
+		if (_material.size() > i)
+		{
+			_fxMaterial->SetRawValue(&_material[i], 0, sizeof(Material));
+		}
+
+		_diffuseMap->SetResource(_diffuseMapSRV[i]);
+
+		_normalMap->SetResource(_normalMapSRV[i]);
+
+		_emissionMap->SetResource(_emissionMapSRV[i]);
+
+		D3DX11_TECHNIQUE_DESC techDesc;
+		_tech->GetDesc(&techDesc);
+
+
+		auto nowMesh = _meshes[i];
+		{
+			DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
+			if (_parentMesh != nullptr)
+			{
+				auto parentOriginWorld = _parentBoneTrasnform;
+				auto parentBoneAnim = _parentMesh->_animator->GetBoneAnimation(_parentBoneIndex);
+
+				auto transform = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&parentOriginWorld), DirectX::XMLoadFloat4x4(&parentBoneAnim));
+				world = DirectX::XMMatrixMultiply(transform, world);
+
+				DirectX::XMStoreFloat4x4(&_transformEffectedByParent, world);
+
+				_debugObject->SetWorld(_transformEffectedByParent);
+			}
+
+			DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
+			DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
+			DirectX::XMMATRIX WorldViewProj = world * view * proj;
+
+			DirectX::XMMATRIX worldCopy = world;
+			worldCopy.r[3] = DirectX::XMVectorSet(0.0f, 0.0f, 0.0f, 1.0f);
+			DirectX::XMMATRIX worldInv = XMMatrixInverse(nullptr, worldCopy);
+			DirectX::XMMATRIX worldInvTranspose = DirectX::XMMatrixTranspose(worldInv);
+
+			_fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
+			_fxWorldInvTranspose->SetMatrix(reinterpret_cast<float*>(&worldInvTranspose));
+			_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
+
+			/// <summary>
+			/// 계층구조 mesh 해야함
+			/// </summary>
+			/// Animation 부분
+
+			//if (_havePlayedAnimation == true)
+			{
+				if (_animator != nullptr)
+				{
+					_fxBoneTransforms->SetMatrixArray(reinterpret_cast<float*>(&_animator->_boneTransformMatrix[0]), 0, static_cast<uint32_t>(_animator->_boneTransformMatrix.size()));
+				}
+			}
+
+			_tech->GetPassByIndex(passIndex)->Apply(0, deviceContext);
+			deviceContext->DrawIndexed(nowMesh->indexNum, 0, 0);
+		}
+	}
+}
+
 void ArkEngine::ArkDX11::FBXMesh::Finalize()
 {
+	_parentMesh = nullptr;
+
 	delete _debugObject;
 
 	_tech = nullptr;
@@ -246,7 +378,8 @@ void ArkEngine::ArkDX11::FBXMesh::Finalize()
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
 
-	if (_isAnimationPlaying == true)
+
+	if (_fxBoneTransforms != nullptr)
 	{
 		_fxBoneTransforms->Release();
 	}
@@ -269,11 +402,24 @@ void ArkEngine::ArkDX11::FBXMesh::SetRenderingState(bool tf)
 	_debugObject->SetRenderingState(tf);
 }
 
+void ArkEngine::ArkDX11::FBXMesh::SetShadowState(bool tf)
+{
+	_haveShadow = tf;
+}
+
+bool ArkEngine::ArkDX11::FBXMesh::GetShadowState()
+{
+	return _haveShadow;
+}
+
 void ArkEngine::ArkDX11::FBXMesh::SetTransform(DirectX::XMFLOAT4X4 matrix)
 {
 	_meshTransform->SetTransformMatrix(matrix);
 
-	_debugObject->SetTransformMatrix(matrix);
+	if (_parentMesh == nullptr)
+	{
+		_debugObject->SetTransformMatrix(matrix);
+	}
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetPosition(float x, float y, float z)
@@ -309,7 +455,6 @@ void ArkEngine::ArkDX11::FBXMesh::SetDiffuseTexture(int index, const char* textu
 		std::string finalTextureName = textureName;
 		if (finalTextureName.find("Resources/Textures/") == std::string::npos)
 		{
-
 			finalTextureName = "Resources/Textures/" + finalTextureName;
 		}
 
@@ -323,7 +468,8 @@ void ArkEngine::ArkDX11::FBXMesh::SetDiffuseTexture(int index, const char* textu
 		}
 		else
 		{
-			texture = nullptr;
+			ArkTexture* newTexture = new ArkTexture(finalTextureName.c_str());
+			_diffuseMapSRV[index] = newTexture->GetDiffuseMapSRV();
 		}
 	}
 }
@@ -350,7 +496,8 @@ void ArkEngine::ArkDX11::FBXMesh::SetNormalTexture(int index, const char* textur
 		}
 		else
 		{
-			texture = nullptr;
+			ArkTexture* newTexture = new ArkTexture(finalTextureName.c_str());
+			_normalMapSRV[index] = newTexture->GetDiffuseMapSRV();
 		}
 	}
 }
@@ -362,22 +509,24 @@ void ArkEngine::ArkDX11::FBXMesh::SetEmissiveTexture(int index, const char* text
 		std::string finalTextureName = textureName;
 		if (finalTextureName.find("Resources/Textures/") == std::string::npos)
 		{
-	
+
 			finalTextureName = "Resources/Textures/" + finalTextureName;
 		}
-	
+
 		_emssiveTextureName[index] = finalTextureName.c_str();
-	
-	
+
+
 		auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(_emssiveTextureName[index]);
-	
+
 		if (texture != nullptr)
 		{
 			_emissionMapSRV[index] = texture->GetDiffuseMapSRV();
 		}
 		else
 		{
-			texture = nullptr;
+			ArkTexture* newTexture = new ArkTexture(finalTextureName.c_str());
+
+			_emissionMapSRV[index] = newTexture->GetDiffuseMapSRV();
 		}
 	}
 }
@@ -482,10 +631,62 @@ float ArkEngine::ArkDX11::FBXMesh::GetMaxFrame()
 	return _animator->GetMaxFrame();
 }
 
+bool ArkEngine::ArkDX11::FBXMesh::GetIsPlaying()
+{
+	return _isAnimationPlaying;
+}
+
+const std::string& ArkEngine::ArkDX11::FBXMesh::GetNowAnimationName()
+{
+	return _animator->GetAnimationName();
+}
+
+void ArkEngine::ArkDX11::FBXMesh::SetParentBone(GInterface::GraphicsRenderable* model, const std::string& boneName)
+{
+	_parentMesh = dynamic_cast<FBXMesh*>(model);
+
+	_parentBoneIndex = _parentMesh->_animator->GetIndexOfBone(boneName);
+
+	DirectX::XMMATRIX boneTransform;
+	if (_parentMesh != nullptr)
+	{
+		auto boneTransform = _parentMesh->_animator->GetBoneTransform(_parentBoneIndex);
+
+		_parentBoneTrasnform = boneTransform;
+	}
+}
+
+void ArkEngine::ArkDX11::FBXMesh::DeleteParentBone()
+{
+	_parentMesh = nullptr;
+	DirectX::XMStoreFloat4x4(&_parentBoneTrasnform, DirectX::XMMatrixIdentity());
+	_parentBoneIndex = 0;
+}
+
+DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXMesh::GetTransformEffectedByBone()
+{
+	return _transformEffectedByParent;
+}
+
+DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXMesh::GetBoneTransform(std::string boneName)
+{
+	auto boneIndex = _animator->GetIndexOfBone(boneName);
+
+	auto boneOriginWorld = _animator->GetBoneTransform(boneIndex);
+	auto boneAnim = _animator->GetBoneAnimation(boneIndex);
+
+	auto transform = DirectX::XMMatrixMultiply(DirectX::XMLoadFloat4x4(&boneOriginWorld), DirectX::XMLoadFloat4x4(&boneAnim));
+	auto toParent = DirectX::XMMatrixMultiply(transform, GetWorldTransform());
+
+	DirectX::XMFLOAT4X4 result;
+	DirectX::XMStoreFloat4x4(&result, toParent);
+
+	return result;
+}
+
 void ArkEngine::ArkDX11::FBXMesh::StopAnimation()
 {
-	//_prevAnimationPlayingState = _isAnimationPlaying;
-	//_isAnimationPlaying = false;
+	_isAnimationPlaying = false;
 
 	if (_animator != nullptr)
 	{
@@ -495,40 +696,38 @@ void ArkEngine::ArkDX11::FBXMesh::StopAnimation()
 
 bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, int animIndex, bool continuousPlay)
 {
-	_prevAnimationPlayingState = _isAnimationPlaying;
-	_isAnimationPlaying = true;
+	_havePlayedAnimation = true;
 
 	if (_animator != nullptr)
 	{
 		if (continuousPlay == true)
 		{
-			auto isPlaying = _animator->PlayAnimationContinuous(speed, deltaTime, animIndex);
-			return isPlaying;
+			_isAnimationPlaying = _animator->PlayAnimationContinuous(speed, deltaTime, animIndex);
+			return _isAnimationPlaying;
 		}
 		else
 		{
-			auto isPlaying = _animator->PlayAnimationOnce(speed, deltaTime, animIndex);
-			return isPlaying;
+			_isAnimationPlaying = _animator->PlayAnimationOnce(speed, deltaTime, animIndex);
+			return _isAnimationPlaying;
 		}
 	}
 }
 
 bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay)
 {
-	_prevAnimationPlayingState = _isAnimationPlaying;
-	_isAnimationPlaying = true;
+	_havePlayedAnimation = true;
 
 	if (_animator != nullptr)
 	{
 		if (continuousPlay == true)
 		{
-			auto isPlaying = _animator->PlayAnimationContinuous(speed, deltaTime, animName);
-			return isPlaying;
+			_isAnimationPlaying = _animator->PlayAnimationContinuous(speed, deltaTime, animName);
+			return _isAnimationPlaying;
 		}
 		else
 		{
-			auto isPlaying = _animator->PlayAnimationOnce(speed, deltaTime, animName);
-			return isPlaying;
+			_isAnimationPlaying = _animator->PlayAnimationOnce(speed, deltaTime, animName);
+			return _isAnimationPlaying;
 		}
 	}
 }
@@ -537,7 +736,7 @@ void ArkEngine::ArkDX11::FBXMesh::SetEffect()
 {
 	_tech = _effect->GetTechniqueByIndex(0);
 
-	if (_isAnimationPlaying == true)
+	if (_animator != nullptr)
 	{
 		_fxBoneTransforms = _effect->GetVariableByName("gBoneTransforms")->AsMatrix();
 	}
@@ -549,8 +748,6 @@ void ArkEngine::ArkDX11::FBXMesh::SetEffect()
 	_fxMaterial = _effect->GetVariableByName("gMaterial");
 
 	// 그림자 매핑용
-	//_fxShadowMap = _effect->GetVariableByName("gShadowMap")->AsShaderResource();
-
 	_diffuseMap = _effect->GetVariableByName("gDiffuseMap")->AsShaderResource();
 	_normalMap = _effect->GetVariableByName("gNormalMap")->AsShaderResource();
 	_emissionMap = _effect->GetVariableByName("gEmissiveMap")->AsShaderResource();
@@ -615,6 +812,27 @@ void ArkEngine::ArkDX11::FBXMesh::ConvertHashToRGBA(int hashValue)
 	_color[1] = g / 255.0f;
 	_color[2] = b / 255.0f;
 	_color[3] = a / 255.0f;
+}
+
+const DirectX::XMMATRIX ArkEngine::ArkDX11::FBXMesh::GetWorldTransform()
+{
+	return _meshTransform->GetTransformMatrix();
+}
+
+const std::string& ArkEngine::ArkDX11::FBXMesh::GetFileName()
+{
+	return _fileName;
+}
+
+void ArkEngine::ArkDX11::FBXMesh::SetMainCamera(ArkEngine::ICamera* camera)
+{
+	_mainCamera = camera;
+
+	auto newCamera = static_cast<ArkEngine::ArkDX11::Camera*>(_mainCamera);
+
+	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
+	DirectX::XMStoreFloat4x4(&_view, newCamera->GetViewMatrix());
+	DirectX::XMStoreFloat4x4(&_proj, newCamera->GetProjMatrix());
 }
 
 /// <summary>
@@ -712,9 +930,18 @@ void ArkEngine::ArkDX11::FBXMesh::BuildGeometryBuffersFBX(std::wstring fileName)
 
 					vertex.pos = modelMesh->vertices[j].position;
 
-					vertex.norm.x = modelMesh->vertices[j].normal.x;
-					vertex.norm.y = modelMesh->vertices[j].normal.y;
-					vertex.norm.z = modelMesh->vertices[j].normal.z;
+					if (_fileName.find("PlayerWithCloak") != std::string::npos)
+					{
+						vertex.norm.x = -1* modelMesh->vertices[j].normal.x;
+						vertex.norm.y = -1* modelMesh->vertices[j].normal.y;
+						vertex.norm.z = -1* modelMesh->vertices[j].normal.z;
+					}
+					else
+					{
+						vertex.norm.x = modelMesh->vertices[j].normal.x;
+						vertex.norm.y = modelMesh->vertices[j].normal.y;
+						vertex.norm.z = modelMesh->vertices[j].normal.z;
+					}
 
 					vertex.tex.x = modelMesh->vertices[j].uv.x;
 					vertex.tex.y = modelMesh->vertices[j].uv.y;
@@ -882,7 +1109,7 @@ void ArkEngine::ArkDX11::FBXMesh::ReadMaterial(std::wstring fileName)
 					if (emissiveFileElement)
 					{
 						const char* emissiveFileText = emissiveFileElement->GetText();
-					
+
 						if (emissiveFileText)
 						{
 							materialData->_emissiveTextureList[meshIndex] = emissiveFileText;

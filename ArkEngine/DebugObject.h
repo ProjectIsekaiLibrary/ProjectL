@@ -44,6 +44,7 @@ namespace ArkEngine
 			enum class eDebugType
 			{
 				Cube,
+				PhysXBox,
 				Shpere,
 				Capsule
 			};
@@ -75,6 +76,8 @@ namespace ArkEngine
 			virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) override;
 			virtual void Delete() override;
+
+			virtual void SetWorld(DirectX::XMFLOAT4X4 matrix) override;
 
 		public:
 			virtual float GetRadius() override;

@@ -27,11 +27,17 @@ namespace ArkEngine
 
 		virtual void Render() abstract;
 
+		virtual void Render(int passIndex) abstract;
+
 		virtual void Finalize() abstract;
 
 	public:
 		virtual bool GetRenderingState() abstract;
 		virtual void SetRenderingState(bool tf) abstract;
+
+	public:
+		virtual void SetShadowState(bool tf) abstract;
+		virtual bool GetShadowState() abstract;
 
 	public:
 		virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
@@ -52,6 +58,8 @@ namespace ArkEngine
 		virtual void SetPickable(bool tf) abstract;
 
 		virtual unsigned int GetHashID() abstract;
+
+		virtual void SetMainCamera(ArkEngine::ICamera* camera) abstract;
 
 	public:
 		virtual bool GetInsideFrustumState() abstract;

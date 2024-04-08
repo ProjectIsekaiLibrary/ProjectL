@@ -55,11 +55,9 @@ ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, floa
 	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
 	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
 	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
-	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(width / 2), _halfHeight(height / 2), _halfDepth(depth / 2), _minPos(0.0f), _type(eDebugType::Cube)
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(width / 2), _halfHeight(height / 2), _halfDepth(depth / 2), _minPos(0.0f - _halfHeight), _type(eDebugType::PhysXBox)
 {
 	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
-
-	//_minPos -= _halfHeight;
 
 	_objectName += "/Debug";
 
@@ -208,6 +206,11 @@ void ArkEngine::ArkDX11::DebugObject::Delete()
 	delete this;
 }
 
+void ArkEngine::ArkDX11::DebugObject::SetWorld(DirectX::XMFLOAT4X4 matrix)
+{
+	_world = matrix;
+}
+
 float ArkEngine::ArkDX11::DebugObject::GetRadius()
 {
 	return _halfWidth;
@@ -267,10 +270,15 @@ void ArkEngine::ArkDX11::DebugObject::BuildGeomtryBuffers()
 		{
 			geomGenerator.CreateDebugBox(_objectName.c_str(), _centerPos, _halfWidth * 2, _halfHeight * 2, _halfDepth * 2, _color);
 		}
+		else if (_type == eDebugType::PhysXBox)
+		{
+			geomGenerator.CreateDebugPhysXBox(_objectName.c_str(), _centerPos, _halfWidth * 2, _halfHeight * 2, _halfDepth * 2, _color);
+		}
 		else if (_type == eDebugType::Shpere)
 		{
 			geomGenerator.CreateDebugSphere(_objectName.c_str(), _minPos, _halfWidth * 2, _color);
 		}
+		 
 
 		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
 	}

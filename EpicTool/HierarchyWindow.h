@@ -38,14 +38,27 @@ namespace EpicTool
 
         void UpdateGameObject();  // 오브젝트의 순서를 바꿈
 
-        //void RenderDragBox(int& selectedObjectIndex); // 드래그 시 작동을 관리 
-
         void GetDebugType(DebugType& instance);
 
         void GetDeleteObjectName(std::string& objectName);
 
-        bool GetIsHierarchySelected();
+		void HandleDragAndDrop(int index, int& selected, std::vector<KunrealEngine::GameObject*>& gameObjectlist);
 
+        void CheckChildListFromUp(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex);
+
+        void CheckChildListFromDown(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex);
+
+        void ApplyIndentToChildObjects(int parentIndex, std::vector<KunrealEngine::GameObject*>& gameobjectlist);
+   
+        void CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject);
+
+        void CheckInDent(KunrealEngine::GameObject* gameObject);
+
+        void CheckUninDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject);
+        
+        void CheckUninDent(KunrealEngine::GameObject* gameObject);
+
+        void GetHierarchyList(std::vector<KunrealEngine::GameObject*>& instance);
     private:
         // 각 오브젝트의 갯수
         int _createEmptyCount;   
@@ -62,7 +75,7 @@ namespace EpicTool
 		float _hierarchyWindowX2;
 		float _hierarchyWindowY2;
 
-        //오브젝트 리스트
+        // 오브젝트 리스트
         std::vector<KunrealEngine::GameObject*> _gameObjectlist;
 
         // 드래그시 출현하는 반투명 박스 위치
@@ -72,9 +85,16 @@ namespace EpicTool
 
         std::string _deleteObjectName;
 
+        std::string _copyObjectName;
+
+        // 드래그를 관리할 변수
     private:
-        // 하이어라이를 클릭해서 선택했을 경우를 반환
-        //bool _isHierarchySelected;
+        bool _isDragged;
+
+    private:
+        int _payloadIndex;
+        bool _show_Context_Menu;
+        bool _indentCheck;
     };
 }
 

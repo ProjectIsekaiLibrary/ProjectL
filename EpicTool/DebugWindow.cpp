@@ -27,12 +27,10 @@ void EpicTool::DebugWindow::ShowHierarchyDebug()
 	case EpicTool::CreateObject: // 오브젝트 생성 후 출력해야함
 		str = _gameObjectlist[_gameObjectlist.size()-1]->GetObjectName().insert(0, "CreateObject : ");
 		_debugTypeList.insert(_debugTypeList.begin(),str);
-		//ImGui::Text("Create Object %s", str.c_str());
 		break;
 	case EpicTool::DeleteObject: // 여기는 지우기 전에 출력해야 할것
 		str = _deleteObjectName.insert(0, "DeleteObject : "); //벡터로 담는 형식으로 변경 뒤에 사용해야할것
 		_debugTypeList.insert(_debugTypeList.begin(), str);
-		//ImGui::Text("Delete Object %s", str.c_str());
 		break;
 	default:
 		break;
@@ -91,7 +89,7 @@ void EpicTool::DebugWindow::ShowInspectorDebug()
 		str = _gameObjectlist[_selectedObjectIndex]->GetObjectName().insert(0, "Add Camera! ");
 		_debugTypeList.insert(_debugTypeList.begin(), str);
 		break;
-	case EpicTool::DeleteComponent:
+	case EpicTool::DeleteComponentDebug:
 		str = _deleteComponentName.insert(0, "DeleteComponent : ");
 		_debugTypeList.insert(_debugTypeList.begin(), str);
 		break;

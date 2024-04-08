@@ -18,6 +18,6 @@ namespace EpicTool
 		AddDirectional,
 		AddPoint,
 		AddCamera,
-		DeleteComponent
+		DeleteComponentDebug
 	};
 }

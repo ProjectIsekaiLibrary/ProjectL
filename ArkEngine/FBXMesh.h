@@ -38,6 +38,7 @@ namespace ArkEngine
 		struct Material;
 
 		class FBXAnimator;
+		//class DirectionalLight;
 	}
 }
 
@@ -70,6 +71,7 @@ namespace ArkEngine
 			virtual void Initialize() override;
 			virtual void Update(ArkEngine::ICamera* p_Camera) override;
 			virtual void Render() override;
+			virtual void Render(int passIndex) override;
 			virtual void Finalize() override;
 
 		public:
@@ -78,6 +80,10 @@ namespace ArkEngine
 		public:
 			virtual bool GetRenderingState() override;
 			virtual void SetRenderingState(bool tf) override;
+			
+		public:
+			virtual void SetShadowState(bool tf) override;
+			virtual bool GetShadowState() override;
 
 		public:
 			virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) override;
@@ -107,7 +113,12 @@ namespace ArkEngine
 			virtual void ReplayAnimation() override;
 			virtual float GetCurrentFrame() override;
 			virtual float GetMaxFrame() override;
-
+			virtual bool GetIsPlaying() override;
+			virtual const std::string& GetNowAnimationName() override;
+			virtual void SetParentBone(GInterface::GraphicsRenderable* model, const std::string& boneName) override;
+			virtual void DeleteParentBone() override;
+			virtual DirectX::XMFLOAT4X4 GetTransformEffectedByBone() override;
+			virtual DirectX::XMFLOAT4X4 GetBoneTransform(std::string boneName) override;
 
 		public:
 			virtual bool GetPickable() override;
@@ -129,6 +140,13 @@ namespace ArkEngine
 		private:
 			void ConvertHashToRGBA(int hashValue);
 
+		public:
+			const DirectX::XMMATRIX GetWorldTransform();
+			const std::string& GetFileName();
+
+		public:
+			virtual void SetMainCamera(ArkEngine::ICamera* camera) override;
+
 		private:
 			std::string _simpleModelName;
 			std::string _fileName;
@@ -147,8 +165,7 @@ namespace ArkEngine
 			ID3DX11EffectMatrixVariable* _fxWorldViewProj;
 			ID3DX11EffectMatrixVariable* _fxTexTransform;
 			ID3DX11EffectVariable* _fxMaterial;
-			// ShadowMapping
-			ID3DX11EffectShaderResourceVariable* _fxShadowMap;
+
 			// cbSkinned
 			ID3DX11EffectMatrixVariable* _fxBoneTransforms;
 
@@ -191,7 +208,10 @@ namespace ArkEngine
 			IDebugObject* _debugObject;
 
 		private:
-			bool _prevAnimationPlayingState;
+			ArkEngine::ICamera* _mainCamera;
+
+		private:
+			bool _havePlayedAnimation;
 			bool _isAnimationPlaying;
 			bool _isRendering;
 
@@ -203,6 +223,7 @@ namespace ArkEngine
 			unsigned int _objectIndex;
 
 			float _color[4];
+			bool _haveShadow;
 
 			/// <summary>
 			/// 김현재가 추가한 것들
@@ -211,7 +232,7 @@ namespace ArkEngine
 			/// FBX 추가 김현재
 			void BuildGeometryBuffersFBX(std::wstring fileName);
 			void BindCacheInfo();
-			
+
 			/// Materials
 			void ReadMaterial(std::wstring fileName);
 
@@ -237,6 +258,12 @@ namespace ArkEngine
 
 			/// Animator
 			std::unique_ptr<FBXAnimator> _animator;
+
+		private:
+			FBXMesh* _parentMesh;
+			DirectX::XMFLOAT4X4 _parentBoneTrasnform;
+			int _parentBoneIndex;
+			DirectX::XMFLOAT4X4 _transformEffectedByParent;
 		};
 	}
 }

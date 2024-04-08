@@ -309,18 +309,18 @@ public:
 	dtStatus getPathFromDijkstraSearch(dtPolyRef endRef, dtPolyRef* path, int* pathCount, int maxPath) const;
 
 	/// @}
-	/// @name Local Query Functions
+	/// @이름 로컬 쿼리 함수
 	///@{
 
-	/// Finds the polygon nearest to the specified center point.
-	/// [opt] means the specified parameter can be a null pointer, in that case the output parameter will not be set.
+	/// 지정된 중심점에 가장 가까운 다각형을 찾습니다.
+	/// [opt]는 지정된 파라미터가 널 포인터일 수 있음을 의미하며, 이 경우 출력 파라미터가 설정되지 않습니다.
 	///
-	///  @param[in]		center		The center of the search box. [(x, y, z)]
-	///  @param[in]		halfExtents	The search distance along each axis. [(x, y, z)]
-	///  @param[in]		filter		The polygon filter to apply to the query.
-	///  @param[out]	nearestRef	The reference id of the nearest polygon. Will be set to 0 if no polygon is found.
-	///  @param[out]	nearestPt	The nearest point on the polygon. Unchanged if no polygon is found. [opt] [(x, y, z)]
-	/// @returns The status flags for the query.
+	/// @param[in] center 검색 상자의 중심입니다. [(x, y, z)]]
+	/// @param[in] halfExtents 각 축을 따른 검색 거리입니다. [(x, y, z)]
+	/// @param[in] filter 쿼리에 적용할 다각형 필터입니다.
+	/// @param[out] nearestRef 가장 가까운 다각형의 참조 ID입니다. 다각형을 찾지 못하면 0으로 설정됩니다.
+	/// @param[out] nearestPt 다각형에서 가장 가까운 점입니다. 다각형을 찾지 못하면 변경되지 않습니다. [opt] [(x, y, z)]
+	/// 쿼리에 대한 상태 플래그를 반환합니다.
 	dtStatus findNearestPoly(const float* center, const float* halfExtents,
 							 const dtQueryFilter* filter,
 							 dtPolyRef* nearestRef, float* nearestPt) const;

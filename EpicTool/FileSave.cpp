@@ -109,7 +109,7 @@ nlohmann::json EpicTool::FileSave::Serialize(std::string sceneName, std::string 
 	std::vector<std::string> meshList = KunrealEngine::GraphicsSystem::GetInstance().GetRenderableList();
 	std::vector<std::string> textureList = KunrealEngine::GraphicsSystem::GetInstance().GetTextureList();
 
-	if ((ptr->GetComponent<KunrealEngine::MeshRenderer>()) != NULL)
+	if ((ptr->GetComponent<KunrealEngine::MeshRenderer>()) != NULL) // 지금 저장을 위해서는 모든 텍스쳐의 이름이 필요함, GetTextures를 통해 뽑아 쓰자
 	{
 		nlohmann::json meshJson;
 		meshJson["RenderingState"] = ptr->GetComponent<KunrealEngine::MeshRenderer>()->GetRenderingState();
@@ -118,6 +118,7 @@ nlohmann::json EpicTool::FileSave::Serialize(std::string sceneName, std::string 
 
 		nlohmann::json textureJson;
 		textureJson["Diffuse"] = ptr->GetComponent<KunrealEngine::MeshRenderer>()->GetTextureName();
+		//textureJson["DiffuseList"] = ptr->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures();
 		textureJson["Normal"] = ptr->GetComponent<KunrealEngine::MeshRenderer>()->GetNormalName();
 		meshRenderer["TextureRenderer"].push_back(textureJson);
 	}

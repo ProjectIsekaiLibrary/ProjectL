@@ -129,6 +129,15 @@
     <Filter Include="Shadow">
       <UniqueIdentifier>{06261cdf-bb5a-4005-b38b-ef61a8df4f4f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ArkEngine\ArkDX11\Shaodw">
+      <UniqueIdentifier>{7c4f92b0-35cb-456d-b560-430fc8342c29}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ArkEngine\ArkDX11\Line">
+      <UniqueIdentifier>{d92bc4ee-b167-4ce1-88da-43f9f2c9a683}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Particle">
+      <UniqueIdentifier>{2c5c796f-2afd-4021-9791-6cb842336ae8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -260,14 +269,29 @@
     <ClInclude Include="IUIImage.h">
       <Filter>UI</Filter>
     </ClInclude>
-    <ClInclude Include="Shadow.h">
+    <ClInclude Include="ShadowMap.h">
       <Filter>Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowApp.h">
+      <Filter>Shadow</Filter>
+    </ClInclude>
+    <ClInclude Include="ShadowBuffer.h">
+      <Filter>ArkEngine\ArkDX11\Shaodw</Filter>
+    </ClInclude>
+    <ClInclude Include="LineObject.h">
+      <Filter>ArkEngine\ArkDX11\Line</Filter>
+    </ClInclude>
+    <ClInclude Include="ILineObject.h">
+      <Filter>ArkEngine\ArkDX11\Line</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleSystem.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="ParticleEffect.h">
+      <Filter>Particle</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="dllmain.cpp">
-      <Filter>Default\dllmain</Filter>
-    </ClCompile>
     <ClCompile Include="DX11Renderer.cpp">
       <Filter>ArkEngine\ArkDX11\Renderer</Filter>
     </ClCompile>
@@ -364,8 +388,26 @@
     <ClCompile Include="UIImage.cpp">
       <Filter>UI</Filter>
     </ClCompile>
-    <ClCompile Include="Shadow.cpp">
+    <ClCompile Include="ShadowMap.cpp">
       <Filter>Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowApp.cpp">
+      <Filter>Shadow</Filter>
+    </ClCompile>
+    <ClCompile Include="ShadowBuffer.cpp">
+      <Filter>ArkEngine\ArkDX11\Shaodw</Filter>
+    </ClCompile>
+    <ClCompile Include="dllmain.cpp">
+      <Filter>Default\dllmain</Filter>
+    </ClCompile>
+    <ClCompile Include="LineObject.cpp">
+      <Filter>ArkEngine\ArkDX11\Line</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleSystem.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="ParticleEffect.cpp">
+      <Filter>Particle</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -400,6 +442,9 @@
       <Filter>FX</Filter>
     </FxCompile>
     <FxCompile Include="RunTimeDependency\Resources\FX\LightHelper.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\ParticleFire.fx">
       <Filter>FX</Filter>
     </FxCompile>
   </ItemGroup>

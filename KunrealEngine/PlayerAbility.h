@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
+#include "Ability.h"
 
 namespace KunrealEngine
 {
@@ -25,8 +26,12 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
+		Ability* _currentSkill;
 	private:
-		int _abilityCount;			// 
+		std::vector<Ability*> _abilityContainer;
+
+	public:
+		void AddToContanier(Ability* abil);
 	};
 }
 

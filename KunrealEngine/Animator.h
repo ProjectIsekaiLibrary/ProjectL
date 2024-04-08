@@ -55,6 +55,12 @@ namespace KunrealEngine
 
 		// mesh에 어떤 애니메이션 클립들이 들어있는지 확인
 		const std::vector<std::string>& GetClipNames();
+
+		// 현재 실행중인 애니메이션 이름 가져오기
+		const std::string& GetNowAnimationName();
+
+		// 애니메이션 실행중인지 여부 가져오기
+		bool GetIsAnimationPlaying();
 	};
 }
 

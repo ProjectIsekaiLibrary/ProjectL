@@ -51,6 +51,8 @@ namespace ArkEngine
 
 		GInterface::GraphicsDirLight* GetDirLightInterface();
 
+		std::vector<int>& GetActiveIndexList();
+
 		void AddDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction);		
 
 	public:
@@ -69,6 +71,8 @@ namespace ArkEngine
 		std::vector<ArkEngine::ArkDX11::DirectionalLight> _dirLightList;
 
 		std::vector<ArkEngine::ArkDX11::DirectionalLight> _activeDirLightList;
+
+		std::vector<int> _activeDirIndexList;
 	
 		// point Light 
 		std::vector<ArkEngine::ArkDX11::PointLight> _pointLightList;

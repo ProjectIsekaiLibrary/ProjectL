@@ -17,7 +17,7 @@ namespace KunrealEngine
 	class GameObject;
 	class BoxCollider;
 
-	class PhysicsSystem : public physx::PxSimulationEventCallback
+	class _DECLSPEC PhysicsSystem : public physx::PxSimulationEventCallback
 	{
 		// actor의 userData에 추가할 구조체
 		struct PhysicsUserData

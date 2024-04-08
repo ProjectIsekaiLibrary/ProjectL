@@ -38,13 +38,18 @@ namespace KunrealEngine
 
 	private:
 		DirectX::XMFLOAT3 _position;
-		DirectX::XMFLOAT4 _rotation;				// local
+		DirectX::XMFLOAT3 _rotation;				// local
 		DirectX::XMFLOAT3 _scale;
 
 		DirectX::XMFLOAT4 _quaternion;				// world
 		DirectX::XMFLOAT4X4 _worldTM;
 
 	public:
+		// 본을 위한 값
+		DirectX::XMFLOAT3 _posForBone;
+		DirectX::XMFLOAT4 _quatForBone;
+		bool _haveParentBone;
+
 		// Rotation값 조정
 		void SetRotation(float x, float y, float z);
 
@@ -55,13 +60,21 @@ namespace KunrealEngine
 		void SetScale(float x, float y, float z);
 
 		DirectX::XMFLOAT3 GetPosition();
-		DirectX::XMFLOAT4 GetRotation();
+		DirectX::XMFLOAT3 GetRotation();
+		DirectX::XMFLOAT4 GetQuaternion();
 		DirectX::XMFLOAT3 GetScale();
 
 	public:
 		// WorldTM 계산			// SRT
 		DirectX::XMFLOAT4X4 CreateWorldTransformMatrix();
 		DirectX::XMFLOAT4X4 GetWorldTM();
+
+		// 에디터에서 사용할 gizmo용 position 변경 함수
+		void SetPositionWithGizmo(float x, float y, float z);
+
+	private:
+		// 부모 오브젝트가 생겼을 때 transform 재계산
+		void RecalculateTransform();
 	};
 }
 

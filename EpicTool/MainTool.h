@@ -3,6 +3,8 @@
 #include "imgui.h"
 #include "imgui_impl_win32.h"
 #include "imgui_impl_dx11.h"
+#include <string>
+#include <vector>
 
 struct ImVec4;
 
@@ -15,6 +17,7 @@ struct ImGuiIO;
 namespace KunrealEngine
 {
     class EngineCore;
+    class GameObject;
 }
 
 namespace EpicTool
@@ -25,6 +28,7 @@ namespace EpicTool
     class DataControlWindow;
     class GraphicWindow;
     class GameWindow;
+    class Deserialize;
 
     class IWindow;
 
@@ -63,7 +67,10 @@ namespace EpicTool
 
 
         void UpdateAll();   // 이후 구현될 부분을 모음
+
         void RenderAll(ImGuiIO& io);
+
+        void LoadData();
     private:
         // 객체선언 변수
         ResourceWindow* _resourceWindow;
@@ -71,7 +78,7 @@ namespace EpicTool
         DataControlWindow* _saveloadWindow;
         GameWindow* _gameWindow;
         ShowWindowManager* _windowManager;
-        
+        Deserialize* _deserialize;
 
 
         // 엔진
@@ -97,6 +104,12 @@ namespace EpicTool
 
     private:
 		int _selectedObjectIndex;  // 오브젝트리스트에서 무엇을 선택했는지 관리
+
+    private:
+        bool _loadSuccess;
+        std::string _loadFilePath;
+
+        std::vector<KunrealEngine::GameObject*> _gameObjectlist;
     };
 }
 

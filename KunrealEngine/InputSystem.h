@@ -56,7 +56,7 @@ namespace KunrealEngine
 
 		// 입력시스템 초기화 함수
 		bool Initialize(HINSTANCE instance, HWND hwnd, int screenHeight, int screenWidth);
-		void Finalize();
+		void Release();
 
 		// 매 프레임마다 작동. 지금은 디바이스와의 연결이 끊어졌는지 아닌지를 체크. 
 		void Update(float fTime);

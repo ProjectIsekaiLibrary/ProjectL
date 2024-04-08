@@ -41,6 +41,7 @@ namespace ArkEngine
 			virtual void SetRenderingState(bool tf) override;
 
 		public:
+			virtual const std::string& GetImageName() override;
 			// 이미지 객체의 트랜스폼 설정	
 			virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) override;
 			// 이미지 객체의 위치값 설정 (좌상단 0,0)

@@ -36,6 +36,7 @@ namespace ArkEngine
 	{
 		class Camera;
 		class DeferredRenderer;
+		class DWFont;
 	}
 
 	namespace FBXLoader
@@ -90,6 +91,12 @@ namespace ArkEngine
 			virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) override;
 
 		public:
+			virtual void CreateDebugLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT4 color) override;
+			virtual void DeleteLine(int index) override;
+			virtual void DeleteLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2) override;
+			virtual void DeleteAllLine() override;
+
+		public:
 			virtual void CreateCubeMap(const char* cubeMapName, const char* textureName, bool isCube) override;
 			virtual void DeleteCubeMap(const char* cubeMapName) override;
 			virtual std::vector<std::string> GetCubeMapList() override;
@@ -138,7 +145,22 @@ namespace ArkEngine
 			// IMGUIZMO를 사용하기 위해 메인 카메라의 Proj행렬을 반환
 			virtual const DirectX::XMFLOAT4X4& GetProjMatrix() override;
 
+			// 특정 본을 따라가도록 하는 Transform 행렬 반환
+			virtual const DirectX::XMFLOAT4X4& GetTransform(GInterface::GraphicsRenderable* renderable, const std::string& boneName) override;
+
+			// 네비 메쉬를 위한 모든 메쉬들의 버텍스의 월드좌표 반환
+			virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> GetAllMeshVertex() override;
+			// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
+			virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() override;
+
+		public:
+			void CreateShadowViewPort(int shadowWidth, int shadowHeight);
+
+		public:
+			void CreateShadowCamera(DirectX::XMFLOAT3 cameraPosition, DirectX::XMFLOAT3 targetPosition);
+		
 		private:
+			void BeginShadowRender();
 			void BeginRender();
 			void FinalRender();
 			void EndRender();
@@ -151,7 +173,9 @@ namespace ArkEngine
 			void CreateRenderTargetView();	// SWAP CHAIN의 후면 버퍼에 대한 랜더 대상 뷰를 생성
 			void CreateDepthStencilView();		// 깊이 스탠실 버퍼와 그에 연결되는 깊이 스탠실 뷰를 생성
 			void BindView();				// 랜더타켓 뷰와 깊이 스탠실 뷰를 파이프 라인의 출력 병합기 단계에 묶기
-			void SetViewport();				// 뷰포트 설정
+			void SetViewport();
+			void SetShadowViewport();				// 화면 크기로 뷰포트 설정
+			void SetViewportWithDefaultCamera();				// 뷰포트 설정
 			void CreateRenderState();		// 렌더 상태 집합
 			void CreateDepthStecilState();	// 깊이 버퍼 설정
 
@@ -172,6 +196,7 @@ namespace ArkEngine
 
 		private:
 			float GetAspectRatio();
+			float GetShadowRatio();
 
 		private:
 			void CreateDirLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction);
@@ -180,6 +205,15 @@ namespace ArkEngine
 		private:
 			void SetPickingTexture();
 			UINT Picking(int mouseX, int mouseY);
+
+		private:
+			DirectX::XMFLOAT3 GetMyPosition(DirectX::XMFLOAT3 direction, DirectX::XMFLOAT3 targetPos);
+
+		private:
+			bool Equal(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+			{
+				return a.x == b.x && a.y == b.y && a.z == b.z;
+			}
 
 		private:
 			Microsoft::WRL::ComPtr<ID3D11Device> _device;
@@ -197,6 +231,7 @@ namespace ArkEngine
 
 			Microsoft::WRL::ComPtr<ID3D11RasterizerState> _solidRS;
 			Microsoft::WRL::ComPtr<ID3D11RasterizerState> _wireRS;
+			Microsoft::WRL::ComPtr<ID3D11RasterizerState> _shadowRS;
 
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilState;
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilStateDisable;
@@ -207,13 +242,18 @@ namespace ArkEngine
 		private:
 			std::unique_ptr<ArkEngine::ArkDX11::DWFont> _font;
 
+			ArkEngine::ICamera* _originMainCamera;
 			ArkEngine::ICamera* _mainCamera;
+
 
 			ArkEngine::ICubeMap* _mainCubeMap;
 
 		private:
 			int _clientWidth;
 			int _clientHeight;
+
+			int _shadowWidth;
+			int _shadowHeight;
 
 			bool _isDebugMode;
 
@@ -234,6 +274,11 @@ namespace ArkEngine
 
 		private:
 			ID3D11Texture2D* _colorTexture;
+
+		private:
+			D3D11_VIEWPORT _viewPort;
+			D3D11_VIEWPORT _shadowViewPort;
+
 		};
 	}
 }

@@ -33,6 +33,8 @@ namespace EpicTool
 
         POINT GetMousePosition();
 
+        void SetGameObjectList(std::vector<KunrealEngine::GameObject*>& intance);
+
     private:
         std::vector<KunrealEngine::GameObject*> _gameObjectlist;
 
@@ -58,5 +60,7 @@ namespace EpicTool
         float _degree = 0;
 
         float _testTransform[9];
+
+        bool _first;
     };
 }

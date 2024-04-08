@@ -1,13 +1,14 @@
 #include "Transform.h"
+#include "GameObject.h"
+#include "ToolBox.h"
 
 KunrealEngine::Transform::Transform()
-	:_position({ 0.0f, 0.0f, 0.0f }), _rotation({ 0.0f, 0.0f, 0.0f, 1.0f }), _scale({ 1.0f, 1.0f, 1.0f }),
-	_worldTM(), _quaternion()
+	:_position({ 0.0f, 0.0f, 0.0f }), _rotation({ 0.0f, 0.0f, 0.0f }), _scale({ 1.0f, 1.0f, 1.0f }),
+	_worldTM(), _quaternion({0.0f, 0.0f, 0.0f, 1.0f}), _haveParentBone(false),
+	_posForBone({0.0f, 0.0f, 0.0f}), _quatForBone({0.0f, 0.0f, 0.0f, 1.0f})
 {
-
+	DirectX::XMStoreFloat4x4(&_worldTM, DirectX::XMMatrixIdentity());
 }
-
-KunrealEngine::KunrealMath::Float2 float1{ 1.0f, 1.0f };
 
 KunrealEngine::Transform::~Transform()
 {
@@ -89,9 +90,14 @@ DirectX::XMFLOAT3 KunrealEngine::Transform::GetPosition()
 	return this->_position;
 }
 
-DirectX::XMFLOAT4 KunrealEngine::Transform::GetRotation()
+DirectX::XMFLOAT3 KunrealEngine::Transform::GetRotation()
 {
 	return this->_rotation;
+}
+
+DirectX::XMFLOAT4 KunrealEngine::Transform::GetQuaternion()
+{
+	return this->_quaternion;
 }
 
 DirectX::XMFLOAT3 KunrealEngine::Transform::GetScale()
@@ -109,11 +115,66 @@ DirectX::XMFLOAT4X4 KunrealEngine::Transform::CreateWorldTransformMatrix()
 	//	* DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->_quaternion))
 	//	* DirectX::XMMatrixScaling(_scale.x, _scale.y, _scale.z));
 
-	return _worldTM; 
+	return _worldTM;
+	
 }
 
 DirectX::XMFLOAT4X4 KunrealEngine::Transform::GetWorldTM()
 {
+	if (this->GetOwner()->GetParent() != nullptr)
+	{
+		DirectX::XMFLOAT4X4 temp = this->GetOwner()->GetParent()->GetComponent<Transform>()->GetWorldTM();
+		DirectX::XMMATRIX parentMatrix = DirectX::XMLoadFloat4x4(&temp);
+		DirectX::XMMATRIX matrix = DirectX::XMLoadFloat4x4(&this->_worldTM);
+	
+		//DirectX::XMMATRIX mult = parentMatrix * matrix;
+		DirectX::XMMATRIX mult = matrix * parentMatrix;
+	
+		DirectX::XMFLOAT4X4 result;
+		DirectX::XMStoreFloat4x4(&result, mult);
+	
+		return result;
+	}
+
 	return this->_worldTM;
 }
 
+void KunrealEngine::Transform::SetPositionWithGizmo(float x, float y, float z)
+{
+	this->_position.x = x;
+	this->_position.y = y;
+	this->_position.z = z;
+
+	CreateWorldTransformMatrix();
+
+	DirectX::XMFLOAT4X4 temp = this->GetOwner()->GetParent()->GetComponent<Transform>()->GetWorldTM();
+	DirectX::XMMATRIX parentMatrix = DirectX::XMLoadFloat4x4(&temp);
+	DirectX::XMMATRIX localMatrix = DirectX::XMLoadFloat4x4(&this->_worldTM);
+
+	DirectX::XMMATRIX inverse = DirectX::XMMatrixInverse(nullptr, parentMatrix);
+	DirectX::XMMATRIX recalcMatrix = localMatrix * inverse;
+
+	DirectX::XMVECTOR scale, quaternion, translation;
+
+	DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, recalcMatrix);
+	DirectX::XMStoreFloat3(&this->_position, translation);
+}
+
+void KunrealEngine::Transform::RecalculateTransform()
+{
+	DirectX::XMFLOAT4X4 temp = this->GetOwner()->GetParent()->GetComponent<Transform>()->GetWorldTM();
+	DirectX::XMMATRIX parentMatrix = DirectX::XMLoadFloat4x4(&temp);
+	DirectX::XMMATRIX localMatrix = DirectX::XMLoadFloat4x4(&this->_worldTM);
+
+	DirectX::XMMATRIX inverse = DirectX::XMMatrixInverse(nullptr, parentMatrix);
+	DirectX::XMMATRIX recalcMatrix = localMatrix * inverse;
+
+	DirectX::XMVECTOR scale, quaternion, translation;
+
+	DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, recalcMatrix);
+	DirectX::XMStoreFloat3(&this->_position, translation);
+	DirectX::XMStoreFloat4(&this->_quaternion, quaternion);
+	DirectX::XMStoreFloat3(&this->_scale, scale);
+
+	this->_rotation = ToolBox::QuaternionToEulerAngles(quaternion);
+}

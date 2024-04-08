@@ -209,6 +209,7 @@
     <ClInclude Include="ICamera.h" />
     <ClInclude Include="ICubeMap.h" />
     <ClInclude Include="IDebugObject.h" />
+    <ClInclude Include="ILineObject.h" />
     <ClInclude Include="IPointLight.h" />
     <ClInclude Include="IRenderable.h" />
     <ClInclude Include="IRenderer.h" />
@@ -217,12 +218,17 @@
     <ClInclude Include="IdirLight.h" />
     <ClInclude Include="IUIImage.h" />
     <ClInclude Include="LightManager.h" />
+    <ClInclude Include="LineObject.h" />
     <ClInclude Include="MathConverter.h" />
     <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ParsingStructs.h" />
+    <ClInclude Include="ParticleEffect.h" />
+    <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ResourceManager.h" />
-    <ClInclude Include="Shadow.h" />
+    <ClInclude Include="ShadowApp.h" />
+    <ClInclude Include="ShadowBuffer.h" />
+    <ClInclude Include="ShadowMap.h" />
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Transform.h" />
@@ -254,11 +260,16 @@
     <ClCompile Include="IdirLight.cpp" />
     <ClCompile Include="IPointLight.cpp" />
     <ClCompile Include="LightManager.cpp" />
+    <ClCompile Include="LineObject.cpp" />
     <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ParsingStructs.cpp" />
+    <ClCompile Include="ParticleEffect.cpp" />
+    <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
-    <ClCompile Include="Shadow.cpp" />
+    <ClCompile Include="ShadowApp.cpp" />
+    <ClCompile Include="ShadowBuffer.cpp" />
+    <ClCompile Include="ShadowMap.cpp" />
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Transform.cpp" />
@@ -281,6 +292,12 @@
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
     </FxCompile>
     <FxCompile Include="RunTimeDependency\Resources\FX\finalDeferredToon.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
+    <FxCompile Include="RunTimeDependency\Resources\FX\ParticleFire.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>

@@ -45,6 +45,9 @@ namespace ArkEngine
 		virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) abstract;
 
 	public:
+		virtual void SetWorld(DirectX::XMFLOAT4X4 matrix) abstract;
+
+	public:
 		virtual float GetRadius() abstract;
 	};
 }

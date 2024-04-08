@@ -25,6 +25,7 @@ Texture2D gDiffuseMap;
 Texture2D gNormalMap;
 Texture2D gEmissiveMap;
 
+
 TextureCube gCubeMap;
 float4 gColor;
 
@@ -36,6 +37,15 @@ SamplerState samAnisotropic
     AddressU = WRAP;
     AddressV = WRAP;
 };
+
+// Ãß°¡
+SamplerState samLinear
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = WRAP;
+    AddressV = WRAP;
+};
+
 
 struct VertexIn
 {
@@ -54,7 +64,7 @@ struct VertexOut
     float4 PosH : SV_POSITION;
     float3 PosW : POSITION;
     float3 NormalW : NORMAL;
-    float2 Tex : TEXCOORD;
+    float2 Tex : TEXCOORD0;
     float3 TangentW : TANGENT;
 };
 
@@ -64,9 +74,13 @@ struct PSOut
     float4 Diffuse : SV_Target1;
     float4 BumpedNormal : SV_Target2;
     float4 Emissive : SV_Target3;
-    float4 Depth : SV_Target4;
-    float4 Material : SV_Target5;
-    float4 Color : SV_Target6;
+    float4 Material : SV_Target4;
+    float4 Color : SV_Target5;
+};
+
+struct PSOut2
+{
+    float4 Color : SV_Target0;
 };
 
 VertexOut VS(VertexIn vin)
@@ -106,7 +120,22 @@ VertexOut VS(VertexIn vin)
 	// Output vertex attributes for interpolation across triangle.
     vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
 	///vout.Tex = vin.Tex;
-
+    
+    //float4x4 lightViewMatrix = gLightViewMatrix;
+    //float3 dirZ = -normalize(gWorldLightPosition.xyz);
+    //float3 up = float3(0.0f, 1.0f, 0.0f);
+    //float3 dirX = cross(up, dirZ);
+    //float3 dirY = cross(dirZ, dirX);
+    //
+    //lightViewMatrix = float4x4(
+    //float4(dirX, -dot(gWorldLightPosition.xyz, dirX)),
+    //float4(dirY, -dot(gWorldLightPosition.xyz, dirY)),
+    //float4(dirZ, -dot(gWorldLightPosition.xyz, dirZ)),
+    //float4(0.0f, 0.0f, 0.0f, 1.0f));
+    //
+    //lightViewMatrix = transpose(lightViewMatrix);
+    
+    
     return vout;
 }
 
@@ -131,10 +160,17 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.Diffuse = float4(diffuse, 1.0f);
     output.BumpedNormal = bumpedNormal;
     output.Emissive = float4(emissive, 1.0f);
-    output.Depth = float4(pin.PosH.zzz, 1.0f);
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
     output.Color = gColor;
     
+    return output;
+}
+
+PSOut2 PS2(VertexOut pin)
+{
+    PSOut2 output;
+    output.Color = float4(0.0f, 0.0f, 0.0f, 0.0f);
+
     return output;
 }
 
@@ -145,6 +181,13 @@ technique11 Light
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PS(false, false)));
+    }
+
+    pass P1
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS2()));
     }
 }
 

@@ -78,9 +78,27 @@ namespace GInterface
 		virtual void PauseAnimation() abstract;
 		// 멈춘 애니메이션을 다시 재생한다
 		virtual void ReplayAnimation() abstract;
-		// 현재 프레임을 가져온다
+		// 현재 프레임을 반환
 		virtual float GetCurrentFrame() abstract;
-		// 현재 애니메이션의 최대 프레임을 가져온다
+		// 현재 애니메이션의 최대 프레임을 반환
 		virtual float GetMaxFrame() abstract;
+		// 현재 애니메이션을 실행중인지 여부 반환
+		virtual bool GetIsPlaying() abstract;
+		// 현재 실행중인 애니메이션의 이름을 반환
+		virtual const std::string& GetNowAnimationName() abstract;
+		// 이름으로 특정 본의 transform값 가져오기
+		virtual void SetParentBone(GInterface::GraphicsRenderable* model, const std::string& boneName) abstract;
+		// 부모 본이 있다면 제거
+		virtual void DeleteParentBone() abstract;
+		// 부모 본이 존재할 경우 그래픽스 엔진에서 계산한 트랜스폼 값을 사용, 부모가 없는경우 단위행렬 반환 // worldTM
+		virtual DirectX::XMFLOAT4X4 GetTransformEffectedByBone() abstract;
+		// 부모 본의 입장에서 transform 행렬 넘겨줌
+		virtual DirectX::XMFLOAT4X4 GetBoneTransform(std::string boneName) abstract;
+
+	public:
+		// 그림자를 가질 것인지 여부 설정 (기본 설정은 true)
+		virtual void SetShadowState(bool tf) abstract;
+		// 그림자를 가질 가지는지 여부 가져오기
+		virtual bool GetShadowState() abstract;
 	};
 }

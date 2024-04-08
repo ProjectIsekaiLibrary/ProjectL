@@ -33,6 +33,7 @@ void KunrealEngine::SceneManager::Release()
 	}
 
 	_sceneList.clear();
+	_sceneList.shrink_to_fit();
 }
 
 KunrealEngine::Scene* KunrealEngine::SceneManager::CreateScene(std::string sceneName)

@@ -1,56 +1,1696 @@
-﻿  PlayerMove.cpp
+﻿  pch.cpp
+  fastlz.c
+  Ability.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Ability.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  AbilityGeneratorcpp.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'AbilityGeneratorcpp.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,25): warning C4251: 'KunrealEngine::PlayerAbility::_abilityContainer': class 'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>'에서는 class 'KunrealEngine::PlayerAbility'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'AbilityGeneratorcpp.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,8):
+  'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>' 선언을 참조하십시오.
+  
+  Animator.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Animator.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  Boss.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Boss.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.cpp(157,65): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.cpp(161,66): warning C4267: '인수': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  BoxCollider.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'BoxCollider.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  ButtonSystem.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'ButtonSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  Camera.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Camera.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  Component.cpp
+  Coroutine.cpp
+  dllmain.cpp
+  EngineCore.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Navigation.h(189,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EngineCore.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\EngineCore.cpp(242,42): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\EngineCore.cpp(242,27): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\EngineCore.cpp(243,39): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\EngineCore.cpp(243,28): warning C4305: '인수': 'double'에서 'float'(으)로 잘립니다.
+  EventManager.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,25): warning C4251: 'KunrealEngine::PlayerAbility::_abilityContainer': class 'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>'에서는 class 'KunrealEngine::PlayerAbility'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,8):
+  'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'EventManager.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+  GameObject.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GameObject.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+  GraphicsSystem.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'GraphicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  ImageRenderer.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'ImageRenderer.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  InputGeom.cpp
+  InputSystem.cpp
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\InputSystem.cpp(9,1): warning C4005: 'Assert': 매크로 재정의
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\InputSystem.cpp(8,1):
+  'Assert'의 이전 정의를 참조하십시오.
+  
+  Kamen.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Kamen.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+  KunrealAPI.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'KunrealAPI.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  Light.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Light.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  코드를 생성하고 있습니다...
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Light.cpp(77): warning C4715: 'KunrealEngine::Light::GetLightType': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Light.cpp(135): warning C4715: 'KunrealEngine::Light::GetDirection': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Light.cpp(170): warning C4715: 'KunrealEngine::Light::GetAmbient': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Light.cpp(240): warning C4715: 'KunrealEngine::Light::GetSpecular': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Light.cpp(205): warning C4715: 'KunrealEngine::Light::GetDiffuse': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Light.cpp(288): warning C4715: 'KunrealEngine::Light::GetPointRange': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\ImageRenderer.cpp(92): warning C4715: 'KunrealEngine::ImageRenderer::GetImageName': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\ImageRenderer.cpp(120): warning C4715: 'KunrealEngine::ImageRenderer::GetImageStatus': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.cpp(64): warning C4715: 'KunrealEngine::GraphicsSystem::GetCubeMapList': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(68): warning C4715: 'BossPattern::Play': 모든 제어 경로에서 값을 반환하지는 않습니다.
+  컴파일하고 있습니다...
+  MeshLoaderObj.cpp
+  MeshRenderer.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'MeshRenderer.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  Navigation.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Navigation.cpp(256,14): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Navigation.cpp(256,32): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Navigation.cpp(256,70): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Navigation.cpp(256,91): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Navigation.cpp(257,104): warning C4305: '초기화 중': 'double'에서 'float'(으)로 잘립니다.
+  NpcCore.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'NpcCore.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+  PhysicsEvent.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsEvent.cpp(9,26): warning C4101: 'rigid2' :참조되지 않은 지역 변수입니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsEvent.cpp(8,26): warning C4101: 'rigid1' :참조되지 않은 지역 변수입니다.
+  PhysicsSystem.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PhysicsSystem.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+  Player.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,25): warning C4251: 'KunrealEngine::PlayerAbility::_abilityContainer': class 'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>'에서는 class 'KunrealEngine::PlayerAbility'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,8):
+  'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Player.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+  PlayerAbility.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerAbility.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,25): warning C4251: 'KunrealEngine::PlayerAbility::_abilityContainer': class 'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>'에서는 class 'KunrealEngine::PlayerAbility'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerAbility.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerAbility.h(31,8):
+  'std::vector<KunrealEngine::Ability *,std::allocator<KunrealEngine::Ability *>>' 선언을 참조하십시오.
+  
+  PlayerMove.cpp
 C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
   C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
   'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
   
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(41,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
   C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
   'DirectX::XMFLOAT3' 선언을 참조하십시오.
   
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(44,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
   C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
   'DirectX::XMFLOAT3' 선언을 참조하십시오.
   
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(47,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
   C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
   'DirectX::XMFLOAT3' 선언을 참조하십시오.
   
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(49,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
-  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(49,8):
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
   'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
   
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(7,51): warning C4275: DLL 인터페이스가 아닌 class 'KunrealEngine::Boss'이(가) DLL 인터페이스 class 'KunrealEngine::Kamen'의 기본으로 사용되었습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
-  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(21,8):
-  'KunrealEngine::Boss' 선언을 참조하십시오.
-  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(7,18):
-  'KunrealEngine::Kamen' 선언을 참조하십시오.
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
   
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(29,29): warning C4251: 'KunrealEngine::Kamen::_testPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
-  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(48,33):
-  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
-  
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(68,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
-  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
-  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(28,10):
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
   'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
   
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
 C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
   (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
   C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
   'DirectX::XMFLOAT3' 선언을 참조하십시오.
   
-  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(15,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(16,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'PlayerMove.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
 C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(17,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(151,68): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
-C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(224,68): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(18,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(19,118): warning C4244: '=': 'float'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(110,29): warning C4267: '=': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(166,67): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(234,68): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.cpp(321,66): warning C4244: '인수': 'int'에서 'float'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  Projectile.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Projectile.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+  ChunkyTriMesh.cpp
+  Scene.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(46,21): warning C4251: 'KunrealEngine::BoxCollider::_boxSize': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(49,21): warning C4251: 'KunrealEngine::BoxCollider::_position': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(52,21): warning C4251: 'KunrealEngine::BoxCollider::_quaternion': struct 'DirectX::XMFLOAT4'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(19,9):
+  'DirectX::XMFLOAT4' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(55,21): warning C4251: 'KunrealEngine::BoxCollider::_offset': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\GraphicsInterface\GraphicsInterface.h(18,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BoxCollider.h(116,15): warning C4251: 'KunrealEngine::BoxCollider::_parentBoneName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::BoxCollider'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(70,14): warning C4251: 'KunrealEngine::Player::_playerInfo': struct 'KunrealEngine::Player::PlayerInfo'에서는 class 'KunrealEngine::Player'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Player.h(29,10):
+  'KunrealEngine::Player::PlayerInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,48): warning C4275: DLL 인터페이스가 아닌 class 'physx::PxSimulationEventCallback'이(가) DLL 인터페이스 class 'KunrealEngine::PhysicsSystem'의 기본으로 사용되었습니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\PxSimulationEventCallback.h(791,7):
+  'physx::PxSimulationEventCallback' 선언을 참조하십시오.
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(20,18):
+  'KunrealEngine::PhysicsSystem' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,39): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidDynamics': class 'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(77,8):
+  'std::vector<physx::PxRigidDynamic *,std::allocator<physx::PxRigidDynamic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,38): warning C4251: 'KunrealEngine::PhysicsSystem::_rigidStatics': class 'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(78,8):
+  'std::vector<physx::PxRigidStatic *,std::allocator<physx::PxRigidStatic *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,37): warning C4251: 'KunrealEngine::PhysicsSystem::_fixedJoints': class 'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(79,8):
+  'std::vector<physx::PxFixedJoint *,std::allocator<physx::PxFixedJoint *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,60): warning C4251: 'KunrealEngine::PhysicsSystem::_dynamicMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(83,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidDynamic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidDynamic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,59): warning C4251: 'KunrealEngine::PhysicsSystem::_staticMap': class 'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(84,8):
+  'std::unordered_map<KunrealEngine::BoxCollider *,physx::PxRigidStatic *,std::hash<KunrealEngine::BoxCollider *>,std::equal_to<KunrealEngine::BoxCollider *>,std::allocator<std::pair<KunrealEngine::BoxCollider *const ,physx::PxRigidStatic *>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(87,31): warning C4251: 'KunrealEngine::PhysicsSystem::_allocator': class 'physx::PxDefaultAllocator'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultAllocator.h(88,7):
+  'physx::PxDefaultAllocator' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(88,34): warning C4251: 'KunrealEngine::PhysicsSystem::_errorCallback': class 'physx::PxDefaultErrorCallback'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\extensions\PxDefaultErrorCallback.h(51,8):
+  'physx::PxDefaultErrorCallback' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.h(89,30): warning C4251: 'KunrealEngine::PhysicsSystem::_torlerance': class 'physx::PxTolerancesScale'에서는 class 'KunrealEngine::PhysicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\ProjectL\ProjectL\vcpkg PhysX\vcpkg\installed\x64-windows\include\physx\common\PxTolerancesScale.h(52,7):
+  'physx::PxTolerancesScale' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(33,21): warning C4251: 'KunrealEngine::PlayerMove::_targetPos': struct 'DirectX::XMFLOAT3'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(7,9):
+  'DirectX::XMFLOAT3' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,64): warning C4251: 'KunrealEngine::PlayerMove::_stopover': class 'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>'에서는 class 'KunrealEngine::PlayerMove'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PlayerMove.h(66,8):
+  'std::vector<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>,std::allocator<std::pair<DirectX::XMFLOAT3,DirectX::XMFLOAT3>>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(98,17): warning C4251: 'KunrealEngine::Boss::_info': struct 'BossBasicInfo'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\BossStruct.hpp(24,8):
+  'BossBasicInfo' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(104,29): warning C4251: 'KunrealEngine::Boss::_basicPattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(105,29): warning C4251: 'KunrealEngine::Boss::_corePattern': class 'std::vector<BossPattern *,std::allocator<BossPattern *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(67,33):
+  'std::vector<BossPattern *,std::allocator<BossPattern *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,44): warning C4251: 'KunrealEngine::Boss::_subColliderList': class 'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(107,8):
+  'std::vector<KunrealEngine::BoxCollider *,std::allocator<KunrealEngine::BoxCollider *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(114,28): warning C4251: 'KunrealEngine::Boss::_subObjectList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Scene.h(38,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Boss.h(127,3): warning C4251: 'KunrealEngine::Boss::patternEnd': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Boss'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Kamen.h(36,3): warning C4251: 'KunrealEngine::Kamen::function': class 'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>'에서는 class 'KunrealEngine::Kamen'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Scene.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\Coroutine.h(77,35):
+  'std::function<KunrealEngine::Coroutine::Coroutine_type (void)>' 선언을 참조하십시오.
+  
+  SceneManager.cpp
+  SoundPlayer.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,26): warning C4251: 'KunrealEngine::SoundPlayer::_soundList': class 'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>'에서는 class 'KunrealEngine::SoundPlayer'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'SoundPlayer.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.h(62,8):
+  'std::vector<KunrealEngine::SoundPlayer::SoundInfo,std::allocator<KunrealEngine::SoundPlayer::SoundInfo>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'SoundPlayer.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'SoundPlayer.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.cpp(71,102): warning C4834: [[nodiscard]] 특성이 포함된 함수의 반환 값을 버리는 중입니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundPlayer.cpp(202,23): warning C4244: 'return': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  SoundSystem.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(39,15): warning C4251: 'KunrealEngine::Sound::fileName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 struct 'KunrealEngine::Sound'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'SoundSystem.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(93,23): warning C4251: 'KunrealEngine::SoundSystem::_soundBuffer': class 'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>'에서는 class 'KunrealEngine::SoundSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'SoundSystem.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.h(87,28):
+  'std::vector<KunrealEngine::Sound *,std::allocator<KunrealEngine::Sound *>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(188,55): warning C4244: '인수': 'int'에서 'D3DVALUE'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(188,49): warning C4244: '인수': 'int'에서 'D3DVALUE'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(188,43): warning C4244: '인수': 'int'에서 'D3DVALUE'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(264,27): warning C4267: 'return': 'size_t'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(306,63): warning C4244: '인수': 'int'에서 'D3DVALUE'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(306,57): warning C4244: '인수': 'int'에서 'D3DVALUE'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(306,51): warning C4244: '인수': 'int'에서 'D3DVALUE'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(513,16): warning C4267: '=': 'size_t'에서 'unsigned int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(591,24): warning C4244: 'return': '__int64'에서 'int'(으)로 변환하면서 데이터가 손실될 수 있습니다.
+  TimeManager.cpp
+  ToolBox.cpp
+  Transform.cpp
+  Zeolight.cpp
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\NpcCore.h(42,15): warning C4251: 'KunrealEngine::NpcCore::_npcName': class 'std::basic_string<char,std::char_traits<char>,std::allocator<char>>'에서는 class 'KunrealEngine::NpcCore'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Zeolight.cpp'을(를) 컴파일하는 중)
+  C:\Program Files\Microsoft Visual Studio\2022\Community\VC\Tools\MSVC\14.38.33130\include\xstring(5127,29):
+  'std::basic_string<char,std::char_traits<char>,std::allocator<char>>' 선언을 참조하십시오.
+  
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GraphicsSystem.h(57,28): warning C4251: 'KunrealEngine::GraphicsSystem::_pickableList': class 'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>'에서는 class 'KunrealEngine::GraphicsSystem'의 클라이언트에서 DLL 인터페이스를 사용하도록 지정해야 합니다.
+  (소스 파일 'Zeolight.cpp'을(를) 컴파일하는 중)
+  C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\GameObject.h(53,8):
+  'std::vector<KunrealEngine::GameObject *,std::allocator<KunrealEngine::GameObject *>>' 선언을 참조하십시오.
+  
+  C:\Program Files (x86)\Windows Kits\10\Include\10.0.19041.0\um\dinput.h: DIRECTINPUT_VERSION undefined. Defaulting to version 0x0800
+  코드를 생성하고 있습니다...
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\SoundSystem.cpp(260): warning C4715: 'KunrealEngine::SoundSystem::Change3DorMono': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\PhysicsSystem.cpp(293): warning C4715: 'KunrealEngine::PhysicsSystem::GetColliderFromDynamic': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\MeshRenderer.cpp(106): warning C4715: 'KunrealEngine::MeshRenderer::GetMeshObject': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\MeshRenderer.cpp(114): warning C4715: 'KunrealEngine::MeshRenderer::GetMeshName': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\MeshRenderer.cpp(205): warning C4715: 'KunrealEngine::MeshRenderer::GetNormalName': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\MeshRenderer.cpp(223): warning C4715: 'KunrealEngine::MeshRenderer::GetMaterial': 모든 제어 경로에서 값을 반환하지는 않습니다.
+C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\KunrealEngine\MeshRenderer.cpp(239): warning C4715: 'KunrealEngine::MeshRenderer::GetReflect': 모든 제어 경로에서 값을 반환하지는 않습니다.
+PhysXExtensions_static_64.lib(ExtDefaultErrorCallback.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtDefaultErrorCallback.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtDefaultCpuDispatcher.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtDefaultCpuDispatcher.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtSimpleFactory.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtSimpleFactory.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtExtensions.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtExtensions.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtCpuWorkerThread.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtCpuWorkerThread.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtRigidBodyExt.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtRigidBodyExt.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(PxExtensionAutoGeneratedMetaDataObjects.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(PxExtensionAutoGeneratedMetaDataObjects.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtPvd.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtPvd.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(OmniPvdPxExtensionsSampler.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(OmniPvdPxExtensionsSampler.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtDistanceJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtDistanceJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtD6Joint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtD6Joint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtFixedJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtFixedJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtPrismaticJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtPrismaticJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtRevoluteJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtRevoluteJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtSphericalJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtSphericalJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(SnRepXCoreSerializer.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(SnRepXCoreSerializer.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(SnJointRepXSerializer.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(SnJointRepXSerializer.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXExtensions_static_64.lib(ExtContactJoint.obj) : warning LNK4099: '' PDB를 'PhysXExtensions_static_64.lib(ExtContactJoint.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvd.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvd.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdDefaultSocketTransport.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdDefaultSocketTransport.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdDataStream.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdDataStream.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdImpl.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdImpl.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdObjectModelMetaData.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdObjectModelMetaData.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdObjectRegistrar.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdObjectRegistrar.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdMemClient.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdMemClient.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxProfileEventImpl.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxProfileEventImpl.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+PhysXPvdSDK_static_64.lib(PxPvdProfileZoneClient.obj) : warning LNK4099: '' PDB를 'PhysXPvdSDK_static_64.lib(PxPvdProfileZoneClient.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(Recast.obj) : warning LNK4099: '' PDB를 'recast.lib(Recast.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(RecastRasterization.obj) : warning LNK4099: '' PDB를 'recast.lib(RecastRasterization.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(RecastFilter.obj) : warning LNK4099: '' PDB를 'recast.lib(RecastFilter.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(RecastArea.obj) : warning LNK4099: '' PDB를 'recast.lib(RecastArea.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(RecastLayers.obj) : warning LNK4099: '' PDB를 'recast.lib(RecastLayers.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(RecastAssert.obj) : warning LNK4099: '' PDB를 'recast.lib(RecastAssert.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+recast.lib(RecastAlloc.obj) : warning LNK4099: '' PDB를 'recast.lib(RecastAlloc.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourAlloc.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourAlloc.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourNavMesh.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourNavMesh.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourNavMeshQuery.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourNavMeshQuery.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourCommon.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourCommon.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourAssert.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourAssert.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourNode.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourNode.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+DetourTileCache.lib(DetourTileCache.obj) : warning LNK4099: '' PDB를 'DetourTileCache.lib(DetourTileCache.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+DetourTileCache.lib(DetourTileCacheBuilder.obj) : warning LNK4099: '' PDB를 'DetourTileCache.lib(DetourTileCacheBuilder.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+Detour.lib(DetourNavMeshBuilder.obj) : warning LNK4099: '' PDB를 'Detour.lib(DetourNavMeshBuilder.obj)' 또는 ''에서 찾을 수 없습니다. 디버그 정보가 없는 것처럼 개체를 링크합니다.
+     C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\Bin\x64\Debug\KunrealEngine.lib 라이브러리 및 C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\Bin\x64\Debug\KunrealEngine.exp 개체를 생성하고 있습니다.
   KunrealEngine.vcxproj -> C:\Users\KOCCA19\Desktop\Projects\FinalProject\5_Project\ProjectL\Bin\x64\Debug\KunrealEngine.dll
   0개 파일이 복사되었습니다.

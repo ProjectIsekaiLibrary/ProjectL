@@ -41,6 +41,7 @@ void KunrealEngine::Scene::Release()
 	}
 
 	_objectList.clear();
+	_objectList.shrink_to_fit();
 }
 
 void KunrealEngine::Scene::FixedUpdate()
@@ -113,7 +114,7 @@ KunrealEngine::GameObject* KunrealEngine::Scene::CreateObject()
 KunrealEngine::GameObject* KunrealEngine::Scene::CreateObject(std::string objectName)
 {
 	GameObject* gameObject = new GameObject(objectName);
-	gameObject->SetObjectName(objectName);
+	//gameObject->SetObjectName(objectName);
 	_objectList.emplace_back(gameObject);
 	gameObject->Initialize();
 	SortObjects();
@@ -137,6 +138,13 @@ void KunrealEngine::Scene::DeleteGameObject(std::string objectName)
 
 	if (iter != _objectList.end())
 	{
+		// 자식 오브젝트들도 삭제
+		for (auto childObjects : (*iter)->_childContainer)
+		{
+			DeleteGameObject(childObjects);
+			(*iter)->_childContainer.clear();
+		}
+
 		(*iter)->Release();							// 컴포넌트를 비워주고
 		delete* iter;								// 삭제하고
 		_objectList.erase(iter);					// 컨테이너에서 빼준다
@@ -149,11 +157,18 @@ void KunrealEngine::Scene::DeleteGameObject(std::string objectName)
 }
 
 void KunrealEngine::Scene::DeleteGameObject(GameObject* obj)
-{
+{                                                                                            
 	auto iter = find(_objectList.begin(), _objectList.end(), obj);
 
 	if (iter != _objectList.end())
 	{
+		// 자식 오브젝트들도 삭제
+		for (auto childObjects : (*iter)->_childContainer)
+		{
+			DeleteGameObject(childObjects);
+			(*iter)->_childContainer.clear();
+		}
+
 		obj->Release();
 		delete* iter;
 		_objectList.erase(iter);
@@ -173,7 +188,7 @@ std::string KunrealEngine::Scene::GetSceneName()
 std::vector<KunrealEngine::GameObject*> KunrealEngine::Scene::GetObjectList()
 {
 	return this->_objectList;
-}
+} 
 
 KunrealEngine::GameObject* KunrealEngine::Scene::GetGameObject(std::string objectName)
 {
@@ -192,6 +207,41 @@ KunrealEngine::GameObject* KunrealEngine::Scene::GetGameObject(std::string objec
 		/// 해당 오브젝트가 없다는 표시 예정
 		return nullptr;
 	}
+}
+
+KunrealEngine::GameObject* KunrealEngine::Scene::GetObjectWithTag(std::string tag)
+{
+	// 오브젝트 리스트에서 전달받은 태그를 가진 오브젝트가 있는지 확인
+	auto iter = find_if(_objectList.begin(), _objectList.end(), [&](GameObject* object)
+		{
+			return object->GetTag() == tag;
+		});
+
+	if (iter != _objectList.end())
+	{
+		return *iter;
+	}
+	else
+	{
+		/// 해당 오브젝트가 없다는 표시 예정
+		return nullptr;
+	}
+}
+
+std::vector<KunrealEngine::GameObject*> KunrealEngine::Scene::GetObjectsWithTag(std::string tag)
+{
+	std::vector<GameObject*> taggedObjects;
+
+	for (auto objects : _objectList)
+	{
+		if (objects->GetTag() == tag)
+		{
+			taggedObjects.emplace_back(objects);
+		}
+	}
+
+	return taggedObjects;
+
 }
 
 void KunrealEngine::Scene::SetMainCamera(GameObject* obj)

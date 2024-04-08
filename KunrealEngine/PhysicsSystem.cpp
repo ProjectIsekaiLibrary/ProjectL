@@ -149,6 +149,8 @@ void KunrealEngine::PhysicsSystem::CreateDynamicBoxCollider(BoxCollider* collide
 	PhysicsUserData data(collider->GetOwner(), boxShape);
 	boxActor->userData = &data;
 
+	collider->_shape = boxShape;
+
 	_pxScene->addActor(*boxActor);
 	_dynamicMap.insert(std::make_pair(collider, boxActor));
 	_rigidDynamics.push_back(boxActor);
@@ -171,7 +173,21 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 	// 포지션 관련
 	for (const auto& pair : _dynamicMap)
 	{
-		pair.second->setGlobalPose(physx::PxTransform(physx::PxVec3(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z)));
+		physx::PxTransform pxTrans;
+		pxTrans.p = physx::PxVec3(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z);
+
+		pxTrans.q.x = pair.first->GetColliderQuat().x;
+		pxTrans.q.y = pair.first->GetColliderQuat().y;
+		pxTrans.q.z = pair.first->GetColliderQuat().z;
+		pxTrans.q.w = pair.first->GetColliderQuat().w;
+
+		//pair.second->setGlobalPose(
+		// physx::PxTransform(
+		// physx::PxVec3(
+		// pair.first->GetColliderPos().x, 
+		// pair.first->GetColliderPos().y, 
+		// pair.first->GetColliderPos().z)));
+		pair.second->setGlobalPose(pxTrans, true);
 	}
 }
 
@@ -188,7 +204,8 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(BoxCollider* collider)
 {
 	/// attach된 shape의 크기를 직접 변경해주는 함수가 없어서 사이즈 변경 함수가 호출될 때마다 삭제/추가를 반복하도록 만들었음
 	// 붙여줬던 shape를 떼주고
-	_dynamicMap.at(collider)->detachShape(*static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape);
+	//_dynamicMap.at(collider)->detachShape(*static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape);
+	_dynamicMap.at(collider)->detachShape(*collider->_shape);
 
 	// 메모리 해제
 	/// detachShape에서 delete까지 해주는 모양이다
@@ -329,7 +346,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	BoxCollider* col2 = GetColliderFromDynamic(casted2);
 
 	// 충돌이 발생했을 때
-	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD))
+	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
+		&& col1->GetActivated() && col2->GetActivated())
 	{
 		// 충돌 여부를 true로
 		col1->_isCollided = true;
@@ -341,8 +359,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	}
 
 	// 충돌에서 벗어났을 때
-	/// 근데 크기가 안 맞네
-	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST))
+	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+		&& col1->GetActivated() && col2->GetActivated())
 	{
 		// 충돌 여부를 false로
 		col1->_isCollided = false;
@@ -351,8 +369,6 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 		// 충돌에서 벗어났으니 nullptr로
 		col1->_targetObj = nullptr;
 		col2->_targetObj = nullptr;
-
-		int a = 10;
 	}
 }
 

@@ -4,12 +4,12 @@
 #include "PlayerMove.h"
 
 KunrealEngine::Player::Player()
-	:_transform(nullptr), _playerStatus(Status::IDLE)
+	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE)
 	, _playerInfo(
 		100.0f,			// hp
 		100.0f,			// stamina
 		10.0f,			// movespeed
-		15.0f,			// dashspeed
+		9.0f,			// dashspeed
 		15.0f,			// dashrange
 		8.0f,			// dashcooldown
 		1.0f,			// spellpower
@@ -65,7 +65,7 @@ void KunrealEngine::Player::OnTriggerStay()
 
 void KunrealEngine::Player::OnTriggerExit()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 void KunrealEngine::Player::SetActive(bool active)
@@ -75,8 +75,14 @@ void KunrealEngine::Player::SetActive(bool active)
 
 void KunrealEngine::Player::AnimateByStatus()
 {
-	/// 현재 평상시, 달리기 애니메이션 밖에 없음
-	/// 애니메이션 추가에 따라 업데이트 될 예정
+	// 상태가 변할 때 애니메이션 프레임을 0으로
+	if (_tempStatus != _playerStatus)
+	{
+		GetOwner()->GetComponent<Animator>()->Stop();
+		_tempStatus = _playerStatus;
+	}
+
+	// 상태에 따라 애니메이션 출력
 	if (GetOwner()->GetComponent<MeshRenderer>() != nullptr)
 	{
 		switch (_playerStatus)
@@ -88,12 +94,18 @@ void KunrealEngine::Player::AnimateByStatus()
 				GetOwner()->GetComponent<Animator>()->Play("Run", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::DASH:
+				GetOwner()->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::ABILITY:
 				break;
 			case KunrealEngine::Player::Status::STAGGERED:
+				GetOwner()->GetComponent<Animator>()->Play("Staggered", 20.0f * _playerInfo._speedScale, true);
+				break;
+			case KunrealEngine::Player::Status::PARALYSIS:
+				GetOwner()->GetComponent<Animator>()->Play("Paralysis2", 30.0f * _playerInfo._speedScale, false);
 				break;
 			case KunrealEngine::Player::Status::DEAD:
+				GetOwner()->GetComponent<Animator>()->Play("Death", 30.0f * _playerInfo._speedScale, false);
 				break;
 			default:
 				break;
@@ -109,4 +121,9 @@ const DirectX::XMVECTOR KunrealEngine::Player::GetDirectionVector()
 const KunrealEngine::Player::Status KunrealEngine::Player::GetPlayerStatus()
 {
 	return this->_playerStatus;
+}
+
+KunrealEngine::Player::PlayerInfo& KunrealEngine::Player::GetPlayerData()
+{
+	return this->_playerInfo;
 }

@@ -7,6 +7,8 @@
 #include "DataControlWindow.h"
 #include "KunrealAPI.h"
 #include "Serialize.h"
+#include "Deserialize.h"
+#include "ExportObj.h"
 
 #include <string.h>
  // NFD¸¦ ¾µ°ÍÀÎµ¥ ¾ÆÁ÷ lib ºôµå°¡ ¾ÈµÇ¾ú´Ù È®ÀÎÇØ¾ßÇÔ
@@ -17,6 +19,11 @@
 /// lib°¡ svn¿¡ ¾È¿Ã¶ó¿Í¼­ ºôµå°¡ ¾ÈµÇ´Â ¹®Á¦°¡ ÀÖ´Ù.
 /// 
 
+/// <summary>
+/// 2024.03.14 ¹è¼º±Ù
+/// ¿¡µðÅÍ »ç¿ëÁß ·Îµå¸¦ ÅëÇÑ µ¤¾î¾²±â¸¦ ±¸ÇöÇÏ°íÀÚ ÇßÀ¸³ª 
+/// Ãæµ¹·Î ÀÎÇØ º¸·ù
+/// </summary>
 
 EpicTool::DataControlWindow::DataControlWindow()
     :_show_save_editor(true), _save_Scene(true), _new_Scene(true), _opt_padding(false), _fileSave(nullptr)
@@ -41,10 +48,8 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close) //¼¼ÀÌºê ¹öÆ° ´Ù¸¥ °÷À
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
 
-	if (_fileSave == nullptr)
-	{
-		_serialize = new Serialize();
-	}
+
+	_serialize = new Serialize();  // ·çÇÁ¹®¿¡ ¾ø¾î¸é ÅÍÁö³×?
 
 	if (_show_save_editor)
 	{
@@ -55,7 +60,20 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close) //¼¼ÀÌºê ¹öÆ° ´Ù¸¥ °÷À
 			SaveToFile(samplefilePath);
 
 		}
+		ImGui::SameLine();
+		if (ImGui::Button("ExportObj"))
+		{
+			_exportObj->ExportToObj("testObj.obj");
+		}
+
 		ImGui::SameLine(); // °°Àº ¶óÀÎ¿¡ ¹èÄ¡
+
+		if (ImGui::Button("Load"))
+		{
+			LoadToFile(samplefilePath);
+		}
+
+		ImGui::SameLine();
 
 		if (ImGui::BeginMenuBar())
 		{
@@ -108,6 +126,8 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close) //¼¼ÀÌºê ¹öÆ° ´Ù¸¥ °÷À
 	{
 		close = true;
 	}
+
+	
 }
 
 void EpicTool::DataControlWindow::ShowWindow(bool* _open, std::vector<Object>& object)
@@ -117,7 +137,7 @@ void EpicTool::DataControlWindow::ShowWindow(bool* _open, std::vector<Object>& o
 
 void EpicTool::DataControlWindow::Initialize()
 {
-
+	_exportObj = new ExportObj();
 }
  
 void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
@@ -141,4 +161,27 @@ void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
     }
 }
 
+void EpicTool::DataControlWindow::LoadToFile(const std::string& filePath)
+{
+	nfdchar_t* outPath = NULL;
+	nfdresult_t result = NFD_OpenDialog("json", NULL, &outPath);
+
+	if (result == NFD_OKAY)
+	{
+		if (outPath)
+		{
+			std::string chosenPath = outPath;
+
+			_loadFilePath = chosenPath;
+
+			free(outPath);
+
+
+			KunrealEngine::GetCurrentScene()->GetObjectList().clear();
+
+			Deserialize* _deserialize = new Deserialize();
+			_deserialize->Initialize(_loadFilePath);			
+		}
+	}
+}
 

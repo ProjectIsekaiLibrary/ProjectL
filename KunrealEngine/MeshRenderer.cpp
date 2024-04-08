@@ -40,25 +40,29 @@ void KunrealEngine::MeshRenderer::Update()
 		this->_mesh->SetTransform(_transform->GetWorldTM());
 	}
 
-	/// 이 코드는 의미없다 오브젝트가 비활성화 되어 있으면 여기로 안들어온다
-	/// 다른곳으로 옮겨야함
-	// 오브젝트가 비활성화 되어 있을 경우
-	//if (!this->GetOwner()->GetActivated())
-	//{
-	//	// 렌더 안하게
-	//	SetRenderingState(false);
-	//}
-	//else
-	//{
-	//	// 아닌 경우에는 컴포넌트의 active 여부를 따라감
-	//	SetRenderingState(this->GetActivated());
-	//}
+	if (_transform->_haveParentBone)
+	{
+		if (_mesh != nullptr)
+		{
+			DirectX::XMFLOAT4X4 worldFromGraphics = this->_mesh->GetTransformEffectedByBone();
+			DirectX::XMMATRIX worldTM = DirectX::XMLoadFloat4x4(&worldFromGraphics);
+
+			DirectX::XMVECTOR scale;
+			DirectX::XMVECTOR quat;
+			DirectX::XMVECTOR translation;
+
+			DirectX::XMMatrixDecompose(&scale, &quat, &translation, worldTM);
+
+			DirectX::XMStoreFloat3(&this->_transform->_posForBone, translation);
+			DirectX::XMStoreFloat4(&this->_transform->_quatForBone, quat);
+		}
+	}
 }
 
 void KunrealEngine::MeshRenderer::LateUpdate()
 {
 
-}
+}  
 
 void KunrealEngine::MeshRenderer::OnTriggerEnter()
 {
@@ -244,4 +248,28 @@ bool KunrealEngine::MeshRenderer::GetMeshStatus()
 	{
 		return true;
 	}
+}
+
+void KunrealEngine::MeshRenderer::SetParentBone(GameObject* model, const std::string& boneName)
+{
+	_transform->_haveParentBone = true;
+	this->_mesh->SetParentBone(model->GetComponent<MeshRenderer>()->_mesh, boneName);
+
+	this->GetOwner()->SetParent(model);
+}
+
+void KunrealEngine::MeshRenderer::DeleteParentBone()
+{
+	_transform->_haveParentBone = false;
+	this->_mesh->DeleteParentBone();
+}
+
+void KunrealEngine::MeshRenderer::SetShadowState(bool tf)
+{
+	this->_mesh->SetShadowState(tf);
+}
+
+bool KunrealEngine::MeshRenderer::GetShadowState()
+{
+	return _mesh->GetShadowState();
 }

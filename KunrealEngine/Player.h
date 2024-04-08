@@ -21,6 +21,7 @@ namespace KunrealEngine
 			DASH,				// 대시
 			ABILITY,			// 스킬 사용		// 스킬 구성에 따라 나뉠 예정
 			STAGGERED,			// 플레이어가 무력화 되었을 때		// 상태이상 등
+			PARALYSIS,			// 경직
 			DEAD				// 사망
 		};
 
@@ -65,6 +66,7 @@ namespace KunrealEngine
 	private:
 		Transform* _transform;					// 플레이어의 transform
 		Status _playerStatus;					// 플레이어의 상태 이동 기절 등
+		Status _tempStatus;						// 애니메이션 변환하며 Stop 불러줄 용도
 		PlayerInfo _playerInfo;					// 플레이어 기본 정보 스탯 등
 		DirectX::XMVECTOR _directionVector;		// 플레이어가 바라보는 방향 벡터
 
@@ -78,6 +80,8 @@ namespace KunrealEngine
 
 		// 플레이어의 상태 반환
 		const Status GetPlayerStatus();
+
+		PlayerInfo& GetPlayerData();
 	};
 }
 

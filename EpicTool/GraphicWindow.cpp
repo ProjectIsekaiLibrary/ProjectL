@@ -1,11 +1,20 @@
 #include "imgui.h"
 #include "GraphicWindow.h"
 #include "KunrealAPI.h"
+#include "HierarchyWindow.h"
 #include <DirectXMath.h>
 #include <ImGuizmo.h>
 
+/// <summary>
+/// 2024.03.14
+/// 현재 기즈모 Rotation이 기능구현에 문제가 있음
+/// worldTM관련인듯 하나 비중이 낮으므로 보류
+/// </summary>
+/// <param name="screenWidth"></param>
+/// <param name="screenHeight"></param>
+
 EpicTool::GraphicWindow::GraphicWindow(int screenWidth, int screenHeight)
-	: _mosX(0), _mosY(0), _screenWidth(screenWidth), _screenHeight(screenHeight), _imageSizeX(1280), _imageSizeY(720), _imguiWindowPosition{}, _imguiWindowSize{}, _isTestRotation(false)
+	: _mosX(0), _mosY(0), _screenWidth(screenWidth), _screenHeight(screenHeight), _imageSizeX(1280), _imageSizeY(720), _imguiWindowPosition{}, _imguiWindowSize{}, _isTestRotation(false), _first(false)
 	
 {
 
@@ -26,7 +35,7 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 	// 생성 실패
 	IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
 
-	_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
+	
 
 	ImGui::Begin("GraphicsWindow", NULL, ImGuiWindowFlags_NoMove);//, ImGuiWindowFlags_NoMove);
 	
@@ -61,13 +70,13 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 		_mosY = -1;
 	}
 
-	if (ImGui::IsWindowHovered() && !ImGui::IsMouseHoveringRect(ImVec2(0, 0), ImVec2(0, 0), false) )
-	{
-		if (!(IMGUIZMO_NAMESPACE::IsOver()) &&	ImGui::IsMouseClicked(0))
-		{
-			selectedObjectIndex = -1;
-		}
-	}
+	//if (ImGui::IsWindowHovered() && !ImGui::IsMouseHoveringRect(ImVec2(0, 0), ImVec2(0, 0), false) )
+	//{
+	//	if (!(IMGUIZMO_NAMESPACE::IsOver()) &&	ImGui::IsMouseClicked(0))
+	//	{
+	//		selectedObjectIndex = -1;
+	//	}
+	//}
 
 	ImVec2 imageSize(_imageSizeX, _imageSizeY); // 이미지 크기
 
@@ -75,8 +84,6 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 
 	ImGuiIO& io = ImGui::GetIO();
 	auto _fps = io.Framerate;
-
-	//ImGui::Text("FPS: %.1f", _fps);
 
 	static IMGUIZMO_NAMESPACE::OPERATION gizmoOperation(IMGUIZMO_NAMESPACE::TRANSLATE);
 
@@ -89,16 +96,19 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 	if (ImGui::RadioButton("Scale", gizmoOperation == IMGUIZMO_NAMESPACE::SCALE))
 		gizmoOperation = IMGUIZMO_NAMESPACE::SCALE;
 
-
-
 	IMGUIZMO_NAMESPACE::SetOrthographic(false);
 	IMGUIZMO_NAMESPACE::SetDrawlist();
 	IMGUIZMO_NAMESPACE::SetRect(_imguiWindowPosition.x, _imguiWindowPosition.y,  _imguiWindowSize.x,  _imguiWindowSize.y);
 
+
 	if (selectedObjectIndex != -1) // 선택된 오브젝트가 있을 경우
 	{
-		DirectX::XMFLOAT4X4 resultMatrix = _gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetWorldTM();
+		DirectX::XMFLOAT4X4 resultMatrix;
+		DirectX::XMFLOAT4X4 result;
 
+		resultMatrix = _gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetWorldTM();
+		
+		
 		DirectX::XMFLOAT4X4 viewMatrix = GRAPHICS->GetViewMatrix();
 
 		DirectX::XMFLOAT4X4 projMatrix = GRAPHICS->GetProjMatrix();
@@ -108,6 +118,7 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 		DirectX::XMMATRIX pro = DirectX::XMLoadFloat4x4(&projMatrix);
 
 		DirectX::XMMATRIX resul = DirectX::XMLoadFloat4x4(&resultMatrix);
+	
 
 		if (gizmoOperation == IMGUIZMO_NAMESPACE::TRANSLATE)
 		{
@@ -140,31 +151,17 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 			);
 		}
 
-		DirectX::XMStoreFloat4x4(&resultMatrix, resul);
 
-		DirectX::XMVECTOR scaleMatrix;
-		DirectX::XMVECTOR rotationMatrix;
-		DirectX::XMVECTOR translateMatrix;
-		//DirectX::XMFLOAT4X4 worldResultMatrix;
-
-		DirectX::XMMatrixDecompose(&scaleMatrix, &rotationMatrix, &translateMatrix, resul);
 
 		if (IMGUIZMO_NAMESPACE::IsUsing())
 		{
-			// 월드TM을 넣어보는 시도
-			
-		
-			//DirectX::XMFLOAT3 fs = *reinterpret_cast<DirectX::XMFLOAT3*>(&scaleMatrix);
-			//DirectX::XMFLOAT4 fr = *reinterpret_cast<DirectX::XMFLOAT4*>(&rotationMatrix);
-			//DirectX::XMFLOAT3 fp = *reinterpret_cast<DirectX::XMFLOAT3*>(&translateMatrix);
-			//
-			////fr.x *= -1;  // 없으니까 더 정확하게 나옴
-			////fr.y *= -1;
-			//
-			//DirectX::XMStoreFloat4x4(&worldResultMatrix, DirectX::XMMatrixScaling(fs.x, fs.y, fs.z)
-			//	* DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&fr))
-			//	* DirectX::XMMatrixTranslation(fp.x, fp.y, fp.z));
+			//DirectX::XMStoreFloat4x4(&resultMatrix, resul);
 
+			DirectX::XMVECTOR scaleMatrix;
+			DirectX::XMVECTOR rotationMatrix;
+			DirectX::XMVECTOR translateMatrix;
+
+			DirectX::XMMatrixDecompose(&scaleMatrix, &rotationMatrix, &translateMatrix, resul);
 
 			if (gizmoOperation == IMGUIZMO_NAMESPACE::TRANSLATE)
 			{
@@ -172,8 +169,14 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 				float translateY = DirectX::XMVectorGetY(translateMatrix);
 				float translateZ = DirectX::XMVectorGetZ(translateMatrix);
 
-	
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->SetPosition(translateX, translateY, translateZ);
+				if (_gameObjectlist[selectedObjectIndex]->GetParent() == nullptr)
+				{
+					_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->SetPosition(translateX, translateY, translateZ);
+				}
+				else
+				{
+					_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->SetPositionWithGizmo(translateX, translateY, translateZ);
+				}
 				
 			}																								
 			else if (gizmoOperation == IMGUIZMO_NAMESPACE::ROTATE)
@@ -205,8 +208,6 @@ void EpicTool::GraphicWindow::ShowWindow(void* _texture, int& selectedObjectInde
 
 	}
 
-
-
 	ImGui::End();
 	
 }
@@ -219,6 +220,11 @@ POINT EpicTool::GraphicWindow::GetMousePosition()
 }
 
 
+
+void EpicTool::GraphicWindow::SetGameObjectList(std::vector<KunrealEngine::GameObject*>& intance)
+{
+	_gameObjectlist = intance;
+}
 
 void EpicTool::GraphicWindow::ShowWindow()
 {

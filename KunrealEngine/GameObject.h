@@ -27,7 +27,7 @@ namespace KunrealEngine
 
 	private:
 		// 모든 과정은 scene, 혹은 LifeCycle에 의해 수행
-		void Initialize();				// 네이밍은 고민중
+		void Initialize();				
 		void Awake();
 		void OnEnable();
 		void Start();
@@ -43,15 +43,21 @@ namespace KunrealEngine
 		std::vector<Component*> _componentContainer;		// 컴포넌트들을 담을 벡터
 		bool _isActivated;									// 활성화 여부
 		std::string _objectName;							// 오브젝트 이름
+		std::string _originalName;							// 오브젝트가 복사되었을때 이름 구분을 위한
 		std::string _sceneName;								// 어떤 scene에 들어있는가
 		Transform* _transform;								// 오브젝트가 transform이 없을 수 없으니 미리 넣어줌
 		GameObject* _parent;								// 부모 오브젝트
 		int _layer;											// 렌더 순서와 관련된 레이어
 		std::string _tag;									// 오브젝트를 비교할 태그
 
+		std::vector<GameObject*> _childContainer;			// 자식 오브젝트를 담을 벡터
+
 	public:
 		// 오브젝트의 이름을 반환
 		std::string GetObjectName();
+
+		// 오브젝트의 원본 이름을 반환 (괄호 적용 전)
+		std::string GetObjectOriginalName();
 
 		// 오브젝트의 이름 설정
 		void SetObjectName(const std::string& name);
@@ -61,6 +67,12 @@ namespace KunrealEngine
 
 		// 부모 오브젝트 반환
 		GameObject* GetParent();
+
+		// 자식 오브젝트가 있는지 bool값 반환
+		bool CheckChild();
+
+		// 자식 오브젝트들이 담겨있는 컨테이너 반환
+		std::vector<GameObject*> GetChilds();
 
 		// 활성화 여부를 정해주는 함수
 		// true = 활성화 / false = 비활성화

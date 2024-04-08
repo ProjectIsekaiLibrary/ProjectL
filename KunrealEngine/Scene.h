@@ -63,8 +63,16 @@ namespace KunrealEngine
 		// 전달받은 이름의 특정 오브젝트를 반환
 		GameObject* GetGameObject(std::string objectName);
 
-		// 카메라 오브젝트 중 전달받은 오브젝트를 메인 카메라로 설정
+		// tag를 통한 오브젝트 검색 후 반환
+		// 하나만 받고 싶을 때
+		/// 같은 태그를 가진 오브젝트가 여럿 있을 경우 가장 먼저 탐색되는 애가 반환되니 주의
+		GameObject* GetObjectWithTag(std::string tag);
 
+		// 해당 tag를 가진 모든 오브젝트를 받고 싶을때
+		std::vector<GameObject*> GetObjectsWithTag(std::string tag);
+		
+
+		// 카메라 오브젝트 중 전달받은 오브젝트를 메인 카메라로 설정
 		void SetMainCamera(GameObject* obj);
 		GameObject* GetMainCamera();
 

@@ -152,8 +152,9 @@ void ArkEngine::ArkDX11::CubeMap::SetTexture(const char* textureName)
 	// 텍스쳐 파일이 없을 경우 mokoko 텍스쳐 출력
 	else if (texture == nullptr)
 	{
-		_textureName = "Resources/Textures/CubeMaps/grasscube1024.dds";
-		auto newTexture = ResourceManager::GetInstance()->GetResource<ArkTexture>("Resources/Textures/CubeMaps/grasscube1024.dds");
+		ArkTexture* newTexture = new ArkTexture(textureName);
+		ResourceManager::GetInstance()->SetTextureNameList(textureName);
+
 		_cubeMapSRV = newTexture->GetDiffuseMapSRV();
 	}
 }

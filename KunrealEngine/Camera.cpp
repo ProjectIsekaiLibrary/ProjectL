@@ -8,12 +8,11 @@
 ///
 #include "InputSystem.h"
 #include "TimeManager.h"
-//KunrealEngine::InputSystem* inputInstance = KunrealEngine::InputSystem::GetInstance();
+
 ///
 
-
 KunrealEngine::Camera::Camera()
-	:_camera(nullptr), _transform(nullptr), _fixTarget(false)
+	:_camera(nullptr), _transform(nullptr), _fixTarget(false) ,_targetPosition(), _prevPosition(), _prevRotation()
 {
 
 }
@@ -52,6 +51,10 @@ void KunrealEngine::Camera::Update()
 			MoveFixedCamera();
 		}
 	}
+
+	///
+	MoveToDebug();
+	///
 }
 
 void KunrealEngine::Camera::LateUpdate()
@@ -167,4 +170,44 @@ void KunrealEngine::Camera::SetMainCamera()
 {
 	GRAPHICS->SetMainCamera(_camera);
 	SceneManager::GetInstance().GetCurrentScene()->SetMainCamera(this->GetOwner());
+}
+
+void KunrealEngine::Camera::MoveToDebug()
+{
+	float x = _transform->GetPosition().x;
+	float y = _transform->GetPosition().y;
+	float z = _transform->GetPosition().z;
+
+	if (InputSystem::GetInstance()->KeyInput(KEY::A))
+	{
+		SetCameraPosition(-20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::D))
+	{
+		SetCameraPosition(20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::W))
+	{
+		SetCameraPosition(x, y, z + 20.0f * TimeManager::GetInstance().GetDeltaTime());
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::S))
+	{
+		SetCameraPosition(x, y, z - 20.0f * TimeManager::GetInstance().GetDeltaTime());
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::Q))
+	{
+		SetCameraPosition(x, y - 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::E))
+	{
+		SetCameraPosition(x, y + 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::R))
+	{
+		GRAPHICS->GetMainCamera()->RotateCamera({ 0, -20.0f * TimeManager::GetInstance().GetDeltaTime() });
+	}
+	else if (InputSystem::GetInstance()->KeyInput(KEY::T))
+	{
+		GRAPHICS->GetMainCamera()->RotateCamera({ 0, 20.0f * TimeManager::GetInstance().GetDeltaTime() });
+	}
 }

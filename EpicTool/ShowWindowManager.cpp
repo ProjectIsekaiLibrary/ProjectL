@@ -11,7 +11,7 @@
 #include "Serialize.h"
 
 EpicTool::ShowWindowManager::ShowWindowManager()
-    : _inspector(nullptr), _Hierarchy(nullptr)
+    : _inspector(nullptr), _hierarchy(nullptr)
 {
 
 }
@@ -27,8 +27,8 @@ void EpicTool::ShowWindowManager::Initialize()
 {
     _inspector = new InspectorWindow();
     _inspector->Initialize();
-    _Hierarchy = new HierarchyWindow();
-    _Hierarchy->Initialize();
+    _hierarchy = new HierarchyWindow();
+    _hierarchy->Initialize();
 	_debugWindow = new DebugWindow;
 	_debugWindow->Initialize();
     _serialize = new Serialize(); // 추상클래스는 인스턴스화 불가
@@ -36,16 +36,13 @@ void EpicTool::ShowWindowManager::Initialize()
 
 void EpicTool::ShowWindowManager::ShowWindow(int& selectedObjectIndex)
 { 
-    std::vector<KunrealEngine::GameObject*> gameObjectlist = KunrealEngine::GetCurrentScene()->
-        GetObjectList();
-
     IM_ASSERT(ImGui::GetCurrentContext() != NULL && "Missing Dear ImGui context. Refer to examples app!");
 
     _debugWindow->ShowWindow(selectedObjectIndex);
 
     ImGui::Begin("Hierarchy", NULL, ImGuiWindowFlags_NoMove);
 
-    _Hierarchy->ShowWindow(selectedObjectIndex);
+    _hierarchy->ShowWindow(selectedObjectIndex);
 
 	//if (ImGui::Button("Save"))
 	//{
@@ -54,7 +51,10 @@ void EpicTool::ShowWindowManager::ShowWindow(int& selectedObjectIndex)
 
     ImGui::End();
    
+    _hierarchy->GetHierarchyList(_getGameObjectList);
    
+    _inspector->SetGameObjectList(_getGameObjectList);
+
    // 매우 하드스러운데 템플릿을 통해 수정해볼까, 컴포넌트 부분 실제로 컴포넌트를 생성하는게 아님
                           // 수정이 필요할것이다.
     ImGui::Begin("inspector", NULL , ImGuiWindowFlags_NoMove);
@@ -70,10 +70,10 @@ void EpicTool::ShowWindowManager::ShowWindow(int& selectedObjectIndex)
     debugHierarchyType = _debugHierarchyType;
     debugInspectorType = _debugInspectorType;
 
-	_Hierarchy->GetDebugType(_debugHierarchyType);
+	_hierarchy->GetDebugType(_debugHierarchyType);
 	_inspector->GetDebugType(_debugInspectorType);
 
-	_Hierarchy->GetDeleteObjectName(_deleteObject);
+	_hierarchy->GetDeleteObjectName(_deleteObject);
 	_debugWindow->GetDeleteObjectName(_deleteObject);
 
     _inspector->GetDeleteComponentName(_deleteComponent);
@@ -92,6 +92,11 @@ void EpicTool::ShowWindowManager::ShowWindow(int& selectedObjectIndex)
 	
 
    
+}
+
+void EpicTool::ShowWindowManager::GetGameObjetcList(std::vector<KunrealEngine::GameObject*>& instance)
+{
+    instance = _getGameObjectList;
 }
 
 void EpicTool::ShowWindowManager::ShowWindow()

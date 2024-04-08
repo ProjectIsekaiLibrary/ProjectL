@@ -8,14 +8,16 @@
 #include "DebugWindow.h"
 #include "GraphicWindow.h"
 #include "ImGuizmo.h"
+#include "HierarchyWindow.h"
 
 
 EpicTool::InspectorWindow::InspectorWindow()
 	:_gameObjectlist(NULL), _selectedObjectIndex(0), _tranform(nullptr), _meshState(false), _cameraFix(false)//, _selectedMesh(0)
-	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1)
+	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
 	, _isMeshRenderActive(true), _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
-	_pointAmbient{0}, _pointSpecular{0}, _isPickedObject{false}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false)
-{																			
+	_pointAmbient{0}, _pointSpecular{0}, _isPickedObject{false}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
+	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0)
+{ 
 																			
 }																			
 
@@ -34,17 +36,6 @@ void EpicTool::InspectorWindow::ComboControl(std::vector<std::string> list, std:
 template<>
 void EpicTool::InspectorWindow::ComboControl<KunrealEngine::MeshRenderer>(std::vector<std::string> list, std::vector<std::string> listEditor, int& selected, const char* name, KunrealEngine::MeshRenderer* instance)
 {
-	if (_selectedObjectIndex2 != _selectedObjectIndex) // 임시 생성 오브젝트 들에 대응 하는 코드이다
-	{
-
-		//_normalName.push_back(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetNormalName());
-		// 해당 부분에서는 현재 이름 뿐만 아니라 오브젝트가 들고있는 모든 이름이 필요한데 지금은 가장 최근의 이름만 가져올수있다.
-
-		_selectedObjectIndex2 = _selectedObjectIndex; // 아래 임시코드와 충돌한다면 새로운 예외처리가 필요하다 어디까지나 임시라
-
-	}
-
-
 
 	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
 	{
@@ -54,22 +45,7 @@ void EpicTool::InspectorWindow::ComboControl<KunrealEngine::MeshRenderer>(std::v
 			listStr = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshName();
 			StringRemove(listStr, _meshStringToRemove);
 		}
-		if (list == _textureList && name == "Normal")
-		{
-			for (auto& normalName : _normalName)
-			{
-				StringRemove(normalName, _textureStringToRemove);
-			}
-		}
-		if (list == _textureList && name == "Diffuse") // 일단 normal먼저
-		{
-			for (auto& diffuseName : _diffuseName)
-			{
-				StringRemove(diffuseName, _textureStringToRemove);
-			}
-		}
 	}
-
 
 	if (ImGui::Combo(name, &selected, [](void* data, int idx, const char** out_text)
 		{
@@ -97,36 +73,9 @@ void EpicTool::InspectorWindow::ComboControl<KunrealEngine::MeshRenderer>(std::v
 					_DebugType = DebugType::ChangeNormal;
 				}
 
-				// 리스트에 자동으로 추가
-				if (isNormalMax == false)
-				{
-					_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->
-						SetNormalTexture(_selectedNormal, list[selected].c_str());
-					_selectedNormal++;
-					_normalName.push_back(list[selected].c_str());
-
-					if (_selectedNormal > _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetNormals().size())
-					{
-						isNormalMax = true;
-						_selectedNormal = 0;
-					}
-				}
-				else
-				{					
-					_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->
-						SetNormalTexture(_selectedNormal, list[selected].c_str());
-					_normalName.erase(_normalName.begin());
-					_normalName.push_back(list[selected].c_str());
-					if (_selectedNormal < _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetNormals().size())
-					{
-						_selectedNormal++;
-					}
-					else if (_selectedNormal >= _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetNormals().size())
-					{
-						_selectedNormal = 0;
-					}
-
-				}			
+				_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->
+					SetNormalTexture(_currentNormal, list[selected].c_str());
+				
 				_comboNormalSelect = -1;
 			}
 
@@ -139,42 +88,17 @@ void EpicTool::InspectorWindow::ComboControl<KunrealEngine::MeshRenderer>(std::v
 					_DebugType = DebugType::ChangeDiffuse;
 				}
 
-				if (isDiffuseMax == false)
-				{
-					_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->
-						SetNormalTexture(_selectedDiffuse, list[selected].c_str());
-					_selectedDiffuse++;
-					_diffuseName.push_back(list[selected].c_str());
-
-					if (_selectedDiffuse > _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures().size())
-					{
-						isDiffuseMax = true;
-						_selectedDiffuse = 0;
-					}
-				}
-				else
-				{					
-					_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->
-						SetNormalTexture(_selectedDiffuse, list[selected].c_str());
-					_diffuseName.erase(_diffuseName.begin());
-					_diffuseName.push_back(list[selected].c_str());
-					if (_selectedDiffuse < _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures().size())
-					{
-						_selectedDiffuse++;
-					}
-					else if (_selectedDiffuse >= _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures().size())
-					{
-						_selectedDiffuse = 0;
-					}
-				}
-
+				_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->
+					SetDiffuseTexture(_currentDiffuse, list[selected].c_str());
+				
 				_comboDiffuseSelect = -1;
 			}
-
 
 		}
 	}
 
+
+	
 }
 
 template<>
@@ -256,44 +180,134 @@ void EpicTool::InspectorWindow::ComboControl<KunrealEngine::ImageRenderer>(std::
 
 }
 
-//template<> // 사운드의 리스트를 받아와야할 것 (string)  
-//void EpicTool::InspectorWindow::ComboControl<KunrealEngine::SoundPlayer>(std::vector<std::string> list, std::vector<std::string> listEditor, int& selected, const char* name, KunrealEngine::SoundPlayer* instace)
-//{
-//	//if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus()) // 사운드 있는지 체크
-//	//{
-//	//	std::string listStr;
-//	//	if (list == _meshList)  // 여기서 판단해서 분기할것
-//	//	{
-//	//		listStr = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshName();
-//	//		StringRemove(listStr, _meshStringToRemove);
-//	//	}
-//	//	if (list == _textureList && name == "Normal")
-//	//	{
-//	//		listStr = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetNormalName();
-//	//		StringRemove(listStr, _textureStringToRemove);
-//	//	}
-//	//	if (list == _textureList && name == "Diffuse")
-//	//	{
-//	//		listStr = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetTextureName();
-//	//		StringRemove(listStr, _textureStringToRemove);
-//	//	}
-//	//}
-//
-//
-//	if (ImGui::Combo(name, &selected, [](void* data, int idx, const char** out_text)
-//		{
-//			auto& items = *static_cast<std::vector<std::string>*>(data);
-//			if (idx < 0 || idx >= static_cast<int>(items.size()))
-//				return false;
-//			*out_text = items[idx].c_str();
-//			return true;
-//		},
-//		static_cast<void*>(&listEditor), static_cast<int>(listEditor.size())))
-//	{
-//		
-//	}
-//}
+template<>
+void EpicTool::InspectorWindow::ComboControl<KunrealEngine::SoundPlayer>(std::vector<std::string> list, std::vector<std::string> listEditor, int& selected, const char* name, KunrealEngine::SoundPlayer* instace)
+{
+	if (ImGui::Combo(name, &selected, [](void* data, int idx, const char** out_text)
+		{
+			auto& items = *static_cast<std::vector<std::string>*>(data);
+			if (idx < 0 || idx >= static_cast<int>(items.size()))
+				return false;
+			*out_text = items[idx].c_str();
+			return true;
+		},
+		static_cast<void*>(&listEditor), static_cast<int>(listEditor.size())))
+	{
+		// 리스트 고르는거 넘길 예정
 
+		_newSoundName = list[selected];
+	}
+
+}
+
+
+
+void EpicTool::InspectorWindow::ComboControlSound(std::vector<KunrealEngine::SoundPlayer::SoundInfo> list, std::vector<KunrealEngine::SoundPlayer::SoundInfo> listEditor, int& selected, const char* name)
+{
+	if (ImGui::Combo(name, &selected, [](void* data, int idx, const char** out_text)
+		{
+			auto& items = *static_cast<std::vector<KunrealEngine::SoundPlayer::SoundInfo>*>(data);
+			if (idx < 0 || idx >= static_cast<int>(items.size()))
+				return false;
+			*out_text = items[idx]._soundPath.c_str();
+			return true;
+		},
+		static_cast<void*>(&listEditor), static_cast<int>(listEditor.size())))
+	{
+		_controlSoundInfo = listEditor[selected];
+	}
+
+	ImGui::Spacing();
+
+	if (selected != -1)
+	{
+		SetSoundInfo(_controlSoundInfo);
+	}
+
+	ImGui::Spacing();
+
+
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SoundCreate");
+
+	SoundCreate();
+}
+
+//
+// bool _is3DSound;				// 3D 사운드인지					// 기본은 false
+//bool _isLoop;					// 반복되는 사운드인지			// 기본은 false
+//int _volume;
+// unsigned int _innerIndex;
+//
+
+void EpicTool::InspectorWindow::SetSoundInfo(KunrealEngine::SoundPlayer::SoundInfo& instance)
+{
+	// 기존 사운드 정보 가져오기
+
+	if (instance._is3DSound == true)
+	{
+		_isSound3DEditor = true;
+	}
+	else if(instance._is3DSound == false)
+	{
+		_isSound3DEditor = false;
+	}
+
+	if (instance._isLoop == true)
+	{
+		_isLoopSoundEditor = true;
+	}
+	else if (instance._isLoop == false)
+	{
+		_isLoopSoundEditor = false;
+	}
+	
+	_soundVolEditor = instance._volume;
+
+
+	if (ImGui::Checkbox("3D Sound", &_isSound3DEditor))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->Change3Dmode(instance._innerIndex);
+		instance._is3DSound = _isSound3DEditor;
+	}
+
+	if (ImGui::Checkbox("Is Loop", &_isLoopSoundEditor))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->ChangeisLoop(instance._innerIndex);
+		instance._isLoop = _isLoopSoundEditor;
+	}
+
+	if (ImGui::SliderInt("Sound Vol", &_soundVolEditor, 0.0f, 100.0f))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->SetVolume(_soundVolEditor, instance._innerIndex);
+	}   
+
+
+}
+
+void EpicTool::InspectorWindow::SoundCreate()
+{
+	ComboControl(_isNewSoundPathList, _isNewSoundPathList, _comboNewSoundSelect, "New Sound Name", _soundPlayer);
+
+	ImGui::Checkbox("is 3D", &_isNewSound3D);
+
+	ImGui::Checkbox("is Loop", & _isNewSoundLoop);
+
+	ImGui::DragInt("Volume", &_isNewSoundVol, 0, 100);
+
+
+	if (ImGui::Button("Make Sound"))
+	{
+		std::string directory = "Resources/Sound/";
+		_newSoundName = directory + _newSoundName;
+
+		int soundInfoval = 0;
+		soundInfoval = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->CreateSoundInfo(_newSoundName, _isNewSound3D, _isNewSoundLoop, _isNewSoundVol);
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->CreateSound(soundInfoval);
+
+		_isNewSoundPathList = KunrealEngine::SoundSystem::GetInstance().GetSoundPathList();
+		
+	}
+}
 
 template<typename PieceType>
 void EpicTool::InspectorWindow::DrawComponentPiece(PieceType& data, const std::string name)
@@ -432,7 +446,7 @@ void EpicTool::InspectorWindow::DeleteComponent(KunrealEngine::Component* instan
 {
     if (ImGui::Button("DeleteCompoent"))
     {
-		_DebugType = DebugType::DeleteComponent;
+		_DebugType = DebugType::DeleteComponentDebug;
 
 		_deleteComponentName = instance->GetComponentName();
         _gameObjectlist[_selectedObjectIndex]->DeleteComponent(instance);
@@ -489,7 +503,14 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Transform>(Kunr
 	DrawComponentPiece(_scaleArray, "Scale");
     instance->SetScale(_scaleArray[0], _scaleArray[1], _scaleArray[2]);
 
+	
+	float totalScale;
+	totalScale = instance->GetScale().x;
 
+	if (ImGui::DragFloat("totalScale", &totalScale))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
+	{
+		instance->SetScale(totalScale, totalScale, totalScale);
+	}
 
 }
 
@@ -544,7 +565,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Camera>(Kunreal
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->UnfixCamera();
 	}
 
-    DeleteComponent(instance);
+    DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>());
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -564,6 +585,8 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 
     bool meshState = false;
     bool isComponent = false;
+
+
         
     _compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
 
@@ -604,19 +627,48 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(_IsSetPisckable);
 	}
 
-
     ComboControl(_meshList, _meshListEditor, _comboMeshSelect, "Mesh", instance);
 
-    ImGui::Spacing();
-    ImGui::Separator();
-    ImGui::Spacing();
+	ImGui::Spacing();
 
     ComboControl(_textureList, _TextureListEditor, _comboNormalSelect, "Diffuse", instance);
     
-    ComboControl(_textureList, _TextureListEditor, _comboDiffuseSelect, "Normal", instance);
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
+	{
+
+		ImGui::Spacing();
+
+		std::vector<std::string> diffuses = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures();
+
+		std::vector<const char*> itemsDiffuse(diffuses.size());
+
+		for (size_t i = 0; i < diffuses.size(); ++i)
+		{
+			itemsDiffuse[i] = diffuses[i].c_str();
+		}
+
+		ImGui::ListBox("DiffuseList", &_currentDiffuse, itemsDiffuse.data(), itemsDiffuse.size(), 4);
+	}
 
 	ImGui::Spacing();
-	ImGui::Separator();
+
+	ComboControl(_textureList, _TextureListEditor, _comboDiffuseSelect, "Normal", instance);
+
+
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
+	{
+		ImGui::Spacing();
+
+		std::vector<std::string> normals = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetNormals();
+		std::vector<const char*> itemsNor(normals.size());
+		for (size_t i = 0; i < normals.size(); ++i)
+		{
+			itemsNor[i] = normals[i].c_str();
+		}
+
+		ImGui::ListBox("NormalList2", &_currentNormal, itemsNor.data(), itemsNor.size(), 4);
+	}
+
 	ImGui::Spacing();
 
 	ImGui::Text("Animator");
@@ -636,15 +688,6 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Animator>()->Replay();
 	}
 
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-
-    DeleteComponent(instance);
-
-	ImGui::Spacing();
-	ImGui::Separator();
 	ImGui::Spacing();
 
 	if (ImGui::Button("ResetList"))
@@ -668,6 +711,8 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 
 		ListToRemove(_textureList, _TextureListEditor, _textureStringToRemove);
 	}
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>());
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -762,7 +807,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 		ImGui::DragFloat4( "Specular", _specular, 0.0f, 0.0f, 1.0f);
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->SetSpecular(_specular[0], _specular[1], _specular[2], _specular[3]);
 		
-		ImGui::DragFloat3("Direction", _direction, 0.0f, 0.0f, 1.0f);
+		ImGui::DragFloat3("Direction", _direction, 0.0f, -1.0f, 1.0f);
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->SetDirection(_direction[0], _direction[1], _direction[2]);
 	}
 
@@ -786,7 +831,11 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 	}
 
 
-	DeleteComponent(instance);
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
 }
 
 /// <summary>
@@ -797,7 +846,6 @@ template<>
 void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::ImageRenderer>(KunrealEngine::ImageRenderer* instance)
 {
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ImageRenderer");
-
 
 	bool isComponent = false;
 
@@ -817,8 +865,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::ImageRenderer>(
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::ImageRenderer>();
 	}
 
-
-	_isImageActive = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::ImageRenderer>()->GetActivated();
+	_isImageActive = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::ImageRenderer>()->GetImageStatus();
 
 	if (ImGui::Checkbox("SetActiveImage", &_isImageActive))
 	{
@@ -828,47 +875,54 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::ImageRenderer>(
 
 	ComboControl(_textureList, _TextureListEditor, _comboImageSelect, "Image", instance);  // 스트링은 잘 넘기는데 이상하게 검은 텍스쳐가 나옴
 
-	DeleteComponent(instance);
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::ImageRenderer>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
 }
 
 /// <summary>
 /// SoundPlayer를 관리하는 UI
 /// </summary>
 /// <param name="instance"></param>
-//template<>
-//void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::SoundPlayer>(KunrealEngine::SoundPlayer* instance)
-//{
-//	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SoundPlayer");
-//
-//	 //빈 깡통 추가하는 부분, 예외가 필요없다면 필요없음
-//	bool isComponent = false;
-//	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-//
-//	for (auto componentName : _compoenetList)
-//	{
-//		std::string checkName = componentName->GetComponentName();
-//		if (checkName == "SoundPlayer")
-//		{
-//			isComponent = true;
-//		}
-//	}
-//
-//	// 추상클래스를 인스턴스화 할 수 없습니다 => 아직 엔진상에서 컴포넌트가 아닌듯
-//	if (isComponent == false) // 깡통 추가
-//	{
-//		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::SoundPlayer>();
-//	}
-//
-//	
-//
-//	// 엔진에서 리스트를 받아와야 할것
-//	//ComboControl()
-//
-//	static float testVol = 0.0f;
-//
-//	ImGui::SliderFloat("TestSlider", &testVol, 0.0f, 100.0f);
-//
-//}
+template<>
+void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::SoundPlayer>(KunrealEngine::SoundPlayer* instance)
+{
+
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SoundPlayer");
+
+	 //빈 깡통 추가하는 부분, 예외가 필요없다면 필요없음
+	bool isComponent = false;
+	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
+
+	for (auto componentName : _compoenetList)
+	{
+		std::string checkName = componentName->GetComponentName();
+		if (checkName == "SoundPlayer")
+		{
+			isComponent = true;
+		}
+	}
+
+	// 추상클래스를 인스턴스화 할 수 없습니다 => 아직 엔진상에서 컴포넌트가 아닌듯
+	if (isComponent == false) // 깡통 추가
+	{
+		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::SoundPlayer>();
+	}
+
+	ComboControlSound(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->_soundList
+		, _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->_soundList,
+		_comboSoundSelect, "SoundInfo");
+
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+
+}
 
 /// <summary>
 /// Collider를 관리하는 UI
@@ -922,19 +976,25 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->SetBoxSize(_boxSize[0], _boxSize[1], _boxSize[2]);
 	}
 
-	DeleteComponent(instance);
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
 }
 
 
 void EpicTool::InspectorWindow::Initialize() // 필요없어보이는데
 {
 	
-	_gameObjectlist = KunrealEngine::GetCurrentScene()->
-		GetObjectList();
+	//_gameObjectlist = KunrealEngine::GetCurrentScene()->
+	//	GetObjectList();
 
     _meshList = KunrealEngine::GraphicsSystem::GetInstance().GetRenderableList();
 
     _textureList = KunrealEngine::GraphicsSystem::GetInstance().GetTextureList();
+
+	_isNewSoundPathList = KunrealEngine::SoundSystem::GetInstance().GetSoundPathList();
 
 	_debugWindow = new DebugWindow;
 
@@ -960,31 +1020,17 @@ void EpicTool::InspectorWindow::Initialize() // 필요없어보이는데
 /// <param name="selectedObjectIndex"></param>
 void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 {
-	//KunrealEngine::SoundPlayer* _soundPlayer;
-
-	_gameObjectlist = KunrealEngine::GetCurrentScene()->
-		GetObjectList();
-	
-	static int current_item = 0;
-	const char* items[] = { "Item 1", "Item 2", "Item 3", "Item 4" };
-
 	static bool selectedComponentIndex = false;
 	bool transformOpen = false;
 	bool meshStateOpen = false;
 	bool cameraOpen = false;
-    bool lightOpen = false;
-    bool imageOpen = false;
-    bool soundPlayerOpen = false;
-    bool collider = false;
+	bool lightOpen = false;
+	bool imageOpen = false;
+	bool soundPlayerOpen = false;
+	bool collider = false;
 	_DebugType = DebugType::None;
 
-	// 리스트 상자 출력
-	ImGui::ListBox("Items", &current_item, items, IM_ARRAYSIZE(items));
-
-	// 선택된 항목 출력
-	ImGui::Text("Selected Item: %s", items[current_item]);
-
-	if (!(IMGUIZMO_NAMESPACE::IsUsing()))
+	if (!(IMGUIZMO_NAMESPACE::IsUsing() || IMGUIZMO_NAMESPACE::IsOver()))
 	{
 		if (KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject() != nullptr && _isPickedObject == false) // 널일때 예외처리 필요
 		{
@@ -1023,56 +1069,60 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		}
 	}
-
 	_selectedObjectIndex = selectedObjectIndex;
 
-    if (_selectedObjectIndex != -1)
-    {
-        _compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
 
-        SetSelectObject();      
+	if (_selectedObjectIndex != -1)
+	{
+		_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
 
-        if (selectedComponentIndex)
-        {
-            const char* items[] = {"MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider"};
-            int selectedItem = -1;
+		SetSelectObject();
 
-            if (ImGui::Combo("Component", &selectedItem, items, 5)) {
-                // 사용자가 새로운 아이템을 선택했을 때 실행할 코드
-                // 임시 테스트 용이며 삭제할것임
-                switch (selectedItem)
-                {
-                    case 0:                        
-                        IsCheckItem(meshStateOpen);
-                         selectedComponentIndex = !selectedComponentIndex;
-						 _DebugType = DebugType::AddMeshRenderer;
-                        break;
-                    case 1:
-                        IsCheckItem(cameraOpen);
-                        selectedComponentIndex = !selectedComponentIndex;
-						_DebugType = DebugType::AddCamera;
-						break;
-					case 2:
-						IsCheckItem(lightOpen);
-						selectedComponentIndex = !selectedComponentIndex;
-						_DebugType = DebugType::AddLight;
-						break;
-					case 3:
-						IsCheckItem(imageOpen);
-						selectedComponentIndex = !selectedComponentIndex;
-						break;
-					case 4:
-						IsCheckItem(collider);
-						selectedComponentIndex = !selectedComponentIndex;
-						break;
-                    default:
-                        break;
-                }
-            }
-            ImGui::Spacing();
-            ImGui::Separator();
-            ImGui::Spacing();
-        }
+		if (selectedComponentIndex)
+		{
+			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer" };
+			int selectedItem = -1;
+
+			if (ImGui::Combo("Component", &selectedItem, items, 6)) {
+				// 사용자가 새로운 아이템을 선택했을 때 실행할 코드
+				// 임시 테스트 용이며 삭제할것임
+				switch (selectedItem)
+				{
+				case 0:
+					IsCheckItem(meshStateOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					_DebugType = DebugType::AddMeshRenderer;
+					break;
+				case 1:
+					IsCheckItem(cameraOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					_DebugType = DebugType::AddCamera;
+					break;
+				case 2:
+					IsCheckItem(lightOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					_DebugType = DebugType::AddLight;
+					break;
+				case 3:
+					IsCheckItem(imageOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 4:
+					IsCheckItem(collider);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 5:
+					IsCheckItem(soundPlayerOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				default:
+					break;
+				}
+			}
+			ImGui::Spacing();
+			ImGui::Separator();
+			ImGui::Spacing();
+		}
 
 
 		for (auto componentlist : _compoenetList)
@@ -1080,7 +1130,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			std::string checkComponentName = componentlist->GetComponentName();
 
 			if (checkComponentName == "MeshRenderer" && checkComponentName != "Light")
-			{				
+			{
 				meshStateOpen = true;
 			}
 			if (checkComponentName == "Camera" && checkComponentName != "Light")
@@ -1099,14 +1149,14 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			{
 				collider = true;
 			}
-			//if (checkComponentName == "SoundPlayer")
-			//{
-			//	soundPlayerOpen = true;
-			//}
+			if (checkComponentName == "SoundPlayer")
+			{
+				soundPlayerOpen = true;
+			}
 		}
 
 		if (meshStateOpen == true)
-		{			
+		{
 			auto asdfgcv = _meshRenderer;
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>());
 		}
@@ -1116,10 +1166,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>());
 		}
 
-        if (lightOpen == true)
-        {
-            DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>());
-        }
+		if (lightOpen == true)
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>());
+		}
 
 		if (imageOpen == true)
 		{
@@ -1131,17 +1181,17 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>());
 		}
 
-		//if (soundPlayerOpen == true)  // 쓰래기 인스턴스로 돌렸는데 여러개 만드는것을 상정한것, 에러발생확률 높음
-		//{
-		//	DrawComponentInfo(_soundPlayer);		
-		//}
+		if (soundPlayerOpen == true)  // 쓰래기 인스턴스로 돌렸는데 여러개 만드는것을 상정한것, 에러발생확률 높음
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>());
+		}
 
 		if (ImGui::Button("Add Component"))
 		{
 			selectedComponentIndex = !selectedComponentIndex;
 		}
 
-    }  
+	}
 }
 
 void EpicTool::InspectorWindow::ShowWindow()
@@ -1162,8 +1212,11 @@ void EpicTool::InspectorWindow::SetSelectObject()
 
     if (ImGui::InputText("Name", nameBuffer, sizeof(ObjectName)))
     {
-        ObjectName = nameBuffer;
-        _gameObjectlist[_selectedObjectIndex]->SetObjectName(ObjectName);
+		if (KunrealEngine::InputSystem::GetInstance()->KeyInput(KEY::ENTER))
+		{
+			ObjectName = nameBuffer;
+			_gameObjectlist[_selectedObjectIndex]->SetObjectName(ObjectName);
+		}
     }
 
 
@@ -1222,6 +1275,11 @@ void EpicTool::InspectorWindow::GetDebugType(DebugType& instance)
 void EpicTool::InspectorWindow::GetDeleteComponentName(std::string& componentName)
 {
 	componentName = _deleteComponentName;
+}
+
+void EpicTool::InspectorWindow::SetGameObjectList(std::vector<KunrealEngine::GameObject*>& intance)
+{
+	_gameObjectlist = intance;
 }
 
 void EpicTool::InspectorWindow::ListToRemove(std::vector<std::string>& list, std::vector<std::string>& listEditor, const std::string stringToRemove)

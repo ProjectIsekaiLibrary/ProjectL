@@ -135,7 +135,7 @@ namespace KunrealEngine
 		return true;
 	}
 
-	void InputSystem::Finalize()
+	void InputSystem::Release()
 	{
 		// 키보드 해제
 		if (_mouse)

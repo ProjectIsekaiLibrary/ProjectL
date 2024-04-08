@@ -54,6 +54,11 @@ GInterface::GraphicsDirLight* ArkEngine::LightManager::GetDirLightInterface()
 	return _iDirLightList.back();
 }
 
+std::vector<int>& ArkEngine::LightManager::GetActiveIndexList()
+{
+	return _activeDirIndexList;
+}
+
 void ArkEngine::LightManager::AddDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction)
 {
 	_dirLightList.emplace_back(ArkEngine::ArkDX11::DirectionalLight(ambient, diffuse, specular, direction));

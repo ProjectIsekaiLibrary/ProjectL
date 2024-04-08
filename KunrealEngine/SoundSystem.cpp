@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <algorithm>
 #include <typeinfo>
+#include <filesystem>
 
 #define ASsert(formula, message) assert(formula && message)
 #define Assert(message) assert(0 && message)
@@ -88,7 +89,7 @@ namespace KunrealEngine
 		return true;
 	}
 
-	void SoundSystem::Terminate()
+	void SoundSystem::Release()
 	{
 		ClearAllSound();
 
@@ -109,7 +110,7 @@ namespace KunrealEngine
 	/////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////
 
-	int SoundSystem::AddSound(std::string filename, int volume)
+	int SoundSystem::AddSound(std::string filename, int volume, int index)
 	{
 		int soundvolume = 0;
 		if (volume > 100 || volume < 0)
@@ -127,7 +128,7 @@ namespace KunrealEngine
 
 		soundstruct->fileName = filename;
 		soundstruct->soundBuffer = tempsound;
-		soundstruct->volume = soundvolume;
+		soundstruct->volume = volume;
 
 		if (FAILED(tempsound->SetCurrentPosition(0)))
 		{
@@ -139,12 +140,20 @@ namespace KunrealEngine
 			Assert("PlayWaveFile function -> SetVolume 01 is failed");
 		}
 
-		_soundBuffer.push_back(soundstruct);
-		int returnValue = FindIndex(_soundBuffer, soundstruct);
-		return returnValue;
+		if (index == -1)
+		{
+			_soundBuffer.push_back(soundstruct);
+			int returnValue = FindIndex(_soundBuffer, soundstruct);
+			return returnValue;
+		}
+		else
+		{
+			_soundBuffer.insert(_soundBuffer.begin() + index, soundstruct);
+			return index;
+		}
 	}
 
-	int SoundSystem::Add3DSound(std::string filename, int volume, int xpos /*= 0*/, int ypos /*= 0*/, int zpos /*= 0*/)
+	int SoundSystem::Add3DSound(std::string filename, int volume, int index, int xpos, int ypos, int zpos)
 	{
 		int soundvolume = 0;
 		if (volume > 100 || volume < 0)
@@ -164,7 +173,7 @@ namespace KunrealEngine
 		soundstruct->fileName = filename;
 		soundstruct->soundBuffer = tempsound;
 		soundstruct->sound3DBuffer = temp3DSound;
-		soundstruct->volume = soundvolume;
+		soundstruct->volume = volume;
 
 		if (FAILED(tempsound->SetCurrentPosition(0)))
 		{
@@ -178,10 +187,17 @@ namespace KunrealEngine
 
 		soundstruct->sound3DBuffer->SetPosition(xpos, ypos, zpos, DS3D_IMMEDIATE);
 
-		_soundBuffer.push_back(soundstruct);
-		int returnValue = FindIndex(_soundBuffer, soundstruct);
-
-		return returnValue;
+		if (index == -1)
+		{
+			_soundBuffer.push_back(soundstruct);
+			int returnValue = FindIndex(_soundBuffer, soundstruct);
+			return returnValue;
+		}
+		else
+		{
+			_soundBuffer.insert(_soundBuffer.begin() + index, soundstruct);
+			return index;
+		}
 	}
 
 	void SoundSystem::RemoveSound(int index)
@@ -220,6 +236,56 @@ namespace KunrealEngine
 		}
 	}
 
+	int SoundSystem::Change3DorMono(int index)
+	{
+		if (_soundBuffer[index]->sound3DBuffer != nullptr)	// sound3DBuffer가 비어있지 않다 = 3D사운드다
+		{ 
+			int result = 0;
+			std::string filename = _soundBuffer[index]->fileName;
+			int volume = _soundBuffer[index]->volume;
+			RemoveSound(index);
+			result = AddSound(filename, volume, index);
+			return result;
+		}
+
+		else if (_soundBuffer[index]->sound3DBuffer == nullptr) // sound3DBuffer가 비어있다면 = 2D사운드다
+		{
+			int result = 0;
+			std::string filename = _soundBuffer[index]->fileName;
+			int volume = _soundBuffer[index]->volume;
+			RemoveSound(index);
+			result = Add3DSound(filename, volume, index);
+			return result;
+		}
+	}
+
+	int SoundSystem::GetSoundListSize()
+	{
+		return _soundBuffer.size();
+	}
+
+	std::vector<std::string> KunrealEngine::SoundSystem::GetSoundPathList()
+	{
+		namespace fs = std::filesystem;
+		std::string directory = "Resources/Sound";
+		std::vector<std::string> fileNames;
+
+		// Iterate over the files in the directory
+		for (const auto& entry : fs::directory_iterator(directory)) {
+			// Check if it's a regular file
+			if (fs::is_regular_file(entry)) {
+				// Get the filename from the path and add it to the vector
+				fileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		return fileNames;
+	}
+
+	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////
+
 	void SoundSystem::updateSoundPosition(int index, float x, float y, float z)
 	{
 		_soundBuffer[index]->sound3DBuffer->SetPosition(x, y, z, DS3D_IMMEDIATE);
@@ -229,10 +295,6 @@ namespace KunrealEngine
 	{
 		_listener->SetPosition(x, y, z, DS3D_IMMEDIATE);
 	}
-
-	/////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////
-	/////////////////////////////////////////////////////////////////////
 
 	void SoundSystem::Play(int index)
 	{
@@ -507,7 +569,13 @@ namespace KunrealEngine
 		if (index != 0)
 		{
 			index->soundBuffer->Release();
-			index->sound3DBuffer->Release();
+			index->soundBuffer = nullptr;
+
+			if (index->sound3DBuffer != nullptr)
+			{
+				index->sound3DBuffer->Release();
+				index->sound3DBuffer = nullptr;
+			}
 		}
 
 		delete index;

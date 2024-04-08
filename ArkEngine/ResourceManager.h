@@ -17,6 +17,7 @@
 #include "IDebugObject.h"
 #include "ICamera.h"
 #include "ICubeMap.h"
+#include "ILineObject.h"
 
 class ASEParser;
 
@@ -110,6 +111,14 @@ namespace ArkEngine
 			void DeleteDebugObject(ArkEngine::IDebugObject* object);
 
 		public:
+			// 모든 라인 오브젝트들은 담아놓은 백터 반환
+			const std::vector<ArkEngine::ILineObject*> GetLineObjectList();
+
+			void AddLineObject(ArkEngine::ILineObject* object);
+
+			void DeleteLineObject(ArkEngine::ILineObject* object);
+
+		public:
 			// 모든 디버그 오브젝트들은 담아놓은 백터 반환
 			const std::vector<ArkEngine::IUIImage*> GetUIImageList();
 
@@ -142,6 +151,11 @@ namespace ArkEngine
 
 			// 렌더링 할 오브젝트들을 담아놓은 백터
 			void AddCamera(ArkEngine::ICamera* camera);
+
+			std::vector<ArkEngine::ICamera*> GetShadowCamera();
+
+			// 그림자 용 카메라를 추가 현재는 한개만 가능
+			void SetShadowCamera(ArkEngine::ICamera* camera);
 
 			// 특정 렌더링하던 오브젝트를 삭제
 			void DeleteCamera(ArkEngine::ICamera* camera);
@@ -204,6 +218,8 @@ namespace ArkEngine
 
 			std::vector<IDebugObject*> _debugList;
 
+			std::vector<ILineObject*> _lineList;
+
 			std::vector<IUIImage*> _uiImageList;
 
 			// 존재하는 모든 큐브맵
@@ -215,6 +231,8 @@ namespace ArkEngine
 
 			// 존재하는 모든 카메라 오브젝트들
 			std::vector<ICamera*> _cameraList;
+
+			std::vector<ArkEngine::ICamera*> _shadowCamera;
 
 			// 출력할 텍스트 리스트
 			std::unordered_map<TextPosition, std::string> _textList;

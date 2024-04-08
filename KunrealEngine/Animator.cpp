@@ -67,7 +67,7 @@ bool KunrealEngine::Animator::Play(int index, float speed /*= 10.0f*/, bool isLo
 bool KunrealEngine::Animator::Play(std::string clipName, float speed /*= 10.0f*/, bool isLoop /*= false*/)
 {
 	auto isPlaying = _mesh->PlayAnimation(speed, TimeManager::GetInstance().GetDeltaTime(), clipName, isLoop);
-
+	
 	return isPlaying;
 }
 
@@ -99,4 +99,14 @@ float KunrealEngine::Animator::GetMaxFrame()
 const std::vector<std::string>& KunrealEngine::Animator::GetClipNames()
 {
 	return _mesh->GetClipNames();
+}
+
+const std::string& KunrealEngine::Animator::GetNowAnimationName()
+{
+	return _mesh->GetNowAnimationName();
+}
+
+bool KunrealEngine::Animator::GetIsAnimationPlaying()
+{
+	return _mesh->GetIsPlaying();
 }

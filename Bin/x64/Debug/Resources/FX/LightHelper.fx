@@ -76,7 +76,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 	// the line of site of the light.
 	
 	float diffuseFactor = dot(lightVec, normal);
-
+	
 	// Flatten to avoid dynamic branching.
 	[flatten]
 	if( diffuseFactor > 0.0f )
@@ -258,5 +258,37 @@ float4 NormalSampleToWorldSpace(float3 normalMapSample, float3 unitNormalW, floa
 
     return bumpedNormalW;
 }
- 
+
+static const float SMAP_SIZE = 2048.0f;
+static const float SMAP_DX = 1.0f / SMAP_SIZE;
+
+float CalcShadowFactor(SamplerComparisonState samShadow, Texture2D shadowMap, float4 shadowPosH)
+{
+	// w로 나누어서 투영을 완료한다
+	shadowPosH.xyz /= shadowPosH.w;
+
+	// NDC 공간 기준의 깊이 값
+	float depth = shadowPosH.z;
+
+	// 텍셀 크기
+	const float dx = SMAP_DX;
+
+	float percentLit = 0.0f;
+	const float2 offsets[9] =
+	{
+		float2(-dx, -dx), float2(0.0f, -dx), float2(dx, -dx),
+		float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+		float2(-dx, +dx), float2(0.0f, +dx), float2(dx, +dx)
+	};
+
+	// 3x3 상자 필터 패턴, 각 표본마다 4표본 PCF를 수행한다
+	[unroll]
+	for (int i = 0; i < 9; ++i)
+	{
+		percentLit += shadowMap.SampleCmpLevelZero(samShadow, shadowPosH.xy + offsets[i], depth).r;
+	}
+
+	// 결과들의 평균을 반환한다
+	return percentLit /= 9.0f;
+}
  
