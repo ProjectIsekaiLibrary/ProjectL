@@ -63,8 +63,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	NavigationInstance.Initialize();
-	NavigationInstance.HandleBuild();
-	//NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
+	//NavigationInstance.HandleBuild();
+	NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 1);
 	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
 	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
@@ -116,6 +116,11 @@ void KunrealEngine::EngineCore::Update()
 
 	CheckMousePosition();
 
+	if (inputInstance->MouseButtonUp(1))
+	{
+		int a = 10;
+	}
+
 	//ninaveh->GetComponent<Animator>()->Play(0, 20.0f, true);
 
 	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
@@ -150,7 +155,7 @@ void KunrealEngine::EngineCore::Update()
 	}
 	//sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->GetPosition().x + 0.1f, 0.f, 0.f);
 
-	sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->GetPosition().x + 0.1f, 5.f, 0.f);
+	//sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->GetPosition().x + 0.1f, 5.f, 0.f);
 
 
 

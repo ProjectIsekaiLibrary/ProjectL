@@ -121,6 +121,16 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 	_nodeCount = 0;
 }
 
+void KunrealEngine::PlayerMove::UpdateDashNode()
+{
+	// 네비게이션으로부터 이동목표 노드들을 받아옴
+	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
+		_targetPos.x, _targetPos.y, _targetPos.z);
+
+	//_stopover = Navigation::GetInstance().FindRaycastPath(0);
+	_nodeCount = 0;
+}
+
 void KunrealEngine::PlayerMove::MoveToTarget(DirectX::XMFLOAT3 targetPos, float speed)
 {
 	// 평상시나 이동상태일 때
@@ -273,8 +283,6 @@ void KunrealEngine::PlayerMove::PlayerDash(DirectX::XMFLOAT3 targetPos, float sp
 		// 스킬 사용중이거나 플레이어가 무력화 되었을 때는 작동 안함
 		//if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK)
 		{
-
-
 			// 플레이어의 상태를 대시로
 			this->_playerComp->_playerStatus = Player::Status::DASH;
 
