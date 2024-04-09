@@ -31,6 +31,7 @@
 #include "DWFont.h"
 #include "ILineObject.h"
 #include "LineObject.h"
+#include "ParticleSystem.h"
 
 #include "DX11Renderer.h"
 
@@ -104,6 +105,9 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
+
+	// 파티클 초기화 추가(2,3번째 매개변수로 집어 넣기 위해 따로 함수로 만들어 줘야한다)
+	//_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>(_device);
 
 	SetPickingTexture();
 }

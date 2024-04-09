@@ -7,7 +7,7 @@ namespace ArkEngine
 		class ParticleEffect
 		{
 		public:
-			ParticleEffect(ID3D11Device* device, const std::wstring& filename);
+			ParticleEffect();
 			~ParticleEffect();
 
 		public:

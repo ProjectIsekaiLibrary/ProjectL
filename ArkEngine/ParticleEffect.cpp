@@ -7,7 +7,7 @@
 
 #include "ParticleEffect.h"
 
-ArkEngine::ArkDX11::ParticleEffect::ParticleEffect(ID3D11Device* device, const std::wstring& filename)
+ArkEngine::ArkDX11::ParticleEffect::ParticleEffect()
 {
 	_streamOutTech = _fx->GetTechniqueByName("StreamOutTech");
 	_drawTech = _fx->GetTechniqueByName("DrawTech");

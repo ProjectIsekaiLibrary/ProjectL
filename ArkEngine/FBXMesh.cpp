@@ -930,13 +930,13 @@ void ArkEngine::ArkDX11::FBXMesh::BuildGeometryBuffersFBX(std::wstring fileName)
 
 					vertex.pos = modelMesh->vertices[j].position;
 
-					if (_fileName.find("PlayerWithCloak") != std::string::npos)
-					{
-						vertex.norm.x = -1* modelMesh->vertices[j].normal.x;
-						vertex.norm.y = -1* modelMesh->vertices[j].normal.y;
-						vertex.norm.z = -1* modelMesh->vertices[j].normal.z;
-					}
-					else
+					//if (_fileName.find("PlayerWithCloak") != std::string::npos)
+					//{
+					//	vertex.norm.x = -1* modelMesh->vertices[j].normal.x;
+					//	vertex.norm.y = -1* modelMesh->vertices[j].normal.y;
+					//	vertex.norm.z = -1* modelMesh->vertices[j].normal.z;
+					//}
+					//else
 					{
 						vertex.norm.x = modelMesh->vertices[j].normal.x;
 						vertex.norm.y = modelMesh->vertices[j].normal.y;

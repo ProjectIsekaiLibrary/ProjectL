@@ -33,7 +33,7 @@ namespace ArkEngine
 		class ParticleSystem
 		{
 		public:
-			ParticleSystem();
+			ParticleSystem(ID3D11Device* device, ID3D11ShaderResourceView* texArraySRV, ID3D11ShaderResourceView* randomTexSRV, unsigned int maxParticle);
 			~ParticleSystem();
 
 		public:
@@ -81,7 +81,6 @@ namespace ArkEngine
 			ID3D11ShaderResourceView* _randomTexSRV;
 
 		private:
-			ArkDevice* _arkDevice;
 			ArkEffect* _arkEffect;
 
 		};

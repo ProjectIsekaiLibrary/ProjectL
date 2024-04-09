@@ -37,6 +37,9 @@ namespace ArkEngine
 		class Camera;
 		class DeferredRenderer;
 		class DWFont;
+
+		// 추가
+		class ParticleSystem;
 	}
 
 	namespace FBXLoader
@@ -158,7 +161,7 @@ namespace ArkEngine
 
 		public:
 			void CreateShadowCamera(DirectX::XMFLOAT3 cameraPosition, DirectX::XMFLOAT3 targetPosition);
-		
+
 		private:
 			void BeginShadowRender();
 			void BeginRender();
@@ -190,7 +193,7 @@ namespace ArkEngine
 
 		private:
 			void InitializeAssimpTool();
-			
+
 		private:
 			void InitializeWIC();
 
@@ -278,6 +281,10 @@ namespace ArkEngine
 		private:
 			D3D11_VIEWPORT _viewPort;
 			D3D11_VIEWPORT _shadowViewPort;
+
+			//추가
+		private:
+			std::unique_ptr<ArkEngine::ArkDX11::ParticleSystem> _particle;
 
 		};
 	}
