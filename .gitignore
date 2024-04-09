@@ -462,4 +462,9 @@ FodyWeavers.xsd
 ### VisualStudio Patch ###
 # Additional files built by Visual Studio
 
+# Include nfd
+!nfd/build/lib/*
+!nfd/build/lib/Debug/*
+!nfd/build/lib/Debug/x64/*
+
 # End of https://www.toptal.com/developers/gitignore/api/c++,windows,visualstudio

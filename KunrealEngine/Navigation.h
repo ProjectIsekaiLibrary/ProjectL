@@ -167,35 +167,53 @@ struct PathFindbox
 		~Navigation();
 
 	public:
+		// 싱글턴 객체 반환 함수
 		static Navigation& GetInstance();
+		// 초기화 함수.
 		void Initialize();
+		// 제거 함수
 		void Release();
 
-		void LoadAll(const char* path, int index);	// path 에서 이미 빌드된 네비매쉬 파일을 읽어옵니다. .bin파일
-
+		// path 에서 이미 빌드된 네비매쉬 파일을 읽어옵니다. .bin파일
+		void LoadAll(const char* path, int index);
+		// 네비매쉬를 직접 빌드 하기
 		bool HandleBuild();
+		// 네비매쉬를 업데이트 한다.
 		void handleUpdate(const float dt);
+		
+		// 장애물을 추가한다.
+		void addTempObstacle(const float* pos);
+		// 특정 장애물을 제거한다.
+		void removeTempObstacle(const float* sp, const float* sq);
+		// 모든 장애물을 제거한다.
+		void clearAllTempObstacles();
+
+		// 직선경로 탐색 함수
+		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> FindStraightPath(int index);
+		// 이미 탐색된 경로를 가져오는 함수
+		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> GetPath(int index);
+		// Raycast 탐색 함수. (직선경로에 부딧히는게 있다면 거기까지만 경로 표시
+		DirectX::XMFLOAT3 FindRaycastPath(int index);
+
+		// startpos 와 endpos를 입력하는 함수. float[3] 버전
+		void SetSEpos(int index, float sx, float sy, float sz, float ex, float ey, float ez);
+		// startpos 와 endpos를 입력하는 함수. XMFLOAT3 버전
+		void SetSEpos(int index, DirectX::XMFLOAT3 startPosition, DirectX::XMFLOAT3 endPosition);
+		// startpos를 입력하는 함수. float[3] 버전
+		void SetStartpos(int index, float x, float y, float z);
+		// startpos를 입력하는 함수. XMFLOAT3 버전
+		void SetStartpos(int index, DirectX::XMFLOAT3 position);
+		// endpos를 입력하는 함수. float[3] 버전
+		void SetEndpos(int index, float x, float y, float z);
+		// endpos를 입력하는 함수. XMFLOAT3 버전
+		void SetEndpos(int index, DirectX::XMFLOAT3 position);
+
+	private:
 		int rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, struct TileCacheData* tiles, const int maxTiles);
-
 		void getTilePos(const float* pos, int& tx, int& ty);
-
 		void renderCachedTile(const int tx, const int ty, const int type);
 		void renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view);
 
-		void addTempObstacle(const float* pos);
-		void removeTempObstacle(const float* sp, const float* sq);
-		void clearAllTempObstacles();
-
-		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> FindStraightPath(int index);
-		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> GetPath(int index);
-		DirectX::XMFLOAT3 FindRaycastPath(int index);
-		void SetSEpos(int index, float sx, float sy, float sz, float ex, float ey, float ez);
-		void SetSEpos(int index, DirectX::XMFLOAT3 startPosition, DirectX::XMFLOAT3 endPosition);
-		void SetStartpos(int index, float x, float y, float z);
-		void SetStartpos(int index, DirectX::XMFLOAT3 position);
-		void SetEndpos(int index, float x, float y, float z);
-		void SetEndpos(int index, DirectX::XMFLOAT3 position);
-	private:
 		dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq);
 		static bool isectSegAABB(const float* sp, const float* sq,
 								const float* amin, const float* amax,

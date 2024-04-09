@@ -31,12 +31,12 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_fxWorld(nullptr), _fxWorldInvTranspose(nullptr), _fxWorldViewProj(nullptr),
 	_fxTexTransform(nullptr), _fxMaterial(nullptr), _fxBoneTransforms(nullptr),
 	_diffuseMap(nullptr), _diffuseMapSRV(), _normalMap(nullptr), _normalMapSRV(), _emissionMap(nullptr), _emissionMapSRV(),
-	_cubeMap(nullptr), _fxColor(nullptr),
+	_cubeMap(nullptr), _fxColor(nullptr), _fxCartoon(nullptr),
 	_boneTMList(), _world(), _view(), _proj(), _vertexBuffer(), _indexBuffer(),
 	_arkDevice(nullptr), _arkEffect(nullptr), _totalVertexCount(0), _totalIndexCount(0), _meshTransform(nullptr),
 	_debugObject(nullptr),
 	_havePlayedAnimation(false), _isAnimationPlaying(false), _isRendering(true), _isSolid(isSolid),
-	_isPickable(false), _hashValue(0), _objectIndex(0), _color(), _haveShadow(true),
+	_isPickable(false), _hashValue(0), _objectIndex(0), _color(), _haveShadow(true), _applyCartoonRendering(false),
 	_modelPath(L"Resources/Models/"), _texturePath(L"Resources/Textures/"),
 	_meshCount(0), _boneIndexNum(0),
 	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
@@ -159,6 +159,8 @@ void ArkEngine::ArkDX11::FBXMesh::Render()
 
 	_fxColor->SetFloatVector(_color);
 
+	_fxCartoon->SetBool(_applyCartoonRendering);
+
 	for (int i = 0; i < _vertexBuffer.size(); i++)
 	{
 		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer[i], &stride, &offset);
@@ -270,6 +272,8 @@ void ArkEngine::ArkDX11::FBXMesh::Render(int passIndex)
 
 	_fxColor->SetFloatVector(_color);
 
+	_fxCartoon->SetBool(_applyCartoonRendering);
+
 	for (int i = 0; i < _vertexBuffer.size(); i++)
 	{
 		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer[i], &stride, &offset);
@@ -366,6 +370,9 @@ void ArkEngine::ArkDX11::FBXMesh::Finalize()
 	_emissionMap->Release();
 	_normalMap->Release();
 	_diffuseMap->Release();
+
+	_fxCartoon->Release();
+	_fxColor->Release();
 
 	_fxMaterial->Release();
 	_fxTexTransform->Release();
@@ -755,6 +762,8 @@ void ArkEngine::ArkDX11::FBXMesh::SetEffect()
 	_cubeMap = _effect->GetVariableByName("gCubeMap")->AsShaderResource();
 
 	_fxColor = _effect->GetVariableByName("gColor")->AsVector();
+
+	_fxCartoon = _effect->GetVariableByName("gCartoon")->AsScalar();
 }
 
 bool ArkEngine::ArkDX11::FBXMesh::GetPickable()
@@ -833,6 +842,18 @@ void ArkEngine::ArkDX11::FBXMesh::SetMainCamera(ArkEngine::ICamera* camera)
 	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
 	DirectX::XMStoreFloat4x4(&_view, newCamera->GetViewMatrix());
 	DirectX::XMStoreFloat4x4(&_proj, newCamera->GetProjMatrix());
+}
+
+
+void ArkEngine::ArkDX11::FBXMesh::SetCartoonRendering(bool tf)
+{
+	_applyCartoonRendering = tf;
+}
+
+
+bool ArkEngine::ArkDX11::FBXMesh::GetCartoonRenderingState()
+{
+	return _applyCartoonRendering;
 }
 
 /// <summary>

@@ -45,11 +45,14 @@ void KunrealEngine::PlayerMove::FixedUpdate()
 void KunrealEngine::PlayerMove::Update()
 {
 	// 마우스 우클릭시	// 홀드도 적용
-	if (InputSystem::GetInstance()->MouseButtonInput(1))
+	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
+		GRAPHICS->DeleteAllLine();
+
 		// 목표지점을 업데이트
 		UpdateTargetPosition();
-
+		UpdateMoveNode();
+	
 		// 이동상태로 만들어줌
 		_playerComp->_playerStatus = Player::Status::WALK;
 		_isMoving = true;
@@ -62,10 +65,19 @@ void KunrealEngine::PlayerMove::Update()
 		_isDash = true;
 	}
 
-	MoveToTarget(_targetPos, 15.f * TimeManager::GetInstance().GetDeltaTime());
+	// 디버깅용
+	if (_stopover.size() > 0)
+	{
+		for (const auto& path : _stopover)
+		{
+			GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
+		}
+	}
+
+	//MoveToTarget(_targetPos, 15.f * TimeManager::GetInstance().GetDeltaTime());
 	PlayerDash(_targetPos, _playerComp->_playerInfo._dashSpeed * TimeManager::GetInstance().GetDeltaTime());
 
-	//NavigationMove(_targetPos, 15.f * TimeManager::GetInstance().GetDeltaTime());
+	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
@@ -104,15 +116,14 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 	// 네비게이션으로부터 이동목표 노드들을 받아옴
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
 		_targetPos.x, _targetPos.y, _targetPos.z);
-	_stopover = Navigation::GetInstance().FindStraightPath(0);
 
-	// 노드 숫자 업데이트
-	_nodeCount = _stopover.size();
+	_stopover = Navigation::GetInstance().FindStraightPath(0);
+	_nodeCount = 0;
 }
 
 void KunrealEngine::PlayerMove::MoveToTarget(DirectX::XMFLOAT3 targetPos, float speed)
 {
-	// 평상시가 이동상태일 때
+	// 평상시나 이동상태일 때
 	// 스킬 사용중이거나 플레이어가 무력화 되었을 때는 작동 안함
 	if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK)
 	{
@@ -176,89 +187,82 @@ void KunrealEngine::PlayerMove::MoveToTarget(DirectX::XMFLOAT3 targetPos, float 
 	}
 }
 
-void KunrealEngine::PlayerMove::NavigationMove(DirectX::XMFLOAT3 targetPos, float speed)
+void KunrealEngine::PlayerMove::NavigationMove(float speed)
 {
+	// 평상시나 이동상태일 때
+	// 스킬 사용중이거나 플레이어가 무력화, 경직 상태가 되었을 때는 작동 안함
 	if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK)
 	{
-		if (_isMoving)
+		// 움직임이 가능한 상태이고 노드 수만큼 이동하지 않았을 때
+		if (_isMoving && _nodeCount < _stopover.size())
 		{
-			// 네비게이션으로부터 이동목표 노드들을 받아옴
-			Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
-						_targetPos.x, _targetPos.y, _targetPos.z);
-			_stopover = Navigation::GetInstance().FindStraightPath(0);
-			
-			for (int i = 0; i < _stopover.size(); i++)
+			// 이동상태로 만들어줌
+			_playerComp->_playerStatus = Player::Status::WALK;
+
+			DirectX::XMFLOAT3 trans(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
+
+			// 목표로 하는 노드 좌표와 플레이어의 좌표가 다를 때
+			if (std::abs(trans.x - _stopover[_nodeCount].second.x) > _errorRange ||
+				std::abs(trans.y - _stopover[_nodeCount].second.y) > _errorRange + 100.0f ||
+				std::abs(trans.z - _stopover[_nodeCount].second.z) > _errorRange)
 			{
-				DirectX::XMFLOAT3 trans(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
+				DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&trans);
+				DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&_stopover[_nodeCount].second);
 
-				// 목표로 하는 좌표와 플레이어의 좌표가 다를 때
-				if (std::abs(_transform->GetPosition().x - _stopover[i].second.x) > _errorRange ||
-					std::abs(_transform->GetPosition().y - _stopover[i].second.y) > _errorRange ||
-					std::abs(_transform->GetPosition().z - _stopover[i].second.z) > _errorRange)
+				DirectX::XMVECTOR currentForward = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
+				DirectX::XMVECTOR targetDirection = DirectX::XMVectorSubtract(targetPosVec, currentPosVec);
+				targetDirection.m128_f32[1] = 0.0f;
+				targetDirection = DirectX::XMVector3Normalize(targetDirection);
 
+				// 두 벡터 간의 각도를 계산
+				DirectX::XMVECTOR dotResult = DirectX::XMVector3Dot(currentForward, targetDirection);
+				float dotProduct = DirectX::XMVectorGetX(dotResult);
+
+				// 각도를 라디안에서 도로 변환
+				float angle = acos(dotProduct);
+				angle = DirectX::XMConvertToDegrees(angle);
+
+				if (targetPosVec.m128_f32[0] > currentPosVec.m128_f32[0])
 				{
-					DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&trans);
-					DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&_stopover[i].second);
-
-					DirectX::XMVECTOR currentForward = DirectX::XMVectorSet(0.0f, 0.0f, -1.0f, 0.0f);
-					DirectX::XMVECTOR targetDirection = DirectX::XMVectorSubtract(targetPosVec, currentPosVec);
-					targetDirection.m128_f32[1] = 0.0f;
-					targetDirection = DirectX::XMVector3Normalize(targetDirection);
-
-					// 두 벡터 간의 각도를 계산
-					auto dotResult = DirectX::XMVector3Dot(currentForward, targetDirection);
-					float dotProduct = DirectX::XMVectorGetX(dotResult);
-
-					// 각도를 라디안에서 도로 변환
-					float angle = acos(dotProduct);
-					angle = DirectX::XMConvertToDegrees(angle);
-
-					if (targetPosVec.m128_f32[0] > currentPosVec.m128_f32[0])
-					{
-						angle *= -1;
-					}
-
-					_transform->SetRotation(0.0f, angle, 0.0f);
-
-					DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&_stopover[i].second), currentPosVec);
-					direction = DirectX::XMVector3Normalize(direction);
-
-					// 플레이어의 방향벡터 업데이트
-					_playerComp->_directionVector = direction;
-
-					// 플레이어 이동
-					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, speed * _playerComp->_playerInfo._speedScale));
-					_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
-
-					// 카메라 이동
-					DirectX::XMFLOAT3 cameraPos(_tempX + newPosition.m128_f32[0], _tempY, _tempZ + newPosition.m128_f32[2]);
-					SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->SetPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+					angle *= -1;
 				}
-				else
-				{
-					int a = 10;
 
-				}
+				// 계산한 각도로 플레이어의 rotation 변경
+				_transform->SetRotation(0.0f, angle, 0.0f);
+
+				// 방향벡터 계산
+				DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&_stopover[_nodeCount].second), currentPosVec);
+				direction = DirectX::XMVector3Normalize(direction);
+
+				// 플레이어의 방향벡터 업데이트
+				_playerComp->_directionVector = direction;
+
+				// 플레이어 이동
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, speed * _playerComp->_playerInfo._speedScale));
+				_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
+
+				// 카메라 이동
+				DirectX::XMFLOAT3 cameraPos(_tempX + newPosition.m128_f32[0], _tempY, _tempZ + newPosition.m128_f32[2]);
+				SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->SetPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+
 			}
-
-			
+			else
+			{
+				_nodeCount++;
+			}
+		}
+		else if (_isMoving && _nodeCount == _stopover.size())
+		{
+			// 이동이 끝나면 평상시 상태로
+			_playerComp->_playerStatus = Player::Status::IDLE;
+			_isMoving = false;
+		}
+		else
+		{
+			// 이동 상태가 아니라면 아무 처리도 안함
 		}
 	}
 }
-
-//void KunrealEngine::PlayerMove::NavigationMove(DirectX::XMFLOAT3 targetPos, float speed)
-//{
-//	navi->SetSEpos(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
-//		_targetPos.x, _targetPos.y, _targetPos.z
-//	);
-//
-//	_stopover = navi->FindPath();
-//
-//	if (_targetPos.x != 0 && _targetPos.z != 0)
-//	{
-//		int a = 10;
-//	}
-//}
 
 void KunrealEngine::PlayerMove::PlayerDash(DirectX::XMFLOAT3 targetPos, float speed)
 {

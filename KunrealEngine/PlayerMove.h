@@ -62,7 +62,7 @@ namespace KunrealEngine
 		void PlayerDash(DirectX::XMFLOAT3 targetPos, float speed);
 
 		/// Navigation 테스트중
-		void NavigationMove(DirectX::XMFLOAT3 targetPos, float speed);
+		void NavigationMove(float speed);
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 	};
 }

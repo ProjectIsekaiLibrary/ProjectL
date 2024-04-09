@@ -92,6 +92,7 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _diffuseMap;
 			ID3DX11EffectShaderResourceVariable* _emissionMap;
 			ID3DX11EffectShaderResourceVariable* _materialMap;
+			ID3DX11EffectShaderResourceVariable* _additionalMap;
 			ID3DX11EffectShaderResourceVariable* _shadowDepthMap;
 
 		private:

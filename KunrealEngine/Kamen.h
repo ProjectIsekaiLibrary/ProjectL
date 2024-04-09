@@ -31,6 +31,7 @@ namespace KunrealEngine
 
 	private:
 		void CreateTestPattern1();
+		void LeftPunch();
 
 
 		Coroutine_Func(function)

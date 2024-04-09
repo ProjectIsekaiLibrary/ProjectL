@@ -204,7 +204,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		testdef = 6;
 	}
-
+	if (GetAsyncKeyState(VK_F8))
+	{
+		testdef = 7;
+	}
 	if (GetAsyncKeyState(VK_F9))
 	{
 		testdef = 9;
@@ -795,7 +798,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_renderingImageView);
 	}
-	else if (testdef == 6)
+	else if (testdef == 7)
 	{
 		return static_cast<void*> (_deferredRenderer->GetShadowBuffer()->GetDepthSRV());
 	}
