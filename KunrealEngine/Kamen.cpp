@@ -146,3 +146,8 @@ void KunrealEngine::Kamen::CreateTestPattern1()
 
 	_basicPattern.emplace_back(pattern1);
 }
+
+void KunrealEngine::Kamen::LeftPunch()
+{
+
+}
