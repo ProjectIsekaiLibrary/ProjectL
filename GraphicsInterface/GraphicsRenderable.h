@@ -100,5 +100,11 @@ namespace GInterface
 		virtual void SetShadowState(bool tf) abstract;
 		// 그림자를 가질 가지는지 여부 가져오기
 		virtual bool GetShadowState() abstract;
+
+	public:
+		// 카툰 렌더링 적용 여부 설정
+		virtual void SetCartoonRendering(bool tf) abstract;
+		// 카툰 렌더링 적용 여부 가져오기
+		virtual bool GetCartoonRenderingState() abstract;
 	};
 }

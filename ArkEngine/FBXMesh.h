@@ -147,6 +147,10 @@ namespace ArkEngine
 		public:
 			virtual void SetMainCamera(ArkEngine::ICamera* camera) override;
 
+		public:
+			virtual void SetCartoonRendering(bool tf) override;
+			virtual bool GetCartoonRenderingState() override;
+
 		private:
 			std::string _simpleModelName;
 			std::string _fileName;
@@ -184,6 +188,8 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _cubeMap;
 
 			ID3DX11EffectVectorVariable* _fxColor;
+
+			ID3DX11EffectScalarVariable* _fxCartoon;
 
 			std::vector<DirectX::XMFLOAT4X4> _boneTMList;
 
@@ -224,6 +230,9 @@ namespace ArkEngine
 
 			float _color[4];
 			bool _haveShadow;
+
+			bool _applyCartoonRendering;
+				
 
 			/// <summary>
 			/// 김현재가 추가한 것들

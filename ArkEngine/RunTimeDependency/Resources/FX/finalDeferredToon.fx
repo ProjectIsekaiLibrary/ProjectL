@@ -26,6 +26,7 @@ Texture2D DiffuseAlbedoTexture : register(t1);
 Texture2D BumpedNormalTexture : register(t2);
 Texture2D EmissiveTexture : register(t3);
 Texture2D MaterialTexture : register(t4);
+Texture2D AdditionalTexture : register(t5);
 // 깊이 값 전달용(G-Buffer에 저장된 depth 정보를 가져와서 그림자)
 Texture2D gShadowDepthMapTexture;
 
@@ -92,7 +93,7 @@ float ToonShade(float intensity)
 }
 
 
-void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material)
+void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon)
 {
     position = PositionTexture.Sample(samAnisotropic, texCoord).xyz;
 
@@ -103,6 +104,8 @@ void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 positio
     emissive = EmissiveTexture.Sample(samAnisotropic, texCoord).xyz;
     
     material = MaterialTexture.Sample(samAnisotropic, texCoord);
+    
+    cartoon = AdditionalTexture.Sample(samAnisotropic, texCoord).x;
 }
 
 float4 WorldToLight(float3 position)
@@ -143,12 +146,13 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float3 diffuseAlbedo;
     float3 emissive;
     float4 material;
-      
+    float cartoon;
+    
 	// Specular Reflaction
     float _Glossiness;
     float4 _SpecularColor;
 
-    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material);
+    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon);
   
     float3 toEye = gEyePosW - position;
 
@@ -156,18 +160,6 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
     toEye /= distToEye;
 
-    //float2 screenPos = (pin.Tex + 1.0f) / 2.0f;
-    //float shadow = gShadowMapTexture.Sample(samAnisotropic, screenPos).r;
-    //// 결국에는 cameraView와 Projection이 필요하다
-    //// shadow에 카메라의 view역행렬을 곱해라 -> world에서의 pos값
-    //// light 시점에서의 viewProj를 곱해라 -> depthFromLight의 행렬이 된다
-    //// x,y 값이 uv가 된다
-    //// -1 ~ 1사이를 0 ~ 1로 바꿔주고 uv값의 y 값을 뒤집어 준다
-    //// depthFromLight의 pin.Tex 값에 넣어주면 된다
-    //float depthFromLight = gShadowDepthMapTexture.Sample(samAnisotropic, pin.Tex).r;
-    //float depth = pin.Pos.z / pin.Pos.w;
-    //float shadowFactor = (depthFromLight < shadow) ? 0.5 : 1.0;
-    
     // 현재 픽셀의 월드좌표에 광원의 VIEW,RPOJ행렬을 곱해 광원시점으로 이동시킴
     float4 worldPosByLight = WorldToLight(position);
     
@@ -204,9 +196,8 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     float3 toLightDir = -gDirLights[0].Direction;
 
-    
-    
-    
+
+   
 	// Rim Lighting
     float rimIntensity = 0.2f;
     float rimThreshold = 0.2f;
@@ -219,14 +210,27 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 	// NdotL
     //float NdotL = dot((texColor,1.0f), toLightDir);
     float NdotL = dot(normal, toLightDir);
-	// 빛의 강도
-    float lightIntensity = smoothstep(0, 1.f, NdotL);
-	//float lightIntensity = NdotL > 0 ? 1 : 0;
-	// 빛의 강도에 따라 색상 출력의 레이어를 정해준다
-    float4 toonColor = ToonShade(lightIntensity);
-    
-    float4 litColor = texColor * toonColor;
 
+    float4 litColor;
+    float lightIntensity;
+    float4 toonColor;
+    
+    if (cartoon == 1.0f)
+    {
+       	// 빛의 강도
+        lightIntensity = smoothstep(0, 1.f, NdotL);
+    }
+    else
+    {
+        // 빛의 강도
+        lightIntensity = smoothstep(1.f, 1.f, NdotL);
+    }
+    
+    //float lightIntensity = NdotL > 0 ? 1 : 0;
+	// 빛의 강도에 따라 색상 출력의 레이어를 정해준다 
+    toonColor = ToonShade(lightIntensity);
+    
+    litColor = texColor * toonColor;
     
 	// Specular Reflection
     _Glossiness = 32.f;

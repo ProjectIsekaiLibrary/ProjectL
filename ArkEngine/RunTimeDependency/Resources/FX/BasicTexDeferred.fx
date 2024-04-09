@@ -22,6 +22,7 @@ Texture2D gEmissiveMap;
 
 TextureCube gCubeMap;
 float4 gColor;
+float gCartoon;
 
 SamplerState samAnisotropic
 {
@@ -56,7 +57,8 @@ struct PSOut
     float4 BumpedNormal : SV_Target2;
     float4 Emissive : SV_Target3;
     float4 Material : SV_Target4;
-    float4 Color : SV_Target5;
+    float4 Additional : SV_Target5;
+    float4 Color : SV_Target6;
 };
 
 struct PSOut2
@@ -105,6 +107,7 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.BumpedNormal = bumpedNormal;
     output.Emissive = float4(emissive, 1.0f);
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
+    output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
     output.Color = gColor;
     
     return output;

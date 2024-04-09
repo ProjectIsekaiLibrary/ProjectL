@@ -22,7 +22,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	: _tech(nullptr), _fxDirLightCount(nullptr),_fxPointLightCount(nullptr),
 	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr), _fxLightView(nullptr), _fxLightProj(nullptr),
 	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr),
-	_materialMap(nullptr),
+	_materialMap(nullptr), _additionalMap(nullptr),
 	_shadowDepthMap(nullptr),
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
@@ -43,7 +43,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	: _tech(nullptr), _fxDirLightCount(nullptr), _fxPointLightCount(nullptr),
 	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr), _fxLightView(nullptr), _fxLightProj(nullptr),
 	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr),
-	_materialMap(nullptr),
+	_materialMap(nullptr), _additionalMap(nullptr),
 	_shadowDepthMap(nullptr),
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
@@ -109,8 +109,6 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	deviceContext->RSSetState(_arkDevice->GetSolidRS());
 	
-
-
 	SetDirLight();
 
 	SetPointLight();
@@ -139,6 +137,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 	_normalMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_NORMALMAP)));
 	_emissionMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_EMISSIONMAP)));
 	_materialMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_MATERIAL)));
+	_additionalMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_ADDITIONALINFO)));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -161,6 +160,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkDevice = nullptr;
 	
 	_shadowDepthMap = nullptr;
+	_additionalMap = nullptr;
 	_materialMap = nullptr;
 	_emissionMap = nullptr;
 	_diffuseMap = nullptr;
@@ -206,6 +206,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 	_diffuseMap = effect->GetVariableByName("DiffuseAlbedoTexture")->AsShaderResource();
 	_emissionMap = effect->GetVariableByName("EmissiveTexture")->AsShaderResource();
 	_materialMap = effect->GetVariableByName("MaterialTexture")->AsShaderResource();
+	_additionalMap = effect->GetVariableByName("AdditionalTexture")->AsShaderResource();
 	_shadowDepthMap = effect->GetVariableByName("gShadowDepthMapTexture")->AsShaderResource();
 }
 
