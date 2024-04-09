@@ -123,7 +123,7 @@ void KunrealEngine::EngineCore::Update()
 
 	//ninaveh->GetComponent<Animator>()->Play(0, 20.0f, true);
 
-	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
+	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 	//GRAPHICS->DrawDebugText(100, 100, 20, "1610¹è¸¶ownerÁ¤±âÈÆ : %f", sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<Transform>()->GetPosition().x);
 	//GRAPHICS->DrawDebugText(100, 300, 30, "%s", sceneInstance.GetCurrentScene()->GetSceneName().c_str());
 	//GRAPHICS->DrawDebugText(500, 500, 30, "Player HP : %f", player->GetComponent<Player>()->GetPlayerData()._hp);

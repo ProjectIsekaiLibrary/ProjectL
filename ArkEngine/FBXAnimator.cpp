@@ -188,6 +188,11 @@ const std::string& ArkEngine::ArkDX11::FBXAnimator::GetAnimationName()
 	{
 		return _anim->name;
 	}
+	else
+	{
+		std::string temp = "";
+		return temp;
+	}
 }
 
 const int ArkEngine::ArkDX11::FBXAnimator::GetIndexOfBone(const std::string& boneName)
