@@ -113,6 +113,7 @@ void KunrealEngine::EngineCore::Update()
 	inputInstance->UpdateEditorMousePos(_editorMousepos);
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
 	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
+	NavigationInstance.handleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
 	CheckMousePosition();
 
