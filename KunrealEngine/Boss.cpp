@@ -45,6 +45,8 @@ void KunrealEngine::Boss::Initialize(GameObject* boss)
 
 	SetMesh();
 
+	SetTexture();
+
 	SetBossTransform();
 	
 	SetCollider();
@@ -485,6 +487,18 @@ void KunrealEngine::Boss::SetColliderState(bool tf)
 	{
 		index->SetActive(tf);
 	}
+}
+
+
+void KunrealEngine::Boss::SetMesh()
+{
+
+}
+
+
+void KunrealEngine::Boss::SetTexture()
+{
+
 }
 
 void KunrealEngine::Boss::SetBossTransform()

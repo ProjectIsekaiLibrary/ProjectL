@@ -88,6 +88,10 @@ namespace KunrealEngine
 
 		// 노말
 		void SetNormalTexture(int index, const char* textureName);
+
+		// 이미시브
+		void SetEmissiveTexture(int index, const char* textureName);
+
 		std::string GetNormalName();
 
 		// 노말맵 컨테이너를 반환

@@ -119,7 +119,7 @@ bool ArkEngine::ArkDX11::FBXAnimator::PlayAnimationContinuous(float speed, float
 		return false;
 	}
 
-	if (_frameCount >= _anim->duration)
+	if (_frameCount >= _anim->duration-1)
 	{
 		_frameCount = 0.0f;
 	}
@@ -140,7 +140,7 @@ bool ArkEngine::ArkDX11::FBXAnimator::PlayAnimationContinuous(float speed, float
 		return false;
 	}
 
-	if (_frameCount >= _anim->duration)
+	if (_frameCount >= _anim->duration-1)
 	{
 		_frameCount = 0.0f;
 	}
