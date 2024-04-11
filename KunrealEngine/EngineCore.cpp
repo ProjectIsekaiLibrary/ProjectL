@@ -22,7 +22,7 @@ KunrealEngine::SceneManager& sceneInstance = KunrealEngine::SceneManager::GetIns
 KunrealEngine::TimeManager& timeInstance = KunrealEngine::TimeManager::GetInstance();
 KunrealEngine::InputSystem* inputInstance = KunrealEngine::InputSystem::GetInstance();
 KunrealEngine::SoundSystem& soundInstance = KunrealEngine::SoundSystem::GetInstance();
-/*KunrealEngine::*/Navigation& NavigationInstance = /*KunrealEngine::*/Navigation::GetInstance();
+KunrealEngine::Navigation& NavigationInstance = KunrealEngine::Navigation::GetInstance();
 
 KunrealEngine::GameObject* player;
 KunrealEngine::GameObject* ninaveh;
@@ -63,12 +63,12 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	NavigationInstance.Initialize();
-	//NavigationInstance.HandleBuild();
-	NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
-	NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 1);
-	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
-	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
-	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
+	NavigationInstance.HandleBuild();
+	//NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
+	NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
+	NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
+	NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
+	NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
 	NavigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 	NavigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos1 = NavigationInstance.FindStraightPath(0);

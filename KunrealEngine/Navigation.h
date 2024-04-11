@@ -17,148 +17,150 @@
 /// 아직 이 enum 변수들이 무슨 역할을 하는지 모르는 상황이므로, 일단 옮겨서 사용되는 모습을 보고 분석할것입니다.
 /// 
 
-enum SamplePolyAreas
+namespace KunrealEngine
 {
-	SAMPLE_POLYAREA_GROUND,
-	SAMPLE_POLYAREA_WATER,
-	SAMPLE_POLYAREA_ROAD,
-	SAMPLE_POLYAREA_DOOR,
-	SAMPLE_POLYAREA_GRASS,
-	SAMPLE_POLYAREA_JUMP
-};
-enum SamplePolyFlags
-{
-	SAMPLE_POLYFLAGS_WALK = 0x01,		// 걷기 능력 (지상, 풀, 도로)
-	SAMPLE_POLYFLAGS_SWIM = 0x02,		// 수영 능력 (물)
-	SAMPLE_POLYFLAGS_DOOR = 0x04,		// 문 통과 능력
-	SAMPLE_POLYFLAGS_JUMP = 0x08,		// 점프 능력
-	SAMPLE_POLYFLAGS_DISABLED = 0x10,	// 비활성화된 폴리곤
-	SAMPLE_POLYFLAGS_ALL = 0xffff		// 모든 능력
-};
-enum SamplePartitionType
-{
-	SAMPLE_PARTITION_WATERSHED,
-	SAMPLE_PARTITION_MONOTONE,
-	SAMPLE_PARTITION_LAYERS
-};
-
-enum TestType
-{
-	TEST_PATHFIND,
-	TEST_RAYCAST
-};
-
-static const int NAVMESHSET_MAGIC = 'M' << 24 | 'S' << 16 | 'E' << 8 | 'T'; //'MSET';
-static const int NAVMESHSET_VERSION = 1;
-
-static const int TILECACHESET_MAGIC = 'T' << 24 | 'S' << 16 | 'E' << 8 | 'T'; //'TSET';
-static const int TILECACHESET_VERSION = 1;
-static const int EXPECTED_LAYERS_PER_TILE = 4;
-static const int MAX_LAYERS = 32;
-
-struct NavMeshSetHeader
-{
-	int magic;
-	int version;
-	int numTiles;
-	dtNavMeshParams params;
-};
-
-struct NavMeshTileHeader
-{
-	dtTileRef tileRef;
-	int dataSize;
-};
-
-struct Test
-{
-	Test() :
-		type(),
-		spos(),
-		epos(),
-		nspos(),
-		nepos(),
-		radius(0),
-		includeFlags(0),
-		excludeFlags(0),
-		expand(false),
-		straight(0),
-		nstraight(0),
-		polys(0),
-		npolys(0),
-		findNearestPolyTime(0),
-		findPathTime(0),
-		findStraightPathTime(0),
-		next(0)
+	enum SamplePolyAreas
 	{
-	}
-
-	~Test()
+		SAMPLE_POLYAREA_GROUND,
+		SAMPLE_POLYAREA_WATER,
+		SAMPLE_POLYAREA_ROAD,
+		SAMPLE_POLYAREA_DOOR,
+		SAMPLE_POLYAREA_GRASS,
+		SAMPLE_POLYAREA_JUMP
+	};
+	enum SamplePolyFlags
 	{
-		delete[] straight;
-		delete[] polys;
-	}
+		SAMPLE_POLYFLAGS_WALK = 0x01,		// 걷기 능력 (지상, 풀, 도로)
+		SAMPLE_POLYFLAGS_SWIM = 0x02,		// 수영 능력 (물)
+		SAMPLE_POLYFLAGS_DOOR = 0x04,		// 문 통과 능력
+		SAMPLE_POLYFLAGS_JUMP = 0x08,		// 점프 능력
+		SAMPLE_POLYFLAGS_DISABLED = 0x10,	// 비활성화된 폴리곤
+		SAMPLE_POLYFLAGS_ALL = 0xffff		// 모든 능력
+	};
+	enum SamplePartitionType
+	{
+		SAMPLE_PARTITION_WATERSHED,
+		SAMPLE_PARTITION_MONOTONE,
+		SAMPLE_PARTITION_LAYERS
+	};
 
-	TestType type;
-	float spos[3];
-	float epos[3];
-	float nspos[3];
-	float nepos[3];
-	float radius;
-	unsigned short includeFlags;
-	unsigned short excludeFlags;
-	bool expand;
+	enum TestType
+	{
+		TEST_PATHFIND,
+		TEST_RAYCAST
+	};
 
-	float* straight;
-	int nstraight;
-	dtPolyRef* polys;
-	int npolys;
+	static const int NAVMESHSET_MAGIC = 'M' << 24 | 'S' << 16 | 'E' << 8 | 'T'; //'MSET';
+	static const int NAVMESHSET_VERSION = 1;
 
-	int findNearestPolyTime;
-	int findPathTime;
-	int findStraightPathTime;
+	static const int TILECACHESET_MAGIC = 'T' << 24 | 'S' << 16 | 'E' << 8 | 'T'; //'TSET';
+	static const int TILECACHESET_VERSION = 1;
+	static const int EXPECTED_LAYERS_PER_TILE = 4;
+	static const int MAX_LAYERS = 32;
 
-	Test* next;
-private:
-	// Explicitly disabled copy constructor and copy assignment operator.
-	Test(const Test&);
-	Test& operator=(const Test&);
-};
+	struct NavMeshSetHeader
+	{
+		int magic;
+		int version;
+		int numTiles;
+		dtNavMeshParams params;
+	};
 
-// 이 PathFIndbox는 네비매쉬를 배열로 관리하기 편하도록 구성 요소들을 묶은 것
-struct PathFindbox
-{
-	class dtNavMesh* _navMesh;
-	class dtNavMeshQuery* _navQuery;
+	struct NavMeshTileHeader
+	{
+		dtTileRef tileRef;
+		int dataSize;
+	};
 
-	// PathFind를 위해 필요한 부분들
-	static const int MAX_POLYS = 256;
-	static const int MAX_SMOOTH = 2048;
+	struct Test
+	{
+		Test() :
+			type(),
+			spos(),
+			epos(),
+			nspos(),
+			nepos(),
+			radius(0),
+			includeFlags(0),
+			excludeFlags(0),
+			expand(false),
+			straight(0),
+			nstraight(0),
+			polys(0),
+			npolys(0),
+			findNearestPolyTime(0),
+			findPathTime(0),
+			findStraightPathTime(0),
+			next(0)
+		{
+		}
 
-	dtPolyRef _startRef;
-	dtPolyRef _endRef;
-	dtPolyRef _parent[MAX_POLYS];
-	float _startPos[3];
-	float _endPos[3];
-	dtQueryFilter _filter;
-	dtPolyRef _path[MAX_POLYS];
-	int _pathCount;
-	float _polyPickExt[3];
+		~Test()
+		{
+			delete[] straight;
+			delete[] polys;
+		}
 
-	// Straight-pathfind를 위해 필요한 부분들
-	float _straightPath[MAX_POLYS * 3];
-	unsigned char _straightPathFlags[MAX_POLYS];
-	dtPolyRef _straightPathPolys[MAX_POLYS];
-	int _nstraightPath;
+		TestType type;
+		float spos[3];
+		float epos[3];
+		float nspos[3];
+		float nepos[3];
+		float radius;
+		unsigned short includeFlags;
+		unsigned short excludeFlags;
+		bool expand;
 
-	// Raycast-pathfind를 위해 필요한 부분들
-	dtRaycastHit _hit;
-	dtPolyRef _RaycastPathPolys;
-	float _hitPos[3];
+		float* straight;
+		int nstraight;
+		dtPolyRef* polys;
+		int npolys;
 
-	PathFindbox();
-	~PathFindbox();
-};
+		int findNearestPolyTime;
+		int findPathTime;
+		int findStraightPathTime;
+
+		Test* next;
+	private:
+		// Explicitly disabled copy constructor and copy assignment operator.
+		Test(const Test&);
+		Test& operator=(const Test&);
+	};
+
+	// 이 PathFIndbox는 네비매쉬를 배열로 관리하기 편하도록 구성 요소들을 묶은 것
+	struct PathFindbox
+	{
+		class dtNavMesh* _navMesh;
+		class dtNavMeshQuery* _navQuery;
+
+		// PathFind를 위해 필요한 부분들
+		static const int MAX_POLYS = 256;
+		static const int MAX_SMOOTH = 2048;
+
+		dtPolyRef _startRef;
+		dtPolyRef _endRef;
+		dtPolyRef _parent[MAX_POLYS];
+		float _startPos[3];
+		float _endPos[3];
+		dtQueryFilter _filter;
+		dtPolyRef _path[MAX_POLYS];
+		int _pathCount;
+		float _polyPickExt[3];
+
+		// Straight-pathfind를 위해 필요한 부분들
+		float _straightPath[MAX_POLYS * 3];
+		unsigned char _straightPathFlags[MAX_POLYS];
+		dtPolyRef _straightPathPolys[MAX_POLYS];
+		int _nstraightPath;
+
+		// Raycast-pathfind를 위해 필요한 부분들
+		dtRaycastHit _hit;
+		dtPolyRef _RaycastPathPolys;
+		float _hitPos[3];
+
+		PathFindbox();
+		~PathFindbox();
+	};
 
 	class Navigation
 	{
@@ -180,7 +182,7 @@ struct PathFindbox
 		bool HandleBuild();
 		// 네비매쉬를 업데이트 한다.
 		void handleUpdate(const float dt);
-		
+
 		// 장애물을 추가한다.
 		// pos = 장애물 위치 / radius = 장애물 크기 / height = 장애물 사이즈
 		void addTempObstacle(const float* pos, float radius, float height);
@@ -217,8 +219,8 @@ struct PathFindbox
 		// sp, sq를 기반으로 장애물의 ref 값을 반환하는 함수. sp,sq가 뭔진 아직 나도 모르겠음
 		dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq);
 		static bool isectSegAABB(const float* sp, const float* sq,
-								const float* amin, const float* amax,
-								float& tmin, float& tmax);
+			const float* amin, const float* amax,
+			float& tmin, float& tmax);
 	private:
 		class InputGeom* _geom;
 		PathFindbox _package[5];
@@ -288,3 +290,4 @@ struct PathFindbox
 		int _maxPolysPerTile;
 		float _tileSize = 48;
 	};
+}
