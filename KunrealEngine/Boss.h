@@ -42,6 +42,10 @@ namespace KunrealEngine
 		virtual void SetCollider() abstract;
 
 	public:
+		// 어떠한 텍스쳐를 입힐 것인지를 지정
+		virtual void SetTexture();
+
+	public:
 		// 보스의 포지션 지정
 		virtual void SetBossTransform();
 

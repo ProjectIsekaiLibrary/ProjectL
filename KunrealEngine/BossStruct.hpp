@@ -59,14 +59,14 @@ private:
 struct BossPattern
 {
 	BossPattern()
-		: _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f), 
+		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _isActive(true), _maxColliderOnCount(1),
 		_logic(nullptr)
 	{
 	}
 
 	bool Play() { if (_logic!= nullptr) return _logic(); }		// 패턴 실행 함수
-
+	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };
 	BossPattern& SetSpeed(float speed) { _speed = speed; return *this; };
@@ -79,6 +79,8 @@ struct BossPattern
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
 	BossPattern& SetActive(unsigned int count) { _maxColliderOnCount = count; return *this; };
 	BossPattern& SetLogic(std::function<bool()> logic) { _logic = logic; return *this; };
+
+	std::string _patternName;		// 패턴 이름
 
 	std::string _animName;			// 패턴 애니메이션 이름
 									

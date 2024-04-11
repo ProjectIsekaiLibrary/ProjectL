@@ -3,7 +3,7 @@
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
-	: Boss()
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr)
 {
 	BossBasicInfo info;
 
@@ -12,7 +12,7 @@ KunrealEngine::Kamen::Kamen()
 
 	SetInfo(info);
 
-	CreateTestPattern1();
+	LeftAttackOnce();
 }
 
 KunrealEngine::Kamen::~Kamen()
@@ -69,55 +69,62 @@ void KunrealEngine::Kamen::SetActive(bool active)
 
 void KunrealEngine::Kamen::CreateSubObject()
 {
-	auto weapon = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Weapon");
-	_subObjectList.emplace_back(weapon);
-
-	auto leftHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("leftHand");
+	auto leftHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("LeftHand");
 	_subObjectList.emplace_back(leftHand);
 
-	auto testSub = SceneManager::GetInstance().GetCurrentScene()->CreateObject("testSub");
-	_subObjectList.emplace_back(testSub);
+	auto rightHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("RightHand");
+	_subObjectList.emplace_back(rightHand);
 }
 
 void KunrealEngine::Kamen::SetMesh()
 {
 	_boss->AddComponent<MeshRenderer>();
-	_boss->GetComponent<MeshRenderer>()->SetMeshObject("alien/alien");
-	
-	_subObjectList[0]->AddComponent<MeshRenderer>();
-	_subObjectList[0]->GetComponent<MeshRenderer>()->SetMeshObject("Sword/Sword");
-	_subObjectList[0]->GetComponent<MeshRenderer>()->SetParentBone(_boss, "mixamorig:RightHand");
+	_boss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
+}
+
+
+void KunrealEngine::Kamen::SetTexture()
+{
+	auto texSize = _boss->GetComponent<MeshRenderer>()->GetTextures().size();
+	for (int i = 0; i < texSize; i++)
+	{
+		_boss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+		_boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+		_boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+	}
 }
 
 void KunrealEngine::Kamen::SetCollider()
 {
 	// 보스의 콜라이더, 플레이어의 이동 체크를 위해 보스의 크기만큼 설정
 	_boss->AddComponent<BoxCollider>();
-	_boss->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 10.0f, 5.0f);
-	_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "mixamorig:Spine");
+	_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
+	_boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
+	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
 
-	// 공격판정을 위한 콜라이더는 하위 오브젝트에서 콜라이더 설정
 	_subObjectList[0]->AddComponent<BoxCollider>();
-	_subObjectList[0]->GetComponent<BoxCollider>()->SetBoxSize(2.0f, _info._attackRange, 2.0f);
+	_leftHand = _subObjectList[0]->GetComponent<BoxCollider>();
+	_leftHand->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->SetBoxSize(2.0f, 3.0f, 2.0f);
 
 	_subObjectList[1]->AddComponent<BoxCollider>();
-	_subObjectList[1]->GetComponent<BoxCollider>()->SetTransform(_boss, "mixamorig:LeftHand");
-	//
-	//_subObjectList[2]->AddComponent<BoxCollider>();
+	_rightHand = _subObjectList[1]->GetComponent<BoxCollider>();
+	_rightHand->SetTransform(_boss, "MiddleFinger1_R");
+	_rightHand->SetBoxSize(2.0f, 3.0f, 2.0f);
 }
 
 void KunrealEngine::Kamen::SetBossTransform()
 {
 	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
-	_boss->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
-	_boss->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
 }
 
-void KunrealEngine::Kamen::CreateTestPattern1()
+void KunrealEngine::Kamen::LeftAttackOnce()
 {
 	BossPattern* pattern1 = new BossPattern();
 
-	pattern1->SetAnimName("Punch").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern1->SetPatternName("Left_Attack_Once");
+
+	pattern1->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
 	pattern1->SetIsWarning(false).SetWarningName("").SetTriggerHp(20.0f);
 
 	std::function<bool()> logic = [pattern1, this]()
@@ -130,7 +137,7 @@ void KunrealEngine::Kamen::CreateTestPattern1()
 		{
 			if (animator->GetCurrentFrame() >= 10)
 			{
-				SetColliderState(true);
+				_leftHand->SetActive(true);
 			}
 		}
 
@@ -147,7 +154,7 @@ void KunrealEngine::Kamen::CreateTestPattern1()
 	_basicPattern.emplace_back(pattern1);
 }
 
-void KunrealEngine::Kamen::LeftPunch()
+void KunrealEngine::Kamen::RightAttackOnce()
 {
 
 }

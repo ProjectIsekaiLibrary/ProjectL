@@ -26,12 +26,17 @@ namespace KunrealEngine
 
 		virtual void CreateSubObject() override;
 		virtual void SetMesh() override;
+		virtual void SetTexture() override;
 		virtual void SetCollider() override;
 		virtual void SetBossTransform() override;
 
 	private:
-		void CreateTestPattern1();
-		void LeftPunch();
+		BoxCollider* _leftHand;
+		BoxCollider* _rightHand;
+
+	private:
+		void LeftAttackOnce();
+		void RightAttackOnce();
 
 
 		Coroutine_Func(function)

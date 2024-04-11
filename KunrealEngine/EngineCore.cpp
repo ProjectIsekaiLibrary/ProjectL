@@ -269,7 +269,7 @@ void KunrealEngine::EngineCore::Update()
 
 	gamePlayer->GetComponent<Animator>()->Play("Walk", 20.0f, true);
 
-	ninaveh->GetComponent<Animator>()->Play("Idle", 20.0f, true);
+	//ninaveh->GetComponent<Animator>()->Play(2, 20.0f, true);
 
 	// 플레이어 상태
 	if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::IDLE)
@@ -399,16 +399,8 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	player->AddComponent<Player>();
 
-	ninaveh = sceneInstance.GetCurrentScene()->CreateObject("Nineveh");
-	ninaveh->AddComponent<MeshRenderer>();
-	ninaveh->GetComponent<MeshRenderer>()->SetMeshObject("Flame/Flame"); 
-	ninaveh->AddComponent<BoxCollider>();
-	ninaveh->GetComponent<BoxCollider>()->SetBoxSize(10.f, 10.f, 10.f);
-	ninaveh->GetComponent<BoxCollider>()->SetOffset(0.0f, 10.f, 0.0f);
-	ninaveh->GetComponent<Transform>()->SetPosition(50.0f, 0.0f, -20.0f);
 	//ninaveh->GetComponent<Transform>()->SetScale(0.01f, 0.01f, 0.01f);
-
-
+	
 	//ninaveh->SetParent(player);
 
 	//ninaveh->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
