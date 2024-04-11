@@ -273,6 +273,9 @@
     <ClInclude Include="ButtonSystem.h">
       <Filter>Source Files\System\ButtonSystem</Filter>
     </ClInclude>
+    <ClInclude Include="NavigationStruct.h">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -396,6 +399,9 @@
       <Filter>Source Files\System\ButtonSystem</Filter>
     </ClCompile>
     <ClCompile Include="..\Inc\Recast\fastlz.c">
+      <Filter>Source Files\System\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="NavigationStruct.cpp">
       <Filter>Source Files\System\Navigation</Filter>
     </ClCompile>
   </ItemGroup>
