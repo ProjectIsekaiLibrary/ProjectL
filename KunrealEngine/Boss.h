@@ -91,11 +91,17 @@ namespace KunrealEngine
 
 		bool MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
 
+		bool MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
+
 		void TeleportToPlayer();
 
 		bool LookAtPlayer(float agnle, float rotateSpeed);
 
 		void RegisterCollider();
+
+		void UpdateMoveNode();
+
+		void UpdateMoveNode(DirectX::XMFLOAT3 targetPos);
 
 	protected:
 		BossStatus _status;
@@ -127,12 +133,19 @@ namespace KunrealEngine
 		bool _isStart;
 		bool _isHit;
 
+		private:
+		Transform* _bossTransform;
+		Transform* _playerTransform;
+
+		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
+		int _nodeCount;
+
 	private:
 		Coroutine_Func(patternEnd)
 		{
 			Boss* boss = this;
 
-			Waitforsecond(0.5);
+			Waitforsecond(1.0);
 
 			if (boss->_isCorePattern)
 			{
@@ -140,8 +153,6 @@ namespace KunrealEngine
 
 				boss->_isCorePattern = false;
 			}
-
-			boss->_boss->GetComponent<Animator>()->Stop();
 
 			boss->_status = BossStatus::IDLE;
 
