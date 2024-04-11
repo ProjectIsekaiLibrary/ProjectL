@@ -182,7 +182,8 @@ struct PathFindbox
 		void handleUpdate(const float dt);
 		
 		// 장애물을 추가한다.
-		void addTempObstacle(const float* pos);
+		// pos = 장애물 위치 / radius = 장애물 크기 / height = 장애물 사이즈
+		void addTempObstacle(const float* pos, float radius, float height);
 		// 특정 장애물을 제거한다.
 		void removeTempObstacle(const float* sp, const float* sq);
 		// 모든 장애물을 제거한다.
@@ -213,7 +214,7 @@ struct PathFindbox
 		void getTilePos(const float* pos, int& tx, int& ty);
 		void renderCachedTile(const int tx, const int ty, const int type);
 		void renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view);
-
+		// sp, sq를 기반으로 장애물의 ref 값을 반환하는 함수. sp,sq가 뭔진 아직 나도 모르겠음
 		dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq);
 		static bool isectSegAABB(const float* sp, const float* sq,
 								const float* amin, const float* amax,

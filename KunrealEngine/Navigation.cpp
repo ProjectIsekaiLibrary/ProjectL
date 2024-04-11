@@ -477,7 +477,7 @@ PathFindbox::~PathFindbox()
 		rcVcopy(params.orig, bmin);
 		params.tileWidth = _tileSize * _cellSize;
 		params.tileHeight = _tileSize * _cellSize;
-		params.maxTiles = _maxTiles;
+  		params.maxTiles = _maxTiles;
 		params.maxPolys = _maxPolysPerTile;
 
 		status = _package[0]._navMesh->init(&params);
@@ -528,16 +528,6 @@ PathFindbox::~PathFindbox()
 				}
 			}
 		}
-
-		// Build initial meshes
-		_ctx->startTimer(RC_TIMER_TOTAL);
-		for (int y = 0; y < th; ++y)
-			for (int x = 0; x < tw; ++x)
-				_tileCache->buildNavMeshTilesAt(x, y, _package[0]._navMesh);
-		_ctx->stopTimer(RC_TIMER_TOTAL);
-
-		_cacheBuildTimeMs = _ctx->getAccumulatedTime(RC_TIMER_TOTAL) / 1000.0f;
-		_cacheBuildMemUsage = static_cast<unsigned int>(_talloc->high);
 
 
 		const dtNavMesh* nav = _package[0]._navMesh;
@@ -764,7 +754,7 @@ PathFindbox::~PathFindbox()
 // 			drawDetailOverlay(m_tileCache, tx, ty, proj, model, view);
  	}
 
-	void Navigation::addTempObstacle(const float* pos)
+	void Navigation::addTempObstacle(const float* pos, float radius, float height)
 	{
 		if (!_tileCache)
 			return;
@@ -818,7 +808,7 @@ PathFindbox::~PathFindbox()
 		for (int i = 0; i < _package[index]._nstraightPath - 1; ++i)
 		{
 			DirectX::XMFLOAT3 strindex;
-			DirectX::XMFLOAT3 nxtindex;
+			DirectX::XMFLOAT3 nxtindex; 
 
 			strindex.x = _package[index]._straightPath[i * 3];
 			strindex.y = _package[index]._straightPath[i * 3 + 1] + 0.4f;
