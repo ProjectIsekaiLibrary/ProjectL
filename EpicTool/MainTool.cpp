@@ -119,7 +119,7 @@ HRESULT EpicTool::MainTool::Initialize()
 
 	/// 로드 구현중 
 
-    //LoadData(); // 로드 부분 구현되었으나 임시 주석
+    LoadData(); // 로드 부분 구현되었으나 임시 주석
 
     _windowManager = new ShowWindowManager;
     _windowManager->Initialize();
@@ -393,7 +393,14 @@ void EpicTool::MainTool::LoadData()
     while (_loadSuccess)
     {
     	nfdchar_t* outPath = NULL;
+
+		//std::string folderPath = std::filesystem::current_path().string();
+		//
+		//std::string filePath = folderPath + "/Resources/MapObj/";
+
     	nfdresult_t result = NFD_OpenDialog("json", NULL, &outPath);
+
+
     
     	if (result == NFD_OKAY) 
         {
