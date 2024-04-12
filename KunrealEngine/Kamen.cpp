@@ -13,6 +13,7 @@ KunrealEngine::Kamen::Kamen()
 	SetInfo(info);
 
 	LeftAttackOnce();
+	RightAttackOnce();
 }
 
 KunrealEngine::Kamen::~Kamen()
@@ -120,17 +121,17 @@ void KunrealEngine::Kamen::SetBossTransform()
 
 void KunrealEngine::Kamen::LeftAttackOnce()
 {
-	BossPattern* pattern1 = new BossPattern();
+	BossPattern* pattern = new BossPattern();
 
-	pattern1->SetPatternName("Left_Attack_Once");
+	pattern->SetPatternName("Left_Attack_Once");
 
-	pattern1->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
-	pattern1->SetIsWarning(false).SetWarningName("").SetTriggerHp(20.0f);
+	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern->SetIsWarning(false).SetWarningName("");
 
-	std::function<bool()> logic = [pattern1, this]()
+	std::function<bool()> logic = [pattern, this]()
 	{
 		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern1->_animName, pattern1->_speed, false);
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
 		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 		if (_maxColliderOnCount > 0)
@@ -149,12 +150,43 @@ void KunrealEngine::Kamen::LeftAttackOnce()
 		return true;
 	};
 
-	pattern1->SetLogic(logic);
+	pattern->SetLogic(logic);
 
-	_basicPattern.emplace_back(pattern1);
+	_basicPattern.emplace_back(pattern);
 }
 
 void KunrealEngine::Kamen::RightAttackOnce()
 {
+	BossPattern* pattern = new BossPattern();
 
+	pattern->SetPatternName("Right_Attack_Once");
+
+	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern->SetIsWarning(false).SetWarningName("");
+
+	std::function<bool()> logic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (_maxColliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
+			{
+				_rightHand->SetActive(true);
+			}
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(logic);
+
+	_basicPattern.emplace_back(pattern);
 }

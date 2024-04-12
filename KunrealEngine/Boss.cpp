@@ -15,7 +15,8 @@
 #include "Boss.h"
 
 KunrealEngine::Boss::Boss()
-	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _distance(0.0f), _isCorePattern(false),
+	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
+	_distance(0.0f), _isCorePattern(false),
 	_basicPattern(), _corePattern(), _subColliderList(), _maxColliderOnCount(1),
 	_isStart(false), _isHit(false), _isRotateFinish(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
@@ -201,6 +202,12 @@ void KunrealEngine::Boss::Idle()
 	{
 		// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
 		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+
+		while (_patternIndex == _exPatternIndex)
+		{
+			// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
+			_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+		}
 
 		// 가져온 랜덤 패턴이 활성화되어있지 않다면
 		while ((_basicPattern)[_patternIndex]->_isActive == false)
@@ -471,6 +478,9 @@ void KunrealEngine::Boss::CoreAttack()
 
 void KunrealEngine::Boss::PatternEnd()
 {
+	// 이전 패턴 인덱스 저장
+	_exPatternIndex = _patternIndex;
+
 	// Idle 애니메이션 실행
 	_boss->GetComponent<Animator>()->Play("Idle", _info._baseAnimSpeed, true);
 
