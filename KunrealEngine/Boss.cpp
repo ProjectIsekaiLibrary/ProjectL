@@ -267,7 +267,7 @@ void KunrealEngine::Boss::Chase()
 		else
 		{
 			// 패턴 사거리보다 플레이어의 거리가 멀지만 일정 거리 이내일 경우 걸어서 이동
-			if (_distance - patternRange <= 15)
+			if (_distance - patternRange <= 30.0f)
 			{
 				// 보스와 플레이어의 갈 수 있는 길을 노드로 계산
 				UpdateMoveNode();
