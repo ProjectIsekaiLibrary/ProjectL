@@ -131,17 +131,9 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		_mainCubeMap->Update(_mainCamera);
 	}
 
-	if (_isDebugMode)
+	// Frustum culling을 위해 그리지 않아도 업데이트 시키도록 변경
+	for (const auto& index : ResourceManager::GetInstance()->GetDebugObjectList())
 	{
-		for (const auto& index : ResourceManager::GetInstance()->GetDebugObjectList())
-		{
-			// Frustum culling을 위해 그리지 않아도 업데이트 시키도록 변경
-			//if (index->GetRenderingState())
-			{
-				index->Update(_mainCamera);
-			}
-		}
-		for (const auto& index : ResourceManager::GetInstance()->GetLineObjectList())
 		{
 			index->Update(_mainCamera);
 		}
@@ -151,6 +143,15 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		// 일단은 그려질 것만 업데이트
 		if (index->GetRenderingState() && index->GetInsideFrustumState())
+		{
+			index->Update(_mainCamera);
+		}
+	}
+
+
+	if (_isDebugMode)
+	{
+		for (const auto& index : ResourceManager::GetInstance()->GetLineObjectList())
 		{
 			index->Update(_mainCamera);
 		}
