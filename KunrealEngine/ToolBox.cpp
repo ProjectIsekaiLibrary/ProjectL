@@ -19,6 +19,15 @@ int KunrealEngine::ToolBox::GetRandomNum(int minNum, int maxNum)
 	return dist(generator);
 }
 
+float KunrealEngine::ToolBox::GetRandomFloat(float minNum, float maxNum)
+{
+	std::random_device rd;
+	std::mt19937 generator(rd());
+	std::uniform_int_distribution<> dist(minNum, maxNum);
+
+	return dist(generator);
+}
+
 float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst)
 {
 	DirectX::XMVECTOR source = DirectX::XMLoadFloat3(&src);

@@ -109,6 +109,16 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	// 파티클 초기화 추가(2,3번째 매개변수로 집어 넣기 위해 따로 함수로 만들어 줘야한다)
 	//_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>(_device);
 
+	
+	_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>();
+	_randomTexSTV = _particle->CreateRandomTextureSRV(_device.Get());
+	std::vector<std::wstring> flame;
+	flame.push_back(L"Resources/Textures/Particles/flare.dds");
+	_flameTexSTV = _particle->CreateTexture2DArraySRV(_device.Get(), _deviceContext.Get(),flame);
+	_particle->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 200);
+	_particle->SetEmitPos(DirectX::XMFLOAT3(0.0f, 10.0f, 0.0f));
+
+
 	SetPickingTexture();
 }
 
@@ -212,6 +222,9 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		testdef = 9;
 	}
+
+	// particle
+	_particle->Update(0.1f, 0.1f);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
@@ -309,6 +322,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	{
 		_deviceContext->PSSetShaderResources(i, 1, &srv);
 	}
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	// Particle
+	_particle->SetEyePos(_mainCamera->GetCameraPos());
+	_particle->Draw(_deviceContext.Get(), _mainCamera);
+	_deviceContext->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 
 	EndRender();
 }

@@ -19,6 +19,9 @@ namespace KunrealEngine
 		// 범위 랜덤
 		static int GetRandomNum(int minNum, int maxNum);
 
+		// float 값 random 반환
+		static float GetRandomFloat(float minNum, float maxNum);
+
 		/// 수학 관련
 	public:
 		// 두 XMFLOAT3 좌표 사이의 거리
