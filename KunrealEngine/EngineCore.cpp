@@ -25,8 +25,6 @@ KunrealEngine::SoundSystem& soundInstance = KunrealEngine::SoundSystem::GetInsta
 KunrealEngine::Navigation& navigationInstance = KunrealEngine::Navigation::GetInstance();
 
 KunrealEngine::GameObject* player;
-KunrealEngine::GameObject* ninaveh;
-KunrealEngine::GameObject* gamePlayer;
 KunrealEngine::GameObject* kamen;
 KunrealEngine::GameObject* zeolight;
 KunrealEngine::GameObject* zeolight_Image;
@@ -34,8 +32,6 @@ KunrealEngine::GameObject* Button_Image1;
 KunrealEngine::GameObject* Button_Image2;
 KunrealEngine::GameObject* Button_Image3;
 KunrealEngine::GameObject* Button_Image4;
-KunrealEngine::GameObject* emptyObject;
-
 
 KunrealEngine::GameObject* testCamera;
 
@@ -271,9 +267,6 @@ void KunrealEngine::EngineCore::Update()
 
 	Updatecoroutine();
 
-	gamePlayer->GetComponent<Animator>()->Play("Walk", 20.0f, true);
-
-	//ninaveh->GetComponent<Animator>()->Play(2, 20.0f, true);
 
 	// 플레이어 상태
 	if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::IDLE)
@@ -403,39 +396,9 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	player->AddComponent<Player>();
 
-	//ninaveh->GetComponent<Transform>()->SetScale(0.01f, 0.01f, 0.01f);
-	
-	//ninaveh->SetParent(player);
-
-	//ninaveh->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//ninaveh->GetComponent<Transform>()->SetRotation(-270.f, -45.f, -180.f);
-	//ninaveh->GetComponent<MeshRenderer>()->PlayAnimation(2.0f, TimeManager::GetInstance().GetDeltaTime(), 0, true);
-
-	//sphere = sceneInstance.GetCurrentScene()->CreateObject("Player2");
-	//sphere->AddComponent<MeshRenderer>();
-	//sphere->GetComponent<MeshRenderer>()->SetMeshObject("Player/Player");
-	//sphere->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-
-	gamePlayer = sceneInstance.GetCurrentScene()->CreateObject("gamePlayer");
-	gamePlayer->AddComponent<MeshRenderer>();
-	gamePlayer->GetComponent<MeshRenderer>()->SetMeshObject("Player/Player");
-	gamePlayer->GetComponent<Transform>()->SetPosition(-5.0f, 0.0f, -20.0f);
-	//gamePlayer->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-	gamePlayer->GetComponent<Transform>()->SetScale(0.01f, 0.01f, 0.01f);
-	gamePlayer->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
-	gamePlayer->AddComponent<BoxCollider>();
-	gamePlayer->GetComponent<BoxCollider>()->SetTransform(gamePlayer, "hand_l");
-
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
 	
-	emptyObject = sceneInstance.GetCurrentScene()->CreateObject("emptyObject");
-	emptyObject->AddComponent<MeshRenderer>();
-	emptyObject->GetComponent<MeshRenderer>()->SetMeshObject("Sword/Sword");
-	emptyObject->GetComponent<MeshRenderer>()->SetParentBone(gamePlayer, "hand_l");
-	//emptyObject->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
-	//gamePlayer->SetParent(emptyObject);
-
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
 	zeolight_Image->AddComponent<ImageRenderer>();
