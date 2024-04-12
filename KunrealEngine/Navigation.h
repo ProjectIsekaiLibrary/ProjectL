@@ -68,15 +68,15 @@ namespace KunrealEngine
 		// 네비매쉬를 직접 빌드 하기
 		bool HandleBuild();
 		// 네비매쉬를 업데이트 한다.
-		void handleUpdate(const float dt);
+		void HandleUpdate(const float dt);
 
 		// 장애물을 추가한다.
 		// pos = 장애물 위치 / radius = 장애물 크기 / height = 장애물 사이즈
-		void addTempObstacle(const float* pos, float radius, float height);
+		void AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height);
 		// 특정 장애물을 제거한다.
-		void removeTempObstacle(const float* sp, const float* sq);
+		void RemoveTempObstacle(const float* sp, const float* sq);
 		// 모든 장애물을 제거한다.
-		void clearAllTempObstacles();
+		void ClearAllTempObstacles();
 
 		// 직선경로 탐색 함수
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> FindStraightPath(int index);

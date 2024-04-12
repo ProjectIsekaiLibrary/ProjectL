@@ -354,7 +354,7 @@ namespace KunrealEngine
 		return true;
 	}
 
-	void Navigation::handleUpdate(const float dt)
+	void Navigation::HandleUpdate(const float dt)
 	{
 		if (!_package[0]._navMesh)
 			return;
@@ -569,17 +569,20 @@ namespace KunrealEngine
 		// 			drawDetailOverlay(m_tileCache, tx, ty, proj, model, view);
 	}
 
-	void Navigation::addTempObstacle(const float* pos, float radius, float height)
+	void Navigation::AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height)
 	{
 		if (!_tileCache)
 			return;
+
 		float p[3];
-		dtVcopy(p, pos);
-		p[1] -= 0.5f;
-		_tileCache->addObstacle(p, 1.0f, 2.0f, 0);
+		p[0] = pos.x;
+		p[1] = pos.y - 0.5f;
+		p[2] = pos.z;
+
+		_tileCache->addObstacle(p, radius, height, 0);
 	}
 
-	void Navigation::removeTempObstacle(const float* sp, const float* sq)
+	void Navigation::RemoveTempObstacle(const float* sp, const float* sq)
 	{
 		if (!_tileCache)
 			return;
@@ -587,7 +590,7 @@ namespace KunrealEngine
 		_tileCache->removeObstacle(ref);
 	}
 
-	void Navigation::clearAllTempObstacles()
+	void Navigation::ClearAllTempObstacles()
 	{
 		if (!_tileCache)
 			return;
