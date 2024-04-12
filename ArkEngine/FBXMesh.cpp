@@ -36,7 +36,7 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_arkDevice(nullptr), _arkEffect(nullptr), _totalVertexCount(0), _totalIndexCount(0), _meshTransform(nullptr),
 	_debugObject(nullptr),
 	_havePlayedAnimation(false), _isAnimationPlaying(false), _isRendering(true), _isSolid(isSolid),
-	_isPickable(false), _hashValue(0), _objectIndex(0), _color(), _haveShadow(true), _applyCartoonRendering(false),
+	_isPickable(false), _hashValue(0), _objectIndex(0), _color(), _haveShadow(true), _applyCartoonRendering(true),
 	_modelPath(L"Resources/Models/"), _texturePath(L"Resources/Textures/"),
 	_meshCount(0), _boneIndexNum(0),
 	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),

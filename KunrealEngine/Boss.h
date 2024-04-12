@@ -132,6 +132,7 @@ namespace KunrealEngine
 	private:
 		bool _isStart;
 		bool _isHit;
+		bool _isRotateFinish;
 
 		private:
 		Transform* _bossTransform;
@@ -147,15 +148,18 @@ namespace KunrealEngine
 
 			Waitforsecond(1.0);
 
+			// 코어 패턴이었다면
 			if (boss->_isCorePattern)
 			{
+				// 실행한 코어 패턴을 백터에서 제거
 				(boss->_corePattern).pop_back();
-
+				
 				boss->_isCorePattern = false;
 			}
 
 			boss->_status = BossStatus::IDLE;
 
+			// 기본 패턴을 실행할 수 있도록 초기화
 			boss->_patternIndex = -1;
 		};
 	};
