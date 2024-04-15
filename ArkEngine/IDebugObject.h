@@ -26,6 +26,10 @@ namespace ArkEngine
 		virtual ~IDebugObject() {};
 
 	public:
+		virtual bool GetActive() abstract;
+		virtual void SetActvie(bool tf) abstract;
+
+	public:
 		virtual void Initialize() abstract;
 
 		virtual void Update(ArkEngine::ICamera* camera) abstract;

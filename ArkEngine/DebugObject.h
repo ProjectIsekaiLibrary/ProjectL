@@ -60,6 +60,10 @@ namespace ArkEngine
 			~DebugObject();
 
 		public:
+			virtual bool GetActive() override;
+			virtual void SetActvie(bool tf) override;
+
+		public:
 			void Initialize() override;
 			void Update(ArkEngine::ICamera* p_Camera) override;
 			void Render() override;
@@ -128,6 +132,9 @@ namespace ArkEngine
 
 		private:
 			DirectX::XMFLOAT3 _centerPos;
+
+		private:
+			bool _renderableState;
 		};
 	}
 }

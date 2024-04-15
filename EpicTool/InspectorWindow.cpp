@@ -500,14 +500,15 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Transform>(Kunr
 	_scaleArray[1] = instance->GetScale().y;
 	_scaleArray[2] = instance->GetScale().z;
 
-	DrawComponentPiece(_scaleArray, "Scale");
-    instance->SetScale(_scaleArray[0], _scaleArray[1], _scaleArray[2]);
-
+	if (ImGui::DragFloat3("totalScale", _scaleArray, 0.01f))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
+	{
+		instance->SetScale(_scaleArray[0], _scaleArray[1], _scaleArray[2]);
+	}
 	
 	float totalScale;
 	totalScale = instance->GetScale().x;
 
-	if (ImGui::DragFloat("totalScale", &totalScale))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
+	if (ImGui::DragFloat("totalScale", &totalScale, 0.01f))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
 	{
 		instance->SetScale(totalScale, totalScale, totalScale);
 	}
