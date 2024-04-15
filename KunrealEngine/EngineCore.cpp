@@ -61,14 +61,14 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild();
 	//NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
-	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 1);
-	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 2);
-	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 3);
-	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 4);
+	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
+	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
+	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
+	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
 	navigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 	navigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 
-	navigationInstance.AddTempObstacle(DirectX::XMFLOAT3(-40.0f, 0.0f, -35.0f), 3.0f, 1.0f);
+	navigationInstance.AddTempObstacle(DirectX::XMFLOAT3(-2.0f, 0.0f, -62.0f), 2.0f, 2.0f);
 
 	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos1 = navigationInstance.FindStraightPath(0);
 	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos2 = navigationInstance.FindStraightPath(1);
