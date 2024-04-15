@@ -18,9 +18,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -32.59639358520508,
-                "position_y": 56.01984786987305,
-                "position_z": -162.48622131347656,
+                "position_x": 0.0,
+                "position_y": 30.0,
+                "position_z": -55.0,
                 "rotation_x": -18.0,
                 "rotation_y": 101.0,
                 "rotation_z": 0.0,
@@ -73,9 +73,7 @@
         "POD": {
             "animationFrame": -431602080.0,
             "collider": {},
-            "customComponent": {
-                "Camera": true
-            },
+            "customComponent": {},
             "image": {},
             "light": {
                 "Ambient_w": 1.0,
@@ -99,16 +97,16 @@
             },
             "meshRenderer": {},
             "meshRenderingState": true,
-            "name": "DirectionalCamera",
+            "name": "DirectionalLight",
             "parent": {},
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -32.59639358520508,
-                "position_y": 56.01984786987305,
-                "position_z": -271.4864807128906,
+                "position_x": 0.0,
+                "position_y": 30.0,
+                "position_z": -55.0,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
