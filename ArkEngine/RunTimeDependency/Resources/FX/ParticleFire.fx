@@ -93,11 +93,11 @@ float3 RandUnitVec3(float offset)
 
 struct Particle
 {
-    float3 InitialPosW : POSITION;  // 파티클 위치
-    float3 InitialVelW : VELOCITY;  // 파티클 속도
-    float2 SizeW : SIZE;            // 파티클 크기
-    float Age : AGE;                // 파티클 수명
-    uint Type : TYPE;               // 파티클 유형
+    float3 InitialPosW : POSITION; // 파티클 위치
+    float3 InitialVelW : VELOCITY; // 파티클 속도
+    float2 SizeW : SIZE; // 파티클 크기
+    float Age : AGE; // 파티클 수명
+    uint Type : TYPE; // 파티클 유형
 };
 
 Particle StreamOutVS(Particle vin)

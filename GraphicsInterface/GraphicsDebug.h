@@ -15,7 +15,7 @@ namespace GInterface
 
 	public:
 		// 디버그 객체의 트랜스폼 설정	
-		virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) abstract;
+		virtual void SetTransform(const DirectX::XMFLOAT4X4& matrix) abstract;
 		// 디버그 객체의 위치값 설정
 		virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		// 디버그 객체의 회전값 설정

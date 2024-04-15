@@ -24,7 +24,8 @@ enum class BossStatus
 struct BossBasicInfo
 {
 	BossBasicInfo()
-		: _hp(0.0f), _phase(0), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(0.0f), _staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f)
+		: _hp(0.0f), _phase(0), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(20.0f), _rotationSpeed(100.0f), _baseAnimSpeed(30.0f),
+		_staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f)
 	{};
 
 	BossBasicInfo& SetHp(float hp) { _maxHp = hp; _hp = hp;   return *this; };
@@ -33,6 +34,8 @@ struct BossBasicInfo
 	BossBasicInfo& SetDamage(float damage) { _damage = damage;  return *this; };
 	BossBasicInfo& SetAttackRange(float attackRange) { _attackRange = attackRange;  return *this; };
 	BossBasicInfo& SetMoveSpeed(float moveSpeed) { _moveSpeed = moveSpeed;  return *this; };
+	BossBasicInfo& SetRotateSpeed(float rotationSpeed) { _rotationSpeed = rotationSpeed;  return *this; };
+	BossBasicInfo& SetBaseAnimationSpeed(float animSpeed) { _baseAnimSpeed = animSpeed;  return *this; };
 	BossBasicInfo& SetsStaggeredGauge(float staggeredGauge) { _maxStaggeredGauge = staggeredGauge; _staggeredGauge = staggeredGauge;  return *this; };
 
 	float GetMaxHP() { return _maxHp; };
@@ -46,6 +49,8 @@ struct BossBasicInfo
 	float _attackRange;		// 기본 공격 범위
 
 	float _moveSpeed;		// 이동속도
+	float _rotationSpeed;	// 회전 속도
+	float _baseAnimSpeed;	// 애니메이션 속도
 
 	float _staggeredGauge;	// 무력화 게이지
 
@@ -59,14 +64,14 @@ private:
 struct BossPattern
 {
 	BossPattern()
-		: _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f), 
+		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _isActive(true), _maxColliderOnCount(1),
 		_logic(nullptr)
 	{
 	}
 
 	bool Play() { if (_logic!= nullptr) return _logic(); }		// 패턴 실행 함수
-
+	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };
 	BossPattern& SetSpeed(float speed) { _speed = speed; return *this; };
@@ -79,6 +84,8 @@ struct BossPattern
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
 	BossPattern& SetActive(unsigned int count) { _maxColliderOnCount = count; return *this; };
 	BossPattern& SetLogic(std::function<bool()> logic) { _logic = logic; return *this; };
+
+	std::string _patternName;		// 패턴 이름
 
 	std::string _animName;			// 패턴 애니메이션 이름
 									

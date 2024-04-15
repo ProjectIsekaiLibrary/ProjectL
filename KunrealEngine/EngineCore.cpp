@@ -22,11 +22,9 @@ KunrealEngine::SceneManager& sceneInstance = KunrealEngine::SceneManager::GetIns
 KunrealEngine::TimeManager& timeInstance = KunrealEngine::TimeManager::GetInstance();
 KunrealEngine::InputSystem* inputInstance = KunrealEngine::InputSystem::GetInstance();
 KunrealEngine::SoundSystem& soundInstance = KunrealEngine::SoundSystem::GetInstance();
-/*KunrealEngine::*/Navigation& NavigationInstance = /*KunrealEngine::*/Navigation::GetInstance();
+KunrealEngine::Navigation& navigationInstance = KunrealEngine::Navigation::GetInstance();
 
 KunrealEngine::GameObject* player;
-KunrealEngine::GameObject* ninaveh;
-KunrealEngine::GameObject* gamePlayer;
 KunrealEngine::GameObject* kamen;
 KunrealEngine::GameObject* zeolight;
 KunrealEngine::GameObject* zeolight_Image;
@@ -34,8 +32,6 @@ KunrealEngine::GameObject* Button_Image1;
 KunrealEngine::GameObject* Button_Image2;
 KunrealEngine::GameObject* Button_Image3;
 KunrealEngine::GameObject* Button_Image4;
-KunrealEngine::GameObject* emptyObject;
-
 
 KunrealEngine::GameObject* testCamera;
 
@@ -62,18 +58,21 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
 	soundInstance.Initialize(hwnd);
 
-	NavigationInstance.Initialize();
-	NavigationInstance.HandleBuild();
+	navigationInstance.Initialize();
+	navigationInstance.HandleBuild();
 	//NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
-	NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 1);
-	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
-	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
-	//NavigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
-	NavigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
-	NavigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
-	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos1 = NavigationInstance.FindStraightPath(0);
-	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos2 = NavigationInstance.FindStraightPath(1);
-	DirectX::XMFLOAT3 navipos3 = NavigationInstance.FindRaycastPath(0);
+	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 1);
+	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 2);
+	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 3);
+	navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 4);
+	navigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
+	navigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
+
+	navigationInstance.AddTempObstacle(DirectX::XMFLOAT3(-40.0f, 0.0f, -35.0f), 3.0f, 1.0f);
+
+	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos1 = navigationInstance.FindStraightPath(0);
+	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos2 = navigationInstance.FindStraightPath(1);
+	DirectX::XMFLOAT3 navipos3 = navigationInstance.FindRaycastPath(0);
 
 	for (auto path : navipos1)
 	{
@@ -113,12 +112,18 @@ void KunrealEngine::EngineCore::Update()
 	inputInstance->UpdateEditorMousePos(_editorMousepos);
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
 	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
+	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
 	CheckMousePosition();
 
+	if (inputInstance->MouseButtonUp(1))
+	{
+		int a = 10;
+	}
+
 	//ninaveh->GetComponent<Animator>()->Play(0, 20.0f, true);
 
-	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
+	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 	//GRAPHICS->DrawDebugText(100, 100, 20, "1610배마owner정기훈 : %f", sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<Transform>()->GetPosition().x);
 	//GRAPHICS->DrawDebugText(100, 300, 30, "%s", sceneInstance.GetCurrentScene()->GetSceneName().c_str());
 	//GRAPHICS->DrawDebugText(500, 500, 30, "Player HP : %f", player->GetComponent<Player>()->GetPlayerData()._hp);
@@ -150,7 +155,7 @@ void KunrealEngine::EngineCore::Update()
 	}
 	//sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->GetPosition().x + 0.1f, 0.f, 0.f);
 
-	sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->GetPosition().x + 0.1f, 5.f, 0.f);
+	//sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->GetPosition().x + 0.1f, 5.f, 0.f);
 
 
 
@@ -262,9 +267,6 @@ void KunrealEngine::EngineCore::Update()
 
 	Updatecoroutine();
 
-	gamePlayer->GetComponent<Animator>()->Play("Walk", 20.0f, true);
-
-	ninaveh->GetComponent<Animator>()->Play("Idle", 20.0f, true);
 
 	// 플레이어 상태
 	if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::IDLE)
@@ -394,47 +396,9 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	player->AddComponent<Player>();
 
-	ninaveh = sceneInstance.GetCurrentScene()->CreateObject("Nineveh");
-	ninaveh->AddComponent<MeshRenderer>();
-	ninaveh->GetComponent<MeshRenderer>()->SetMeshObject("Flame/Flame"); 
-	ninaveh->AddComponent<BoxCollider>();
-	ninaveh->GetComponent<BoxCollider>()->SetBoxSize(10.f, 10.f, 10.f);
-	ninaveh->GetComponent<BoxCollider>()->SetOffset(0.0f, 10.f, 0.0f);
-	ninaveh->GetComponent<Transform>()->SetPosition(50.0f, 0.0f, -20.0f);
-	//ninaveh->GetComponent<Transform>()->SetScale(0.01f, 0.01f, 0.01f);
-
-
-	//ninaveh->SetParent(player);
-
-	//ninaveh->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//ninaveh->GetComponent<Transform>()->SetRotation(-270.f, -45.f, -180.f);
-	//ninaveh->GetComponent<MeshRenderer>()->PlayAnimation(2.0f, TimeManager::GetInstance().GetDeltaTime(), 0, true);
-
-	//sphere = sceneInstance.GetCurrentScene()->CreateObject("Player2");
-	//sphere->AddComponent<MeshRenderer>();
-	//sphere->GetComponent<MeshRenderer>()->SetMeshObject("Player/Player");
-	//sphere->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-
-	gamePlayer = sceneInstance.GetCurrentScene()->CreateObject("gamePlayer");
-	gamePlayer->AddComponent<MeshRenderer>();
-	gamePlayer->GetComponent<MeshRenderer>()->SetMeshObject("Player/Player");
-	gamePlayer->GetComponent<Transform>()->SetPosition(-5.0f, 0.0f, -20.0f);
-	//gamePlayer->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-	gamePlayer->GetComponent<Transform>()->SetScale(0.01f, 0.01f, 0.01f);
-	gamePlayer->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
-	gamePlayer->AddComponent<BoxCollider>();
-	gamePlayer->GetComponent<BoxCollider>()->SetTransform(gamePlayer, "hand_l");
-
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
 	
-	emptyObject = sceneInstance.GetCurrentScene()->CreateObject("emptyObject");
-	emptyObject->AddComponent<MeshRenderer>();
-	emptyObject->GetComponent<MeshRenderer>()->SetMeshObject("Sword/Sword");
-	emptyObject->GetComponent<MeshRenderer>()->SetParentBone(gamePlayer, "hand_l");
-	//emptyObject->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
-	//gamePlayer->SetParent(emptyObject);
-
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
 	zeolight_Image->AddComponent<ImageRenderer>();
@@ -576,14 +540,7 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	targetPos = { 0.0f ,0.0f ,0.0f };
 
-	auto imageTest = sceneInstance.GetCurrentScene()->CreateObject("ImageTest1");
-	imageTest->AddComponent<ImageRenderer>();
-	imageTest->GetComponent<ImageRenderer>()->SetImage("MenuQuitButton.dds");
-	imageTest->GetComponent<ImageRenderer>()->SetImageStatus(true);
-	imageTest->GetComponent<ImageRenderer>()->SetPosition(500.f, 400.f);
-	imageTest->GetComponent<ImageRenderer>()->SetImageStatus(false);
-
-	cursorimage = GRAPHICS->CreateImage("Resources/Textures/floor.dds");
+	cursorimage = GRAPHICS->CreateImage("floor.dds");
 	cursorimage->SetPosition(500.0f);
 	cursorimage->SetRenderingState(false);
 
