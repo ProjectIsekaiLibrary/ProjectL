@@ -74,7 +74,7 @@ namespace KunrealEngine
 		// pos = 장애물 위치 / radius = 장애물 크기 / height = 장애물 사이즈
 		void AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height);
 		// 특정 장애물을 제거한다.
-		void RemoveTempObstacle(const float* sp, const float* sq);
+		void RemoveTempObstacle(DirectX::XMFLOAT3 pos);
 		// 모든 장애물을 제거한다.
 		void ClearAllTempObstacles();
 
@@ -104,10 +104,8 @@ namespace KunrealEngine
 		void renderCachedTile(const int tx, const int ty, const int type);
 		void renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view);
 		// sp, sq를 기반으로 장애물의 ref 값을 반환하는 함수. sp,sq가 뭔진 아직 나도 모르겠음
-		dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq);
-		static bool isectSegAABB(const float* sp, const float* sq,
-			const float* amin, const float* amax,
-			float& tmin, float& tmax);
+		dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sq);
+		static bool isectSegAABB(const float* sq,const float* amin, const float* amax,float& tmin, float& tmax);
 	private:
 		class InputGeom* _geom;
 		PathFindbox _package[5];
