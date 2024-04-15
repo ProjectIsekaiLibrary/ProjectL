@@ -82,7 +82,7 @@ struct BossPattern
 	BossPattern& SetTriggerHp(float hp) { _triggerHp = hp; return *this; };
 	BossPattern& SetCoolDown(float coolDown) { _triggerHp = coolDown; return *this; };
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
-	BossPattern& SetActive(unsigned int count) { _maxColliderOnCount = count; return *this; };
+	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; return *this; };
 	BossPattern& SetLogic(std::function<bool()> logic) { _logic = logic; return *this; };
 
 	std::string _patternName;		// 패턴 이름
@@ -95,7 +95,7 @@ struct BossPattern
 									
 	float _range;					// 패턴 범위
 									
-	float _afterDelay;				// 패턴 후 가만히 있는 시간
+	float _afterDelay;				// 패턴 후 가만히 있는 시간 (초)
 									
 	std::string _effectName;		// 패턴 이펙트 텍스쳐 이름
 									

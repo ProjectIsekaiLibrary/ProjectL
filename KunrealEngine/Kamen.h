@@ -30,6 +30,9 @@ namespace KunrealEngine
 		virtual void SetCollider() override;
 		virtual void SetBossTransform() override;
 
+	public:
+		virtual void CreatePattern() override;
+
 	private:
 		BoxCollider* _leftHand;
 		BoxCollider* _rightHand;
@@ -39,15 +42,5 @@ namespace KunrealEngine
 		void LeftAttackOnce();
 		void RightAttackOnce();
 		void SpellAttack();
-
-
-		Coroutine_Func(function)
-		{
-			Kamen* kamen = this;
-
-			Waitforsecond(0.5f);
-			kamen->_status = BossStatus::IDLE;
-			kamen->_patternIndex = -1;
-		};
 	};
 }
