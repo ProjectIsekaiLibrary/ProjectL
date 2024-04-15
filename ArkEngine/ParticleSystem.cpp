@@ -10,7 +10,7 @@
 #include "ParticleSystem.h"
 
 ArkEngine::ArkDX11::ParticleSystem::ParticleSystem()
-	:_maxParticles(0), _firstRun(false),
+	:_maxParticles(0), _firstRun(true),
 	_gameTime(0), _timeStep(0), _age(0),
 	_initVB(nullptr), _drawVB(nullptr), _streamOutVB(nullptr),
 	_texArraySRV(nullptr), _randomTexSRV(nullptr)
@@ -53,8 +53,8 @@ void ArkEngine::ArkDX11::ParticleSystem::Initialize(ID3D11Device* device, ID3D11
 	_texArraySRV = texArraySRV;
 	_randomTexSRV = randomTexSRV;
 
-	BuildVB(device);
 	SetEffect();
+	BuildVB(device);
 }
 
 void ArkEngine::ArkDX11::ParticleSystem::Reset()
@@ -75,7 +75,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 {
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
-	dc = arkDevice->GetDeviceContext();
+	//dc = arkDevice->GetDeviceContext();
 	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
 
 	auto cameraView = camera->GetViewMatrix();
@@ -181,7 +181,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateRandomTextur
 	texDesc.MiscFlags = 0;
 	texDesc.ArraySize = 1;
 
-	ID3D11Texture1D* randomTex;
+	ID3D11Texture1D *randomTex;
 	device->CreateTexture1D(&texDesc, &initData, &randomTex);
 
 	// ResourceView를 생성한다
@@ -189,7 +189,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateRandomTextur
 	viewDesc.Format = texDesc.Format;
 	viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
 	viewDesc.Texture1D.MipLevels = texDesc.MipLevels;
-	viewDesc.Texture1D.MostDetailedMip - 0;
+	viewDesc.Texture1D.MostDetailedMip = 0;
 
 	ID3D11ShaderResourceView* randomTexSRV = 0;
 	device->CreateShaderResourceView(randomTex, &viewDesc, &randomTexSRV);
@@ -330,7 +330,8 @@ float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float max
 {
 	std::random_device rd;
 	std::mt19937 generator(rd());
-	std::uniform_int_distribution<> dist(minNum, maxNum);
+	std::uniform_real_distribution<> dist(minNum, maxNum);
+	//std::uniform_int_distribution<> dist(minNum, maxNum);
 
 	return dist(generator);
 }
