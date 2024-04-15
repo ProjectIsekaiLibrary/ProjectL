@@ -92,7 +92,7 @@ namespace ArkEngine
 
 		public:
 			// 렌더링 할 오브젝트들은 담아놓은 백터 반환
-			const std::vector<ArkEngine::IRenderable*> GetRenderableList();
+			const std::vector<ArkEngine::IRenderable*>& GetRenderableList();
 
 			// 렌더링 할 오브젝트들을 담아놓은 백터
 			void AddRenderable(ArkEngine::IRenderable* renderable);
@@ -104,7 +104,7 @@ namespace ArkEngine
 
 		public:
 			// 모든 디버그 오브젝트들은 담아놓은 백터 반환
-			const std::vector<ArkEngine::IDebugObject*> GetDebugObjectList();
+			const std::vector<ArkEngine::IDebugObject*>& GetDebugObjectList();
 
 			void AddDebugObject(ArkEngine::IDebugObject* object);
 
@@ -112,7 +112,7 @@ namespace ArkEngine
 
 		public:
 			// 모든 라인 오브젝트들은 담아놓은 백터 반환
-			const std::vector<ArkEngine::ILineObject*> GetLineObjectList();
+			const std::vector<ArkEngine::ILineObject*>& GetLineObjectList();
 
 			void AddLineObject(ArkEngine::ILineObject* object);
 
@@ -120,7 +120,7 @@ namespace ArkEngine
 
 		public:
 			// 모든 디버그 오브젝트들은 담아놓은 백터 반환
-			const std::vector<ArkEngine::IUIImage*> GetUIImageList();
+			const std::vector<ArkEngine::IUIImage*>& GetUIImageList();
 
 			void AddUIImage(ArkEngine::IUIImage* image);
 
@@ -128,9 +128,9 @@ namespace ArkEngine
 
 		public:
 			// 모든 큐브맵을 담아놓은 백터 반환
-			const std::unordered_set<ArkEngine::ICubeMap*> GetCubeMapList();
+			const std::unordered_set<ArkEngine::ICubeMap*>& GetCubeMapList();
 
-			std::vector<std::string> GetCubeMapNameList();
+			const std::vector<std::string>& GetCubeMapNameList();
 
 			// 현재 렌더링되고 있는 큐브맵을 반환
 			ArkEngine::ICubeMap* GetNowCubeMap();
@@ -147,12 +147,12 @@ namespace ArkEngine
 
 		public:
 			// 렌더링 할 오브젝트들은 담아놓은 백터 반환
-			const std::vector<ArkEngine::ICamera*> GetCameraList();
+			const std::vector<ArkEngine::ICamera*>& GetCameraList();
 
 			// 렌더링 할 오브젝트들을 담아놓은 백터
 			void AddCamera(ArkEngine::ICamera* camera);
 
-			std::vector<ArkEngine::ICamera*> GetShadowCamera();
+			std::vector<ArkEngine::ICamera*>& GetShadowCamera();
 
 			// 그림자 용 카메라를 추가 현재는 한개만 가능
 			void SetShadowCamera(ArkEngine::ICamera* camera);
@@ -173,7 +173,7 @@ namespace ArkEngine
 			void DeleteASEParser(const std::string& fileName);
 
 		public:
-			std::vector<ModelMesh*> GetFbxParsingData(const std::string& fileName);
+			const std::vector<ModelMesh*>& GetFbxParsingData(const std::string& fileName);
 
 			void AddFbxParsingData(const std::string& fileName, std::vector<ModelMesh*> modelData);
 
@@ -186,7 +186,7 @@ namespace ArkEngine
 			void SetTextureNameList(std::string name);
 
 			// 에디터에 텍스쳐 이름을 넘겨주기 위함
-			const std::vector<std::string> GetTextureNameList();
+			const std::vector<std::string>& GetTextureNameList();
 
 		public:
 			AnimData* GetAnimationData(const std::wstring& fileName);
@@ -203,7 +203,7 @@ namespace ArkEngine
 			void DeleteModelMaterial(const std::wstring& fileName);
 
 		public:
-			std::vector<ArkEngine::ArkDX11::ArkBuffer*> GetArkBuffer(const std::string& bufferName);
+			const std::vector<ArkEngine::ArkDX11::ArkBuffer*>& GetArkBuffer(const std::string& bufferName);
 			void AddArkBuffer(const std::string& bufferName, ArkEngine::ArkDX11::ArkBuffer* buffer);
 
 		public:

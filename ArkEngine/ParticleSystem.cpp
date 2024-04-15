@@ -65,7 +65,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Reset()
 
 void ArkEngine::ArkDX11::ParticleSystem::Update(float deltaTime, float gameTime)
 {
-	_gameTime = gameTime;
+	_gameTime += gameTime;
 	_timeStep = deltaTime;
 
 	_age += deltaTime;
@@ -96,6 +96,8 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 	// 입력 조립기 단계를 설정
 	dc->IASetInputLayout(_arkEffect->GetInputLayOut());
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	dc->RSSetState(arkDevice->GetSolidRS());
+
 	unsigned int stride = sizeof(Particle);
 	unsigned int offset = 0;
 
@@ -204,7 +206,9 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	HRESULT hr;
 
 	// 이미지들을 로드한다
-	for (int i = 0; i < filenames.size(); i++)
+	unsigned int size = filenames.size();
+
+	for (int i = 0; i < size; i++)
 	{
 		hr = LoadFromDDSFile(filenames[i].c_str(), DirectX::DDS_FLAGS_NONE, &metadata[i], scratchImage[i]);
 		if (FAILED(hr))
@@ -237,9 +241,11 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 
 	// 개별 이미지들을 텍스처 배열에 복사한다
 	for (UINT i = 0; i < filenames.size(); ++i) {
-		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel) {
+		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel) 
+		{
 			const DirectX::Image* img = scratchImage[i].GetImage(mipLevel, 0, 0);
-			dc->UpdateSubresource(
+			dc->UpdateSubresource
+			(
 				textureArray,
 				D3D11CalcSubresource(mipLevel, i, texArrayDesc.MipLevels),
 				nullptr,

@@ -95,15 +95,15 @@ namespace ArkEngine
 			virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) override;
 
 		public:
-			virtual void CreateDebugLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT4 color) override;
+			virtual void CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color) override;
 			virtual void DeleteLine(int index) override;
-			virtual void DeleteLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2) override;
+			virtual void DeleteLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2) override;
 			virtual void DeleteAllLine() override;
 
 		public:
 			virtual void CreateCubeMap(const char* cubeMapName, const char* textureName, bool isCube) override;
 			virtual void DeleteCubeMap(const char* cubeMapName) override;
-			virtual std::vector<std::string> GetCubeMapList() override;
+			virtual const std::vector<std::string>& GetCubeMapList() override;
 			virtual void SetMainCubeMap(std::string cubeMapName) override;
 
 		public:
@@ -112,19 +112,19 @@ namespace ArkEngine
 			virtual GInterface::GraphicsImage* GetPickedImage(int mouseX, int mouseY) override;
 
 		public:
-			virtual GInterface::GraphicsCamera* CreateCamera(DirectX::XMFLOAT3 cameraPosition, DirectX::XMFLOAT3 targetPosition) override;
+			virtual GInterface::GraphicsCamera* CreateCamera(const DirectX::XMFLOAT3& cameraPosition, const DirectX::XMFLOAT3& targetPosition) override;
 			virtual void DeleteCamera(GInterface::GraphicsCamera* camera) override;
 			virtual GInterface::GraphicsCamera* GetMainCamera() override;
 			virtual void SetMainCamera(GInterface::GraphicsCamera* camera) override;
 
 		public:
-			virtual GInterface::GraphicsDirLight* CreateDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction) override;
-			virtual GInterface::GraphicsPointLight* CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range) override;
+			virtual GInterface::GraphicsDirLight* CreateDirectionalLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& direction) override;
+			virtual GInterface::GraphicsPointLight* CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range) override;
 
 		public:
 			// End 키를 눌렀을때 활성화되는 텍스트
 			virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) override;
-			virtual void DrawColorText(int posX, int posY, int fontSize, DirectX::XMFLOAT4 color, const char* text, ...) override;
+			virtual void DrawColorText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) override;
 
 		public:
 			virtual void* GetRenderingImage() override;
@@ -137,10 +137,10 @@ namespace ArkEngine
 
 			virtual const std::vector<std::string> GetRenderableNameList() override;
 
-			virtual const std::vector<std::string> GetTextureNameList() override;
+			virtual const std::vector<std::string>& GetTextureNameList() override;
 
 		public:
-			virtual DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) override;
+			virtual const DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) override;
 
 		public:
 			// IMGUIZMO를 사용하기 위해 메인 카메라의 View행렬을 반환
@@ -153,15 +153,15 @@ namespace ArkEngine
 			virtual const DirectX::XMFLOAT4X4& GetTransform(GInterface::GraphicsRenderable* renderable, const std::string& boneName) override;
 
 			// 네비 메쉬를 위한 모든 메쉬들의 버텍스의 월드좌표 반환
-			virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> GetAllMeshVertex() override;
+			virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>>& GetAllMeshVertex() override;
 			// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
-			virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() override;
+			virtual const std::vector<std::vector<std::vector<unsigned int>>>& GetAllMeshIndex() override;
 
 		public:
 			void CreateShadowViewPort(int shadowWidth, int shadowHeight);
 
 		public:
-			void CreateShadowCamera(DirectX::XMFLOAT3 cameraPosition, DirectX::XMFLOAT3 targetPosition);
+			void CreateShadowCamera(const DirectX::XMFLOAT3& cameraPosition, const DirectX::XMFLOAT3& targetPosition);
 
 		private:
 			void BeginShadowRender();
@@ -190,7 +190,7 @@ namespace ArkEngine
 			void CreateTexture();
 			void CreateNewTexture();
 			void CreateASEParser();
-			void CreateDefaultCamera(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 target, DirectX::XMFLOAT3 worldUp);
+			void CreateDefaultCamera(DirectX::XMFLOAT3& pos, DirectX::XMFLOAT3& target, DirectX::XMFLOAT3& worldUp);
 
 		private:
 			void InitializeAssimpTool();
@@ -203,15 +203,15 @@ namespace ArkEngine
 			float GetShadowRatio();
 
 		private:
-			void CreateDirLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction);
-			void CreatePoLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range);
+			void CreateDirLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& direction);
+			void CreatePoLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range);
 
 		private:
 			void SetPickingTexture();
 			UINT Picking(int mouseX, int mouseY);
 
 		private:
-			DirectX::XMFLOAT3 GetMyPosition(DirectX::XMFLOAT3 direction, DirectX::XMFLOAT3 targetPos);
+			const DirectX::XMFLOAT3 GetMyPosition(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& targetPos);
 
 		private:
 			bool Equal(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)

@@ -74,7 +74,7 @@ void ArkEngine::ResourceManager::DeleteResource(const std::string& fileName)
 	}
 }
 
-const std::vector<ArkEngine::IRenderable*> ArkEngine::ResourceManager::GetRenderableList()
+const std::vector<ArkEngine::IRenderable*>& ArkEngine::ResourceManager::GetRenderableList()
 {
 	return _renderableList;
 }
@@ -97,7 +97,7 @@ unsigned int ArkEngine::ResourceManager::GetObjectIndex()
 	return _objectIndex;
 }
 
-const std::vector<ArkEngine::IDebugObject*> ArkEngine::ResourceManager::GetDebugObjectList()
+const std::vector<ArkEngine::IDebugObject*>& ArkEngine::ResourceManager::GetDebugObjectList()
 {
 	return _debugList;
 }
@@ -112,7 +112,7 @@ void ArkEngine::ResourceManager::DeleteDebugObject(ArkEngine::IDebugObject* obje
 	_debugList.erase(std::remove(_debugList.begin(), _debugList.end(), object), _debugList.end());
 }
 
-const std::vector<ArkEngine::ILineObject*> ArkEngine::ResourceManager::GetLineObjectList()
+const std::vector<ArkEngine::ILineObject*>& ArkEngine::ResourceManager::GetLineObjectList()
 {
 	return _lineList;
 }
@@ -127,7 +127,7 @@ void ArkEngine::ResourceManager::DeleteLineObject(ArkEngine::ILineObject* object
 	_lineList.erase(std::remove(_lineList.begin(), _lineList.end(), object), _lineList.end());
 }
 
-const std::vector<ArkEngine::IUIImage*> ArkEngine::ResourceManager::GetUIImageList()
+const std::vector<ArkEngine::IUIImage*>& ArkEngine::ResourceManager::GetUIImageList()
 {
 	return _uiImageList;
 }
@@ -143,12 +143,12 @@ void ArkEngine::ResourceManager::DeleteUIImage(ArkEngine::IUIImage* image)
 	_uiImageList.erase(std::remove(_uiImageList.begin(), _uiImageList.end(), image), _uiImageList.end());
 }
 
-const std::unordered_set<ArkEngine::ICubeMap*> ArkEngine::ResourceManager::GetCubeMapList()
+const std::unordered_set<ArkEngine::ICubeMap*>& ArkEngine::ResourceManager::GetCubeMapList()
 {
 	return _cubeMapList;
 }
 
-std::vector<std::string> ArkEngine::ResourceManager::GetCubeMapNameList()
+const std::vector<std::string>& ArkEngine::ResourceManager::GetCubeMapNameList()
 {
 	return _cubeMapNameList;
 }
@@ -170,7 +170,7 @@ void ArkEngine::ResourceManager::SetCubeMapNameList(std::vector <std::string> na
 
 void ArkEngine::ResourceManager::AddCubeMap(ArkEngine::ICubeMap* cubeMap)
 {
-	for (auto index : _cubeMapList)
+	for (const auto& index : _cubeMapList)
 	{
 		if (index->GetName() == cubeMap->GetName())
 		{
@@ -191,7 +191,7 @@ void ArkEngine::ResourceManager::DeleteCubeMap(ArkEngine::ICubeMap* cubeMap)
 	delete cubeMap;
 }
 
-const std::vector<ArkEngine::ICamera*> ArkEngine::ResourceManager::GetCameraList()
+const std::vector<ArkEngine::ICamera*>& ArkEngine::ResourceManager::GetCameraList()
 {
 	return _cameraList;
 }
@@ -201,7 +201,7 @@ void ArkEngine::ResourceManager::AddCamera(ArkEngine::ICamera* camera)
 	_cameraList.emplace_back(camera);
 }
 
-std::vector<ArkEngine::ICamera*> ArkEngine::ResourceManager::GetShadowCamera()
+std::vector<ArkEngine::ICamera*>& ArkEngine::ResourceManager::GetShadowCamera()
 {
 	return _shadowCamera;
 }
@@ -272,7 +272,7 @@ void ArkEngine::ResourceManager::DeleteASEParser(const std::string& fileName)
 	}
 }
 
-std::vector<ModelMesh*> ArkEngine::ResourceManager::GetFbxParsingData(const std::string& fileName)
+const std::vector<ModelMesh*>& ArkEngine::ResourceManager::GetFbxParsingData(const std::string& fileName)
 {
 	auto iter = _fbxParsingList.find(fileName);
 	
@@ -299,7 +299,7 @@ void ArkEngine::ResourceManager::DeleteFbxParsingData(const std::string& fileNam
 	
 	if (iter != _fbxParsingList.end())
 	{
-		for (auto index : iter->second)
+		for (const auto& index : iter->second)
 		{
 			iter->second.erase(std::remove(iter->second.begin(), iter->second.end(), index), iter->second.end());
 			
@@ -321,7 +321,7 @@ std::vector<std::string> ArkEngine::ResourceManager::GetRenderableNameList()
 	return nameList;
 }
 
-const std::vector<std::string> ArkEngine::ResourceManager::GetTextureNameList()
+const std::vector<std::string>& ArkEngine::ResourceManager::GetTextureNameList()
 {
 	return _textureNameList;
 }
@@ -382,14 +382,14 @@ void ArkEngine::ResourceManager::DeleteModelMaterial(const std::wstring& fileNam
 	}
 }
 
-std::vector<ArkEngine::ArkDX11::ArkBuffer*> ArkEngine::ResourceManager::GetArkBuffer(const std::string& bufferName)
+const std::vector<ArkEngine::ArkDX11::ArkBuffer*>& ArkEngine::ResourceManager::GetArkBuffer(const std::string& bufferName)
 {
 	return _arkBufferList.at(bufferName);
 }
 
 void ArkEngine::ResourceManager::AddArkBuffer(const std::string& bufferName, ArkEngine::ArkDX11::ArkBuffer* buffer)
 {
-	auto iter = _arkBufferList.find(bufferName);
+	const auto& iter = _arkBufferList.find(bufferName);
 
 	if (iter == _arkBufferList.end())
 	{
@@ -409,7 +409,7 @@ void ArkEngine::ResourceManager::ReleaseAll()
 {
 	_textList.clear();
 
-	for (auto index : _renderableList)
+	for (const auto& index : _renderableList)
 	{
 		delete index;
 	}
@@ -417,13 +417,13 @@ void ArkEngine::ResourceManager::ReleaseAll()
 
 	_cubeMapNameList.clear();
 
-	for (auto index : _cubeMapList)
+	for (const auto& index : _cubeMapList)
 	{
 		delete index;
 	}
 	_cubeMapList.clear();
 
-	for (auto index : _cameraList)
+	for (const auto& index : _cameraList)
 	{
 		delete index;
 	}

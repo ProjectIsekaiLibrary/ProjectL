@@ -93,11 +93,11 @@ float3 RandUnitVec3(float offset)
 
 struct Particle
 {
-    float3 InitialPosW : POSITION;
-    float3 InitialVelW : VELOCITY;
-    float2 SizeW : SIZE;
-    float Age : AGE;
-    uint Type : TYPE;
+    float3 InitialPosW : POSITION;  // 파티클 위치
+    float3 InitialVelW : VELOCITY;  // 파티클 속도
+    float2 SizeW : SIZE;            // 파티클 크기
+    float Age : AGE;                // 파티클 수명
+    uint Type : TYPE;               // 파티클 유형
 };
 
 Particle StreamOutVS(Particle vin)
@@ -239,7 +239,9 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
 
 float4 DrawPS(GeoOut pin) : SV_TARGET
 {
-    return gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
+    float4 texture = gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
+
+    return texture;
 }
 
 technique11 DrawTech
