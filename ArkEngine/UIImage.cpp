@@ -217,8 +217,8 @@ void ArkEngine::ArkDX11::UIImage::SetTexture()
 	}
 	else
 	{
-		texture = nullptr;
-		_diffuseMapSRV = nullptr;
+		ArkTexture* newTexture = new ArkTexture(_imageName.c_str());
+		_diffuseMapSRV = newTexture->GetDiffuseMapSRV();
 	}
 }
 

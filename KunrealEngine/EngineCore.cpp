@@ -540,14 +540,7 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	targetPos = { 0.0f ,0.0f ,0.0f };
 
-	auto imageTest = sceneInstance.GetCurrentScene()->CreateObject("ImageTest1");
-	imageTest->AddComponent<ImageRenderer>();
-	imageTest->GetComponent<ImageRenderer>()->SetImage("MenuQuitButton.dds");
-	imageTest->GetComponent<ImageRenderer>()->SetImageStatus(true);
-	imageTest->GetComponent<ImageRenderer>()->SetPosition(500.f, 400.f);
-	imageTest->GetComponent<ImageRenderer>()->SetImageStatus(false);
-
-	cursorimage = GRAPHICS->CreateImage("Resources/Textures/floor.dds");
+	cursorimage = GRAPHICS->CreateImage("floor.dds");
 	cursorimage->SetPosition(500.0f);
 	cursorimage->SetRenderingState(false);
 

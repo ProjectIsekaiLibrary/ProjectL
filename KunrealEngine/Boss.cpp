@@ -67,11 +67,7 @@ void KunrealEngine::Boss::Update()
 	// 캐릭터가 이동시
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
-		// Chase 단계일 경우
-		if (_status == BossStatus::CHASE)
-		{
-			_isRotateFinish = false;
-		}
+		_isRotateFinish = false;
 	}
 
 	Hit();
@@ -266,7 +262,6 @@ void KunrealEngine::Boss::Chase()
 
 			// Basic Attack으로 상태 변경
 			_status = BossStatus::BASIC_ATTACK;
-			_isRotateFinish = false;
 			return;
 		}
 
@@ -301,7 +296,6 @@ void KunrealEngine::Boss::Chase()
 					
 					// Baisc Attack으로 상태 변경
 					_status = BossStatus::BASIC_ATTACK;
-					_isRotateFinish = false;
 					return;
 				}
 
@@ -326,7 +320,6 @@ void KunrealEngine::Boss::Chase()
 
 				// Baisc Attack으로 상태 변경
 				_status = BossStatus::BASIC_ATTACK;
-				_isRotateFinish = false;
 				return;
 			}
 		}
