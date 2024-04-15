@@ -3,7 +3,7 @@
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr)
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _spell(nullptr)
 {
 	BossBasicInfo info;
 
@@ -13,6 +13,7 @@ KunrealEngine::Kamen::Kamen()
 	SetInfo(info);
 
 	LeftAttackOnce();
+	RightAttackOnce();
 }
 
 KunrealEngine::Kamen::~Kamen()
@@ -74,6 +75,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	auto rightHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("RightHand");
 	_subObjectList.emplace_back(rightHand);
+
+	auto spell = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Spell");
+	_subObjectList.emplace_back(spell);
 }
 
 void KunrealEngine::Kamen::SetMesh()
@@ -111,6 +115,10 @@ void KunrealEngine::Kamen::SetCollider()
 	_rightHand = _subObjectList[1]->GetComponent<BoxCollider>();
 	_rightHand->SetTransform(_boss, "MiddleFinger1_R");
 	_rightHand->SetBoxSize(2.0f, 3.0f, 2.0f);
+
+	_subObjectList[2]->AddComponent<BoxCollider>();
+	_spell = _subObjectList[2]->GetComponent<BoxCollider>();
+	_spell->SetBoxSize(5.0f, 10.0f, 5.0f);
 }
 
 void KunrealEngine::Kamen::SetBossTransform()
@@ -120,17 +128,17 @@ void KunrealEngine::Kamen::SetBossTransform()
 
 void KunrealEngine::Kamen::LeftAttackOnce()
 {
-	BossPattern* pattern1 = new BossPattern();
+	BossPattern* pattern = new BossPattern();
 
-	pattern1->SetPatternName("Left_Attack_Once");
+	pattern->SetPatternName("Left_Attack_Once");
 
-	pattern1->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
-	pattern1->SetIsWarning(false).SetWarningName("").SetTriggerHp(20.0f);
+	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern->SetIsWarning(false).SetWarningName("");
 
-	std::function<bool()> logic = [pattern1, this]()
+	std::function<bool()> logic = [pattern, this]()
 	{
 		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern1->_animName, pattern1->_speed, false);
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
 		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 		if (_maxColliderOnCount > 0)
@@ -149,12 +157,79 @@ void KunrealEngine::Kamen::LeftAttackOnce()
 		return true;
 	};
 
-	pattern1->SetLogic(logic);
+	pattern->SetLogic(logic);
 
-	_basicPattern.emplace_back(pattern1);
+	_basicPattern.emplace_back(pattern);
 }
 
 void KunrealEngine::Kamen::RightAttackOnce()
 {
+	BossPattern* pattern = new BossPattern();
 
+	pattern->SetPatternName("Right_Attack_Once");
+
+	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern->SetIsWarning(false).SetWarningName("");
+
+	std::function<bool()> logic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (_maxColliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
+			{
+				_rightHand->SetActive(true);
+			}
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(logic);
+
+	_basicPattern.emplace_back(pattern);
+}
+
+void KunrealEngine::Kamen::SpellAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Spell");
+
+	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(10.0f);
+	pattern->SetIsWarning(true).SetWarningName("Spell");
+
+	std::function<bool()> logic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (_maxColliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
+			{
+				_rightHand->SetActive(true);
+			}
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(logic);
+
+	_basicPattern.emplace_back(pattern);
 }

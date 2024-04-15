@@ -170,7 +170,7 @@ void ArkEngine::ResourceManager::SetCubeMapNameList(std::vector <std::string> na
 
 void ArkEngine::ResourceManager::AddCubeMap(ArkEngine::ICubeMap* cubeMap)
 {
-	for (auto index : _cubeMapList)
+	for (const auto& index : _cubeMapList)
 	{
 		if (index->GetName() == cubeMap->GetName())
 		{
@@ -299,7 +299,7 @@ void ArkEngine::ResourceManager::DeleteFbxParsingData(const std::string& fileNam
 	
 	if (iter != _fbxParsingList.end())
 	{
-		for (auto index : iter->second)
+		for (const auto& index : iter->second)
 		{
 			iter->second.erase(std::remove(iter->second.begin(), iter->second.end(), index), iter->second.end());
 			
@@ -389,7 +389,7 @@ const std::vector<ArkEngine::ArkDX11::ArkBuffer*>& ArkEngine::ResourceManager::G
 
 void ArkEngine::ResourceManager::AddArkBuffer(const std::string& bufferName, ArkEngine::ArkDX11::ArkBuffer* buffer)
 {
-	auto iter = _arkBufferList.find(bufferName);
+	const auto& iter = _arkBufferList.find(bufferName);
 
 	if (iter == _arkBufferList.end())
 	{

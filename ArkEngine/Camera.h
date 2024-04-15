@@ -54,16 +54,17 @@ namespace ArkEngine
 			virtual void UpDown(float deltaTime) override;
 
 		public:
-			virtual std::vector<DirectX::XMFLOAT4>& GetFrstum() override;
+			virtual std::vector<DirectX::XMFLOAT4>& GetFrustum() override;
 
 		public:
 			virtual DirectX::XMFLOAT3 GetCameraPosition() override;
-			virtual void SetCameraPosition(DirectX::XMFLOAT3 position) override;
-			virtual void SetTargetPosition(DirectX::XMFLOAT3 position) override;
-			virtual void RotateCamera(DirectX::XMFLOAT2 angle) override;
+			virtual void SetCameraPosition(const DirectX::XMFLOAT3& position) override;
+			virtual void SetTargetPosition(const DirectX::XMFLOAT3& position) override;
+			virtual void RotateCamera(const DirectX::XMFLOAT2& angle) override;
 
 		public:
-			virtual void SetCameraPos(DirectX::XMFLOAT3 targetPos, DirectX::XMFLOAT3 direction, float scaleFactor) override;
+			// 타겟 포지션과 카메라가 바라보는 방향을 가지고 카메라의 위치를 조정 (Shadow Map)에서 사용
+			virtual void SetCameraPos(const DirectX::XMFLOAT3& targetPos, const DirectX::XMFLOAT3& direction, float scaleFactor) override;
 
 		public:
 			// View 행렬 가져오기
@@ -99,6 +100,10 @@ namespace ArkEngine
 		private:
 			bool _isMain;
 			std::vector<DirectX::XMFLOAT4> _frustumPlanes;
+
+		private:
+			float _cameraSpaceDepth;
+			float _depthScalingFactor;
 		};
 	}
 }

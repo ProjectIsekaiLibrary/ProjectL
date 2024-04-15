@@ -78,7 +78,7 @@ bool ArkEngine::ArkDX11::FBXAnimator::PlayAnimationOnce(float speed, float delta
 		return false;
 	}
 
-	if (_frameCount >= _anim->duration)
+	if (_frameCount >= _anim->duration-1)
 	{
 		return false;
 	}
@@ -98,7 +98,7 @@ bool ArkEngine::ArkDX11::FBXAnimator::PlayAnimationOnce(float speed, float delta
 		return false;
 	}
 
-	if (_frameCount >= _anim->duration)
+	if (_frameCount >= _anim->duration-1)
 	{
 		return false;
 	}

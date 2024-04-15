@@ -117,6 +117,7 @@ namespace KunrealEngine
 		std::vector<KunrealEngine::BoxCollider*> _subColliderList;
 
 		int _patternIndex;
+		int _exPatternIndex;
 
 		float _distance;
 

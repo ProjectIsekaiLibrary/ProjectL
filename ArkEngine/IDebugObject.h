@@ -39,13 +39,13 @@ namespace ArkEngine
 		virtual void SetRenderingState(bool tf) abstract;
 
 	public:
-		virtual void SetTransformMatrix(DirectX::XMFLOAT4X4 matrix) abstract;
+		virtual void SetTransformMatrix(const DirectX::XMFLOAT4X4& matrix) abstract;
 		virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) abstract;
 
 	public:
-		virtual void SetWorld(DirectX::XMFLOAT4X4 matrix) abstract;
+		virtual void SetWorld(const DirectX::XMFLOAT4X4& matrix) abstract;
 
 	public:
 		virtual float GetRadius() abstract;

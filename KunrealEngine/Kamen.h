@@ -33,10 +33,12 @@ namespace KunrealEngine
 	private:
 		BoxCollider* _leftHand;
 		BoxCollider* _rightHand;
+		BoxCollider* _spell;
 
 	private:
 		void LeftAttackOnce();
 		void RightAttackOnce();
+		void SpellAttack();
 
 
 		Coroutine_Func(function)
