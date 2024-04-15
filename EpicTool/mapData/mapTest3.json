@@ -18,11 +18,11 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -32.59639358520508,
-                "position_y": 56.01984786987305,
-                "position_z": -162.48622131347656,
-                "rotation_x": -18.0,
-                "rotation_y": 101.0,
+                "position_x": 6.958542823791504,
+                "position_y": 81.7442626953125,
+                "position_z": -132.83685302734375,
+                "rotation_x": -2.0,
+                "rotation_y": -3.0,
                 "rotation_z": 0.0,
                 "scale_x": 1.0,
                 "scale_y": 1.0,
@@ -106,9 +106,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -32.59639358520508,
-                "position_y": 56.01984786987305,
-                "position_z": -271.4864807128906,
+                "position_x": 6.958542823791504,
+                "position_y": 81.7442626953125,
+                "position_z": -132.83685302734375,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -596,7 +596,7 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 82.42243957519531,
+                "position_x": 51.500892639160156,
                 "position_y": -6.670000076293945,
                 "position_z": 34.98603057861328,
                 "rotation_x": 0.0,
@@ -637,7 +637,7 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -70.21526336669922,
+                "position_x": -60.513404846191406,
                 "position_y": -6.676774024963379,
                 "position_z": 36.68061828613281,
                 "rotation_x": 0.0,
@@ -1557,36 +1557,32 @@
             "lightType": {},
             "meshRenderer": {
                 "Diffuse": [
-                    "Resources/Textures/SM_arch_small_ruins+/M_edges_ruins_BaseMap.png",
-                    "Resources/Textures/SM_arch_small_ruins+/M_columns_square_ruins_02_BaseMap.png",
-                    "Resources/Textures/SM_arch_small_ruins+/M_stoneblocks_ruins_BaseMap.png"
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_BaseMap 1.png"
                 ],
                 "Mesh": [
-                    "SM_arch_small_ruins+/SM_arch_small_ruins+"
+                    "SM_stone_rune_ruins/SM_stone_rune_ruins"
                 ],
                 "Normal": [
-                    "Resources/Textures/SM_arch_small_ruins+/M_edges_ruins_Normal.png",
-                    "Resources/Textures/SM_arch_small_ruins+/M_columns_square_ruins_02_Normal.png",
-                    "Resources/Textures/SM_arch_small_ruins+/M_stoneblocks_ruins_Normal.png"
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_Normal 1.png"
                 ]
             },
             "meshRenderingState": true,
-            "name": "Create Empty",
+            "name": "arch",
             "parent": {},
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -69.10680389404297,
-                "position_y": 17.330976486206055,
-                "position_z": -91.74308776855469,
+                "position_x": -28.185047149658203,
+                "position_y": -2.1939640045166016,
+                "position_z": -95.18522644042969,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.15000000596046448,
-                "scale_y": 0.15000000596046448,
-                "scale_z": 0.15000000596046448
+                "scale_x": 0.12999999523162842,
+                "scale_y": 0.12999999523162842,
+                "scale_z": 0.12999999523162842
             }
         }
     },
@@ -1612,7 +1608,7 @@
                 ]
             },
             "meshRenderingState": true,
-            "name": "Create Empty (1)",
+            "name": "staircase",
             "parent": {},
             "sound_Is3D": [],
             "sound_IsLoop": [],
@@ -1628,6 +1624,291 @@
                 "scale_x": 0.15000000596046448,
                 "scale_y": 0.15000000596046448,
                 "scale_z": 0.15000000596046448
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_BaseMap 1.png"
+                ],
+                "Mesh": [
+                    "SM_stone_rune_ruins/SM_stone_rune_ruins"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_Normal 1.png"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "arch (1)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 17.488754272460938,
+                "position_y": -2.1939640045166016,
+                "position_z": -95.18522644042969,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.12999999523162842,
+                "scale_y": 0.12999999523162842,
+                "scale_z": 0.12999999523162842
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_tree_large_ancient_03/M_tree_ruins_diff.png",
+                    "Resources/Textures/SM_tree_large_ancient_03/yel.png"
+                ],
+                "Mesh": [
+                    "SM_tree_large_ancient_03/SM_tree_large_ancient_03"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_tree_large_ancient_03/M_tree_ruins_normal.png",
+                    "Resources/Textures/SM_tree_large_ancient_03/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "ancente_tree (2) (2) (1)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 82.69039154052734,
+                "position_y": -6.670000076293945,
+                "position_z": -77.34837341308594,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.15000000596046448,
+                "scale_y": 0.15000000596046448,
+                "scale_z": 0.15000000596046448
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_tree_large_ancient_02/M_tree_large_ruins_BaseMap.png",
+                    "Resources/Textures/SM_tree_large_ancient_02/red.png"
+                ],
+                "Mesh": [
+                    "SM_tree_large_ancient_02/SM_tree_large_ancient_02"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_tree_large_ancient_02/M_tree_large_ruins_Normal.png",
+                    "Resources/Textures/SM_tree_large_ancient_02/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "ancente_tree (2) (2) (2)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -87.77715301513672,
+                "position_y": -6.670000076293945,
+                "position_z": -77.34837341308594,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.15000000596046448,
+                "scale_y": 0.15000000596046448,
+                "scale_z": 0.15000000596046448
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_tree_ruins_02_yel/M_tree_ruins_diff.png",
+                    "Resources/Textures/SM_tree_ruins_02_yel/yel.png"
+                ],
+                "Mesh": [
+                    "SM_tree_ruins_02_yel/SM_tree_ruins_02_yel"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_tree_ruins_02_yel/M_tree_ruins_normal.png",
+                    "Resources/Textures/SM_tree_ruins_02_yel/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "tree (2)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 38.853370666503906,
+                "position_y": 1.0401611328125,
+                "position_z": -97.59026336669922,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_tree_ruins_01_red/M_tree_ruins_diff.png",
+                    "Resources/Textures/SM_tree_ruins_01_red/red.png"
+                ],
+                "Mesh": [
+                    "SM_tree_ruins_01_red/SM_tree_ruins_01_red"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_tree_ruins_01_red/M_tree_ruins_normal.png",
+                    "Resources/Textures/SM_tree_ruins_01_red/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "tree (3)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 50.531856536865234,
+                "position_y": 0.31522369384765625,
+                "position_z": -97.59026336669922,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_tree_ruins_02_red/M_tree_ruins_diff.png",
+                    "Resources/Textures/SM_tree_ruins_02_red/red.png"
+                ],
+                "Mesh": [
+                    "SM_tree_ruins_02_red/SM_tree_ruins_02_red"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_tree_ruins_02_red/M_tree_ruins_normal.png",
+                    "Resources/Textures/SM_tree_ruins_02_red/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "tree (4)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -51.3868293762207,
+                "position_y": 0.31522369384765625,
+                "position_z": -97.59026336669922,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_tree_ruins_01_yel/M_tree_ruins_diff.png",
+                    "Resources/Textures/SM_tree_ruins_01_yel/yel.png"
+                ],
+                "Mesh": [
+                    "SM_tree_ruins_01_yel/SM_tree_ruins_01_yel"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_tree_ruins_01_yel/M_tree_ruins_normal.png",
+                    "Resources/Textures/SM_tree_ruins_01_yel/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "tree (5)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -61.298912048339844,
+                "position_y": 0.31522369384765625,
+                "position_z": -97.59026336669922,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
             }
         }
     }
