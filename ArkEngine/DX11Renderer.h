@@ -286,7 +286,7 @@ namespace ArkEngine
 			//Ãß°¡
 		private:
 			std::unique_ptr<ArkEngine::ArkDX11::ParticleSystem> _particle;
-			std::unique_ptr<ArkEngine::ArkDX11::ParticleSystem> _particle2;
+
 			
 			ArkEffect* _arkEffect;
 

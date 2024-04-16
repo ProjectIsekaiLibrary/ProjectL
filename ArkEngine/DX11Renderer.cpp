@@ -114,10 +114,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_particle->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 200);
 	_particle->SetEmitPos(DirectX::XMFLOAT3(0.0f, 20.0f, 0.0f));
 
-	_flameTexSTV = _particle->CreateTexture2DArraySRV(_device.Get(), _deviceContext.Get(), flame);
-	_particle2->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 200);
-	_particle2->SetEmitPos(DirectX::XMFLOAT3(20.0f, 20.0f, 0.0f));
-
 	SetPickingTexture();
 }
 
@@ -233,7 +229,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	float gameTime = 0.0f;
 	gameTime += time;
 	_particle->Update(timaplus, gameTime);
-	_particle2->Update(timaplus, gameTime);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
@@ -348,10 +343,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	_particle->SetEyePos(_mainCamera->GetCameraPos());
 	_particle->Draw(_deviceContext.Get(), _mainCamera);
-
-
-	_particle2->SetEyePos(_mainCamera->GetCameraPos());
-	_particle2->Draw(_deviceContext.Get(), _mainCamera);
 	_deviceContext->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 
 
