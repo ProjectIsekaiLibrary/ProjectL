@@ -37,7 +37,6 @@
 
 static int testdef = 9;
 
-
 GInterface::GraphicsInterface* CreateGraphicsEngine()
 {
 	return new ArkEngine::ArkDX11::DX11Renderer();
@@ -225,7 +224,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	}
 
 	// particle
-	float time = 0.2f;
+	float time = 0.016f;
 	float timaplus = 0.0f;
 	timaplus += time;
 	float gameTime = 0.0f;
@@ -850,6 +849,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 
 	backBuffer->Release();
 	renderingImage->Release();
+
 
 	if (testdef == 9)
 	{

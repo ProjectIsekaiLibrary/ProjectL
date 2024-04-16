@@ -68,7 +68,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Update(float deltaTime, float gameTime)
 	_gameTime += gameTime;
 	_timeStep = deltaTime;
 
-	_age += deltaTime;
+	_age = deltaTime;
 }
 
 void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine::ICamera* p_Camera)
@@ -83,6 +83,14 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 
 	DirectX::XMMATRIX VP = cameraView * cameraProj;
 
+	// 입력 조립기 단계를 설정
+	dc->IASetInputLayout(_arkEffect->GetInputLayOut());
+	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+	dc->RSSetState(arkDevice->GetSolidRS());
+
+	unsigned int stride = sizeof(Particle);
+	unsigned int offset = 0;
+
 	// 상수들을 설정한다
 	SetViewProj(VP);
 	SetGameTime(_gameTime);
@@ -93,13 +101,6 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 	SetTexArray(_texArraySRV);
 	SetRandomTex(_randomTexSRV);
 
-	// 입력 조립기 단계를 설정
-	dc->IASetInputLayout(_arkEffect->GetInputLayOut());
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-	dc->RSSetState(arkDevice->GetSolidRS());
-
-	unsigned int stride = sizeof(Particle);
-	unsigned int offset = 0;
 
 	// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
 	// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
@@ -138,11 +139,14 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 		}
 	}
 
+	// 스트림 전용 패스가 끝났다. 정점 버퍼를 때어낸다
 	ID3D11Buffer* bufferArray[1] = { 0 };
 	dc->SOSetTargets(1, bufferArray, &offset);
 
+	// 정점 버퍼들을 맞바꾼다
 	std::swap(_drawVB, _streamOutVB);
 
+	// 방금 스트림 출력된, 갱신된 입자를 화면에 드린다
 	dc->IASetVertexBuffers(0, 1, &_drawVB, &stride, &offset);
 
 	_drawTech->GetDesc(&techDesc);
@@ -235,12 +239,14 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 
 	ID3D11Texture2D* textureArray = nullptr;
 	hr = device->CreateTexture2D(&texArrayDesc, nullptr, &textureArray);
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
+	{
 		return nullptr; // 텍스처 생성 실패
 	}
 
 	// 개별 이미지들을 텍스처 배열에 복사한다
-	for (UINT i = 0; i < filenames.size(); ++i) {
+	for (UINT i = 0; i < filenames.size(); ++i) 
+	{
 		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel) 
 		{
 			const DirectX::Image* img = scratchImage[i].GetImage(mipLevel, 0, 0);
@@ -270,7 +276,8 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	hr = device->CreateShaderResourceView(textureArray, &srvDesc, &srv);
 	textureArray->Release(); // 텍스처 배열 사용이 끝났으므로 메모리 해제
 
-	if (FAILED(hr)) {
+	if (FAILED(hr)) 
+	{
 		return nullptr; // SRV 생성 실패
 	}
 
@@ -281,9 +288,8 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 void ArkEngine::ArkDX11::ParticleSystem::BuildVB(ID3D11Device* device)
 {
 	//
-// Create the buffer to kick-off the particle system.
-//
-
+	// Create the buffer to kick-off the particle system.
+	//
 	D3D11_BUFFER_DESC vbd;
 	vbd.Usage = D3D11_USAGE_DEFAULT;
 	vbd.ByteWidth = sizeof(Particle) * 1;
