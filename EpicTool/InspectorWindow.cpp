@@ -1102,6 +1102,8 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 	bool collider = false;
 	_DebugType = DebugType::None;
 
+	_selectedObjectIndex = selectedObjectIndex;
+
 	if (!(IMGUIZMO_NAMESPACE::IsUsing() || IMGUIZMO_NAMESPACE::IsOver()))
 	{
 		if (KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject() != nullptr && _isPickedObject == false) // 널일때 예외처리 필요
@@ -1115,6 +1117,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 					_isPickedObject = true;
 					_isPickedObjectName = KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject()->GetObjectName();
 				}
+				
 				count++;
 			}
 		}
@@ -1141,7 +1144,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		}
 	}
-	_selectedObjectIndex = selectedObjectIndex;
+
 
 
 	if (_selectedObjectIndex != -1)

@@ -29,6 +29,15 @@ void EpicTool::HierarchyWindow::Initialize()
 
 void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 {
+	if (_gameObjectlist.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size())
+	{
+		_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
+		if (selectedObjectIndex != -1)
+		{
+			--selectedObjectIndex;
+		}
+	}
+
 	_draggedIndex = -1;
 	_dropTargetIndex = -1;
 	int childCound = 0;
