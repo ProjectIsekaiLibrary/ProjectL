@@ -500,14 +500,15 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Transform>(Kunr
 	_scaleArray[1] = instance->GetScale().y;
 	_scaleArray[2] = instance->GetScale().z;
 
-	DrawComponentPiece(_scaleArray, "Scale");
-    instance->SetScale(_scaleArray[0], _scaleArray[1], _scaleArray[2]);
-
+	if (ImGui::DragFloat3("totalScale", _scaleArray, 0.01f))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
+	{
+		instance->SetScale(_scaleArray[0], _scaleArray[1], _scaleArray[2]);
+	}
 	
 	float totalScale;
 	totalScale = instance->GetScale().x;
 
-	if (ImGui::DragFloat("totalScale", &totalScale))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
+	if (ImGui::DragFloat("totalScale", &totalScale, 0.01f))  // 한번에 조작하기 위해 만듬, 위 스케일 조절이랑은 값 연동은 안되지만 기능은 정상
 	{
 		instance->SetScale(totalScale, totalScale, totalScale);
 	}
@@ -983,6 +984,40 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 	ImGui::Spacing();
 }
 
+/// <summary>
+/// Player를 관리하는 UI
+/// </summary>
+/// <param name="instance"></param>
+template<>
+void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Player>(KunrealEngine::Player* instance)
+{
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Player");
+
+	bool isComponent = false;
+
+	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
+
+	for (auto componentName : _compoenetList)
+	{
+		std::string checkName = componentName->GetComponentName();
+		if (checkName == "Player")
+		{
+			isComponent = true;
+		}
+	}
+
+	if (isComponent == false) // 깡통 추가
+	{
+		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Player>();
+	}
+
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Player>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+}
 
 void EpicTool::InspectorWindow::Initialize() // 필요없어보이는데
 {
@@ -1027,6 +1062,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 	bool lightOpen = false;
 	bool imageOpen = false;
 	bool soundPlayerOpen = false;
+	bool playerOpen = false;
 	bool collider = false;
 	_DebugType = DebugType::None;
 
@@ -1080,10 +1116,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		if (selectedComponentIndex)
 		{
-			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer" };
+			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer","Player"};
 			int selectedItem = -1;
 
-			if (ImGui::Combo("Component", &selectedItem, items, 6)) {
+			if (ImGui::Combo("Component", &selectedItem, items, 7)) {
 				// 사용자가 새로운 아이템을 선택했을 때 실행할 코드
 				// 임시 테스트 용이며 삭제할것임
 				switch (selectedItem)
@@ -1113,6 +1149,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 					break;
 				case 5:
 					IsCheckItem(soundPlayerOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 6:
+					IsCheckItem(playerOpen);
 					selectedComponentIndex = !selectedComponentIndex;
 					break;
 				default:
@@ -1153,6 +1193,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			{
 				soundPlayerOpen = true;
 			}
+			if (checkComponentName == "Player")
+			{
+				playerOpen = true;
+			}
 		}
 
 		if (meshStateOpen == true)
@@ -1184,6 +1228,11 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		if (soundPlayerOpen == true)  // 쓰래기 인스턴스로 돌렸는데 여러개 만드는것을 상정한것, 에러발생확률 높음
 		{
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>());
+		}
+
+		if (playerOpen == true)
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Player>());
 		}
 
 		if (ImGui::Button("Add Component"))

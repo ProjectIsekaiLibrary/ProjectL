@@ -393,7 +393,14 @@ void EpicTool::MainTool::LoadData()
     while (_loadSuccess)
     {
     	nfdchar_t* outPath = NULL;
+
+		//std::string folderPath = std::filesystem::current_path().string();
+		//
+		//std::string filePath = folderPath + "/Resources/MapObj/";
+
     	nfdresult_t result = NFD_OpenDialog("json", NULL, &outPath);
+
+
     
     	if (result == NFD_OKAY) 
         {

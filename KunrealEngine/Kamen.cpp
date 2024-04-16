@@ -11,9 +11,6 @@ KunrealEngine::Kamen::Kamen()
 	info.SetAttackRange(5.0f);
 
 	SetInfo(info);
-
-	LeftAttackOnce();
-	RightAttackOnce();
 }
 
 KunrealEngine::Kamen::~Kamen()
@@ -126,13 +123,21 @@ void KunrealEngine::Kamen::SetBossTransform()
 	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
 }
 
+
+void KunrealEngine::Kamen::CreatePattern()
+{
+	LeftAttackOnce();
+	RightAttackOnce();
+	SpellAttack();
+}
+
 void KunrealEngine::Kamen::LeftAttackOnce()
 {
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Once");
 
-	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 
 	std::function<bool()> logic = [pattern, this]()
@@ -168,7 +173,7 @@ void KunrealEngine::Kamen::RightAttackOnce()
 
 	pattern->SetPatternName("Right_Attack_Once");
 
-	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(5.0f);
+	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5f);
 	pattern->SetIsWarning(false).SetWarningName("");
 
 	std::function<bool()> logic = [pattern, this]()
@@ -204,7 +209,7 @@ void KunrealEngine::Kamen::SpellAttack()
 
 	pattern->SetPatternName("Spell");
 
-	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(10.0f);
+	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(2.0f);
 	pattern->SetIsWarning(true).SetWarningName("Spell");
 
 	std::function<bool()> logic = [pattern, this]()
@@ -217,7 +222,7 @@ void KunrealEngine::Kamen::SpellAttack()
 		{
 			if (animator->GetCurrentFrame() >= 10)
 			{
-				_rightHand->SetActive(true);
+				_spell->SetActive(true);
 			}
 		}
 
