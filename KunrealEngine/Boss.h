@@ -42,6 +42,13 @@ namespace KunrealEngine
 		virtual void SetCollider() abstract;
 
 	public:
+		virtual void CreatePattern() abstract;
+
+	public:
+		// 어떠한 텍스쳐를 입힐 것인지를 지정
+		virtual void SetTexture();
+
+	public:
 		// 보스의 포지션 지정
 		virtual void SetBossTransform();
 
@@ -87,11 +94,17 @@ namespace KunrealEngine
 
 		bool MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
 
+		bool MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
+
 		void TeleportToPlayer();
 
 		bool LookAtPlayer(float agnle, float rotateSpeed);
 
 		void RegisterCollider();
+
+		void UpdateMoveNode();
+
+		void UpdateMoveNode(DirectX::XMFLOAT3 targetPos);
 
 	protected:
 		BossStatus _status;
@@ -103,10 +116,12 @@ namespace KunrealEngine
 
 		std::vector<BossPattern*> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
+		BossPattern* _nowPattern;
 
 		std::vector<KunrealEngine::BoxCollider*> _subColliderList;
 
 		int _patternIndex;
+		int _exPatternIndex;
 
 		float _distance;
 
@@ -122,26 +137,38 @@ namespace KunrealEngine
 	private:
 		bool _isStart;
 		bool _isHit;
+		bool _isRotateFinish;
+
+		private:
+		Transform* _bossTransform;
+		Transform* _playerTransform;
+
+		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
+		int _nodeCount;
 
 	private:
 		Coroutine_Func(patternEnd)
 		{
 			Boss* boss = this;
 
-			Waitforsecond(0.5);
+			auto delay = _nowPattern->_afterDelay;
+			Waitforsecond(delay);
 
+			// 코어 패턴이었다면
 			if (boss->_isCorePattern)
 			{
+				// 실행한 코어 패턴을 백터에서 제거
 				(boss->_corePattern).pop_back();
-
+				
 				boss->_isCorePattern = false;
 			}
 
-			boss->_boss->GetComponent<Animator>()->Stop();
-
 			boss->_status = BossStatus::IDLE;
 
+			// 기본 패턴을 실행할 수 있도록 초기화
 			boss->_patternIndex = -1;
+
+			boss->_nowPattern = nullptr;
 		};
 	};
 }

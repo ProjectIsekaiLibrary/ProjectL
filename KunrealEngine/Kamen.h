@@ -26,21 +26,21 @@ namespace KunrealEngine
 
 		virtual void CreateSubObject() override;
 		virtual void SetMesh() override;
+		virtual void SetTexture() override;
 		virtual void SetCollider() override;
 		virtual void SetBossTransform() override;
 
+	public:
+		virtual void CreatePattern() override;
+
 	private:
-		void CreateTestPattern1();
-		void LeftPunch();
+		BoxCollider* _leftHand;
+		BoxCollider* _rightHand;
+		BoxCollider* _spell;
 
-
-		Coroutine_Func(function)
-		{
-			Kamen* kamen = this;
-
-			Waitforsecond(0.5f);
-			kamen->_status = BossStatus::IDLE;
-			kamen->_patternIndex = -1;
-		};
+	private:
+		void LeftAttackOnce();
+		void RightAttackOnce();
+		void SpellAttack();
 	};
 }

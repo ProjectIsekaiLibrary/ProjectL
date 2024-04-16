@@ -68,11 +68,11 @@ namespace GInterface
 
 	public:
 		// 두 버텍스로 원하는 컬러로 라인을 생성
-		virtual void CreateDebugLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT4 color) abstract;
+		virtual void CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color) abstract;
 		// 만들어놓은 순서대로 index가 부여, 그 index를 통해 라인을 삭제
 		virtual void DeleteLine(int index) abstract;
 		// 만들어놓은 라인과 일치하는 버텍스를 지닌 라인을 삭제
-		virtual void DeleteLine(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2) abstract;
+		virtual void DeleteLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2) abstract;
 		// 모든 라인을 제거
 		virtual void DeleteAllLine() abstract;
 
@@ -90,13 +90,13 @@ namespace GInterface
 		// 큐브맵 삭제
 		virtual void DeleteCubeMap(const char* cubeMapName) abstract;
 		// 큐브맵 리스트 가져오기
-		virtual std::vector<std::string> GetCubeMapList() abstract;
+		virtual const std::vector<std::string>& GetCubeMapList() abstract;
 		// 현재 렌더링 되는 메인 큐브맵 가져오기
 		virtual void SetMainCubeMap(std::string cubeMapName) abstract;
 
 	public:
 		// 카메라를 생성 후 반환
-		virtual GInterface::GraphicsCamera* CreateCamera(DirectX::XMFLOAT3 cameraPosition = { 0.0f, 0.0f, 0.0f }, DirectX::XMFLOAT3 targetPosition = { 0.0f, 0.0f, 0.0f }) abstract;
+		virtual GInterface::GraphicsCamera* CreateCamera(const DirectX::XMFLOAT3& cameraPosition = { 0.0f, 0.0f, 0.0f }, const DirectX::XMFLOAT3& targetPosition = { 0.0f, 0.0f, 0.0f }) abstract;
 		// 카메라 객체를 삭제
 		virtual void DeleteCamera(GInterface::GraphicsCamera* camera) abstract;
 		// 현재 렌더링하고 있는 메인 카메라 가져오기
@@ -106,15 +106,15 @@ namespace GInterface
 
 	public:
 		// Directional Light 생성
-		virtual GInterface::GraphicsDirLight* CreateDirectionalLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 direction) abstract;
-		virtual GInterface::GraphicsPointLight* CreatePointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range) abstract;
+		virtual GInterface::GraphicsDirLight* CreateDirectionalLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& direction) abstract;
+		virtual GInterface::GraphicsPointLight* CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range) abstract;
 
 
 	public:
 		// End 키를 통해 텍스트 출력 활성화 / 비활성화
 		virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) abstract;
 		// 색깔이 입혀진 텍스트 출력 (RGBA 0~255)
-		virtual void DrawColorText(int posX, int posY, int fontSize, DirectX::XMFLOAT4 color, const char* text, ...) abstract;
+		virtual void DrawColorText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) abstract;
 
 	public:
 		// IMGUI에서 렌더링시키기 위해 이미지를 넘겨줌
@@ -133,10 +133,10 @@ namespace GInterface
 		virtual const std::vector<std::string> GetRenderableNameList() abstract;
 
 		// IMGUI에 그릴 수 있는 파싱된 텍스쳐의 파일명을 넘겨주기 위함
-		virtual const std::vector<std::string> GetTextureNameList() abstract;
+		virtual const std::vector<std::string>& GetTextureNameList() abstract;
 
 		// screen 마우스 좌표를 world 좌표로 변환
-		virtual DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) abstract;
+		virtual const DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) abstract;
 
 		// IMGUIZMO를 사용하기 위해 메인 카메라의 View행렬을 반환
 		virtual const DirectX::XMFLOAT4X4& GetViewMatrix() abstract;
@@ -149,9 +149,9 @@ namespace GInterface
 		virtual const DirectX::XMFLOAT4X4& GetTransform(GInterface::GraphicsRenderable* renderable, const std::string& boneName) abstract;
 
 		// 네비 메쉬를 위한 모든 메쉬들의 버텍스의 월드좌표 반환
-		virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> GetAllMeshVertex() abstract;
+		virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>>& GetAllMeshVertex() abstract;
 		// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
-		virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() abstract;
+		virtual const std::vector<std::vector<std::vector<unsigned int>>>& GetAllMeshIndex() abstract;
 	};
 };
 

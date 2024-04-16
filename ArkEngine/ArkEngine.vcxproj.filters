@@ -138,6 +138,9 @@
     <Filter Include="Particle">
       <UniqueIdentifier>{2c5c796f-2afd-4021-9791-6cb842336ae8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ArkEngine\Interface\IDebug">
+      <UniqueIdentifier>{eda9442d-133f-4f10-aa21-a13a7c40aa76}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -254,12 +257,6 @@
     <ClInclude Include="IPointLight.h">
       <Filter>Light\Point</Filter>
     </ClInclude>
-    <ClInclude Include="DebugObject.h">
-      <Filter>ArkEngine\ArkDX11\DebugObject</Filter>
-    </ClInclude>
-    <ClInclude Include="IDebugObject.h">
-      <Filter>ArkEngine\ArkDX11\DebugObject</Filter>
-    </ClInclude>
     <ClInclude Include="DWFont.h">
       <Filter>ArkEngine\ArkDX11\Resources\Font</Filter>
     </ClInclude>
@@ -289,6 +286,12 @@
     </ClInclude>
     <ClInclude Include="ParticleEffect.h">
       <Filter>Particle</Filter>
+    </ClInclude>
+    <ClInclude Include="DebugObject.h">
+      <Filter>ArkEngine\ArkDX11\DebugObject</Filter>
+    </ClInclude>
+    <ClInclude Include="IDebugObject.h">
+      <Filter>ArkEngine\Interface\IDebug</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

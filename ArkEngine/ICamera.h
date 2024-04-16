@@ -32,7 +32,7 @@ namespace ArkEngine
 		virtual void UpDown(float deltaTime) abstract;
 
 	public:
-		virtual void SetCameraPos(DirectX::XMFLOAT3 targetPos, DirectX::XMFLOAT3 direction, float scaleFactor) abstract;
+		virtual void SetCameraPos(const DirectX::XMFLOAT3& targetPos, const DirectX::XMFLOAT3& direction, float scaleFactor) abstract;
 
 	public:
 		// View 행렬 가져오기
@@ -45,6 +45,6 @@ namespace ArkEngine
 		virtual const DirectX::XMFLOAT3 GetCameraPos() abstract;
 
 	public:
-		virtual std::vector<DirectX::XMFLOAT4>& GetFrstum() abstract;
+		virtual std::vector<DirectX::XMFLOAT4>& GetFrustum() abstract;
 	};
 }

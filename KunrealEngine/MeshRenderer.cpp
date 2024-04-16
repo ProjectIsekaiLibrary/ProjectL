@@ -196,6 +196,12 @@ void KunrealEngine::MeshRenderer::SetNormalTexture(int index, const char* textur
 	this->_normalName = textureName;
 }
 
+
+void KunrealEngine::MeshRenderer::SetEmissiveTexture(int index, const char* textureName)
+{
+	this->_mesh->SetEmissiveTexture(index, textureName);
+}
+
 std::string KunrealEngine::MeshRenderer::GetNormalName()
 {
 	if (_mesh != nullptr)

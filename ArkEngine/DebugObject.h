@@ -51,13 +51,17 @@ namespace ArkEngine
 
 		public:
 			// 타입 지정해서 만들 수 있는 생성자
-			DebugObject(const std::string& objectName, eDebugType type, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+			DebugObject(const std::string& objectName, eDebugType type, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 			// DebugCube 생성자
-			DebugObject(const std::string& objectName, float width, float height, float depth, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+			DebugObject(const std::string& objectName, float width, float height, float depth, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 			// DebugSphere 생성자
-			DebugObject(const std::string& objectName, float centerPos, float range, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+			DebugObject(const std::string& objectName, float centerPos, float range, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 
 			~DebugObject();
+
+		public:
+			virtual bool GetActive() override;
+			virtual void SetActvie(bool tf) override;
 
 		public:
 			void Initialize() override;
@@ -70,14 +74,14 @@ namespace ArkEngine
 			virtual void SetRenderingState(bool tf) override;
 
 		public:
-			virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) override;
-			virtual void SetTransformMatrix(DirectX::XMFLOAT4X4 matrix) override;
+			virtual void SetTransform(const DirectX::XMFLOAT4X4& matrix) override;
+			virtual void SetTransformMatrix(const DirectX::XMFLOAT4X4& matrix) override;
 			virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) override;
 			virtual void Delete() override;
 
-			virtual void SetWorld(DirectX::XMFLOAT4X4 matrix) override;
+			virtual void SetWorld(const DirectX::XMFLOAT4X4& matrix) override;
 
 		public:
 			virtual float GetRadius() override;
@@ -128,6 +132,9 @@ namespace ArkEngine
 
 		private:
 			DirectX::XMFLOAT3 _centerPos;
+
+		private:
+			bool _renderableState;
 		};
 	}
 }
