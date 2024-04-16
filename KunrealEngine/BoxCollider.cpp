@@ -79,7 +79,7 @@ void KunrealEngine::BoxCollider::Update()
 	// 특정 본을 부모로 받는 경우
 	else
 	{
-		_position = this->GetOwner()->GetComponent<Transform>()->_posForBone;
+ 		_position = this->GetOwner()->GetComponent<Transform>()->_posForBone;
 		_position.x += _offset.x;
 		_position.y += _offset.y;
 		_position.z += _offset.z;
