@@ -627,29 +627,26 @@ namespace KunrealEngine
 
 	void Navigation::MoveTempObstacle(DirectX::XMFLOAT3 bpos, DirectX::XMFLOAT3 npos)
 	{
-		// bpos 와 npos가 겹친다면 그냥 통과하도록
-// 		if (bpos == npos)
-// 		{
-// 			return;
-// 		}
+			if (!_package[0]._tileCache)
+				return;
+
+			float p1[3];
+			p1[0] = bpos.x;
+			p1[1] = bpos.y;
+			p1[2] = bpos.z;
+
+			dtObstacleRef ref = hitTestObstacle(_package[0]._tileCache, p1);
+			_package[0]._tileCache->removeObstacle(ref);
 
 			if (!_package[0]._tileCache)
 				return;
 
-			float p[3];
-			p[0] = bpos.x;
-			p[1] = bpos.y;
-			p[2] = bpos.z;
+			float p2[3];
+			p2[0] = npos.x;
+			p2[1] = npos.y - 0.5f;
+			p2[2] = npos.z;
 
-			dtObstacleRef ref = hitTestObstacle(_package[0]._tileCache, p);
-			_package[0]._tileCache->removeObstacle(ref);
-			
-			float p1[3];
-			p1[0] = npos.x;
-			p1[1] = npos.y - 0.5f;
-			p1[2] = npos.z;
-
-			_package[0]._tileCache->addObstacle(p, 4, 4, 0);
+			_package[0]._tileCache->addObstacle(p2, 5, 5, 0);
 	}
 
 	void Navigation::ClearAllTempObstacles()
