@@ -54,16 +54,19 @@ namespace KunrealEngine
 		int _tempZ;
 
 	public:
-
 		// 플레이어 이동
 		void MoveToTarget(DirectX::XMFLOAT3 targetPos, float speed);
 
 		// 플레이어 대시
 		void PlayerDash(DirectX::XMFLOAT3 targetPos, float speed);
 
-		/// Navigation 테스트중
+		// Navigation을 이용한 움직임
 		void NavigationMove(float speed);
+		void NavigationDash(float speed);
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
+
+		/// 디버깅을 위한 함수
+		void ShowPlayerInfo();
 	};
 }
 
