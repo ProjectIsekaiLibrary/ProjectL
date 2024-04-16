@@ -6,6 +6,7 @@
 #include "TimeManager.h"
 #include "Transform.h"
 #include "SceneManager.h"
+#include "MeshRenderer.h"
 #include "Scene.h"
 #include "Player.h"
 #include "ToolBox.h"
@@ -18,10 +19,10 @@ KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
 	_distance(0.0f), _isCorePattern(false),
 	_basicPattern(), _corePattern(), _nowPattern(nullptr),
-	_subColliderList(), _maxColliderOnCount(1),
+	_maxColliderOnCount(1),
 	_isStart(false), _isHit(false), _isRotateFinish(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
-	_stopover(), _nodeCount(0)
+	_stopover(), _nodeCount(0), _direction(), _prevPos()
 {
 
 }
@@ -30,7 +31,83 @@ KunrealEngine::Boss::~Boss()
 {
 	for (auto index : _basicPattern)
 	{
-		_basicPattern.erase(std::remove(_basicPattern.begin(), _basicPattern.end(), index));
+		delete index;
+	}
+
+	auto collider = _boss->GetComponent<BoxCollider>();
+	if (collider != nullptr)
+	{
+		_boss->DeleteComponent(collider);
+	}
+
+	auto meshRenderer = _boss->GetComponent<MeshRenderer>();
+	if (meshRenderer != nullptr)
+	{
+		_boss->DeleteComponent(meshRenderer);
+	}
+}
+
+
+void KunrealEngine::Boss::DebugTest()
+{
+	// 애니메이션 확인용
+	GRAPHICS->DrawDebugText(500, 0, 50, "%s", _boss->GetComponent<Animator>()->GetNowAnimationName().c_str());
+
+	// 상태 확인용
+	switch (_status)
+	{
+		case BossStatus::ENTER:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : ENTER");
+			break;
+		}
+		case BossStatus::IDLE:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : IDLE");
+			break;
+		}
+		case BossStatus::CHASE:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CHASE");
+			break;
+		}
+		case BossStatus::STAGGERED:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : ON_STAGGERED");
+			break;
+		}
+		case BossStatus::OFF_STAGGRED:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : OFF_STAGGERED");
+			break;
+		}
+		case BossStatus::DEAD:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : DEAD");
+			break;
+		}
+		case BossStatus::PATTERN_READY:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : PATTERN_READY");
+			break;
+		}
+		case BossStatus::BASIC_ATTACK:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : BASIC_ATTACK");
+			break;
+		}
+		case BossStatus::CORE_ATTACK:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CORE_ATTACK");
+			break;
+		}
+		case BossStatus::PATTERN_END:
+		{
+			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : PATTERN_END");
+			break;
+		}
+		default:
+			break;
 	}
 }
 
@@ -45,27 +122,25 @@ void KunrealEngine::Boss::Initialize(GameObject* boss)
 	_bossTransform = _boss->GetComponent<Transform>();
 	_playerTransform = _player->GetComponent<Transform>();
 
-	CreateSubObject();
-	SetParentToSubObject();
-
 	SetMesh();
 
 	SetTexture();
 
+	SetBossCollider();
+
 	SetBossTransform();
 
 	CreatePattern();
-	
-	SetCollider();
-	RegisterCollider();
-	SetColliderState(false);
+
+	SetSubObject(false);
 
 	SortCorePattern();
 }
 
 void KunrealEngine::Boss::Update()
 {
-	GRAPHICS->DrawDebugText(500, 0, 50, "%s", _boss->GetComponent<Animator>()->GetNowAnimationName().c_str());
+	// 디버그 확인용
+	DebugTest();
 
 	// 캐릭터가 이동시
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
@@ -117,6 +192,11 @@ void KunrealEngine::Boss::Update()
 			Dead();
 			break;
 		}
+		case BossStatus::PATTERN_READY:
+		{
+			PatternReady();
+			break;
+		}
 		case BossStatus::BASIC_ATTACK:
 		{
 			BasicAttack();
@@ -134,7 +214,6 @@ void KunrealEngine::Boss::Update()
 		}
 		default:
 		{
-
 			break;
 		}
 	}
@@ -187,11 +266,11 @@ void KunrealEngine::Boss::Idle()
 
 			_nowPattern = _corePattern.back();
 
-			// Core Attack으로 상태 변경
-			_status = BossStatus::CORE_ATTACK;
+			// 패턴 초기화해줘야할 것들 초기화
+			_nowPattern->Initialize();
 
-			// 현재 실행 중인 Idle 애니메이션 종료
-			_boss->GetComponent<Animator>()->Stop();
+			// 패턴 준비 상태로 변경
+			_status = BossStatus::PATTERN_READY;
 
 			// 함수 종료
 			return;
@@ -204,17 +283,20 @@ void KunrealEngine::Boss::Idle()
 		// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
 		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
 
-		while (_patternIndex == _exPatternIndex)
+		if (_basicPattern.size() > 1)
 		{
-			// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
-			_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
-		}
+			while (_patternIndex == _exPatternIndex)
+			{
+				// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+			}
 
-		// 가져온 랜덤 패턴이 활성화되어있지 않다면
-		while ((_basicPattern)[_patternIndex]->_isActive == false)
-		{
-			// 가져온 랜덤 패턴이 활성화 되어 있을때까지 다시 랜덤 인덱스를 추출
-			_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+			// 가져온 랜덤 패턴이 활성화되어있지 않다면
+			while ((_basicPattern)[_patternIndex]->_isActive == false)
+			{
+				// 가져온 랜덤 패턴이 활성화 되어 있을때까지 다시 랜덤 인덱스를 추출
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+			}
 		}
 	}
 
@@ -222,6 +304,9 @@ void KunrealEngine::Boss::Idle()
 
 	// Attack 처리를 위해 패턴 중 최대 충돌이 몇번 일어나는지를 지니고 있음  
 	_maxColliderOnCount = _nowPattern->_maxColliderOnCount;
+
+	// 패턴 초기화해줘야할 것들 초기화
+	_nowPattern->Initialize();
 
 	// Chase로 상태 변환
 	_status = BossStatus::CHASE;	
@@ -264,11 +349,9 @@ void KunrealEngine::Boss::Chase()
 		// 패턴 사거리보다 플레이어와의 거리가 가까울 경우 공격 시행
 		if (_distance <= 5 + patternRange)
 		{
-			// 현재 실행 중인 Idle 애니메이션을 종료
-			_boss->GetComponent<Animator>()->Stop();
+			// 패턴 준비 상태로 변경
+			_status = BossStatus::PATTERN_READY;
 
-			// Basic Attack으로 상태 변경
-			_status = BossStatus::BASIC_ATTACK;
 			return;
 		}
 
@@ -298,23 +381,11 @@ void KunrealEngine::Boss::Chase()
 				// 모든 노드를 읽어 보스가 플레이어를 다 쫓아갔다면
 				if (_nodeCount >= _stopover.size()+1)
 				{
-					// 현재 실행 중인 Idle 애니메이션을 종료
-					_boss->GetComponent<Animator>()->Stop();
-					
-					// Baisc Attack으로 상태 변경
-					_status = BossStatus::BASIC_ATTACK;
+					// 패턴 준비 상태로 변경
+					_status = BossStatus::PATTERN_READY;
+
 					return;
 				}
-
-				//
-				//auto isChasing = MoveToPlayer(playerPosition, _info._moveSpeed, patternRange);
-
-				//if (!isChasing)
-				//{
-				//	_boss->GetComponent<Animator>()->Stop();
-				//
-				//	_status = BossStatus::BASIC_ATTACK;
-				//}
 			}
 
 			// 패턴 사거리보다 플레이의 거리가 멀고 일정 거리를 벗어날 경우 텔레포트로 이동
@@ -322,11 +393,9 @@ void KunrealEngine::Boss::Chase()
 			{
 				TeleportToPlayer();
 
-				// 현재 실행 중인 Idle 애니메이션을 종료
-				_boss->GetComponent<Animator>()->Stop();
+				// 패턴 준비 상태로 변경
+				_status = BossStatus::PATTERN_READY;
 
-				// Baisc Attack으로 상태 변경
-				_status = BossStatus::BASIC_ATTACK;
 				return;
 			}
 		}
@@ -396,22 +465,26 @@ void KunrealEngine::Boss::Hit()
 void KunrealEngine::Boss::Attack()
 {
 	// 보스의 하위 콜라이더를 돌면서
-	for (const auto& collider : _subColliderList)
+	if (_patternIndex != -1)
 	{
-		// 콜라이더와 충돌하였고 그 대상이 플레이어라면
-		if (collider->IsCollided() && collider->GetTargetObject() == _player)
+		for (const auto& object : _basicPattern[_patternIndex]->_subObject)
 		{
-			// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
-			collider->SetActive(false);
+			auto collider = object->GetComponent<BoxCollider>();
+			// 콜라이더와 충돌하였고 그 대상이 플레이어라면
+			if (collider->IsCollided() && collider->GetTargetObject() == _player)
+			{
+				// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
+				collider->SetActive(false);
 
-			// 패턴의 최대 타격 횟수에서 하나를 감소시킴
-			_maxColliderOnCount--;
+				// 패턴의 최대 타격 횟수에서 하나를 감소시킴
+				_maxColliderOnCount--;
 
-			// 패턴의 데미지를 가져옴
-			auto damage = _nowPattern->_damage;
+				// 패턴의 데미지를 가져옴
+				auto damage = _nowPattern->_damage;
 
-			// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
-			_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+				// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+				_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+			}
 		}
 	}
 }
@@ -450,6 +523,35 @@ void KunrealEngine::Boss::Dead()
 	_boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
 }
 
+
+void KunrealEngine::Boss::PatternReady()
+{
+	// 현재 실행 중인 Idle 애니메이션을 종료
+	_boss->GetComponent<Animator>()->Stop();
+
+
+	// 플레이어를 바라보는 백터를 계산
+	CalculateDirection();
+
+	// 패턴이 지닌 하위 오브젝트들을 모두 켬
+	for (const auto& object : _nowPattern->_subObject)
+	{
+		object->SetActive(true);
+	}
+
+	// 코어 패턴일 경우
+	if (_isCorePattern)
+	{
+		// Core Attack으로 상태 변경
+		_status = BossStatus::CORE_ATTACK;
+	}
+	else
+	{
+		// Basic Attack으로 상태 변경
+		_status = BossStatus::BASIC_ATTACK;
+	}
+}
+
 void KunrealEngine::Boss::BasicAttack()
 {
 	// 패턴을 실행
@@ -484,8 +586,11 @@ void KunrealEngine::Boss::PatternEnd()
 	// Idle 애니메이션 실행
 	_boss->GetComponent<Animator>()->Play("Idle", _info._baseAnimSpeed, true);
 
-	// 모든 하위 오브젝트의 충돌 처리를 끔
-	SetColliderState(false);
+	// 모든 하위 오브젝트를 끔
+	for (const auto& object : _basicPattern[_patternIndex]->_subObject)
+	{
+		object->SetActive(false);
+	}
 
 	// 1초동안 대기한 뒤 Idle 상태로 전환
 	Startcoroutine(patternEnd);
@@ -508,14 +613,6 @@ void KunrealEngine::Boss::SetCorePatternList(std::vector<BossPattern*>* corePatt
 const BossStatus& KunrealEngine::Boss::GetStatus()
 {
 	return _status;
-}
-
-void KunrealEngine::Boss::SetParentToSubObject()
-{
-	for (auto index : _subObjectList)
-	{
-		index->SetParent(_boss);
-	}
 }
 
 bool KunrealEngine::Boss::CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2)
@@ -599,6 +696,7 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFL
 	if (_distance > patternRange - 5)
 	{
 		// 플레이어 이동
+		_prevPos = startPos;
 		_boss->GetComponent<Animator>()->Play("Run", speed, true);
 
 		DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&startPos);
@@ -621,6 +719,8 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFL
 
 void KunrealEngine::Boss::TeleportToPlayer()
 {
+	_prevPos = _bossTransform->GetPosition();
+
 	auto playerDirection = _player->GetComponent<Player>()->GetDirectionVector();
 	auto originPlayerPos = _playerTransform->GetPosition();
 	auto currentPosVec = DirectX::XMLoadFloat3(&originPlayerPos);
@@ -692,20 +792,30 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 
 }
 
-void KunrealEngine::Boss::SetColliderState(bool tf)
+const DirectX::XMVECTOR KunrealEngine::Boss::GetDirection()
 {
-	for (auto index : _subColliderList)
+	auto direction = DirectX::XMLoadFloat3(&_direction);
+
+	return direction;
+}
+
+
+void KunrealEngine::Boss::SetBossCollider()
+{
+	_boss->AddComponent<BoxCollider>();
+}
+
+
+void KunrealEngine::Boss::SetSubObject(bool tf)
+{
+	for (const auto& pattern : _basicPattern)
 	{
-		index->SetActive(tf);
+		for (const auto& object : pattern->_subObject)
+		{
+			object->SetActive(tf);
+		}
 	}
 }
-
-
-void KunrealEngine::Boss::SetMesh()
-{
-
-}
-
 
 void KunrealEngine::Boss::SetTexture()
 {
@@ -717,19 +827,15 @@ void KunrealEngine::Boss::SetBossTransform()
 
 }
 
-void KunrealEngine::Boss::RegisterCollider()
+
+const std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> KunrealEngine::Boss::GetBossPosition()
 {
-	_subColliderList.clear();
+	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos;
 
-	for (auto index : _subObjectList)
-	{
-		auto collider = index->GetComponent<BoxCollider>();
+	pos.first = _prevPos;
+	pos.second = _bossTransform->GetPosition();
 
-		if (collider != nullptr)
-		{
-			_subColliderList.emplace_back(collider);
-		}
-	}
+	return pos;
 }
 
 void KunrealEngine::Boss::UpdateMoveNode()
@@ -739,6 +845,22 @@ void KunrealEngine::Boss::UpdateMoveNode()
  
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
  	_nodeCount = 0;
+}
+
+
+void KunrealEngine::Boss::CalculateDirection()
+{
+	auto bossPosition = _bossTransform->GetPosition();
+
+	DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&bossPosition);
+
+	auto targetPos = _playerTransform->GetPosition();
+
+	DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), currentPosVec);
+
+	direction = DirectX::XMVector3Normalize(direction);
+
+	DirectX::XMStoreFloat3(&_direction, direction);
 }
 
 void KunrealEngine::Boss::UpdateMoveNode(DirectX::XMFLOAT3 targetPos)

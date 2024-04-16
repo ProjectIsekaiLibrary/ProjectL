@@ -296,57 +296,6 @@ void KunrealEngine::EngineCore::Update()
 	{
 		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : Idontknow");
 	}
-
-	switch (kamen->GetComponent<Kamen>()->GetStatus())
-	{
-		case BossStatus::ENTER:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : ENTER");
-			break;
-		}
-		case BossStatus::IDLE:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : IDLE");
-			break;
-		}
-		case BossStatus::CHASE:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CHASE");
-			break;
-		}
-		case BossStatus::STAGGERED:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : ON_STAGGERED");
-			break;
-		}
-		case BossStatus::OFF_STAGGRED:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : OFF_STAGGERED");
-			break;
-		}
-		case BossStatus::DEAD:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : DEAD");
-			break;
-		}
-		case BossStatus::BASIC_ATTACK:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : BASIC_ATTACK");
-			break;
-		}
-		case BossStatus::CORE_ATTACK:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CORE_ATTACK");
-			break;
-		}
-		case BossStatus::PATTERN_END:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : PATTERN_END");
-			break;
-		}
-		default:
-			break;
-	}
 }
 
 void KunrealEngine::EngineCore::LateUpdate()

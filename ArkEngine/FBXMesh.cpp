@@ -406,7 +406,7 @@ void ArkEngine::ArkDX11::FBXMesh::SetRenderingState(bool tf)
 {
 	_isRendering = tf;
 
-	_debugObject->SetRenderingState(tf);
+	_debugObject->SetActvie(tf);
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetShadowState(bool tf)

@@ -24,23 +24,27 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
-		virtual void CreateSubObject() override;
 		virtual void SetMesh() override;
 		virtual void SetTexture() override;
-		virtual void SetCollider() override;
 		virtual void SetBossTransform() override;
+		virtual void SetBossCollider() override;
 
 	public:
 		virtual void CreatePattern() override;
 
 	private:
-		BoxCollider* _leftHand;
-		BoxCollider* _rightHand;
-		BoxCollider* _spell;
-
-	private:
 		void LeftAttackOnce();
 		void RightAttackOnce();
 		void SpellAttack();
+		void CallAttack();
+
+	private:
+		// 패턴에 필요한 subObject들
+		GameObject* _leftHand;
+		GameObject* _rightHand;
+		GameObject* _call;
+
+	private:
+		float _callPostion;
 	};
 }
