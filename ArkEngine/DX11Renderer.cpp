@@ -296,7 +296,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		// 프러스텀 컬링용, 메쉬 크기만큼의 디버그용 오브젝트 렌더링
 		for (const auto& index : ResourceManager::GetInstance()->GetDebugObjectList())
 		{
-			if (index->GetRenderingState())
+			if (index->GetRenderingState() && index->GetActive())
 			{
 				index->Render();
 			}

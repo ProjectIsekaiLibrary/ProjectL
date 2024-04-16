@@ -577,16 +577,22 @@ namespace KunrealEngine
 		float p[3];
 		p[0] = pos.x;
 		p[1] = pos.y - 0.5f;
-		p[2] = pos.z;
+		p[2] = pos.z; 
 
 		_tileCache->addObstacle(p, radius, height, 0);
 	}
 
-	void Navigation::RemoveTempObstacle(const float* sp, const float* sq)
+	void Navigation::RemoveTempObstacle(DirectX::XMFLOAT3 pos)
 	{
 		if (!_tileCache)
 			return;
-		dtObstacleRef ref = hitTestObstacle(_tileCache, sp, sq);
+		
+		float p[3];
+		p[0] = pos.x;
+		p[1] = pos.y;
+		p[2] = pos.z;
+
+		dtObstacleRef ref = hitTestObstacle(_tileCache, p);
 		_tileCache->removeObstacle(ref);
 	}
 
@@ -726,10 +732,10 @@ namespace KunrealEngine
 		SetEndpos(index, position.x, position.y, position.z);
 	}
 
-	dtObstacleRef Navigation::hitTestObstacle(const dtTileCache* tc, const float* sp, const float* sq)
+	dtObstacleRef Navigation::hitTestObstacle(const dtTileCache* tc, const float* sq)
 	{
 		float tmin = FLT_MAX;
-		const dtTileCacheObstacle* obmin = 0;
+		const dtTileCacheObstacle* obmin = nullptr;
 		for (int i = 0; i < tc->getObstacleCount(); ++i)
 		{
 			const dtTileCacheObstacle* ob = tc->getObstacle(i);
@@ -739,7 +745,7 @@ namespace KunrealEngine
 			float bmin[3], bmax[3], t0, t1;
 			tc->getObstacleBounds(ob, bmin, bmax);
 
-			if (Navigation::isectSegAABB(sp, sq, bmin, bmax, t0, t1))
+			if (Navigation::isectSegAABB(sq, bmin, bmax, t0, t1))
 			{
 				if (t0 < tmin)
 				{
@@ -751,14 +757,15 @@ namespace KunrealEngine
 		return tc->getObstacleRef(obmin);
 	}
 
-	bool Navigation::isectSegAABB(const float* sp, const float* sq, const float* amin, const float* amax, float& tmin, float& tmax)
+	bool Navigation::isectSegAABB(const float* sq, const float* amin, const float* amax, float& tmin, float& tmax)
 	{
 		static const float EPS = 1e-6f;
 
 		float d[3];
+		float sp[3] = { 0.0f, 0.0f, 0.0f }; // Assuming the origin of the ray is at (0, 0, 0)
 		rcVsub(d, sq, sp);
 		tmin = 0;  // set to -FLT_MAX to get first hit on line
-		tmax = FLT_MAX;		// set to max distance ray can travel (for segment)
+		tmax = FLT_MAX;        // set to max distance ray can travel (for segment)
 
 		// For all three slabs
 		for (int i = 0; i < 3; i++)
@@ -787,5 +794,4 @@ namespace KunrealEngine
 
 		return true;
 	}
-
 }

@@ -19,7 +19,8 @@ ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, eDeb
 	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
 	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
 	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
-	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(type)
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(type),
+	_renderableState(true)
 {
 	const auto& buffers = ResourceManager::GetInstance()->GetArkBuffer(_objectName);
 
@@ -55,7 +56,8 @@ ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, floa
 	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
 	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
 	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
-	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(width / 2), _halfHeight(height / 2), _halfDepth(depth / 2), _minPos(0.0f - _halfHeight), _type(eDebugType::PhysXBox)
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(width / 2), _halfHeight(height / 2), _halfDepth(depth / 2), _minPos(0.0f - _halfHeight), _type(eDebugType::PhysXBox),
+	_renderableState(true)
 {
 	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
 
@@ -68,7 +70,8 @@ ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, floa
 	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
 	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
 	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
-	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(eDebugType::Shpere)
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _color(color), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(eDebugType::Shpere),
+	_renderableState(true)
 {
 	_halfWidth = std::abs(range / 2);
 	_halfHeight = std::abs(range / 2);
@@ -83,6 +86,17 @@ ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, floa
 ArkEngine::ArkDX11::DebugObject::~DebugObject()
 {
 	Finalize();
+}
+
+
+bool ArkEngine::ArkDX11::DebugObject::GetActive()
+{
+	return _renderableState;
+}
+
+void ArkEngine::ArkDX11::DebugObject::SetActvie(bool tf)
+{
+	_renderableState = tf;
 }
 
 void ArkEngine::ArkDX11::DebugObject::Initialize()

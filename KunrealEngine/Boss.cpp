@@ -17,7 +17,8 @@
 KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
 	_distance(0.0f), _isCorePattern(false),
-	_basicPattern(), _corePattern(), _subColliderList(), _maxColliderOnCount(1),
+	_basicPattern(), _corePattern(), _nowPattern(nullptr),
+	_subColliderList(), _maxColliderOnCount(1),
 	_isStart(false), _isHit(false), _isRotateFinish(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0)
@@ -52,6 +53,8 @@ void KunrealEngine::Boss::Initialize(GameObject* boss)
 	SetTexture();
 
 	SetBossTransform();
+
+	CreatePattern();
 	
 	SetCollider();
 	RegisterCollider();
@@ -67,11 +70,7 @@ void KunrealEngine::Boss::Update()
 	// 캐릭터가 이동시
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
-		// Chase 단계일 경우
-		if (_status == BossStatus::CHASE)
-		{
-			_isRotateFinish = false;
-		}
+		_isRotateFinish = false;
 	}
 
 	Hit();
@@ -186,6 +185,8 @@ void KunrealEngine::Boss::Idle()
 			// 코어패턴인지 여부 확인
 			_isCorePattern = true;
 
+			_nowPattern = _corePattern.back();
+
 			// Core Attack으로 상태 변경
 			_status = BossStatus::CORE_ATTACK;
 
@@ -217,8 +218,10 @@ void KunrealEngine::Boss::Idle()
 		}
 	}
 
+	_nowPattern = _basicPattern[_patternIndex];
+
 	// Attack 처리를 위해 패턴 중 최대 충돌이 몇번 일어나는지를 지니고 있음  
-	_maxColliderOnCount = _basicPattern[_patternIndex]->_maxColliderOnCount;
+	_maxColliderOnCount = _nowPattern->_maxColliderOnCount;
 
 	// Chase로 상태 변환
 	_status = BossStatus::CHASE;	
@@ -236,7 +239,7 @@ void KunrealEngine::Boss::Chase()
 		_boss->GetComponent<Animator>()->Play("Idle", _info._baseAnimSpeed, true);
 	}
 
-	auto patternRange = (_basicPattern)[_patternIndex]->_range;
+	auto patternRange = _nowPattern->_range;
 
 	auto bossPosition = _bossTransform->GetPosition();
 
@@ -266,7 +269,6 @@ void KunrealEngine::Boss::Chase()
 
 			// Basic Attack으로 상태 변경
 			_status = BossStatus::BASIC_ATTACK;
-			_isRotateFinish = false;
 			return;
 		}
 
@@ -301,7 +303,6 @@ void KunrealEngine::Boss::Chase()
 					
 					// Baisc Attack으로 상태 변경
 					_status = BossStatus::BASIC_ATTACK;
-					_isRotateFinish = false;
 					return;
 				}
 
@@ -326,7 +327,6 @@ void KunrealEngine::Boss::Chase()
 
 				// Baisc Attack으로 상태 변경
 				_status = BossStatus::BASIC_ATTACK;
-				_isRotateFinish = false;
 				return;
 			}
 		}
@@ -408,7 +408,7 @@ void KunrealEngine::Boss::Attack()
 			_maxColliderOnCount--;
 
 			// 패턴의 데미지를 가져옴
-			auto damage = _basicPattern[_patternIndex]->_damage;
+			auto damage = _nowPattern->_damage;
 
 			// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 			_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
@@ -453,7 +453,7 @@ void KunrealEngine::Boss::Dead()
 void KunrealEngine::Boss::BasicAttack()
 {
 	// 패턴을 실행
-	auto isPatternPlaying = (_basicPattern)[_patternIndex]->Play();
+	auto isPatternPlaying = _nowPattern->Play();
 
 	// 패턴 실행이 끝났다면
 	if (isPatternPlaying == false)
@@ -466,7 +466,7 @@ void KunrealEngine::Boss::BasicAttack()
 void KunrealEngine::Boss::CoreAttack()
 {
 	// 패턴을 실행
-	auto isPatternPlaying = (_corePattern).back()->Play();
+	auto isPatternPlaying = _nowPattern->Play();
 
 	// 패턴 실행이 끝났다면
 	if (isPatternPlaying == false)
@@ -625,7 +625,7 @@ void KunrealEngine::Boss::TeleportToPlayer()
 	auto originPlayerPos = _playerTransform->GetPosition();
 	auto currentPosVec = DirectX::XMLoadFloat3(&originPlayerPos);
 
-	auto patternRange = (_basicPattern)[_patternIndex]->_range;
+	auto patternRange = _nowPattern->_range;
 	DirectX::XMVECTOR newPlayerPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(playerDirection, 10.0f + patternRange));
 
 	// 보스와 플레이어 까지의 경로 계산

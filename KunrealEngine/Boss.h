@@ -42,6 +42,9 @@ namespace KunrealEngine
 		virtual void SetCollider() abstract;
 
 	public:
+		virtual void CreatePattern() abstract;
+
+	public:
 		// 어떠한 텍스쳐를 입힐 것인지를 지정
 		virtual void SetTexture();
 
@@ -113,6 +116,7 @@ namespace KunrealEngine
 
 		std::vector<BossPattern*> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
+		BossPattern* _nowPattern;
 
 		std::vector<KunrealEngine::BoxCollider*> _subColliderList;
 
@@ -147,7 +151,8 @@ namespace KunrealEngine
 		{
 			Boss* boss = this;
 
-			Waitforsecond(1.0);
+			auto delay = _nowPattern->_afterDelay;
+			Waitforsecond(delay);
 
 			// 코어 패턴이었다면
 			if (boss->_isCorePattern)
@@ -162,6 +167,8 @@ namespace KunrealEngine
 
 			// 기본 패턴을 실행할 수 있도록 초기화
 			boss->_patternIndex = -1;
+
+			boss->_nowPattern = nullptr;
 		};
 	};
 }
