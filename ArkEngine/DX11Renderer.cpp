@@ -909,7 +909,7 @@ const DirectX::XMFLOAT4X4& ArkEngine::ArkDX11::DX11Renderer::GetTransform(GInter
 	return mat;
 }
 
-const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>>& ArkEngine::ArkDX11::DX11Renderer::GetAllMeshVertex()
+const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> ArkEngine::ArkDX11::DX11Renderer::GetAllMeshVertex()
 {
 	std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> vertexWorldList;
 
@@ -948,7 +948,7 @@ const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>>& ArkEngine::ArkDX
 	return vertexWorldList;
 }
 
-const std::vector<std::vector<std::vector<unsigned int>>>& ArkEngine::ArkDX11::DX11Renderer::GetAllMeshIndex()
+const std::vector<std::vector<std::vector<unsigned int>>> ArkEngine::ArkDX11::DX11Renderer::GetAllMeshIndex()
 {
 	std::vector<std::vector<std::vector<unsigned int>>> totalIndexList;
 

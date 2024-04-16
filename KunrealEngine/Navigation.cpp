@@ -136,13 +136,13 @@ namespace KunrealEngine
 			return;
 		}
 
-		_tileCache = dtAllocTileCache();
-		if (!_tileCache)
+		_package[index]._tileCache = dtAllocTileCache();
+		if (!_package[index]._tileCache)
 		{
 			fclose(fp);
 			return;
 		}
-		status = _tileCache->init(&header.cacheParams, _talloc, _tcomp, _tmproc);
+		status = _package[index]._tileCache->init(&header.cacheParams, _talloc, _tcomp, _tmproc);
 		if (dtStatusFailed(status))
 		{
 			fclose(fp);
@@ -176,14 +176,14 @@ namespace KunrealEngine
 			}
 
 			dtCompressedTileRef tile = 0;
-			dtStatus addTileStatus = _tileCache->addTile(data, tileHeader.dataSize, DT_COMPRESSEDTILE_FREE_DATA, &tile);
+			dtStatus addTileStatus = _package[index]._tileCache->addTile(data, tileHeader.dataSize, DT_COMPRESSEDTILE_FREE_DATA, &tile);
 			if (dtStatusFailed(addTileStatus))
 			{
 				dtFree(data);
 			}
 
 			if (tile)
-				_tileCache->buildNavMeshTile(tile, _package[index]._navMesh);
+				_package[index]._tileCache->buildNavMeshTile(tile, _package[index]._navMesh);
 		}
 
 		fclose(fp);
@@ -192,7 +192,7 @@ namespace KunrealEngine
 		return;
 	}
 
-	bool Navigation::HandleBuild()
+	bool Navigation::HandleBuild(int index)
 	{
 		dtStatus status;
 
@@ -251,25 +251,25 @@ namespace KunrealEngine
 		tcparams.maxTiles = tw * th * EXPECTED_LAYERS_PER_TILE;
 		tcparams.maxObstacles = 128;
 
-		dtFreeTileCache(_tileCache);
+		dtFreeTileCache(_package[index]._tileCache);
 
-		_tileCache = dtAllocTileCache();
-		if (!_tileCache)
+		_package[index]._tileCache = dtAllocTileCache();
+		if (!_package[index]._tileCache)
 		{
 			_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not allocate tile cache.");
 			return false;
 		}
-		status = _tileCache->init(&tcparams, _talloc, _tcomp, _tmproc);
+		status = _package[index]._tileCache->init(&tcparams, _talloc, _tcomp, _tmproc);
 		if (dtStatusFailed(status))
 		{
 			_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init tile cache.");
 			return false;
 		}
 
-		dtFreeNavMesh(_package[0]._navMesh);
+		dtFreeNavMesh(_package[index]._navMesh);
 
-		_package[0]._navMesh = dtAllocNavMesh();
-		if (!_package[0]._navMesh)
+		_package[index]._navMesh = dtAllocNavMesh();
+		if (!_package[index]._navMesh)
 		{
 			_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not allocate navmesh.");
 			return false;
@@ -283,14 +283,14 @@ namespace KunrealEngine
 		params.maxTiles = _maxTiles;
 		params.maxPolys = _maxPolysPerTile;
 
-		status = _package[0]._navMesh->init(&params);
+		status = _package[index]._navMesh->init(&params);
 		if (dtStatusFailed(status))
 		{
 			_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init navmesh.");
 			return false;
 		}
 
-		status = _package[0]._navQuery->init(_package[0]._navMesh, 2048);
+		status = _package[index]._navQuery->init(_package[index]._navMesh, 2048);
 		if (dtStatusFailed(status))
 		{
 			_ctx->log(RC_LOG_ERROR, "buildTiledNavigation: Could not init Detour navmesh query");
@@ -317,7 +317,7 @@ namespace KunrealEngine
 				for (int i = 0; i < ntiles; ++i)
 				{
 					TileCacheData* tile = &tiles[i];
-					status = _tileCache->addTile(tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0);
+					status = _package[index]._tileCache->addTile(tile->data, tile->dataSize, DT_COMPRESSEDTILE_FREE_DATA, 0);
 					if (dtStatusFailed(status))
 					{
 						dtFree(tile->data);
@@ -339,11 +339,11 @@ namespace KunrealEngine
 
 			for (int x = 0; x < tw; ++x)
 			{
-				_tileCache->buildNavMeshTilesAt(x, y, _package[0]._navMesh);
+				_package[index]._tileCache->buildNavMeshTilesAt(x, y, _package[index]._navMesh);
 			}
 		}
 
-		const dtNavMesh* nav = _package[0]._navMesh;
+		const dtNavMesh* nav = _package[index]._navMesh;
 		int navmeshMemUsage = 0;
 		for (int i = 0; i < nav->getMaxTiles(); ++i)
 		{
@@ -356,12 +356,14 @@ namespace KunrealEngine
 
 	void Navigation::HandleUpdate(const float dt)
 	{
-		if (!_package[0]._navMesh)
-			return;
-		if (!_tileCache)
-			return;
-
-		_tileCache->update(dt, _package[0]._navMesh);
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._navMesh)
+				return;
+			if (!_package[i]._tileCache)
+				return;
+			_package[i]._tileCache->update(dt, _package[i]._navMesh);
+		}
 	}
 
 	int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)
@@ -571,40 +573,97 @@ namespace KunrealEngine
 
 	void Navigation::AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height)
 	{
-		if (!_tileCache)
-			return;
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._tileCache)
+				return;
 
-		float p[3];
-		p[0] = pos.x;
-		p[1] = pos.y - 0.5f;
-		p[2] = pos.z; 
+			float p[3];
+			p[0] = pos.x;
+			p[1] = pos.y - 0.5f;
+			p[2] = pos.z;
 
-		_tileCache->addObstacle(p, radius, height, 0);
+			_package[i]._tileCache->addObstacle(p, radius, height, 0);
+		}
+	}
+
+	void Navigation::AddBoxTempObstacle(DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax)
+	{
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._tileCache)
+				return;
+
+			float p[3];
+			p[0] = bmin.x;
+			p[1] = bmin.y - 0.5f;
+			p[2] = bmin.z;
+
+			float p1[3];
+			p1[0] = bmax.x;
+			p1[1] = bmax.y - 0.5f;
+			p1[2] = bmax.z;
+
+			_package[i]._tileCache->addBoxObstacle(p, p1, 0);
+		}
 	}
 
 	void Navigation::RemoveTempObstacle(DirectX::XMFLOAT3 pos)
 	{
-		if (!_tileCache)
-			return;
-		
-		float p[3];
-		p[0] = pos.x;
-		p[1] = pos.y;
-		p[2] = pos.z;
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._tileCache)
+				return;
 
-		dtObstacleRef ref = hitTestObstacle(_tileCache, p);
-		_tileCache->removeObstacle(ref);
+			float p[3];
+			p[0] = pos.x;
+			p[1] = pos.y;
+			p[2] = pos.z;
+
+			dtObstacleRef ref = hitTestObstacle(_package[i]._tileCache, p);
+			_package[i]._tileCache->removeObstacle(ref);
+		}
+	}
+
+	void Navigation::MoveTempObstacle(DirectX::XMFLOAT3 bpos, DirectX::XMFLOAT3 npos)
+	{
+		// bpos 와 npos가 겹친다면 그냥 통과하도록
+// 		if (bpos == npos)
+// 		{
+// 			return;
+// 		}
+
+			if (!_package[0]._tileCache)
+				return;
+
+			float p[3];
+			p[0] = bpos.x;
+			p[1] = bpos.y;
+			p[2] = bpos.z;
+
+			dtObstacleRef ref = hitTestObstacle(_package[0]._tileCache, p);
+			_package[0]._tileCache->removeObstacle(ref);
+			
+			float p1[3];
+			p1[0] = npos.x;
+			p1[1] = npos.y - 0.5f;
+			p1[2] = npos.z;
+
+			_package[0]._tileCache->addObstacle(p, 4, 4, 0);
 	}
 
 	void Navigation::ClearAllTempObstacles()
 	{
-		if (!_tileCache)
-			return;
-		for (int i = 0; i < _tileCache->getObstacleCount(); ++i)
+		for (int i = 0; i < PACKAGESIZE; i++)
 		{
-			const dtTileCacheObstacle* ob = _tileCache->getObstacle(i);
-			if (ob->state == DT_OBSTACLE_EMPTY) continue;
-			_tileCache->removeObstacle(_tileCache->getObstacleRef(ob));
+			if (!_package[i]._tileCache)
+				return;
+			for (int f = 0; f < _package[i]._tileCache->getObstacleCount(); ++f)
+			{
+				const dtTileCacheObstacle* ob = _package[i]._tileCache->getObstacle(f);
+				if (ob->state == DT_OBSTACLE_EMPTY) continue;
+				_package[i]._tileCache->removeObstacle(_package[0]._tileCache->getObstacleRef(ob));
+			}
 		}
 	}
 

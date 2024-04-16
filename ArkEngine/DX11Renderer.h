@@ -152,9 +152,9 @@ namespace ArkEngine
 			virtual const DirectX::XMFLOAT4X4& GetTransform(GInterface::GraphicsRenderable* renderable, const std::string& boneName) override;
 
 			// 네비 메쉬를 위한 모든 메쉬들의 버텍스의 월드좌표 반환
-			virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>>& GetAllMeshVertex() override;
+			virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> GetAllMeshVertex() override;
 			// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
-			virtual const std::vector<std::vector<std::vector<unsigned int>>>& GetAllMeshIndex() override;
+			virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() override;
 
 		public:
 			void CreateShadowViewPort(int shadowWidth, int shadowHeight);

@@ -53,6 +53,8 @@ namespace KunrealEngine
 		// 로직 테스트할때 여기다 다 만들어 함수 새로 파고 싶으면 또 만들어도 돼
 		void PlayGround();
 		void CheckMousePosition();
+		void MakeObstacle();
+		void RemoveObstacle();
 
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	

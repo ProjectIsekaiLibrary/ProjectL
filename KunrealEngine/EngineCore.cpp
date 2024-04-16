@@ -59,12 +59,13 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.HandleBuild();
-	//NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
+	navigationInstance.HandleBuild(0);
+	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
+	navigationInstance.HandleBuild(1);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
 	navigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 	navigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 
@@ -112,12 +113,16 @@ void KunrealEngine::EngineCore::Update()
 	inputInstance->UpdateEditorMousePos(_editorMousepos);
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
 	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
-
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
-
-	if (inputInstance->KeyDown(KEY::GRAVE))
+	
+	// 장애물 설치 테스트
+	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
 	{
-		navigationInstance.RemoveTempObstacle(DirectX::XMFLOAT3(20.0f, 0.0f, 10.0f));
+		RemoveObstacle();
+	}
+	else if (inputInstance->MouseButtonDown(0))
+	{
+//		MakeObstacle();
 	}
 
 	CheckMousePosition();
@@ -606,6 +611,31 @@ void KunrealEngine::EngineCore::CheckMousePosition()
 	{
 		_finalMousePosition = _editorMousepos;
 	}
+}
+
+void KunrealEngine::EngineCore::MakeObstacle()
+{
+	DirectX::XMFLOAT3 targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
+	DirectX::XMFLOAT3 bmin = { targetPos.x - 4, targetPos.y - 4, targetPos.z - 4 };
+	DirectX::XMFLOAT3 bmax = { targetPos.x + 4, targetPos.y + 4, targetPos.z + 4 };
+	navigationInstance.AddBoxTempObstacle(bmin, bmax);
+
+	KunrealEngine::GameObject* obstacle;
+	obstacle = sceneInstance.GetCurrentScene()->CreateObject("obstacle");
+	obstacle->AddComponent<MeshRenderer>();
+	obstacle->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	obstacle->GetComponent<MeshRenderer>()->SetPickableState(true);
+	obstacle->GetComponent<Transform>()->SetPosition(targetPos.x, targetPos.y, targetPos.z);
+	obstacle->GetComponent<Transform>()->SetScale(4.0f, 4.0f, 4.0f);
+	obstacle->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
+}
+
+void KunrealEngine::EngineCore::RemoveObstacle()
+{
+	KunrealEngine::GameObject* obstacle = GraphicsSystem::GetInstance().GetPickedObject();
+	DirectX::XMFLOAT3 targetPos = obstacle->GetComponent<Transform>()->GetPosition();
+	navigationInstance.RemoveTempObstacle(targetPos);
+	//SceneManager::GetInstance().GetCurrentScene()->DeleteGameObject(obstacle);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
