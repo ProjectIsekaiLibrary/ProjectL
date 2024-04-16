@@ -9,7 +9,7 @@ KunrealEngine::Player::Player()
 		100.0f,			// hp
 		100.0f,			// stamina
 		10.0f,			// movespeed
-		70.0f,			// dashspeed
+		120.0f,			// dashspeed
 		40.0f,			// dashrange
 		8.0f,			// dashcooldown
 		1.0f,			// spellpower

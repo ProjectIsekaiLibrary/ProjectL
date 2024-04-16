@@ -192,39 +192,6 @@ void KunrealEngine::EngineCore::Update()
 	{
 		kamen->GetComponent<BoxCollider>()->SetTransform(kamen, "mixamorig:RightHand");
 	}
-	//else if (inputInstance->KeyInput(KEY::A))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(-20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::D))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::W))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y, z + 20.0f * TimeManager::GetInstance().GetDeltaTime());
-	//}
-	//else if (inputInstance->KeyInput(KEY::S))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y, z - 20.0f * TimeManager::GetInstance().GetDeltaTime());
-	//}
-	//else if (inputInstance->KeyInput(KEY::Q))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y - 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::E))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y + 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::R))
-	//{
-	//	GRAPHICS->GetMainCamera()->RotateCamera({ 0,  -20.0f * TimeManager::GetInstance().GetDeltaTime() });
-	//}
-	//else if (inputInstance->KeyInput(KEY::T))
-	//{
-	//	GRAPHICS->GetMainCamera()->RotateCamera({ 0,  20.0f * TimeManager::GetInstance().GetDeltaTime() });
-	//}
-
 
 	SoundSystem::GetInstance().updateListenerPosition(x,y,z);
 
@@ -358,6 +325,7 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
+	kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
@@ -540,9 +508,6 @@ void KunrealEngine::EngineCore::PlayGround()
 			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
 		}
 	}
-
-	GameObject* asdfgqwea = GetCurrentScene()->CreateObject("asdfgqwert");
-	asdfgqwea->AddComponent<MeshRenderer>();
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()

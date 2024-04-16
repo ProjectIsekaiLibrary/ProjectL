@@ -64,6 +64,7 @@ void KunrealEngine::PlayerMove::Update()
 	{
 		// 이동 상태 해제
 		_isMoving = false;
+		_movedRange = 0.0f;
 
 		UpdateTargetPosition();
 		UpdateDashNode();
@@ -85,7 +86,7 @@ void KunrealEngine::PlayerMove::Update()
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 	
-	//ShowPlayerInfo();
+	ShowPlayerInfo();
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
@@ -120,7 +121,7 @@ void KunrealEngine::PlayerMove::UpdateTargetPosition()
 }
 
 void KunrealEngine::PlayerMove::UpdateMoveNode()
-{
+{ 
 	// 네비게이션으로부터 이동목표 노드들을 받아옴
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
 		_targetPos.x, _targetPos.y, _targetPos.z);
@@ -345,8 +346,14 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 		// 오브젝트의 transform
 		DirectX::XMFLOAT3 trans(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 
+		// 대시 가능 거리를 넘었는데도 움직이는 상황에 대한 예외처리
+		if (_movedRange >= _playerComp->GetPlayerData()._dashRange)
+		{
+			_isDash = false;
+			_playerComp->_playerStatus = Player::Status::IDLE;
+		}
 		// 목표로 하는 좌표와 플레이어의 좌표가 다를 때
-		if (std::abs(_transform->GetPosition().x - _targetPos.x) > _errorRange ||
+		else if (std::abs(_transform->GetPosition().x - _targetPos.x) > _errorRange ||
 			std::abs(_transform->GetPosition().y - _targetPos.y) > _errorRange + 100.0f ||
 			std::abs(_transform->GetPosition().z - _targetPos.z) > _errorRange)
 		{
@@ -358,6 +365,9 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 			// 플레이어 이동
 			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(_playerComp->_directionVector, _playerComp->_playerInfo._dashSpeed * _playerComp->_playerInfo._speedScale * TimeManager::GetInstance().GetDeltaTime()));
 			_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
+
+			// 이동한 거리 계산
+			_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec)));
 
 			// 카메라 이동
 			DirectX::XMFLOAT3 cameraPos(_tempX + newPosition.m128_f32[0], _tempY, _tempZ + newPosition.m128_f32[2]);
@@ -457,6 +467,8 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 	GRAPHICS->DrawDebugText(300, 300, 20, "%.3f", _targetPos.x);
 	GRAPHICS->DrawDebugText(360, 300, 20, "%.3f", _targetPos.y);
 	GRAPHICS->DrawDebugText(420, 300, 20, "%.3f", _targetPos.z);
+	GRAPHICS->DrawDebugText(300, 200, 20, "%.3f", _movedRange);
+	GRAPHICS->DrawDebugText(300, 100, 20, "%.3f", _playerComp->GetPlayerData()._dashRange);
 	
 	switch (_playerComp->_playerStatus)
 	{

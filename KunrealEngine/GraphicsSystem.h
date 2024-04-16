@@ -64,6 +64,9 @@ namespace KunrealEngine
 		// pick된 오브젝트 반환
 		GameObject* GetPickedObject();
 
+		// pick된 오브젝트를 nullptr로
+		void ClearPickedObject();
+
 	public:
 		// picking이 가능한 오브젝트들의 컨테이너 반환
 		const std::vector<GameObject*> GetPickableList();

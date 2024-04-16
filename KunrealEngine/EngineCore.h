@@ -32,7 +32,6 @@ namespace KunrealEngine
 
 	public:
 		void Initialize(HWND hwnd, HINSTANCE hInstance, int screenWidth, int screenHeight);
-		void InitializeInputSystem();
 		void Release();
 
 	private:
