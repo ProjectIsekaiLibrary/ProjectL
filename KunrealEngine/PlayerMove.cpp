@@ -13,7 +13,7 @@
 
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false)
-	, _stopover(), _errorRange(0.5f), _nodeCount(0)
+	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f)
 {
 	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x - 0;
 	_tempY = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().y - 0;
@@ -85,7 +85,7 @@ void KunrealEngine::PlayerMove::Update()
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 	
-	ShowPlayerInfo();
+	//ShowPlayerInfo();
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
