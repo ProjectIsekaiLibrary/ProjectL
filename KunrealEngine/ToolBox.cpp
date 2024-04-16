@@ -28,7 +28,7 @@ float KunrealEngine::ToolBox::GetRandomFloat(float minNum, float maxNum)
 	return dist(generator);
 }
 
-float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst)
+float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3& src, DirectX::XMFLOAT3& dst)
 {
 	DirectX::XMVECTOR source = DirectX::XMLoadFloat3(&src);
 	DirectX::XMVECTOR destination = DirectX::XMLoadFloat3(&dst);
