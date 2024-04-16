@@ -96,34 +96,6 @@ physx::PxScene* KunrealEngine::PhysicsSystem::GetPxScene()
 
 void KunrealEngine::PhysicsSystem::CreateDynamicBoxCollider(BoxCollider* collider)
 {
-	/// 그가 남긴 코드
-	///// Collider 및 BoxCollider 컴포넌트 생성하는 부분 필요
-	//
-	////physx::PxShape* shape = _physics->createShape(physx::PxBoxGeometry(box->GetWidth() / 2, box->GetHeight() / 2, box->GetDepth() / 2), *_material);
-	//
-	//KunrealMath::Float3 pos = obj->GetComponent<Transform>()->GetPosition();
-	//physx::PxTransform localTm(physx::PxVec3(pos.x, pos.y, pos.z));
-	//physx::PxRigidDynamic* body = _physics->createRigidDynamic(localTm);
-	////body->attachShape(*shape);
-	//body->setAngularDamping(0.5f);
-	//body->setLinearDamping(5.0f); 
-	//
-	////if (box->gameObject->objName == "player")
-	//{
-	//	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X, true);
-	//	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y, true);
-	//	body->setRigidDynamicLockFlag(physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z, true);
-	//}
-	////body->setMass(4.5f);
-	////physx::PxRigidBodyExt::updateMassAndInertia(*body, 1.0f);
-	////_scene->addActor(*body);
-	//
-	////box->SetPhysXRigid(body);
-	////body->userData = box;
-	//_rigidDynamics.push_back(body);
-	//
-	////shape->release();
-
 	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
 	physx::PxBoxGeometry geometry(physx::PxVec3(0.5f, 0.5f, 0.5f));
 

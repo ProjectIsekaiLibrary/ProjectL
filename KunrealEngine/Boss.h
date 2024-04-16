@@ -28,20 +28,20 @@ namespace KunrealEngine
 		virtual ~Boss();
 
 	public:
+		void DebugTest();
+
+	public:
 		// 반드시 호출
 		void Initialize(GameObject* boss);
 		// 반드시 호출
 		void Update();
 
 	public:
-		// 하위 오브젝트를 설정
-		virtual void CreateSubObject() abstract;
 		// 어떠한 모델로 렌더링 할 것인지를 지정
 		virtual void SetMesh() abstract;
-		// 콜라이더를 어떻게 입힐지를 지정
-		virtual void SetCollider() abstract;
 
 	public:
+		// 패턴 생성
 		virtual void CreatePattern() abstract;
 
 	public:
@@ -51,6 +51,9 @@ namespace KunrealEngine
 	public:
 		// 보스의 포지션 지정
 		virtual void SetBossTransform();
+
+	public:
+		const std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> GetBossPosition();
 
 	// 상태에 따른 함수들
 	public:
@@ -62,6 +65,7 @@ namespace KunrealEngine
 		virtual void Staggred();
 		virtual void OffStaggred();
 		virtual void Dead();
+		virtual void PatternReady();
 		virtual void BasicAttack();
 		virtual void CoreAttack();
 		virtual void PatternEnd();
@@ -79,12 +83,16 @@ namespace KunrealEngine
 		// 현재 보스의 상태 가져오기
 		const BossStatus& GetStatus();
 
-		// 데미지 체크용 콜라이더 활성화 여부
-		void SetColliderState(bool tf);
+		// 현재 보스가 바라보는 방향 벡터 가져오기
+		const DirectX::XMVECTOR GetDirection();
+
+	public:
+		// 보스 히트 판정용 콜라이더 생성
+		virtual void SetBossCollider();
+
+		void SetSubObject(bool tf);
 
 	private:
-		void SetParentToSubObject();
-
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
 		void SortCorePattern();
@@ -100,11 +108,11 @@ namespace KunrealEngine
 
 		bool LookAtPlayer(float agnle, float rotateSpeed);
 
-		void RegisterCollider();
-
 		void UpdateMoveNode();
 
 		void UpdateMoveNode(DirectX::XMFLOAT3 targetPos);
+
+		void CalculateDirection();
 
 	protected:
 		BossStatus _status;
@@ -118,15 +126,10 @@ namespace KunrealEngine
 		std::vector<BossPattern*> _corePattern;
 		BossPattern* _nowPattern;
 
-		std::vector<KunrealEngine::BoxCollider*> _subColliderList;
-
 		int _patternIndex;
 		int _exPatternIndex;
 
 		float _distance;
-
-		// 무기, 장신구 등 메쉬나 콜라이더 처리할 것들
-		std::vector<GameObject*> _subObjectList;
 
 		// 한 패턴 내에 콜라이더가 켜지는 수 
 		unsigned int _maxColliderOnCount;
@@ -146,6 +149,10 @@ namespace KunrealEngine
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 		int _nodeCount;
 
+		DirectX::XMFLOAT3 _direction;
+
+		DirectX::XMFLOAT3 _prevPos;
+
 	private:
 		Coroutine_Func(patternEnd)
 		{
@@ -162,6 +169,9 @@ namespace KunrealEngine
 				
 				boss->_isCorePattern = false;
 			}
+
+			// 패턴 초기화할 것들 초기화
+			boss->_nowPattern->Initialize();
 
 			boss->_status = BossStatus::IDLE;
 

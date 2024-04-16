@@ -1,9 +1,10 @@
 #include <functional>
+#include "TimeManager.h"
 #include "SceneManager.h"
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _spell(nullptr)
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _callPostion(0.0f)
 {
 	BossBasicInfo info;
 
@@ -26,7 +27,6 @@ void KunrealEngine::Kamen::Initialize()
 
 void KunrealEngine::Kamen::Release()
 {
-
 }
 
 void KunrealEngine::Kamen::FixedUpdate()
@@ -65,24 +65,11 @@ void KunrealEngine::Kamen::SetActive(bool active)
 
 }
 
-void KunrealEngine::Kamen::CreateSubObject()
-{
-	auto leftHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("LeftHand");
-	_subObjectList.emplace_back(leftHand);
-
-	auto rightHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("RightHand");
-	_subObjectList.emplace_back(rightHand);
-
-	auto spell = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Spell");
-	_subObjectList.emplace_back(spell);
-}
-
 void KunrealEngine::Kamen::SetMesh()
 {
 	_boss->AddComponent<MeshRenderer>();
 	_boss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
 }
-
 
 void KunrealEngine::Kamen::SetTexture()
 {
@@ -95,40 +82,26 @@ void KunrealEngine::Kamen::SetTexture()
 	}
 }
 
-void KunrealEngine::Kamen::SetCollider()
-{
-	// 보스의 콜라이더, 플레이어의 이동 체크를 위해 보스의 크기만큼 설정
-	_boss->AddComponent<BoxCollider>();
-	_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
-	_boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
-	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
-
-	_subObjectList[0]->AddComponent<BoxCollider>();
-	_leftHand = _subObjectList[0]->GetComponent<BoxCollider>();
-	_leftHand->SetTransform(_boss, "MiddleFinger1_L");
-	_leftHand->SetBoxSize(2.0f, 3.0f, 2.0f);
-
-	_subObjectList[1]->AddComponent<BoxCollider>();
-	_rightHand = _subObjectList[1]->GetComponent<BoxCollider>();
-	_rightHand->SetTransform(_boss, "MiddleFinger1_R");
-	_rightHand->SetBoxSize(2.0f, 3.0f, 2.0f);
-
-	_subObjectList[2]->AddComponent<BoxCollider>();
-	_spell = _subObjectList[2]->GetComponent<BoxCollider>();
-	_spell->SetBoxSize(5.0f, 10.0f, 5.0f);
-}
-
 void KunrealEngine::Kamen::SetBossTransform()
 {
 	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
 }
 
 
+void KunrealEngine::Kamen::SetBossCollider()
+{
+	_boss->AddComponent<BoxCollider>();
+	_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
+	_boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
+	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
+}
+
 void KunrealEngine::Kamen::CreatePattern()
 {
 	LeftAttackOnce();
 	RightAttackOnce();
 	SpellAttack();
+	CallAttack();
 }
 
 void KunrealEngine::Kamen::LeftAttackOnce()
@@ -140,6 +113,12 @@ void KunrealEngine::Kamen::LeftAttackOnce()
 	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 
+	_leftHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("LeftHand");
+	_leftHand->AddComponent<BoxCollider>();
+	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	pattern->_subObject.emplace_back(_leftHand);
+
 	std::function<bool()> logic = [pattern, this]()
 	{
 		auto animator = _boss->GetComponent<Animator>();
@@ -150,7 +129,7 @@ void KunrealEngine::Kamen::LeftAttackOnce()
 		{
 			if (animator->GetCurrentFrame() >= 10)
 			{
-				_leftHand->SetActive(true);
+				_leftHand->GetComponent<BoxCollider>()->SetActive(true);
 			}
 		}
 
@@ -176,6 +155,12 @@ void KunrealEngine::Kamen::RightAttackOnce()
 	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5f);
 	pattern->SetIsWarning(false).SetWarningName("");
 
+	_rightHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("rightHand");
+	_rightHand->AddComponent<BoxCollider>();
+	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
+	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	pattern->_subObject.emplace_back(_rightHand);
+
 	std::function<bool()> logic = [pattern, this]()
 	{
 		auto animator = _boss->GetComponent<Animator>();
@@ -186,7 +171,7 @@ void KunrealEngine::Kamen::RightAttackOnce()
 		{
 			if (animator->GetCurrentFrame() >= 10)
 			{
-				_rightHand->SetActive(true);
+				_rightHand->GetComponent<BoxCollider>()->SetActive(true);
 			}
 		}
 
@@ -222,7 +207,6 @@ void KunrealEngine::Kamen::SpellAttack()
 		{
 			if (animator->GetCurrentFrame() >= 10)
 			{
-				_spell->SetActive(true);
 			}
 		}
 
@@ -235,6 +219,72 @@ void KunrealEngine::Kamen::SpellAttack()
 	};
 
 	pattern->SetLogic(logic);
+
+	_basicPattern.emplace_back(pattern);
+}
+
+void KunrealEngine::Kamen::CallAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Call");
+
+	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(2.0f);
+	pattern->SetIsWarning(true).SetWarningName("Call");
+	pattern->SetMaxColliderCount(1);
+
+	_call = SceneManager::GetInstance().GetCurrentScene()->CreateObject("call");
+	_call->AddComponent<BoxCollider>();
+	_call->AddComponent<MeshRenderer>();
+	_call->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_call->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
+	pattern->_subObject.emplace_back(_call);
+
+	std::function<bool()> logic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (animator->GetCurrentFrame() >= 20)
+		{
+			if (_maxColliderOnCount > 0)
+			{
+				_call->GetComponent<BoxCollider>()->SetActive(true);
+			}
+
+			// 보스가 바라보는 방향 가져옴
+			auto direction = GetDirection();
+			
+			// 현재 보스의 포지션
+			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+			
+			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+			
+			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, animator->GetCurrentFrame()));
+
+			_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
+	
+	// 로직 함수 실행 가능하도록 넣어주기
+	pattern->SetLogic(logic);
+
+	std::function<void()> init = [pattern, this]()
+	{
+		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
+	};
+	
+	// 이니셜라이즈 로직 함수 넣어주기
+	pattern->SetInitializeLogic(init);
 
 	_basicPattern.emplace_back(pattern);
 }

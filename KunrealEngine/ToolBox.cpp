@@ -40,6 +40,16 @@ float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3 src, DirectX::XMFLOA
 	return result;
 }
 
+DirectX::XMVECTOR KunrealEngine::ToolBox::GetDirectionVec(DirectX::XMFLOAT3& src, DirectX::XMFLOAT3& dst)
+{
+	DirectX::XMVECTOR source = DirectX::XMLoadFloat3(&src);
+	DirectX::XMVECTOR destination = DirectX::XMLoadFloat3(&dst);
+
+	DirectX::XMVECTOR result = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(destination, source));
+
+	return result;
+}
+
 float KunrealEngine::ToolBox::GetAngle(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst)
 {
 	DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&src);

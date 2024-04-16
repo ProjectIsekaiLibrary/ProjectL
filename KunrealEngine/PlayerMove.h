@@ -34,6 +34,7 @@ namespace KunrealEngine
 		Player* _playerComp;					// 플레이어 컴포넌트
 		float _errorRange;						// 이 정도 오차범위 이내로 움직이면 움직임이 완료된 것으로 판단
 		int _nodeCount;							// 이동할 노드의 수
+		float _movedRange;						// 대시로 이동한 거리 체크용 변수
 
 		// 이동할 위치를 마우스 우클릭 시 업데이트
 		void UpdateTargetPosition();
@@ -54,16 +55,19 @@ namespace KunrealEngine
 		int _tempZ;
 
 	public:
-
 		// 플레이어 이동
 		void MoveToTarget(DirectX::XMFLOAT3 targetPos, float speed);
 
 		// 플레이어 대시
 		void PlayerDash(DirectX::XMFLOAT3 targetPos, float speed);
 
-		/// Navigation 테스트중
+		// Navigation을 이용한 움직임
 		void NavigationMove(float speed);
+		void NavigationDash(float speed);
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
+
+		/// 디버깅을 위한 함수
+		void ShowPlayerInfo();
 	};
 }
 

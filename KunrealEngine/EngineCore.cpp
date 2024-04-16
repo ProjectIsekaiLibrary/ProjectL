@@ -59,12 +59,13 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.HandleBuild();
-	//NavigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
-	navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
+	navigationInstance.HandleBuild(0);
+	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
+	navigationInstance.HandleBuild(1);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
+	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
 	navigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 	navigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
 
@@ -112,12 +113,19 @@ void KunrealEngine::EngineCore::Update()
 	inputInstance->UpdateEditorMousePos(_editorMousepos);
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
 	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
-
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
-	if (inputInstance->KeyDown(KEY::GRAVE))
+	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
+	navigationInstance.MoveTempObstacle(pos.first,pos.second);
+	
+	// 장애물 설치 테스트
+	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
 	{
-		navigationInstance.RemoveTempObstacle(DirectX::XMFLOAT3(20.0f, 0.0f, 10.0f));
+		RemoveObstacle();
+	}
+	else if (inputInstance->MouseButtonDown(0))
+	{
+//		MakeObstacle();
 	}
 
 	CheckMousePosition();
@@ -187,39 +195,6 @@ void KunrealEngine::EngineCore::Update()
 	{
 		kamen->GetComponent<BoxCollider>()->SetTransform(kamen, "mixamorig:RightHand");
 	}
-	//else if (inputInstance->KeyInput(KEY::A))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(-20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::D))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::W))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y, z + 20.0f * TimeManager::GetInstance().GetDeltaTime());
-	//}
-	//else if (inputInstance->KeyInput(KEY::S))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y, z - 20.0f * TimeManager::GetInstance().GetDeltaTime());
-	//}
-	//else if (inputInstance->KeyInput(KEY::Q))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y - 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::E))
-	//{
-	//	testCamera->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(x, y + 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
-	//}
-	//else if (inputInstance->KeyInput(KEY::R))
-	//{
-	//	GRAPHICS->GetMainCamera()->RotateCamera({ 0,  -20.0f * TimeManager::GetInstance().GetDeltaTime() });
-	//}
-	//else if (inputInstance->KeyInput(KEY::T))
-	//{
-	//	GRAPHICS->GetMainCamera()->RotateCamera({ 0,  20.0f * TimeManager::GetInstance().GetDeltaTime() });
-	//}
-
 
 	SoundSystem::GetInstance().updateListenerPosition(x,y,z);
 
@@ -291,57 +266,6 @@ void KunrealEngine::EngineCore::Update()
 	{
 		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : Idontknow");
 	}
-
-	switch (kamen->GetComponent<Kamen>()->GetStatus())
-	{
-		case BossStatus::ENTER:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : ENTER");
-			break;
-		}
-		case BossStatus::IDLE:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : IDLE");
-			break;
-		}
-		case BossStatus::CHASE:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CHASE");
-			break;
-		}
-		case BossStatus::STAGGERED:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : ON_STAGGERED");
-			break;
-		}
-		case BossStatus::OFF_STAGGRED:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : OFF_STAGGERED");
-			break;
-		}
-		case BossStatus::DEAD:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : DEAD");
-			break;
-		}
-		case BossStatus::BASIC_ATTACK:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : BASIC_ATTACK");
-			break;
-		}
-		case BossStatus::CORE_ATTACK:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CORE_ATTACK");
-			break;
-		}
-		case BossStatus::PATTERN_END:
-		{
-			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : PATTERN_END");
-			break;
-		}
-		default:
-			break;
-	}
 }
 
 void KunrealEngine::EngineCore::LateUpdate()
@@ -404,6 +328,7 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
+	kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
@@ -586,9 +511,6 @@ void KunrealEngine::EngineCore::PlayGround()
 			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
 		}
 	}
-
-	GameObject* asdfgqwea = GetCurrentScene()->CreateObject("asdfgqwert");
-	asdfgqwea->AddComponent<MeshRenderer>();
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()
@@ -606,6 +528,31 @@ void KunrealEngine::EngineCore::CheckMousePosition()
 	{
 		_finalMousePosition = _editorMousepos;
 	}
+}
+
+void KunrealEngine::EngineCore::MakeObstacle()
+{
+	DirectX::XMFLOAT3 targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
+	DirectX::XMFLOAT3 bmin = { targetPos.x - 4, targetPos.y - 4, targetPos.z - 4 };
+	DirectX::XMFLOAT3 bmax = { targetPos.x + 4, targetPos.y + 4, targetPos.z + 4 };
+	navigationInstance.AddBoxTempObstacle(bmin, bmax);
+
+	KunrealEngine::GameObject* obstacle;
+	obstacle = sceneInstance.GetCurrentScene()->CreateObject("obstacle");
+	obstacle->AddComponent<MeshRenderer>();
+	obstacle->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	obstacle->GetComponent<MeshRenderer>()->SetPickableState(true);
+	obstacle->GetComponent<Transform>()->SetPosition(targetPos.x, targetPos.y, targetPos.z);
+	obstacle->GetComponent<Transform>()->SetScale(4.0f, 4.0f, 4.0f);
+	obstacle->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
+}
+
+void KunrealEngine::EngineCore::RemoveObstacle()
+{
+	KunrealEngine::GameObject* obstacle = GraphicsSystem::GetInstance().GetPickedObject();
+	DirectX::XMFLOAT3 targetPos = obstacle->GetComponent<Transform>()->GetPosition();
+	navigationInstance.RemoveTempObstacle(targetPos);
+	//SceneManager::GetInstance().GetCurrentScene()->DeleteGameObject(obstacle);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()

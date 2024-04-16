@@ -25,7 +25,10 @@ namespace KunrealEngine
 		/// 수학 관련
 	public:
 		// 두 XMFLOAT3 좌표 사이의 거리
-		static float GetDistance(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst);
+		static float GetDistance(DirectX::XMFLOAT3& src, DirectX::XMFLOAT3& dst);
+
+		// 두 XMFLOAT3 좌표 사이의 방향벡터
+		static DirectX::XMVECTOR GetDirectionVec(DirectX::XMFLOAT3& src, DirectX::XMFLOAT3& dst);
 
 		// 두 XMFLOAT3 좌표 사잇각
 		static float GetAngle(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst);
