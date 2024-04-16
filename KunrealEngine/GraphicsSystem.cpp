@@ -75,9 +75,6 @@ void KunrealEngine::GraphicsSystem::SetPickedObject(int mouseX, int mouseY)
 
 			if (picked != nullptr)
 			{
-				// 디버그용	// 실사용시에는 삭제
-				//this->_graphics->DrawColorText(900, 50, 40, gpSkyBlueColor, "PICK");
-
 				// 해당 renderable 객체가 있는 지 탐색 후 일치하면 반환
 				for (auto obj : _pickableList)
 				{
@@ -91,9 +88,6 @@ void KunrealEngine::GraphicsSystem::SetPickedObject(int mouseX, int mouseY)
 			{
 				// 클릭한 것이 pick 가능한게 아니면 null로
 				this->_pickedObject = nullptr;
-
-				// 디버그용	// 실사용시에는 삭제
-				//this->_graphics->DrawColorText(900, 50, 40, gpPinkColor, "FAIL");
 			}
 		}
 	}
@@ -109,6 +103,11 @@ KunrealEngine::GameObject* KunrealEngine::GraphicsSystem::GetPickedObject()
 	{
 		return nullptr;
 	}
+}
+
+void KunrealEngine::GraphicsSystem::ClearPickedObject()
+{
+	this->_pickedObject = nullptr;
 }
 
 const std::vector<KunrealEngine::GameObject*> KunrealEngine::GraphicsSystem::GetPickableList()
