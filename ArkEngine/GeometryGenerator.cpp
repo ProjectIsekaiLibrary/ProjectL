@@ -309,7 +309,7 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateSphere(const char* geometryNam
 	ArkBuffer* newbuffer = new ArkBuffer(geometryName, totalVertexCount, vertexList, totalIndexCount, indexList);
 }
 
-void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryName, DirectX::XMFLOAT3 centerPos, float width, float height, float depth, DirectX::XMFLOAT4 color)
+void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryName, const DirectX::XMFLOAT3& centerPos, float width, float height, float depth, const DirectX::XMFLOAT4& color)
 {
 	std::vector<PosColor> vertexList;
 	std::vector<unsigned int> indexList;
@@ -374,7 +374,7 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryN
 	}
 }
 
-void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugPhysXBox(const char* geometryName, DirectX::XMFLOAT3 centerPos, float width, float height, float depth, DirectX::XMFLOAT4 color)
+void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugPhysXBox(const char* geometryName, const DirectX::XMFLOAT3& centerPos, float width, float height, float depth, const DirectX::XMFLOAT4& color)
 {
 	std::vector<PosColor> vertexList;
 	std::vector<unsigned int> indexList;
@@ -439,7 +439,7 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugPhysXBox(const char* geom
 	}
 }
 
-void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugSphere(const char* geometryName, float minPos, float range, DirectX::XMFLOAT4 color)
+void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugSphere(const char* geometryName, float minPos, float range, const DirectX::XMFLOAT4& color)
 {
 	float radius = range / 2;
 	std::vector<PosColor> vertexList;

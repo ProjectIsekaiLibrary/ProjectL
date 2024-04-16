@@ -27,7 +27,7 @@ namespace ArkEngine
 
 	public:
 		virtual bool GetActive() abstract;
-		virtual void SetActvie(bool tf) abstract;
+		virtual void SetActive(bool tf) abstract;
 
 	public:
 		virtual void Initialize() abstract;

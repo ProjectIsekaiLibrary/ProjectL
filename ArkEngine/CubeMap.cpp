@@ -79,12 +79,12 @@ void ArkEngine::ArkDX11::CubeMap::Render()
 	}
 }
 
-std::string ArkEngine::ArkDX11::CubeMap::GetName()
+const std::string& ArkEngine::ArkDX11::CubeMap::GetName()
 {
 	return _fileName;
 }
 
-std::string ArkEngine::ArkDX11::CubeMap::GetTextureName()
+const std::string& ArkEngine::ArkDX11::CubeMap::GetTextureName()
 {
 	return _textureName;
 }

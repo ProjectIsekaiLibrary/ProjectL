@@ -21,7 +21,7 @@ ArkEngine::ArkDX11::LineObject::~LineObject()
 	Release();
 }
 
-void ArkEngine::ArkDX11::LineObject::Initialize(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT4 color)
+void ArkEngine::ArkDX11::LineObject::Initialize(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color)
 {
 	_vertex1 = vertex1;
 	_vertex2 = vertex2;
