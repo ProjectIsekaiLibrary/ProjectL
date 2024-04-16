@@ -103,7 +103,7 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 	//여기에 게임엔진 객체 생성 및 초기화
 
 	engineInstance->Initialize(_hWnd, hInstance, _screenWidth, _screenHeight);
-	KunrealEngine::ChangeScene("Main");
+	//KunrealEngine::ChangeScene("Main");
 
 	return S_OK;
 }

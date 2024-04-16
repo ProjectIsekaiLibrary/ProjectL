@@ -166,7 +166,10 @@ bool KunrealEngine::MeshRenderer::GetPickableState()
 
 void KunrealEngine::MeshRenderer::SetRenderingState(bool flag)
 {
-	this->_mesh->SetRenderingState(flag);
+	if (this->_mesh != nullptr)
+	{
+		this->_mesh->SetRenderingState(flag);
+	}
 }
 
 bool KunrealEngine::MeshRenderer::GetRenderingState()

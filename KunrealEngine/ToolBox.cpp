@@ -19,7 +19,7 @@ int KunrealEngine::ToolBox::GetRandomNum(int minNum, int maxNum)
 	return dist(generator);
 }
 
-float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst)
+float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3& src, DirectX::XMFLOAT3& dst)
 {
 	DirectX::XMVECTOR source = DirectX::XMLoadFloat3(&src);
 	DirectX::XMVECTOR destination = DirectX::XMLoadFloat3(&dst);
@@ -27,6 +27,16 @@ float KunrealEngine::ToolBox::GetDistance(DirectX::XMFLOAT3 src, DirectX::XMFLOA
 	DirectX::XMVECTOR distance = DirectX::XMVectorSubtract(destination, source);
 
 	float result = DirectX::XMVectorGetX(DirectX::XMVector3Length(distance));
+
+	return result;
+}
+
+DirectX::XMVECTOR KunrealEngine::ToolBox::GetDirectionVec(DirectX::XMFLOAT3& src, DirectX::XMFLOAT3& dst)
+{
+	DirectX::XMVECTOR source = DirectX::XMLoadFloat3(&src);
+	DirectX::XMVECTOR destination = DirectX::XMLoadFloat3(&dst);
+
+	DirectX::XMVECTOR result = DirectX::XMVector3Normalize(DirectX::XMVectorSubtract(destination, source));
 
 	return result;
 }
