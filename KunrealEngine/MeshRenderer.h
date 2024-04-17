@@ -45,6 +45,12 @@ namespace KunrealEngine
 		// picking 가능 여부
 		bool _isPickable;
 
+		// 그림자 표시 여부
+		bool _isShadow;
+
+		// 툰쉐이딩 적용 여부
+		bool _isCartoon;
+
 	private:
 		// 그림을 그리기 위한 정보들
 		// 에디터에 수치를 띄워주기 위해 데이터를 멤버로 가지고 있음
@@ -114,8 +120,12 @@ namespace KunrealEngine
 		void DeleteParentBone();
 
 		// 그림자 활성화 여부
-		void SetShadowState(bool tf);
+		void SetShadowState(bool flag);
 		bool GetShadowState();
+
+		// 툰쉐이딩 활성화 여부
+		void SetCartoonState(bool flag);
+		bool GetCartoonState();
 	};
 }
 
