@@ -84,8 +84,6 @@ namespace KunrealEngine
 	void Navigation::Initialize()
 	{
 		_geom = new class InputGeom();
-		_geom->load(_ctx, "Resources/MapObj/testObj.obj");
-
 		_ctx = new rcContext();
 		_talloc = new LinearAllocator(32000);
 		_tcomp = new FastLZCompressor();
@@ -194,6 +192,7 @@ namespace KunrealEngine
 	bool Navigation::HandleBuild(int index)
 	{
 		dtStatus status;
+		_geom->load(_ctx, "Resources/MapObj/testObj.obj");
 
 		if (!_geom || !_geom->getMesh())
 		{
