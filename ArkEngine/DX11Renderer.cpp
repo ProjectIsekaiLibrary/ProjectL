@@ -107,6 +107,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>("Resources/Textures/Particles/flare.dds", 200);
 
+
+
 	SetPickingTexture();
 }
 
@@ -334,7 +336,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	// particle을 그린다
 	_particle->Draw(_mainCamera);
-
 	// UI IMAGE 렌더링
 	for (const auto& index : ResourceManager::GetInstance()->GetUIImageList())
 	{

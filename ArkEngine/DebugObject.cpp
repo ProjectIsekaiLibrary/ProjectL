@@ -155,6 +155,11 @@ void ArkEngine::ArkDX11::DebugObject::Render()
 
 	deviceContext->RSSetState(_arkDevice->GetWireRS());
 
+	//if (_objectName == "navMesh")
+	//{
+	//	deviceContext->RSSetState(_arkDevice->GetSolidRS());
+	//}
+
 	UINT stride = sizeof(ArkEngine::ArkDX11::PosColor);
 	UINT offset = 0;
 
@@ -328,30 +333,31 @@ void ArkEngine::ArkDX11::DebugObject::BuildGeomtryBuffers()
 
 void ArkEngine::ArkDX11::DebugObject::BuildMapBuffers(std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec)
 {
-	std::vector<PosColor> vertexList;
-	std::vector<unsigned int> indexList;
+	auto buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_objectName);
 
-	for (const auto& index : vertexVec)
+	if (buffer == nullptr)
 	{
-		PosColor newPosColor;
-		newPosColor.color = { 0.0f, 0.0f, 1.0f, 1.0f };
-		newPosColor.pos = index;
-	}
+		std::vector<PosColor> vertexList;
+		std::vector<unsigned int> indexList;
 
-	for (const auto& index : indexVec)
-	{
+		for (const auto& index : vertexVec)
+		{
+			PosColor newPosColor;
+			newPosColor.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+			newPosColor.pos = index;
+
+			vertexList.emplace_back(newPosColor);
+		}
+
 		indexList = indexVec;
+
+		buffer = new ArkBuffer(_objectName.c_str(), vertexList.size(), vertexList, indexList.size(), indexList);
 	}
 
+	_vertexBuffer = buffer->GetVertexBuffer();
+	_indexBuffer = buffer->GetIndexBuffer();
 
-	ArkBuffer* newbuffer = new ArkBuffer(_objectName.c_str(), vertexList.size(), vertexList, indexList.size(), indexList);
-
-	std::vector<DirectX::XMFLOAT3> vertexPosList;
-
-	for (int i = 0; i < vertexList.size(); i++)
-	{
-		vertexPosList.emplace_back(vertexList[i].pos);
-	}
+	_totalIndexCount = buffer->GetTotalIndexCount();
 }
 
 void ArkEngine::ArkDX11::DebugObject::SetEffect()

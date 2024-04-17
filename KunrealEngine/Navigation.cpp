@@ -364,7 +364,7 @@ namespace KunrealEngine
 		}
 	}
 
-	void Navigation::GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<int>& indices)
+	void Navigation::GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices)
 	{
 		const dtNavMesh* navmesh = _package[index]._navMesh;
 		const dtMeshTile* tile = navmesh->getTile(index);

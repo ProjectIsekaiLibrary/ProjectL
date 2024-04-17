@@ -7,6 +7,9 @@ namespace KunrealEngine
 	class Navigation;
 }
 
+struct ImDrawList;
+struct ImVec2;
+
 namespace EpicTool
 {
 
@@ -21,6 +24,7 @@ namespace EpicTool
 		virtual void ShowWindow(bool* _open, std::vector<Object>& object) override; // 기능없음
 
 		void Initialize();
+		void DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height);
 
 	private:
 		int _naviIndex;
