@@ -106,6 +106,7 @@ KunrealEngine::GameObject* KunrealEngine::Scene::CreateObject()
 	GameObject* gameObject = new GameObject();
 	_objectList.emplace_back(gameObject);
 	gameObject->Initialize();
+	gameObject->_sceneName = this->_sceneName;
 	SortObjects();
 
 	return gameObject;
@@ -117,6 +118,7 @@ KunrealEngine::GameObject* KunrealEngine::Scene::CreateObject(std::string object
 	//gameObject->SetObjectName(objectName);
 	_objectList.emplace_back(gameObject);
 	gameObject->Initialize();
+	gameObject->_sceneName = this->_sceneName;
 	SortObjects();
 
 	return gameObject;

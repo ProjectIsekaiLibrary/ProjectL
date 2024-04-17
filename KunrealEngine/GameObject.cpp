@@ -192,6 +192,11 @@ std::vector<KunrealEngine::GameObject*> KunrealEngine::GameObject::GetChilds()
 	return this->_childContainer;
 }
 
+KunrealEngine::Scene* KunrealEngine::GameObject::GetObjectScene()
+{
+	return SceneManager::GetInstance().GetScene(_sceneName);
+}
+
 void KunrealEngine::GameObject::SetActive(bool active)
 {
 	this->_isActivated = active;
