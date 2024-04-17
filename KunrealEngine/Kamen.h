@@ -45,6 +45,7 @@ namespace KunrealEngine
 		GameObject* _call;
 
 	private:
+		// Call 거리 체크용
 		float _callPostion;
 	};
 }

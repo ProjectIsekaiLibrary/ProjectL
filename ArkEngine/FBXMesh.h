@@ -65,6 +65,7 @@ namespace ArkEngine
 		{
 		public:
 			FBXMesh(const std::string& fileName, bool isSolid = true);
+			FBXMesh(std::vector<DirectX::XMFLOAT3> vertexVec, std::vector<unsigned int> indexVec, bool isSold = true);
 			~FBXMesh();
 
 		public:

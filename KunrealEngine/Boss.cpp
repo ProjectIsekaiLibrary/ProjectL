@@ -143,7 +143,7 @@ void KunrealEngine::Boss::Update()
 	DebugTest();
 
 	// 캐릭터가 이동시
-	if (InputSystem::GetInstance()->MouseButtonUp(1))
+	if (InputSystem::GetInstance()->MouseButtonUp(1) || InputSystem::GetInstance()->KeyDown(KEY::SPACE))
 	{
 		_isRotateFinish = false;
 	}
@@ -344,10 +344,10 @@ void KunrealEngine::Boss::Chase()
 	}
 
 	// 보스가 플레이어를 바라보게 되었을 때
-	if (_isRotateFinish)
+ 	if (_isRotateFinish)
 	{
 		// 패턴 사거리보다 플레이어와의 거리가 가까울 경우 공격 시행
-		if (_distance <= 5 + patternRange)
+		if (_distance <= patternRange + _nowPattern->_rangeOffset)
 		{
 			// 패턴 준비 상태로 변경
 			_status = BossStatus::PATTERN_READY;
@@ -359,7 +359,7 @@ void KunrealEngine::Boss::Chase()
 		else
 		{
 			// 패턴 사거리보다 플레이어의 거리가 멀지만 일정 거리 이내일 경우 걸어서 이동
-			if (_distance - patternRange <= 30.0f)
+			if (_distance - patternRange <= 50.0f)
 			{
 				// 보스와 플레이어의 갈 수 있는 길을 노드로 계산
 				UpdateMoveNode();
@@ -687,13 +687,12 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed,
 	}
 }
 
-
 bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 targetPos, float speed, float patternRange)
 {
 	float moveSpeed = speed * TimeManager::GetInstance().GetDeltaTime();
 
 	// 패턴 거리 내에 플레이어가 존재하지 않을 경우
-	if (_distance > patternRange - 5)
+	if (_distance > patternRange + _nowPattern->_rangeOffset)
 	{
 		// 플레이어 이동
 		_prevPos = startPos;

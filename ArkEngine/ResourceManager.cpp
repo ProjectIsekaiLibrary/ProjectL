@@ -124,7 +124,12 @@ void ArkEngine::ResourceManager::AddLineObject(ArkEngine::ILineObject* object)
 
 void ArkEngine::ResourceManager::DeleteLineObject(ArkEngine::ILineObject* object)
 {
-	_lineList.erase(std::remove(_lineList.begin(), _lineList.end(), object), _lineList.end());
+	auto it = std::find(_lineList.begin(), _lineList.end(), object);
+	if (it != _lineList.end()) 
+	{
+		delete* it;
+		_lineList.erase(it);
+	}
 }
 
 const std::vector<ArkEngine::IUIImage*>& ArkEngine::ResourceManager::GetUIImageList()
@@ -140,7 +145,12 @@ void ArkEngine::ResourceManager::AddUIImage(ArkEngine::IUIImage* image)
 
 void ArkEngine::ResourceManager::DeleteUIImage(ArkEngine::IUIImage* image)
 {
-	_uiImageList.erase(std::remove(_uiImageList.begin(), _uiImageList.end(), image), _uiImageList.end());
+	auto it = std::find(_uiImageList.begin(), _uiImageList.end(), image);
+	if (it != _uiImageList.end())
+	{
+		delete* it;
+		_uiImageList.erase(it);
+	}
 }
 
 const std::unordered_set<ArkEngine::ICubeMap*>& ArkEngine::ResourceManager::GetCubeMapList()

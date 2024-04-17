@@ -230,7 +230,7 @@ void KunrealEngine::Kamen::CallAttack()
 	pattern->SetPatternName("Call");
 
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(2.0f);
-	pattern->SetIsWarning(true).SetWarningName("Call");
+	pattern->SetIsWarning(true).SetWarningName("Call").SetRangeOffset(-10.0f);
 	pattern->SetMaxColliderCount(1);
 
 	_call = SceneManager::GetInstance().GetCurrentScene()->CreateObject("call");
@@ -261,8 +261,18 @@ void KunrealEngine::Kamen::CallAttack()
 			
 			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
 			
+			if (_callPostion < pattern->_range)
+			{
+				_callPostion += 20.0f * TimeManager::GetInstance().GetDeltaTime();
+			}
+			else
+			{
+				_callPostion = 0.0f;
+			}
+
+
 			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, animator->GetCurrentFrame()));
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callPostion));
 
 			_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 		}
@@ -281,6 +291,7 @@ void KunrealEngine::Kamen::CallAttack()
 	std::function<void()> init = [pattern, this]()
 	{
 		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
+		_callPostion = 0.0f;
 	};
 	
 	// 이니셜라이즈 로직 함수 넣어주기

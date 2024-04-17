@@ -46,7 +46,8 @@ namespace ArkEngine
 				Cube,
 				PhysXBox,
 				Shpere,
-				Capsule
+				Capsule,
+				Map
 			};
 
 		public:
@@ -56,6 +57,8 @@ namespace ArkEngine
 			DebugObject(const std::string& objectName, float width, float height, float depth, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
 			// DebugSphere 持失切
 			DebugObject(const std::string& objectName, float centerPos, float range, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(0.0f, 1.0f, 0.0f, 1.0f));
+			// DebugMap 持失切
+			DebugObject(const std::string& objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec);
 
 			~DebugObject();
 
@@ -91,6 +94,7 @@ namespace ArkEngine
 
 		private:
 			void BuildGeomtryBuffers();
+			void BuildMapBuffers(std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec);
 			void SetEffect();
 
 		private:

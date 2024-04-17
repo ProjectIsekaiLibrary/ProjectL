@@ -69,7 +69,8 @@ struct BossPattern
 {
 	BossPattern()
 		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
-		_coolDown(0.0f), _isActive(true), _maxColliderOnCount(1), _subObject(),
+		_coolDown(0.0f), _rangeOffset(5.0f),
+		_isActive(true), _maxColliderOnCount(1), _subObject(),
 		_logic(nullptr), _initializeLogic(nullptr)
 	{
 	}
@@ -94,6 +95,7 @@ struct BossPattern
 	BossPattern& SetWarningName(const std::string& warningName) { _warningName = warningName; return *this; };
 	BossPattern& SetTriggerHp(float hp) { _triggerHp = hp; return *this; };
 	BossPattern& SetCoolDown(float coolDown) { _triggerHp = coolDown; return *this; };
+	BossPattern& SetRangeOffset(float rangeOffset) { _rangeOffset = rangeOffset; return *this; };
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
 	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; return *this; };
 	BossPattern& SetLogic(std::function<bool()> logic) { _logic = logic; return *this; };
@@ -119,6 +121,8 @@ struct BossPattern
 	float _triggerHp;				// 패턴이 발동될 조건의 hp
 
 	float _coolDown;				// 패턴 쿨타임
+
+	float _rangeOffset;				// 어느정도까지 보스가 쫓아올 것인지를 지정, offset을 줄일수록 가까운 거리까지 chase
 
 	bool _isActive;					// 패턴 활성화 여부
 

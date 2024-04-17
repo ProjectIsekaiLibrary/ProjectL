@@ -47,7 +47,6 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	Initialize();
 }
 
-
 ArkEngine::ArkDX11::FBXMesh::~FBXMesh()
 {
 	Finalize();

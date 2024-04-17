@@ -52,6 +52,27 @@ ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, eDeb
 	Initialize();
 }
 
+
+ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec)
+	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
+	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
+	_world(), _view(), _proj(), _vertexBuffer(nullptr), _indexBuffer(nullptr), _arkDevice(nullptr), _arkEffect(nullptr),
+	_totalIndexCount(0), _isRendering(true), _meshTransform(nullptr), _halfWidth(0.0f), _halfHeight(0.0f), _halfDepth(0.0f), _minPos(0.0f), _type(eDebugType::Map),
+	_renderableState(true)
+{
+	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>(_effectName);
+	_effect = _arkEffect->GetEffect();
+
+	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+
+	BuildMapBuffers(vertexVec, indexVec);
+	SetEffect();
+
+	ResourceManager::GetInstance()->AddDebugObject(this);
+
+	_meshTransform = new Transform();
+}
+
 ArkEngine::ArkDX11::DebugObject::DebugObject(const std::string& objectName, float width, float height, float depth, const DirectX::XMFLOAT4& color)
 	: _objectName(objectName), _effectName("Resources/FX/color.fx"), _effect(nullptr), _tech(nullptr),
 	_fxWorld(nullptr), _fxWorldViewProj(nullptr), _fxFrustum(nullptr),
@@ -304,6 +325,35 @@ void ArkEngine::ArkDX11::DebugObject::BuildGeomtryBuffers()
 	_indexBuffer = buffer->GetIndexBuffer();
 
 	_totalIndexCount = buffer->GetTotalIndexCount();
+}
+
+
+void ArkEngine::ArkDX11::DebugObject::BuildMapBuffers(std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec)
+{
+	std::vector<PosColor> vertexList;
+	std::vector<unsigned int> indexList;
+
+	for (const auto& index : vertexVec)
+	{
+		PosColor newPosColor;
+		newPosColor.color = { 0.0f, 0.0f, 1.0f, 1.0f };
+		newPosColor.pos = index;
+	}
+
+	for (const auto& index : indexVec)
+	{
+		indexList = indexVec;
+	}
+
+
+	ArkBuffer* newbuffer = new ArkBuffer(_objectName.c_str(), vertexList.size(), vertexList, indexList.size(), indexList);
+
+	std::vector<DirectX::XMFLOAT3> vertexPosList;
+
+	for (int i = 0; i < vertexList.size(); i++)
+	{
+		vertexPosList.emplace_back(vertexList[i].pos);
+	}
 }
 
 void ArkEngine::ArkDX11::DebugObject::SetEffect()

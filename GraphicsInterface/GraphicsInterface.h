@@ -63,7 +63,9 @@ namespace GInterface
 		// 디버그 큐브 생성 후 반환 ** 꼭 실제 오브젝트 모양대로 이름 만들기!**
 		virtual GInterface::GraphicsDebug* CreateDebugCube(const char* objectName, float width, float height, float depth) abstract;
 		virtual GInterface::GraphicsDebug* CreateDebugSphere(const char* objectName, float radius) abstract;
-		
+		// 버텍스와 인덱스를 받아 디버그 오브젝트를 생성 후 이를 반환
+		virtual GInterface::GraphicsDebug* CreateMapDebug(const char* objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec) abstract;
+
 		virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) abstract;
 
 	public:

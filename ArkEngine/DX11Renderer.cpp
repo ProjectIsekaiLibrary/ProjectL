@@ -112,7 +112,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	flame.push_back(L"Resources/Textures/Particles/flare.dds");
 	_flameTexSTV = _particle->CreateTexture2DArraySRV(_device.Get(), _deviceContext.Get(),flame);
 	_particle->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 200);
-	_particle->SetEmitPos(DirectX::XMFLOAT3(0.0f, 20.0f, 0.0f));
+	_particle->SetEmitPos(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f));
 
 	SetPickingTexture();
 }
@@ -461,6 +461,14 @@ GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::CreateDebugSphere(c
 	return debugObject;
 }
 
+
+GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::CreateMapDebug(const char* objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec)
+{
+	GInterface::GraphicsDebug* debugObject = new DebugObject(objectName, vertexVec, indexVec);
+
+	return debugObject;
+}
+
 void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDebug* debugObject)
 {
 	delete debugObject;
@@ -532,7 +540,7 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteLine(const DirectX::XMFLOAT3& verte
 
 void ArkEngine::ArkDX11::DX11Renderer::DeleteAllLine()
 {
-	for (const auto& index : ResourceManager::GetInstance()->GetLineObjectList())
+	for (auto& index : ResourceManager::GetInstance()->GetLineObjectList())
 	{
 		ResourceManager::GetInstance()->DeleteLineObject(index);
 	}

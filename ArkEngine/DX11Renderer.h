@@ -91,7 +91,7 @@ namespace ArkEngine
 		public:
 			virtual GInterface::GraphicsDebug* CreateDebugCube(const char* objectName, float width, float height, float depth) override;
 			virtual GInterface::GraphicsDebug* CreateDebugSphere(const char* objectName, float radius) override;
-
+			virtual GInterface::GraphicsDebug* CreateMapDebug(const char* objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec) override;
 			virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) override;
 
 		public:
