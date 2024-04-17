@@ -532,7 +532,7 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteLine(const DirectX::XMFLOAT3& verte
 
 void ArkEngine::ArkDX11::DX11Renderer::DeleteAllLine()
 {
-	for (const auto& index : ResourceManager::GetInstance()->GetLineObjectList())
+	for (auto& index : ResourceManager::GetInstance()->GetLineObjectList())
 	{
 		ResourceManager::GetInstance()->DeleteLineObject(index);
 	}

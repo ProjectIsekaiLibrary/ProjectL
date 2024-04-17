@@ -1,6 +1,8 @@
 #pragma once
 #include <windows.h>
 
+#define _SILENCE_CXX20_CISO646_REMOVED_WARNING
+
 /// <summary>
 /// 엔진의 클라이언트
 /// 프로그램의 기본 정보, 게임엔진 초기화 등
