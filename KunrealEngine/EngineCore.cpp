@@ -62,9 +62,9 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	navigationInstance.HandleBuild(0);
 	
 	std::vector<DirectX::XMFLOAT3> vertices;
-	std::vector<int> indices;
-
+	std::vector<unsigned int> indices;
 	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+	//GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
 
 	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	navigationInstance.HandleBuild(1);
