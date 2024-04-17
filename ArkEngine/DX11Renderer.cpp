@@ -110,8 +110,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_randomTexSTV = _particle->CreateRandomTextureSRV(_device.Get());
 	std::vector<std::wstring> flame;
 	flame.push_back(L"Resources/Textures/Particles/flare.dds");
-	_flameTexSTV = _particle->CreateTexture2DArraySRV(_device.Get(), _deviceContext.Get(),flame);
-	_particle->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 200);
+	_flameTexSTV = _particle->CreateTexture2DArraySRV(_device.Get(), _deviceContext.Get(), flame);
+	_particle->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 10000);
 	_particle->SetEmitPos(DirectX::XMFLOAT3(0.0f, 20.0f, 0.0f));
 
 	SetPickingTexture();
@@ -342,6 +342,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// particle을 그린다
 	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	_particle->SetEyePos(_mainCamera->GetCameraPos());
+	//_particle->SetEmitPos(_mainCamera->GetCameraPos());
 	_particle->Draw(_deviceContext.Get(), _mainCamera);
 	_deviceContext->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 
