@@ -14,11 +14,22 @@
 
 namespace KunrealEngine
 {
+	struct Agent
+	{
+		float _agentHeight = 2.0f;
+		float _agentRadius = 1.2f;
+		float _agentMaxClimb = 0.9f;
+		float _agentMaxSlope = 45.0f;
+	};
+
 	// 이 PathFIndbox는 네비매쉬를 배열로 관리하기 편하도록 구성 요소들을 묶은 것
 	struct PathFindbox
 	{
 		class dtNavMesh* _navMesh;
 		class dtNavMeshQuery* _navQuery;
+		
+		// 에이전트 세팅
+		Agent _agentsetting;
 
 		// PathFind를 위해 필요한 부분들
 		static const int MAX_POLYS = 256;
@@ -103,7 +114,11 @@ namespace KunrealEngine
 		void SetEndpos(int index, float x, float y, float z);
 		// endpos를 입력하는 함수. XMFLOAT3 버전
 		void SetEndpos(int index, DirectX::XMFLOAT3 position);
+		// 네비매쉬를 빌드하기 위한 agent를 세팅하는 함수. 각 변수명을 참고
+		void SetAgent(int index, float agentHeight, float agentMaxSlope, float agentRadius, float agentMaxClimb);
 
+		// 네비매쉬를 빌드하기 위해 vertex와 index를 제공해주는 함수(예정)
+		void GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<int>& indices);
 	private:
 		int rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, struct TileCacheData* tiles, const int maxTiles);
 		void getTilePos(const float* pos, int& tx, int& ty);
@@ -134,10 +149,6 @@ namespace KunrealEngine
 
 		float _cellSize;
 		float _cellHeight;
-		float _agentHeight;
-		float _agentRadius;
-		float _agentMaxClimb;
-		float _agentMaxSlope;
 		float _regionMinSize;
 		float _regionMergeSize;
 		float _edgeMaxLen;
