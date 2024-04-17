@@ -49,7 +49,7 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close) //세이브 버튼 다른 곳�
 
 
 
-	_serialize = new Serialize();  // 루프문에 없어면 터지네?
+	
 
 	if (_show_save_editor)
 	{
@@ -126,7 +126,6 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close) //세이브 버튼 다른 곳�
 	{
 		close = true;
 	}
-
 	
 }
 
@@ -145,6 +144,7 @@ void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
     nfdchar_t* outPath = NULL;
     nfdresult_t result = NFD_SaveDialog("json", "json", &outPath);
 
+
     if (result == NFD_OKAY) {
         if (outPath) {
             std::string chosenPath = outPath;
@@ -156,6 +156,7 @@ void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
             _saveFilePath = chosenPath;
 
             free(outPath);
+			_serialize = new Serialize();  // 루프문에 없어면 터지네?
 			_serialize->SaveFile(_saveFilePath);
         }
     }

@@ -4,6 +4,7 @@
 #include <directxmath.h>
 
 #include "NavigationStruct.h"
+#include "CommonHeader.h"
 
 /// 이것들은 샘플 간에 일관된 값 사용을 위한 샘플 영역입니다.
 /// 사용자는 자신의 요구에 따라 이를 지정해야 합니다.
@@ -14,7 +15,7 @@
 
 namespace KunrealEngine
 {
-	struct Agent
+	struct _DECLSPEC Agent
 	{
 		float _agentHeight = 2.0f;
 		float _agentRadius = 1.2f;
@@ -23,7 +24,7 @@ namespace KunrealEngine
 	};
 
 	// 이 PathFIndbox는 네비매쉬를 배열로 관리하기 편하도록 구성 요소들을 묶은 것
-	struct PathFindbox
+	struct _DECLSPEC PathFindbox
 	{
 		class dtNavMesh* _navMesh;
 		class dtNavMeshQuery* _navQuery;
@@ -63,7 +64,7 @@ namespace KunrealEngine
 		~PathFindbox();
 	};
 
-	class Navigation
+	class _DECLSPEC Navigation
 	{
 	private:
 		Navigation();

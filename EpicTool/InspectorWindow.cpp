@@ -625,7 +625,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 
 	if (ImGui::Checkbox("SetPisckable", &_IsSetPisckable))
 	{
-		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(_IsSetPisckable);
+		if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
+		{
+			_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(_IsSetPisckable);
+		}
 	}
 
     ComboControl(_meshList, _meshListEditor, _comboMeshSelect, "Mesh", instance);
@@ -1019,7 +1022,42 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Player>(Kunreal
 	ImGui::Spacing();
 }
 
-void EpicTool::InspectorWindow::Initialize() // 필요없어보이는데
+/// <summary>
+/// Boss[Kamen]을 관리하는 UI
+/// </summary>
+/// <param name="instance"></param>
+template<>
+void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Kamen>(KunrealEngine::Kamen* instance)
+{
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Kamen");
+
+	bool isComponent = false;
+
+	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
+
+	for (auto componentName : _compoenetList)
+	{
+		std::string checkName = componentName->GetComponentName();
+		if (checkName == "Kamen")
+		{
+			isComponent = true;
+		}
+	}
+
+	if (isComponent == false) // 깡통 추가
+	{
+		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Kamen>();
+	}
+
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Kamen>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+}
+
+void EpicTool::InspectorWindow::Initialize()
 {
 	
 	//_gameObjectlist = KunrealEngine::GetCurrentScene()->
@@ -1063,8 +1101,11 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 	bool imageOpen = false;
 	bool soundPlayerOpen = false;
 	bool playerOpen = false;
+	bool KamenOpen = false;
 	bool collider = false;
 	_DebugType = DebugType::None;
+
+	_selectedObjectIndex = selectedObjectIndex;
 
 	if (!(IMGUIZMO_NAMESPACE::IsUsing() || IMGUIZMO_NAMESPACE::IsOver()))
 	{
@@ -1079,6 +1120,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 					_isPickedObject = true;
 					_isPickedObjectName = KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject()->GetObjectName();
 				}
+				
 				count++;
 			}
 		}
@@ -1105,7 +1147,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		}
 	}
-	_selectedObjectIndex = selectedObjectIndex;
+
 
 
 	if (_selectedObjectIndex != -1)
@@ -1116,10 +1158,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		if (selectedComponentIndex)
 		{
-			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer","Player"};
+			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer", "Player", "Kamen"};
 			int selectedItem = -1;
 
-			if (ImGui::Combo("Component", &selectedItem, items, 7)) {
+			if (ImGui::Combo("Component", &selectedItem, items, 8)) {
 				// 사용자가 새로운 아이템을 선택했을 때 실행할 코드
 				// 임시 테스트 용이며 삭제할것임
 				switch (selectedItem)
@@ -1153,6 +1195,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 					break;
 				case 6:
 					IsCheckItem(playerOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 7:
+					IsCheckItem(KamenOpen);
 					selectedComponentIndex = !selectedComponentIndex;
 					break;
 				default:
@@ -1197,6 +1243,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			{
 				playerOpen = true;
 			}
+			if (checkComponentName == "Kamen")
+			{
+				KamenOpen = true;
+			}
 		}
 
 		if (meshStateOpen == true)
@@ -1233,6 +1283,11 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		if (playerOpen == true)
 		{
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Player>());
+		}
+
+		if (KamenOpen == true)
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Kamen>());
 		}
 
 		if (ImGui::Button("Add Component"))
