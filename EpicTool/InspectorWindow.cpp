@@ -625,7 +625,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 
 	if (ImGui::Checkbox("SetPisckable", &_IsSetPisckable))
 	{
-		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(_IsSetPisckable);
+		if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
+		{
+			_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(_IsSetPisckable);
+		}
 	}
 
     ComboControl(_meshList, _meshListEditor, _comboMeshSelect, "Mesh", instance);

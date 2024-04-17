@@ -133,6 +133,10 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 					selectedObjectIndex = i;
 				}
 			}
+			else if (ImGui::IsMouseClicked(0))
+			{
+				selectedObjectIndex = -1;
+			}
 
 			ImGui::PopStyleColor();
 
