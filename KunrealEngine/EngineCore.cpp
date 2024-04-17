@@ -193,15 +193,6 @@ void KunrealEngine::EngineCore::Update()
 	auto z = testCamera->GetComponent<Transform>()->GetPosition().z;
 
 
-	if (inputInstance->KeyInput(KEY::B))
-	{
-		kamen->GetComponent<BoxCollider>()->SeperateFromParent();
-	}
-	else if (inputInstance->KeyInput(KEY::N))      
-	{
-		kamen->GetComponent<BoxCollider>()->SetTransform(kamen, "mixamorig:RightHand");
-	}
-
 	SoundSystem::GetInstance().updateListenerPosition(x,y,z);
 
 	if (inputInstance->KeyDown(KEY::LBRACKET))

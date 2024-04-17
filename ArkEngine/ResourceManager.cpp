@@ -410,6 +410,49 @@ void ArkEngine::ResourceManager::AddArkBuffer(const std::string& bufferName, Ark
 	_arkBufferList.at(bufferName).emplace_back(buffer);
 }
 
+
+const std::vector<ArkEngine::ArkDX11::ParticleSystem*>& ArkEngine::ResourceManager::GetParticleList()
+{
+	return _particleList;
+}
+
+
+void ArkEngine::ResourceManager::AddParticle(ArkEngine::ArkDX11::ParticleSystem* particle)
+{
+	_particleList.emplace_back(particle);
+}
+
+
+void ArkEngine::ResourceManager::DeleteParticle(ArkEngine::ArkDX11::ParticleSystem* particle)
+{
+	_particleList.erase(std::remove(_particleList.begin(), _particleList.end(), particle), _particleList.end());
+
+	delete particle;
+}
+
+ArkEngine::ParticleResource* ArkEngine::ResourceManager::GetParticleResource(const std::string& particleName)
+{
+	auto iter = _particleResourceList.find(particleName);
+
+	if (iter != _particleResourceList.end())
+	{
+		return iter->second;
+	}
+
+	else return nullptr;
+}
+
+
+void ArkEngine::ResourceManager::AddParticleResource(const std::string& particleName, ParticleResource* particleResource)
+{
+	const auto& iter = _particleResourceList.find(particleName);
+
+	if (iter == _particleResourceList.end())
+	{
+		_particleResourceList.insert(std::make_pair(particleName, particleResource));
+	}
+}
+
 void ArkEngine::ResourceManager::SetTextureNameList(std::string name)
 {
 	_textureNameList.emplace_back(name);

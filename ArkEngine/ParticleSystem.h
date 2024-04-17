@@ -11,6 +11,11 @@ struct ID3D11Texture2D;
 struct ID3D11DepthStencilView;
 struct ID3D11ShaderResourceView;
 struct ID3D11RenderTargetView;
+struct ID3DX11EffectTechnique;
+struct ID3DX11EffectMatrixVariable;
+struct ID3DX11EffectScalarVariable;
+struct ID3DX11EffectShaderResourceVariable;
+struct ID3DX11Effect;
 
 struct Particle
 {
@@ -35,8 +40,8 @@ namespace ArkEngine
 		class ParticleSystem
 		{
 		public:
-			ParticleSystem(const std::string fileName, unsigned int maxParticle);
-			ParticleSystem(const std::vector<std::string>& fileNameList, unsigned int maxParticle);
+			ParticleSystem(const std::string& particleName, const std::string& fileName, unsigned int maxParticle);
+			ParticleSystem(const std::string& particleName, const std::vector<std::string>& fileNameList, unsigned int maxParticle);
 			~ParticleSystem();
 
 		public:
@@ -63,6 +68,7 @@ namespace ArkEngine
 
 		private:
 			void BuildVB();
+			void BuildDrawStreamVB();
 			void SetEffect();
 
 		private:
@@ -85,7 +91,6 @@ namespace ArkEngine
 			ID3D11Buffer* _streamOutVB;
 
 			ID3D11ShaderResourceView* _texArraySRV;
-			ID3D11ShaderResourceView* _randomTexSRV;
 
 			ID3DX11EffectTechnique* _streamOutTech;
 			ID3DX11EffectTechnique* _drawTech;
@@ -101,8 +106,9 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _randomTex;
 
 		private:
+			std::string _particleName;
+			ArkDevice* _arkDevice;
 			ArkEffect* _arkEffect;
-			ID3DX11Effect* _fx;
 
 			void SetViewProj(DirectX::CXMMATRIX m);
 

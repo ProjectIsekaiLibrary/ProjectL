@@ -223,6 +223,7 @@
     <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ParsingStructs.h" />
     <ClInclude Include="ParticleEffect.h" />
+    <ClInclude Include="ParticleResource.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -264,6 +265,7 @@
     <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ParsingStructs.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
+    <ClCompile Include="ParticleResource.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="ResourceManager.cpp" />

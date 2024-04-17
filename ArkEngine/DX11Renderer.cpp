@@ -105,8 +105,13 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-	_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>("Resources/Textures/Particles/flare.dds", 200);
+	auto particle = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 200);
+	ResourceManager::GetInstance()->AddParticle(particle);
 
+	auto particle2 = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 200);
+	particle2->SetEmitPos(DirectX::XMFLOAT3{ 10.0f, 10.0f, 0.0f });
+	ResourceManager::GetInstance()->AddParticle(particle2);
+	
 	SetPickingTexture();
 }
 
@@ -212,7 +217,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	}
 	if (GetAsyncKeyState('H') & 0x8000)
 	{
-		_particle->Reset();
+		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+		{
+			index->Reset();
+		}
 	}
 
 	// particle
@@ -221,7 +229,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	timaplus += time;
 	float gameTime = 0.0f;
 	gameTime += time;
-	_particle->Update(timaplus, gameTime);
+
+	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	{
+		index->Update(timaplus, gameTime);
+	}
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
@@ -333,7 +345,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	}
 
 	// particle을 그린다
-	_particle->Draw(_mainCamera);
+	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	{
+		index->Draw(_mainCamera);
+	}
 
 	// UI IMAGE 렌더링
 	for (const auto& index : ResourceManager::GetInstance()->GetUIImageList())
