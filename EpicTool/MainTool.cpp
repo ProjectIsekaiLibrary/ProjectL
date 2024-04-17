@@ -12,6 +12,7 @@
 #include "DataControlWindow.h"
 #include "GraphicWindow.h"
 #include "GameWindow.h"
+#include "NavimashEditor.h"
 
 #include "IWindow.h"
 #include "FileLoad.h"
@@ -52,8 +53,8 @@ EpicTool::MainTool::~MainTool()
 
 HRESULT EpicTool::MainTool::Initialize()
 {
-	_console = GetConsoleWindow();
-	ShowWindow(_console, SW_SHOW);
+	//_console = GetConsoleWindow();
+	//ShowWindow(_console, SW_SHOW);
 
      wc = { sizeof(wc), CS_CLASSDC, WndProc, 0L, 0L, GetModuleHandle(nullptr), nullptr, nullptr, nullptr, nullptr, L"ImGui Example", nullptr };
     ::RegisterClassExW(&wc);
@@ -132,6 +133,8 @@ HRESULT EpicTool::MainTool::Initialize()
 	_saveloadWindow->Initialize();
 
     _gameWindow = new GameWindow();   
+
+    _navimeshEditor = new NavimashEditor();
 
     return 1;
 }
@@ -352,6 +355,8 @@ void EpicTool::MainTool::ShowWindowFunction()
 	_gameWindow->ShowWindow();
 
 	_saveloadWindow->ShowWindow(_toolClose);
+
+    _navimeshEditor->ShowWindow();
 
   
 }
