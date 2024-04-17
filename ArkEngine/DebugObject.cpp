@@ -94,7 +94,7 @@ bool ArkEngine::ArkDX11::DebugObject::GetActive()
 	return _renderableState;
 }
 
-void ArkEngine::ArkDX11::DebugObject::SetActvie(bool tf)
+void ArkEngine::ArkDX11::DebugObject::SetActive(bool tf)
 {
 	_renderableState = tf;
 }

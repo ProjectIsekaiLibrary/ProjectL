@@ -61,7 +61,7 @@ namespace ArkEngine
 
 		public:
 			virtual bool GetActive() override;
-			virtual void SetActvie(bool tf) override;
+			virtual void SetActive(bool tf) override;
 
 		public:
 			void Initialize() override;

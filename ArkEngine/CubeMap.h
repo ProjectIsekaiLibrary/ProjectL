@@ -33,8 +33,8 @@ namespace ArkEngine
 		public:
 			virtual void Update(ArkEngine::ICamera* p_Camera) override;
 			virtual void Render() override;
-			virtual std::string GetName() override;
-			virtual std::string GetTextureName() override;
+			virtual const std::string& GetName() override;
+			virtual const std::string& GetTextureName() override;
 
 		private:
 			void BuildGeometryBuffers();

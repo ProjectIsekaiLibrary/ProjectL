@@ -17,7 +17,7 @@ namespace GInterface
 		// 디버그 객체 그리기 여부 가져오기
 		virtual bool GetActive() abstract;
 		// 디버그 객체 그리기 여부 설정
-		virtual void SetActvie(bool tf) abstract;
+		virtual void SetActive(bool tf) abstract;
 
 		// 디버그 객체의 트랜스폼 설정	
 		virtual void SetTransform(const DirectX::XMFLOAT4X4& matrix) abstract;

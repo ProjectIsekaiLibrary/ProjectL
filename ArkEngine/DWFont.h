@@ -101,10 +101,10 @@ namespace ArkEngine
 			void Finalize();
 
 		public:
-			void RenderText(int posX, int posY, std::string text, float fontSize = 20.0f, DirectX::XMFLOAT4 color = DirectX::XMFLOAT4(255.0f,255.0f,255.0f,255.0f));
+			void RenderText(int posX, int posY, std::string text, float fontSize = 20.0f, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(255.0f,255.0f,255.0f,255.0f));
 
 		private:
-			ID2D1SolidColorBrush* CreateBrush(DirectX::XMFLOAT4 color);
+			ID2D1SolidColorBrush* CreateBrush(const DirectX::XMFLOAT4& color);
 
 			IDWriteTextFormat* CreateTextFormat(float fontSize);
 			IDWriteTextLayout* CreateTextLayout(POINT pos, std::string text, IDWriteTextFormat* textFormat);

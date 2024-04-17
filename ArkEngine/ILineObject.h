@@ -19,7 +19,7 @@ namespace ArkEngine
 		virtual ~ILineObject() {};
 
 	public:
-		virtual void Initialize(DirectX::XMFLOAT3 vertex1, DirectX::XMFLOAT3 vertex2, DirectX::XMFLOAT4 color) abstract;
+		virtual void Initialize(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color) abstract;
 
 		virtual void Update(ArkEngine::ICamera* camera) abstract;
 
