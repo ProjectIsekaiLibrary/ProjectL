@@ -5,7 +5,7 @@
 
 KunrealEngine::MeshRenderer::MeshRenderer()
 	:_mesh(nullptr), _transform(nullptr), _reflect(0.f, 0.f, 0.f, 0.f), _isPickable(false)
-	, _meshFileName(""), _textureName(""), _normalName("")
+	, _meshFileName(""), _textureName(""), _normalName(""), _isShadow(true), _isCartoon(false)
 {
 
 }
@@ -95,6 +95,12 @@ void KunrealEngine::MeshRenderer::SetMeshObject(const char* fileName, bool isSol
 	this->_meshFileName = fileName;
 
 	this->GetOwner()->AddComponentParam<Animator>(_mesh);
+
+	// 그림자는 기본적으로 표시해줘야 하는데, 컴포넌트에서 false로 따로 지정해준게 아니라면 그래픽스에 그림자 그리라고 전달
+	if (this->_isShadow)
+	{
+		SetShadowState(true);
+	}
 }
 
 GInterface::GraphicsRenderable* KunrealEngine::MeshRenderer::GetMeshObject()
@@ -273,12 +279,23 @@ void KunrealEngine::MeshRenderer::DeleteParentBone()
 	this->_mesh->DeleteParentBone();
 }
 
-void KunrealEngine::MeshRenderer::SetShadowState(bool tf)
+void KunrealEngine::MeshRenderer::SetShadowState(bool flag)
 {
-	this->_mesh->SetShadowState(tf);
+	this->_mesh->SetShadowState(flag);
 }
 
 bool KunrealEngine::MeshRenderer::GetShadowState()
 {
 	return _mesh->GetShadowState();
+}
+
+
+void KunrealEngine::MeshRenderer::SetCartoonState(bool flag)
+{
+	this->_mesh->SetShadowState(flag);
+}
+
+bool KunrealEngine::MeshRenderer::GetCartoonState()
+{
+	return this->_mesh->GetCartoonRenderingState();
 }

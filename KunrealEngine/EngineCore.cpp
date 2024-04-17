@@ -313,8 +313,8 @@ void KunrealEngine::EngineCore::PlayGround()
 	//testCamera->GetComponent<Camera>()->RotateCamera(5.f, 0.f);
 	testCamera->GetComponent<Camera>()->SetMainCamera();
 	
-	//testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
-	//testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
+	testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
+	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
