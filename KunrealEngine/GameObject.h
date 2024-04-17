@@ -74,6 +74,9 @@ namespace KunrealEngine
 		// 자식 오브젝트들이 담겨있는 컨테이너 반환
 		std::vector<GameObject*> GetChilds();
 
+		// 현재 소속된 scene 반환
+		Scene* GetObjectScene();
+
 		// 활성화 여부를 정해주는 함수
 		// true = 활성화 / false = 비활성화
 		void SetActive(bool active);

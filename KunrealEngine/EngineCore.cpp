@@ -60,6 +60,12 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0);
+	
+	std::vector<DirectX::XMFLOAT3> vertices;
+	std::vector<int> indices;
+
+	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+
 	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	navigationInstance.HandleBuild(1);
 	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
