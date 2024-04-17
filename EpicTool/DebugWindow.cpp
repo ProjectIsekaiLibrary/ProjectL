@@ -96,6 +96,7 @@ void EpicTool::DebugWindow::ShowInspectorDebug()
 	default:
 		break;
 	}
+	_typeInspector = EpicTool::None;
 }
 
 void EpicTool::DebugWindow::GetDeleteObjectName(std::string& objectName)

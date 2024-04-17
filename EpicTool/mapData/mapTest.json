@@ -46,7 +46,6 @@
                     "cube/cube"
                 ],
                 "Normal": [
-                    "Resources/Textures/floor_nmap.dds"
                 ]
             },
             "meshRenderingState": true,
