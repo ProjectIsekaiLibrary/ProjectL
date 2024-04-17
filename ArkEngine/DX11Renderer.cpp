@@ -37,7 +37,6 @@
 
 static int testdef = 9;
 
-
 GInterface::GraphicsInterface* CreateGraphicsEngine()
 {
 	return new ArkEngine::ArkDX11::DX11Renderer();
@@ -106,8 +105,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-	// 파티클 초기화 추가(2,3번째 매개변수로 집어 넣기 위해 따로 함수로 만들어 줘야한다)
-	//_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>(_device);
+	
+	_particle = std::make_unique<ArkEngine::ArkDX11::ParticleSystem>();
+	_randomTexSTV = _particle->CreateRandomTextureSRV(_device.Get());
+	std::vector<std::wstring> flame;
+	flame.push_back(L"Resources/Textures/Particles/flare.dds");
+	_flameTexSTV = _particle->CreateTexture2DArraySRV(_device.Get(), _deviceContext.Get(),flame);
+	_particle->Initialize(_device.Get(), _flameTexSTV, _randomTexSTV, 200);
+	_particle->SetEmitPos(DirectX::XMFLOAT3(0.0f, 20.0f, 0.0f));
 
 	SetPickingTexture();
 }
@@ -212,6 +217,18 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		testdef = 9;
 	}
+	if (GetAsyncKeyState('H') & 0x8000)
+	{
+		_particle->Reset();
+	}
+
+	// particle
+	float time = 0.016f;
+	float timaplus = 0.0f;
+	timaplus += time;
+	float gameTime = 0.0f;
+	gameTime += time;
+	_particle->Update(timaplus, gameTime);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
@@ -220,6 +237,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	// 광원의 위치에 카메라로 설정
 	const auto& lightIndexList = LightManager::GetInstance()->GetActiveIndexList();
+
+
 
 	// 빛이 있다면
 	if (lightIndexList.empty() == false)
@@ -252,6 +271,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 디퍼드 버퍼에 기존 카메라 시점에서의 오브젝트들을 렌더링 하기 위한 준비
 	BeginRender();
 
+
+
 	for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
 	{
 		// 그려지고 프러스텀 내에 들어온 (시야에 들어온) 오브젝트들만
@@ -265,6 +286,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 			index->Render(0);
 		}
 	}
+
+
 
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
@@ -281,14 +304,18 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
 
+
 	// 디퍼드 버퍼를 조합하여 빈 Texture2D에 완성된 화면을 출력함
 	_deferredRenderer->Render();
+
 
 	// 큐브맵 렌더링
 	if (_mainCubeMap != nullptr)
 	{
 		_mainCubeMap->Render();
 	}
+
+
 
 	// 디버그 모드일 경우
 	if (_isDebugMode)
@@ -312,6 +339,13 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		_font->Render();
 	}
 
+	// particle을 그린다
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	_particle->SetEyePos(_mainCamera->GetCameraPos());
+	_particle->Draw(_deviceContext.Get(), _mainCamera);
+	_deviceContext->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
+
+
 	// UI IMAGE 렌더링
 	for (const auto& index : ResourceManager::GetInstance()->GetUIImageList())
 	{
@@ -322,7 +356,15 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		}
 	}
 
-	// 화면에 Present -> 실질적으로 화면에 보일 수 있도록 함
+	ID3D11ShaderResourceView* srv = NULL;
+
+	for (int i = 0; i < static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT); i++)
+	{
+		_deviceContext->PSSetShaderResources(i, 1, &srv);
+	}
+
+
+
 	EndRender();
 }
 
@@ -806,6 +848,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	backBuffer->Release();
 	renderingImage->Release();
 
+
 	if (testdef == 9)
 	{
 		return static_cast<void*> (_renderingImageView);
@@ -818,6 +861,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRV(testdef));
 	}
+	
 }
 
 void* ArkEngine::ArkDX11::DX11Renderer::GetDevice()

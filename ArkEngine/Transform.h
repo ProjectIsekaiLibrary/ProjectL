@@ -35,7 +35,7 @@ namespace ArkEngine
 
 			const DirectX::XMMATRIX GetScaleMatrix() const;
 
-			void SetTransformMatrix(DirectX::XMFLOAT4X4 matrix);
+			void SetTransformMatrix(const DirectX::XMFLOAT4X4& matrix);
 
 			void SetTranslationMatrix(float translateX = 0, float translateY = 0, float translateZ = 0);
 

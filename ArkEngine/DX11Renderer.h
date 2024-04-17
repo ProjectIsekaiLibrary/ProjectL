@@ -39,7 +39,8 @@ namespace ArkEngine
 		class DWFont;
 
 		// 추가
-		class ParticleSystem;
+		//class ParticleSystem;
+		//class ArkEffect;
 	}
 
 	namespace FBXLoader
@@ -285,6 +286,12 @@ namespace ArkEngine
 			//추가
 		private:
 			std::unique_ptr<ArkEngine::ArkDX11::ParticleSystem> _particle;
+
+			
+			ArkEffect* _arkEffect;
+
+			ID3D11ShaderResourceView* _flameTexSTV;
+			ID3D11ShaderResourceView* _randomTexSTV;
 
 		};
 	}

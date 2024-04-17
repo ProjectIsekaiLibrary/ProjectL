@@ -84,7 +84,7 @@ const DirectX::XMMATRIX ArkEngine::ArkDX11::Transform::GetScaleMatrix() const
 	return scaleMatirx;
 }
 
-void ArkEngine::ArkDX11::Transform::SetTransformMatrix(DirectX::XMFLOAT4X4 matrix)
+void ArkEngine::ArkDX11::Transform::SetTransformMatrix(const DirectX::XMFLOAT4X4& matrix)
 {
 	_transform = matrix;
 }

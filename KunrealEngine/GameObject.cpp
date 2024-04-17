@@ -216,6 +216,12 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		{
 			this->GetComponent<ImageRenderer>()->SetImageStatus(false);
 		}
+
+		// physx 관련 부분
+		if (this->GetComponent<BoxCollider>() != nullptr)
+		{
+			this->GetComponent<BoxCollider>()->_debugObject->SetActvie(false);
+		}
 	}
 	else
 	{
@@ -233,6 +239,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		if (this->GetComponent<ImageRenderer>() != nullptr)
 		{
 			this->GetComponent<ImageRenderer>()->SetImageStatus(this->GetComponent<ImageRenderer>()->GetActivated());
+		}
+
+		if (this->GetComponent<BoxCollider>() != nullptr)
+		{
+			this->GetComponent<BoxCollider>()->_debugObject->SetActvie(this->GetComponent<BoxCollider>()->GetActivated());
 		}
 	}
 

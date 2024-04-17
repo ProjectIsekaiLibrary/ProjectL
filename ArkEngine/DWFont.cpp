@@ -84,7 +84,7 @@ void ArkEngine::ArkDX11::DWFont::Finalize()
 	_d2dFactory->Release();
 }
 
-void ArkEngine::ArkDX11::DWFont::RenderText(int posX, int posY, std::string text, float fontSize, DirectX::XMFLOAT4 color)
+void ArkEngine::ArkDX11::DWFont::RenderText(int posX, int posY, std::string text, float fontSize, const DirectX::XMFLOAT4& color)
 {
 	for (auto index = 0; index < _textList.size(); index++)
 	{
@@ -118,7 +118,7 @@ void ArkEngine::ArkDX11::DWFont::RenderText(int posX, int posY, std::string text
 	_textList.emplace_back(newFont);
 }
 
-ID2D1SolidColorBrush* ArkEngine::ArkDX11::DWFont::CreateBrush(DirectX::XMFLOAT4 color)
+ID2D1SolidColorBrush* ArkEngine::ArkDX11::DWFont::CreateBrush(const DirectX::XMFLOAT4& color)
 {
 	auto iter = _brushList.find(color);
 

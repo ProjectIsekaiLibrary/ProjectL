@@ -119,7 +119,7 @@ void KunrealEngine::BoxCollider::SetActive(bool active)
 		this->_isCollided = false;
 	}
 
-	_debugObject->SetActvie(active);
+	_debugObject->SetActive(active);
 }
 
 bool KunrealEngine::BoxCollider::IsCollided()

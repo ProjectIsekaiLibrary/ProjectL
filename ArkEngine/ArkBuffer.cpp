@@ -3,7 +3,7 @@
 #include "ArkDevice.h"
 #include "ArkBuffer.h"
 
-ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCount, std::vector<ArkEngine::ArkDX11::Vertex> vertexList, int totalIndexCount, std::vector<UINT> indexList)
+ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCount, const std::vector<ArkEngine::ArkDX11::Vertex>& vertexList, int totalIndexCount, const std::vector<UINT>& indexList)
 	: _vertexBuffer(nullptr), _indexBuffer(nullptr), _totalVertexCount(totalVertexCount), _totalIndexCount(totalIndexCount), _minPos(), _maxPos()
 {
 	CreateVertexBuffer(totalVertexCount, vertexList);
@@ -21,7 +21,7 @@ ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCo
 	Load(fileName);
 }
 
-ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCount, std::vector<ArkEngine::ArkDX11::PosColor> vertexList, int totalIndexCount, std::vector<unsigned int> indexList)
+ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCount, const std::vector<ArkEngine::ArkDX11::PosColor>& vertexList, int totalIndexCount, const std::vector<unsigned int>& indexList)
 	: _vertexBuffer(nullptr), _indexBuffer(nullptr), _totalVertexCount(totalVertexCount), _totalIndexCount(totalIndexCount), _minPos(), _maxPos()
 {
 	CreatePosColorBuffer(totalVertexCount, vertexList);
@@ -39,7 +39,7 @@ ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCo
 	Load(fileName);
 }
 
-ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCount, std::vector<ArkEngine::ArkDX11::Postex> vertexList, int totalIndexCount, std::vector<unsigned int> indexList)
+ArkEngine::ArkDX11::ArkBuffer::ArkBuffer(const char* fileName, int totalVertexCount, const std::vector<ArkEngine::ArkDX11::Postex>& vertexList, int totalIndexCount, const std::vector<unsigned int>& indexList)
 	:_vertexBuffer(nullptr), _indexBuffer(nullptr), _totalVertexCount(totalVertexCount), _totalIndexCount(totalIndexCount), _minPos(), _maxPos()
 {
 	CreatePosTexBuffer(totalVertexCount, vertexList);
@@ -86,22 +86,22 @@ const unsigned int ArkEngine::ArkDX11::ArkBuffer::GetTotalIndexCount()
 	return _totalIndexCount;
 }
 
-std::vector<DirectX::XMFLOAT3> ArkEngine::ArkDX11::ArkBuffer::GetVertexPosList()
+const std::vector<DirectX::XMFLOAT3>& ArkEngine::ArkDX11::ArkBuffer::GetVertexPosList()
 {
 	return _vertexPosList;
 }
 
-std::vector<unsigned int> ArkEngine::ArkDX11::ArkBuffer::GetIndexList()
+const std::vector<unsigned int>& ArkEngine::ArkDX11::ArkBuffer::GetIndexList()
 {
 	return _indexList;
 }
 
-DirectX::XMFLOAT3 ArkEngine::ArkDX11::ArkBuffer::GetMaxPos()
+const DirectX::XMFLOAT3& ArkEngine::ArkDX11::ArkBuffer::GetMaxPos()
 {
 	return _maxPos;
 }
 
-DirectX::XMFLOAT3 ArkEngine::ArkDX11::ArkBuffer::GetMinPos()
+const DirectX::XMFLOAT3& ArkEngine::ArkDX11::ArkBuffer::GetMinPos()
 {
 	return _minPos;
 }

@@ -21,7 +21,7 @@ namespace ArkEngine
 		virtual void Update(ArkEngine::ICamera* camera) abstract;
 		virtual void Render() abstract;
 
-		virtual std::string GetName() abstract;
-		virtual std::string GetTextureName() abstract;
+		virtual const std::string& GetName() abstract;
+		virtual const std::string& GetTextureName() abstract;
 	};
 }
