@@ -137,11 +137,9 @@ void ArkEngine::ArkDX11::DebugObject::Initialize()
 
 void ArkEngine::ArkDX11::DebugObject::Update(ArkEngine::ICamera* p_Camera)
 {
-	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
-
 	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
-	DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
-	DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
+	DirectX::XMStoreFloat4x4(&_view, p_Camera->GetViewMatrix());
+	DirectX::XMStoreFloat4x4(&_proj, p_Camera->GetProjMatrix());
 
 	_fxFrustum->SetFloatVectorArray(reinterpret_cast<float*>(&p_Camera->GetFrustum()[0]), 0, static_cast<uint32_t>(p_Camera->GetFrustum().size()));
 

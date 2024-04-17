@@ -97,6 +97,8 @@ namespace KunrealEngine
 
 		void SortCorePattern();
 
+		void SetSubObjectScene();
+
 	private:
 		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 

@@ -836,11 +836,9 @@ void ArkEngine::ArkDX11::FBXMesh::SetMainCamera(ArkEngine::ICamera* camera)
 {
 	_mainCamera = camera;
 
-	auto newCamera = static_cast<ArkEngine::ArkDX11::Camera*>(_mainCamera);
-
 	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
-	DirectX::XMStoreFloat4x4(&_view, newCamera->GetViewMatrix());
-	DirectX::XMStoreFloat4x4(&_proj, newCamera->GetProjMatrix());
+	DirectX::XMStoreFloat4x4(&_view, camera->GetViewMatrix());
+	DirectX::XMStoreFloat4x4(&_proj, camera->GetProjMatrix());
 }
 
 

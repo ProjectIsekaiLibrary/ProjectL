@@ -291,8 +291,6 @@ namespace ArkEngine
 			ArkEffect* _arkEffect;
 
 			ID3D11ShaderResourceView* _flameTexSTV;
-			ID3D11ShaderResourceView* _randomTexSTV;
-
 		};
 	}
 }
