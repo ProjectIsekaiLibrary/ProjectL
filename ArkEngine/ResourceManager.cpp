@@ -109,12 +109,7 @@ void ArkEngine::ResourceManager::AddDebugObject(ArkEngine::IDebugObject* object)
 
 void ArkEngine::ResourceManager::DeleteDebugObject(ArkEngine::IDebugObject* object)
 {
-	auto it = std::find(_debugList.begin(), _debugList.end(), object);
-	if (it != _debugList.end()) 
-	{
-		delete* it;
-		_debugList.erase(it);
-	}
+	_debugList.erase(std::remove(_debugList.begin(), _debugList.end(), object), _debugList.end());
 }
 
 const std::vector<ArkEngine::ILineObject*>& ArkEngine::ResourceManager::GetLineObjectList()
