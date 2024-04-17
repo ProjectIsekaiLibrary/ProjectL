@@ -60,6 +60,12 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0);
+	
+	std::vector<DirectX::XMFLOAT3> vertices;
+	std::vector<int> indices;
+
+	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+
 	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	navigationInstance.HandleBuild(1);
 	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
@@ -328,7 +334,7 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
-	kamen->DeleteComponent(kamen->GetComponent<Kamen>());
+	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
