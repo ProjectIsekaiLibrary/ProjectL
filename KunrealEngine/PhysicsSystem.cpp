@@ -317,6 +317,12 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	BoxCollider* col1 = GetColliderFromDynamic(casted1);
 	BoxCollider* col2 = GetColliderFromDynamic(casted2);
 
+	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
+	if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
+	{
+		return;
+	}
+
 	// 충돌이 발생했을 때
 	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
 		&& col1->GetActivated() && col2->GetActivated())
