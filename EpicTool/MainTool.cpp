@@ -135,6 +135,7 @@ HRESULT EpicTool::MainTool::Initialize()
     _gameWindow = new GameWindow();   
 
     _navimeshEditor = new NavimashEditor();
+    _navimeshEditor->Initialize();
 
     return 1;
 }

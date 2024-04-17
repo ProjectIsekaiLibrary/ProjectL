@@ -1,11 +1,12 @@
 #include "NavimashEditor.h"
 #include "imgui.h"
-//#include "Navigation.h"
+#include "KunrealAPI.h"
 
 #include <iostream>
 #include <fstream>
 
 EpicTool::NavimashEditor::NavimashEditor()
+	:_naviIndex(0), _agentHeight(0), _agentRadius(0), _agentMaxClimb(0), _agentMaxSlope(0)
 {
 
 }
@@ -17,7 +18,7 @@ EpicTool::NavimashEditor::~NavimashEditor()
 
 void EpicTool::NavimashEditor::Initialize()
 {
-
+	_navimashEditor = &KunrealEngine::Navigation::GetInstance();
 }
 
 void EpicTool::NavimashEditor::ShowWindow()
@@ -29,30 +30,23 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Agent");
 
-	if (ImGui::SliderFloat("Height", &AgentHeight, 0.0f, 5.0f))
-	{
-		// 값 반영
-	}
+	ImGui::SliderFloat("Height", &_agentHeight, 0.0f, 5.0f);
 
-	if (ImGui::SliderFloat("Radius", &AgentRadius, 0.0f, 5.0f))
-	{
-		// 값 반영
-	}
+	ImGui::SliderFloat("Radius", &_agentRadius, 0.0f, 10.0f);
 
-	if (ImGui::SliderFloat("Max Climb", &AgentMaxClimb, 0.0f, 5.0f))
-	{
-		// 값 반영
-	}
+	ImGui::SliderFloat("Max Climb", &_agentMaxClimb, 0.0f, 5.0f);
 
-	if (ImGui::SliderFloat("Max Slope", &AgentMaxSlope, 0.0f, 5.0f))
-	{
-		// 값 반영
-	}
+	ImGui::SliderFloat("Max Slope", &_agentMaxSlope, 0.0f, 90.0f);
 
 	if (ImGui::Button("Build"))
 	{
-
+		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
+		_navimashEditor->HandleBuild(_naviIndex);
 	}
+
+	ImGui::SameLine();
+
+	ImGui::InputInt("ObjectIndex", &_naviIndex);
 
 	ImGui::End();
 

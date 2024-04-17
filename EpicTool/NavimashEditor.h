@@ -2,9 +2,14 @@
 #include "IWindow.h"
 
 
+namespace KunrealEngine
+{
+	class Navigation;
+}
 
 namespace EpicTool
 {
+
 	class NavimashEditor : public IWindow
 	{
 	public:
@@ -18,9 +23,13 @@ namespace EpicTool
 		void Initialize();
 
 	private:
-		float AgentHeight;
-		float AgentRadius;
-		float AgentMaxClimb;
-		float AgentMaxSlope;
+		int _naviIndex;
+
+		float _agentHeight;
+		float _agentRadius;
+		float _agentMaxClimb;
+		float _agentMaxSlope;
+
+		KunrealEngine::Navigation* _navimashEditor;
 	};
 }
