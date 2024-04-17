@@ -119,7 +119,7 @@ namespace KunrealEngine
 		void SetAgent(int index, float agentHeight, float agentMaxSlope, float agentRadius, float agentMaxClimb);
 
 		// 네비매쉬를 빌드하기 위해 vertex와 index를 제공해주는 함수(예정)
-		void GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<int>& indices);
+		void GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices);
 	private:
 		int rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, struct TileCacheData* tiles, const int maxTiles);
 		void getTilePos(const float* pos, int& tx, int& ty);
