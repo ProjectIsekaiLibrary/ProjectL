@@ -135,7 +135,13 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 			}
 			else if (ImGui::IsMouseClicked(0))
 			{
-				selectedObjectIndex = -1;
+				ImVec2 clickPos = ImGui::GetMousePos();
+				ImVec2 windowPos = ImGui::GetWindowPos();
+				ImVec2 windowSize = ImGui::GetWindowSize();
+				if (!(clickPos.x < windowPos.x || clickPos.y < windowPos.y || clickPos.x > windowPos.x + windowSize.x || clickPos.y > windowPos.y + windowSize.y))
+				{
+					selectedObjectIndex = -1; 
+				}
 			}
 
 			ImGui::PopStyleColor();
