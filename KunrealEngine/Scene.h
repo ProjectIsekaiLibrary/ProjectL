@@ -58,7 +58,7 @@ namespace KunrealEngine
 		std::string GetSceneName();
 
 		// scene이 가지고 있는 오브젝트들의 목록을 반환
-		std::vector<GameObject*> GetObjectList();
+		std::vector<GameObject*>& GetObjectList();
 
 		// 전달받은 이름의 특정 오브젝트를 반환
 		GameObject* GetGameObject(std::string objectName);

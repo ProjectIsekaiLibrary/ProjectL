@@ -77,6 +77,10 @@ namespace KunrealEngine
 		// 현재 소속된 scene 반환
 		Scene* GetObjectScene();
 
+		// 소속된 scene을 바꿔주는 함수
+		void MoveToScene(Scene* scene);
+		void MoveToScene(std::string sceneName);
+
 		// 활성화 여부를 정해주는 함수
 		// true = 활성화 / false = 비활성화
 		void SetActive(bool active);

@@ -197,6 +197,30 @@ KunrealEngine::Scene* KunrealEngine::GameObject::GetObjectScene()
 	return SceneManager::GetInstance().GetScene(_sceneName);
 }
 
+void KunrealEngine::GameObject::MoveToScene(Scene* scene)
+{
+	// 해당 scene에 이 오브젝트 추가
+	scene->AddObject(this);
+
+	// 기존 scene에서 이 오브젝트 삭제
+	auto iter = find(GetObjectScene()->GetObjectList().begin(), GetObjectScene()->GetObjectList().end(), this);
+	if (iter != GetObjectScene()->GetObjectList().end())
+	{
+		GetObjectScene()->GetObjectList().erase(iter);
+	}
+
+	// 이동한 scene과 현재 scene이 다르다면 비활성화	// 그래픽스 쪽에서 render 하지 않기 위해
+	if (SceneManager::GetInstance().GetCurrentScene() != scene)
+	{
+		SetActive(false);
+	}
+}
+
+void KunrealEngine::GameObject::MoveToScene(std::string sceneName)
+{
+
+}
+
 void KunrealEngine::GameObject::SetActive(bool active)
 {
 	this->_isActivated = active;
