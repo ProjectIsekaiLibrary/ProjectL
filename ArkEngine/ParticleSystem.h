@@ -55,14 +55,14 @@ namespace ArkEngine
 			
 			void SetParticleSize(const DirectX::XMFLOAT2& particleSize);
 			void SetEmitVelocity(float emitVelocity, bool isRandom);
-
+			void SetParticleTime(float particleFadeTime, float particleLifeTime);
 
 			float GetRandomFloat(float minNum, float maxNum);
+			void SetEyePos(const DirectX::XMFLOAT3& eyePosW);
 		private:
 			// 시스템이 (재)설정된 후 흐른 시간
 			float GetAge() const;
 
-			void SetEyePos(const DirectX::XMFLOAT3& eyePosW);
 			
 			void Initialize(const std::wstring& fileNameList, unsigned int maxParticle);
 			void Initialize(const std::vector<std::wstring>& fileName, unsigned int maxParticle);
@@ -79,6 +79,9 @@ namespace ArkEngine
 			
 		private:
 			bool _isRandom;
+			float _particleLifeTime;
+			float _particleFadeTime;
+			std::string _fileName;
 
 		private:
 			unsigned int _maxParticles;
@@ -111,6 +114,9 @@ namespace ArkEngine
 			ID3DX11EffectVectorVariable* _particleSizeEffect;
 			ID3DX11EffectVectorVariable* _emitVelocityEffect;
 			ID3DX11EffectScalarVariable* _isRandomEffect;
+			ID3DX11EffectScalarVariable* _particleFadeTimeEffect;
+			ID3DX11EffectScalarVariable* _particleLifeTimeEffect;
+
 
 			ID3DX11EffectShaderResourceVariable* _texArray;
 			ID3DX11EffectShaderResourceVariable* _randomTex;
@@ -137,6 +143,8 @@ namespace ArkEngine
 
 			void SetParticleSizeW(const DirectX::XMFLOAT2& v);
 			void SetEmitVelocityW(const DirectX::XMFLOAT3& v);
+
+			void SetParticleTimeW(float f1, float f2);
 		};
 	}
 
