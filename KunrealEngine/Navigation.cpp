@@ -366,38 +366,38 @@ namespace KunrealEngine
 
 	void Navigation::GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices)
 	{
-// 		const dtNavMesh* navmesh = _package[index]._navMesh;
-// 		// NavMesh에서 모든 타일을 반복하여 처리
-// 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
-// 		{
-// 			const dtMeshTile* tile = navmesh->getTile(i);
-// 			if (!tile || !tile->header) continue;
-// 		
-// 			// 타일의 폴리곤을 반복하여 처리
-// 			for (int j = 0; j < tile->header->polyCount; ++j)
-// 			{
-// 				const dtPoly* poly = &tile->polys[j];
-// 				if (poly->getType() == DT_POLYTYPE_GROUND)
-// 				{
-// 					// 폴리곤의 vertex 인덱스를 추출하여 indices에 추가
-// 					for (int k = 0; k < poly->vertCount; ++k)
-// 					{
-// 						const int vertIndex = poly->verts[k];
-// 						indices.push_back(vertices.size()); // 인덱스 추가
-// 						// 타일 내 vertex 좌표를 추출하여 vertices에 추가
-// 						const float* pos = &tile->verts[vertIndex * 3]; 
-// 						vertices.push_back(DirectX::XMFLOAT3(pos[0], pos[1], pos[2]));
-// 					}
-// 				}
-// 			}
-// 		}
+		// 		const dtNavMesh* navmesh = _package[index]._navMesh;
+		// 		// NavMesh에서 모든 타일을 반복하여 처리
+		// 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
+		// 		{
+		// 			const dtMeshTile* tile = navmesh->getTile(i);
+		// 			if (!tile || !tile->header) continue;
+		// 		
+		// 			// 타일의 폴리곤을 반복하여 처리
+		// 			for (int j = 0; j < tile->header->polyCount; ++j)
+		// 			{
+		// 				const dtPoly* poly = &tile->polys[j];
+		// 				if (poly->getType() == DT_POLYTYPE_GROUND)
+		// 				{
+		// 					// 폴리곤의 vertex 인덱스를 추출하여 indices에 추가
+		// 					for (int k = 0; k < poly->vertCount; ++k)
+		// 					{
+		// 						const int vertIndex = poly->verts[k];
+		// 						indices.push_back(vertices.size()); // 인덱스 추가
+		// 						// 타일 내 vertex 좌표를 추출하여 vertices에 추가
+		// 						const float* pos = &tile->verts[vertIndex * 3]; 
+		// 						vertices.push_back(DirectX::XMFLOAT3(pos[0], pos[1], pos[2]));
+		// 					}
+		// 				}
+		// 			}
+		// 		}
 		const dtNavMesh* navmesh = _package[index]._navMesh;
 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
 		{
 			const dtMeshTile* tile = navmesh->getTile(i);
 			if (tile->header == nullptr)
 			{
-				return;
+				break;
 			}
 
 			for (int j = 0; j < tile->header->polyCount; ++j)
@@ -423,7 +423,14 @@ namespace KunrealEngine
 					}
 				}
 			}
- 		}
+		}
+
+		for (unsigned int i = 1; i < vertices.size(); i += 3)
+		{
+			indices.push_back(i - 1);
+			indices.push_back(i);
+			indices.push_back(i + 1);
+		}
 	}
 
 	int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)
@@ -917,6 +924,15 @@ namespace KunrealEngine
 		}
 
 		return true;
+	}
+
+	bool Navigation::compareXMFLOAT3(DirectX::XMFLOAT3 v1, DirectX::XMFLOAT3 v2)
+	{
+		bool result = true;
+		result = v1.x == v2.x ? false : result;
+		result = v1.y == v2.y ? false : result;
+		result = v1.z == v2.z ? false : result;
+		return false;
 	}
 
 	DirectX::XMFLOAT3 Navigation::vertex(const float* pos)
