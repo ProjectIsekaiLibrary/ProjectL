@@ -282,17 +282,6 @@ namespace ArkEngine
 		private:
 			D3D11_VIEWPORT _viewPort;
 			D3D11_VIEWPORT _shadowViewPort;
-
-			//Ãß°¡
-		private:
-			std::unique_ptr<ArkEngine::ArkDX11::ParticleSystem> _particle;
-
-			
-			ArkEffect* _arkEffect;
-
-			ID3D11ShaderResourceView* _flameTexSTV;
-			ID3D11ShaderResourceView* _randomTexSTV;
-
 		};
 	}
 }

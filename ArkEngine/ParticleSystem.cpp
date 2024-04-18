@@ -1,4 +1,5 @@
 #include <d3d11.h>
+#include <string>
 #include "ResourceManager.h"
 #include "ArkDevice.h"
 #include "Camera.h"
@@ -6,22 +7,62 @@
 #include "d3dx11effect.h"
 #include "ParticleEffect.h"
 #include "DXTK/DirectXTex.h"
+#include "ParticleResource.h"
 
 #include "ParticleSystem.h"
 
-ArkEngine::ArkDX11::ParticleSystem::ParticleSystem()
-	:_maxParticles(0), _firstRun(true),
+
+ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleName, const std::string& fileName, unsigned int maxParticle)
+	: _particleName(particleName), _maxParticles(maxParticle), _firstRun(true),
 	_gameTime(0), _timeStep(0), _age(0),
 	_initVB(nullptr), _drawVB(nullptr), _streamOutVB(nullptr),
-	_texArraySRV(nullptr), _randomTexSRV(nullptr)
+	_texArraySRV(nullptr)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitDirW = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+	
+	Initialize(std::wstring(fileName.begin(), fileName.end()), _maxParticles);
+}
+
+ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleName, const std::vector<std::string>& fileNameList, unsigned int maxParticle)
+	:_particleName(particleName), _maxParticles(maxParticle), _firstRun(true),
+	_gameTime(0), _timeStep(0), _age(0),
+	_initVB(nullptr), _drawVB(nullptr), _streamOutVB(nullptr),
+	_texArraySRV(nullptr)
+{
+	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_emitDirW = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+	std::vector<std::wstring> newStringVec;
+
+	for (auto index : fileNameList)
+	{
+		newStringVec.emplace_back(std::wstring(index.begin(), index.end()));
+	}
+
+
+	Initialize(newStringVec, _maxParticles);
 }
 
 ArkEngine::ArkDX11::ParticleSystem::~ParticleSystem()
 {
+	_texArray->Release();
+	_randomTex->Release();
+
+	_viewProjEffect->Release();
+	_gameTimeEffect->Release();
+	_timeStepEffect->Release();
+	_eyePosWEffect->Release();
+	_emitPosWEffect->Release();
+	_emitDirWEffect->Release();
+
+	_streamOutTech->Release();
+	_drawTech->Release();
+
+	_streamOutVB->Release();
+	_drawVB->Release();
 }
 
 float ArkEngine::ArkDX11::ParticleSystem::GetAge() const
@@ -44,17 +85,84 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEmitDir(const DirectX::XMFLOAT3& emi
 	_emitDirW = emitDirW;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::Initialize(ID3D11Device* device, ID3D11ShaderResourceView* texArraySRV, ID3D11ShaderResourceView* randomTexSRV, unsigned int maxParticle)
+void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
 {
-	//maxParticle = _maxParticles;
-	//_arkEffect = new ArkEffect();
+	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
-	_maxParticles = maxParticle;
-	_texArraySRV = texArraySRV;
-	_randomTexSRV = randomTexSRV;
+	if (arkDevice->GetRandomTex() == nullptr)
+	{
+		CreateRandomTextureSRV();
+	}
+
+	auto particleResource = ResourceManager::GetInstance()->GetParticleResource(_particleName);
+	
+	// 이미 만들어진 파티클을 위한 리소스가 존재하지 않는다면
+	if (particleResource == nullptr)
+	{
+		CreateTexture2DArraySRV(fileNameList);
+
+		BuildVB();
+
+		auto resoruce = new ParticleResource(_particleName, _texArraySRV, _initVB);
+	}
+
+	// 존재한다면 있는 것 사용
+	else
+	{
+		/// 두개는 같은 vb를 공유하면 출력이 마지막꺼 하나만 됨; 	std::swap(_drawVB, _streamOutVB); 이거때문인가? 흠..
+		//_drawVB = particleResource->GetDrawVB();
+		//_streamOutVB = particleResource->GetStreamVB();
+		// 그래서 이거로 draw, stream vb를 만들어주는중
+
+		BuildDrawStreamVB();
+
+		_texArraySRV = particleResource->GetTexArray();
+
+		_initVB = particleResource->GetInitVB();
+	}
 
 	SetEffect();
-	BuildVB(device);
+}
+
+
+void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::wstring& fileName, unsigned int maxParticle)
+{
+	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+
+	if (_arkDevice->GetRandomTex() == nullptr)
+	{
+		CreateRandomTextureSRV();
+	}
+
+	auto particleResource = ResourceManager::GetInstance()->GetParticleResource(_particleName);
+
+	// 이미 만들어진 파티클을 위한 리소스가 존재하지 않는다면
+	if (particleResource == nullptr)
+	{
+		CreateTexture2DArraySRV(fileName);
+
+		BuildVB();
+
+		auto resoruce = new ParticleResource(_particleName, _texArraySRV, _initVB);
+
+		ResourceManager::GetInstance()->AddParticleResource(_particleName, resoruce);
+	}
+
+	// 존재한다면 있는 것 사용
+	else
+	{
+		/// 두개는 같은 vb를 공유하면 출력이 마지막꺼 하나만 됨; 	std::swap(_drawVB, _streamOutVB); 이거때문인가? 흠..
+		//_drawVB = particleResource->GetDrawVB();
+		//_streamOutVB = particleResource->GetStreamVB();
+		// 그래서 이거로 draw, stream vb를 만들어주는중
+		BuildDrawStreamVB();
+
+		_texArraySRV = particleResource->GetTexArray();
+		
+		_initVB = particleResource->GetInitVB();
+	}
+
+	SetEffect();
 }
 
 void ArkEngine::ArkDX11::ParticleSystem::Reset()
@@ -71,22 +179,19 @@ void ArkEngine::ArkDX11::ParticleSystem::Update(float deltaTime, float gameTime)
 	_age = deltaTime;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine::ICamera* p_Camera)
+void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 {
-	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
+	auto dc = _arkDevice->GetDeviceContext();
 
-	//dc = arkDevice->GetDeviceContext();
-	auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
-
-	auto cameraView = camera->GetViewMatrix();
-	auto cameraProj = camera->GetProjMatrix();
+	auto cameraView = p_Camera->GetViewMatrix();
+	auto cameraProj = p_Camera->GetProjMatrix();
 
 	DirectX::XMMATRIX VP = cameraView * cameraProj;
 
 	// 입력 조립기 단계를 설정
 	dc->IASetInputLayout(_arkEffect->GetInputLayOut());
 	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-	dc->RSSetState(arkDevice->GetSolidRS());
+	dc->RSSetState(_arkDevice->GetSolidRS());
 
 	unsigned int stride = sizeof(Particle);
 	unsigned int offset = 0;
@@ -99,7 +204,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 	SetEmitPosW(_emitPosW);
 	SetEmitDirW(_emitDirW);
 	SetTexArray(_texArraySRV);
-	SetRandomTex(_randomTexSRV);
+	SetRandomTex(_arkDevice->GetRandomTex());
 
 
 	// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
@@ -156,65 +261,77 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ID3D11DeviceContext* dc, ArkEngine
 
 		dc->DrawAuto();
 	}
+
+	SetEyePos(p_Camera->GetCameraPos());
+
+	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 }
 
-ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateRandomTextureSRV(ID3D11Device* device)
+ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateRandomTextureSRV()
 {
-	// 랜덤 데이터를 생성한다
-	std::vector<DirectX::XMFLOAT4> randomValues(1024);
+	auto device = _arkDevice->GetDevice();
 
-	for (int i = 0; i < 1024; i++)
+	if (_arkDevice->GetRandomTex() == nullptr)
 	{
-		randomValues[i].x = GetRandomFloat(-1.0f, 1.0f);
-		randomValues[i].y = GetRandomFloat(-1.0f, 1.0f);
-		randomValues[i].z = GetRandomFloat(-1.0f, 1.0f);
-		randomValues[i].w = GetRandomFloat(-1.0f, 1.0f);
+		// 랜덤 데이터를 생성한다
+		std::vector<DirectX::XMFLOAT4> randomValues(1024);
+
+		for (int i = 0; i < 1024; i++)
+		{
+			randomValues[i].x = GetRandomFloat(-1.0f, 1.0f);
+			randomValues[i].y = GetRandomFloat(-1.0f, 1.0f);
+			randomValues[i].z = GetRandomFloat(-1.0f, 1.0f);
+			randomValues[i].w = GetRandomFloat(-1.0f, 1.0f);
+		}
+
+		D3D11_SUBRESOURCE_DATA initData;
+		initData.pSysMem = randomValues.data();
+		initData.SysMemPitch = 1024 * sizeof(DirectX::XMFLOAT4);
+		initData.SysMemSlicePitch = 0;
+
+		// 새로운 텍스쳐를 생성한다
+		D3D11_TEXTURE1D_DESC texDesc;
+		texDesc.Width = 1024;
+		texDesc.MipLevels = 1;
+		texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		texDesc.Usage = D3D11_USAGE_IMMUTABLE;
+		texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+		texDesc.CPUAccessFlags = 0;
+		texDesc.MiscFlags = 0;
+		texDesc.ArraySize = 1;
+
+		ID3D11Texture1D* randomTex;
+		device->CreateTexture1D(&texDesc, &initData, &randomTex);
+
+		// ResourceView를 생성한다
+		D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
+		viewDesc.Format = texDesc.Format;
+		viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
+		viewDesc.Texture1D.MipLevels = texDesc.MipLevels;
+		viewDesc.Texture1D.MostDetailedMip = 0;
+
+		ID3D11ShaderResourceView* randomTexSRV = 0;
+		device->CreateShaderResourceView(randomTex, &viewDesc, &randomTexSRV);
+
+		_arkDevice->SetRandomTex(randomTexSRV);
 	}
 
-	D3D11_SUBRESOURCE_DATA initData;
-	initData.pSysMem = randomValues.data();
-	initData.SysMemPitch = 1024 * sizeof(DirectX::XMFLOAT4);
-	initData.SysMemSlicePitch = 0;
-
-	// 새로운 텍스쳐를 생성한다
-	D3D11_TEXTURE1D_DESC texDesc;
-	texDesc.Width = 1024;
-	texDesc.MipLevels = 1;
-	texDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
-	texDesc.Usage = D3D11_USAGE_IMMUTABLE;
-	texDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
-	texDesc.CPUAccessFlags = 0;
-	texDesc.MiscFlags = 0;
-	texDesc.ArraySize = 1;
-
-	ID3D11Texture1D *randomTex;
-	device->CreateTexture1D(&texDesc, &initData, &randomTex);
-
-	// ResourceView를 생성한다
-	D3D11_SHADER_RESOURCE_VIEW_DESC viewDesc;
-	viewDesc.Format = texDesc.Format;
-	viewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE1D;
-	viewDesc.Texture1D.MipLevels = texDesc.MipLevels;
-	viewDesc.Texture1D.MostDetailedMip = 0;
-
-	ID3D11ShaderResourceView* randomTexSRV = 0;
-	device->CreateShaderResourceView(randomTex, &viewDesc, &randomTexSRV);
-
-	return randomTexSRV;
+	return _arkDevice->GetRandomTex();
 }
 
-ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArraySRV(ID3D11Device* device, ID3D11DeviceContext* dc, std::vector<std::wstring>& filenames)
+ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArraySRV(const std::vector<std::wstring>& fileNameList)
 {
-	std::vector<DirectX::TexMetadata> metadata(filenames.size());
-	std::vector<DirectX::ScratchImage> scratchImage(filenames.size());
+	std::vector<DirectX::TexMetadata> metadata(fileNameList.size());
+	std::vector<DirectX::ScratchImage> scratchImage(fileNameList.size());
 	HRESULT hr;
 
 	// 이미지들을 로드한다
-	unsigned int size = filenames.size();
+	unsigned int size = fileNameList.size();
 
 	for (int i = 0; i < size; i++)
 	{
-		hr = LoadFromDDSFile(filenames[i].c_str(), DirectX::DDS_FLAGS_NONE, &metadata[i], scratchImage[i]);
+		hr = LoadFromDDSFile(fileNameList[i].c_str(), DirectX::DDS_FLAGS_NONE, &metadata[i], scratchImage[i]);
 		if (FAILED(hr))
 		{
 			return nullptr;
@@ -227,7 +344,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	texArrayDesc.Width = static_cast<UINT>(metadata[0].width);
 	texArrayDesc.Height = static_cast<UINT>(metadata[0].height);
 	texArrayDesc.MipLevels = metadata[0].mipLevels;
-	texArrayDesc.ArraySize = static_cast<UINT>(filenames.size());
+	texArrayDesc.ArraySize = static_cast<UINT>(fileNameList.size());
 	texArrayDesc.Format = metadata[0].format;
 	texArrayDesc.SampleDesc.Count = 1;
 	texArrayDesc.SampleDesc.Quality = 0;
@@ -238,19 +355,19 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 
 
 	ID3D11Texture2D* textureArray = nullptr;
-	hr = device->CreateTexture2D(&texArrayDesc, nullptr, &textureArray);
+	hr = _arkDevice->GetDevice()->CreateTexture2D(&texArrayDesc, nullptr, &textureArray);
 	if (FAILED(hr)) 
 	{
 		return nullptr; // 텍스처 생성 실패
 	}
 
 	// 개별 이미지들을 텍스처 배열에 복사한다
-	for (UINT i = 0; i < filenames.size(); ++i) 
+	for (UINT i = 0; i < fileNameList.size(); ++i)
 	{
 		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel) 
 		{
 			const DirectX::Image* img = scratchImage[i].GetImage(mipLevel, 0, 0);
-			dc->UpdateSubresource
+			_arkDevice->GetDeviceContext()->UpdateSubresource
 			(
 				textureArray,
 				D3D11CalcSubresource(mipLevel, i, texArrayDesc.MipLevels),
@@ -270,10 +387,10 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	srvDesc.Texture2DArray.MostDetailedMip = 0;
 	srvDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
 	srvDesc.Texture2DArray.FirstArraySlice = 0;
-	srvDesc.Texture2DArray.ArraySize = static_cast<UINT>(filenames.size());
+	srvDesc.Texture2DArray.ArraySize = static_cast<UINT>(fileNameList.size());
 
 	ID3D11ShaderResourceView* srv;
-	hr = device->CreateShaderResourceView(textureArray, &srvDesc, &srv);
+	hr = _arkDevice->GetDevice()->CreateShaderResourceView(textureArray, &srvDesc, &srv);
 	textureArray->Release(); // 텍스처 배열 사용이 끝났으므로 메모리 해제
 
 	if (FAILED(hr)) 
@@ -281,12 +398,98 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 		return nullptr; // SRV 생성 실패
 	}
 
+	_texArraySRV = srv;
+
 	return srv; // 생성된 Shader Resource View 반환
 }
 
 
-void ArkEngine::ArkDX11::ParticleSystem::BuildVB(ID3D11Device* device)
+ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArraySRV(const std::wstring& fileName)
 {
+	std::vector<DirectX::TexMetadata> metadata(1);
+	std::vector<DirectX::ScratchImage> scratchImage(1);
+	HRESULT hr;
+
+	// 이미지들을 로드한다
+	unsigned int size = 1;
+
+	for (int i = 0; i < size; i++)
+	{
+		hr = LoadFromDDSFile(fileName.c_str(), DirectX::DDS_FLAGS_NONE, &metadata[i], scratchImage[i]);
+		if (FAILED(hr))
+		{
+			return nullptr;
+		}
+	}
+
+	// 텍스처 배열을 생성한다
+	D3D11_TEXTURE2D_DESC texArrayDesc;
+	ZeroMemory(&texArrayDesc, sizeof(D3D11_TEXTURE2D_DESC));
+	texArrayDesc.Width = static_cast<UINT>(metadata[0].width);
+	texArrayDesc.Height = static_cast<UINT>(metadata[0].height);
+	texArrayDesc.MipLevels = metadata[0].mipLevels;
+	texArrayDesc.ArraySize = static_cast<UINT>(1);
+	texArrayDesc.Format = metadata[0].format;
+	texArrayDesc.SampleDesc.Count = 1;
+	texArrayDesc.SampleDesc.Quality = 0;
+	texArrayDesc.Usage = D3D11_USAGE_DEFAULT;
+	texArrayDesc.BindFlags = D3D11_BIND_SHADER_RESOURCE;
+	texArrayDesc.CPUAccessFlags = 0;
+	texArrayDesc.MiscFlags = 0;
+
+
+	ID3D11Texture2D* textureArray = nullptr;
+	hr = _arkDevice->GetDevice()->CreateTexture2D(&texArrayDesc, nullptr, &textureArray);
+	if (FAILED(hr))
+	{
+		return nullptr; // 텍스처 생성 실패
+	}
+
+	// 개별 이미지들을 텍스처 배열에 복사한다
+	for (UINT i = 0; i < 1; ++i)
+	{
+		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel)
+		{
+			const DirectX::Image* img = scratchImage[i].GetImage(mipLevel, 0, 0);
+			_arkDevice->GetDeviceContext()->UpdateSubresource
+			(
+				textureArray,
+				D3D11CalcSubresource(mipLevel, i, texArrayDesc.MipLevels),
+				nullptr,
+				img->pixels,
+				img->rowPitch,
+				img->slicePitch
+			);
+		}
+	}
+
+	// SRV를 생성한다
+	D3D11_SHADER_RESOURCE_VIEW_DESC srvDesc;
+	ZeroMemory(&srvDesc, sizeof(D3D11_SHADER_RESOURCE_VIEW_DESC));
+	srvDesc.Format = texArrayDesc.Format;
+	srvDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2DARRAY;
+	srvDesc.Texture2DArray.MostDetailedMip = 0;
+	srvDesc.Texture2DArray.MipLevels = texArrayDesc.MipLevels;
+	srvDesc.Texture2DArray.FirstArraySlice = 0;
+	srvDesc.Texture2DArray.ArraySize = static_cast<UINT>(1);
+
+	ID3D11ShaderResourceView* srv;
+	hr = _arkDevice->GetDevice()->CreateShaderResourceView(textureArray, &srvDesc, &srv);
+	textureArray->Release(); // 텍스처 배열 사용이 끝났으므로 메모리 해제
+
+	if (FAILED(hr))
+	{
+		return nullptr; // SRV 생성 실패
+	}
+
+	_texArraySRV = srv;
+
+	return srv; // 생성된 Shader Resource View 반환
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::BuildVB()
+{
+	auto device = _arkDevice->GetDevice();
 	//
 	// Create the buffer to kick-off the particle system.
 	//
@@ -311,6 +514,37 @@ void ArkEngine::ArkDX11::ParticleSystem::BuildVB(ID3D11Device* device)
 	device->CreateBuffer(&vbd, &vinitData, &_initVB);
 
 	//
+	// Create the ping-pong buffers for stream-out and drawing.
+	//
+	vbd.ByteWidth = sizeof(Particle) * _maxParticles;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
+
+	(device->CreateBuffer(&vbd, 0, &_drawVB));
+	(device->CreateBuffer(&vbd, 0, &_streamOutVB));
+}
+
+
+void ArkEngine::ArkDX11::ParticleSystem::BuildDrawStreamVB()
+{
+	auto device = _arkDevice->GetDevice();
+	//
+	// Create the buffer to kick-off the particle system.
+	//
+	D3D11_BUFFER_DESC vbd;
+	vbd.Usage = D3D11_USAGE_DEFAULT;
+	vbd.ByteWidth = sizeof(Particle) * 1;
+	vbd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	vbd.CPUAccessFlags = 0;
+	vbd.MiscFlags = 0;
+	vbd.StructureByteStride = 0;
+
+	// The initial particle emitter has type 0 and age 0.  The rest
+	// of the particle attributes do not apply to an emitter.
+	Particle p;
+	ZeroMemory(&p, sizeof(Particle));
+	p.Age = 0.0f;
+	p.Type = 0;
+
 	// Create the ping-pong buffers for stream-out and drawing.
 	//
 	vbd.ByteWidth = sizeof(Particle) * _maxParticles;

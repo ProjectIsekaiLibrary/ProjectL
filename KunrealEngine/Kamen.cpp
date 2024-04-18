@@ -113,7 +113,7 @@ void KunrealEngine::Kamen::LeftAttackOnce()
 	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 
-	_leftHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("LeftHand");
+	_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
 	_leftHand->AddComponent<BoxCollider>();
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
@@ -155,7 +155,7 @@ void KunrealEngine::Kamen::RightAttackOnce()
 	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5f);
 	pattern->SetIsWarning(false).SetWarningName("");
 
-	_rightHand = SceneManager::GetInstance().GetCurrentScene()->CreateObject("rightHand");
+	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
 	_rightHand->AddComponent<BoxCollider>();
 	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
@@ -233,7 +233,7 @@ void KunrealEngine::Kamen::CallAttack()
 	pattern->SetIsWarning(true).SetWarningName("Call").SetRangeOffset(-10.0f);
 	pattern->SetMaxColliderCount(1);
 
-	_call = SceneManager::GetInstance().GetCurrentScene()->CreateObject("call");
+	_call = _boss->GetObjectScene()->CreateObject("call");
 	_call->AddComponent<BoxCollider>();
 	_call->AddComponent<MeshRenderer>();
 	_call->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");

@@ -223,6 +223,7 @@
     <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ParsingStructs.h" />
     <ClInclude Include="ParticleEffect.h" />
+    <ClInclude Include="ParticleResource.h" />
     <ClInclude Include="ParticleSystem.h" />
     <ClInclude Include="PointLight.h" />
     <ClInclude Include="ResourceManager.h" />
@@ -264,6 +265,7 @@
     <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ParsingStructs.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />
+    <ClCompile Include="ParticleResource.cpp" />
     <ClCompile Include="ParticleSystem.cpp" />
     <ClCompile Include="PointLight.cpp" />
     <ClCompile Include="ResourceManager.cpp" />
@@ -276,6 +278,12 @@
     <ClCompile Include="UIImage.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <FxCompile Include="..\Bin\x64\Debug\Resources\FX\ParticleRain.fx">
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</ExcludedFromBuild>
+      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</ExcludedFromBuild>
+    </FxCompile>
     <FxCompile Include="RunTimeDependency\Resources\FX\BasicTex.fx">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>

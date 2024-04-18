@@ -135,6 +135,8 @@ void KunrealEngine::Boss::Initialize(GameObject* boss)
 	SetSubObject(false);
 
 	SortCorePattern();
+
+	SetSubObjectScene();
 }
 
 void KunrealEngine::Boss::Update()
@@ -623,6 +625,20 @@ bool KunrealEngine::Boss::CompareCorePattern(const BossPattern* pattern1, const 
 void KunrealEngine::Boss::SortCorePattern()
 {
 	std::sort((_corePattern).begin(), (_corePattern).end(), CompareCorePattern);
+}
+
+
+void KunrealEngine::Boss::SetSubObjectScene()
+{
+	//auto bossScene = _boss->GetObjectScene();
+	//
+	//for (const auto& index : _basicPattern)
+	//{
+	//	for (const auto& object : index->_subObject)
+	//	{
+	//		object->changescene()?
+	//	}
+	//}
 }
 
 float KunrealEngine::Boss::CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition)

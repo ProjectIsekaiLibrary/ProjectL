@@ -293,6 +293,9 @@
     <ClInclude Include="IDebugObject.h">
       <Filter>ArkEngine\Interface\IDebug</Filter>
     </ClInclude>
+    <ClInclude Include="ParticleResource.h">
+      <Filter>Particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11Renderer.cpp">
@@ -412,6 +415,9 @@
     <ClCompile Include="ParticleEffect.cpp">
       <Filter>Particle</Filter>
     </ClCompile>
+    <ClCompile Include="ParticleResource.cpp">
+      <Filter>Particle</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <FxCompile Include="RunTimeDependency\Resources\FX\Skinning.fx">
@@ -448,6 +454,9 @@
       <Filter>FX</Filter>
     </FxCompile>
     <FxCompile Include="RunTimeDependency\Resources\FX\ParticleFire.fx">
+      <Filter>FX</Filter>
+    </FxCompile>
+    <FxCompile Include="..\Bin\x64\Debug\Resources\FX\ParticleRain.fx">
       <Filter>FX</Filter>
     </FxCompile>
   </ItemGroup>
