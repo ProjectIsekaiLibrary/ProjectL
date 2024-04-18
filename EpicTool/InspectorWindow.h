@@ -144,7 +144,7 @@ namespace EpicTool
         // 오브젝트의 활성화를 관리할 변수
         bool _isObjectActive;
 
-        bool _isMeshRenderActive;
+       // bool _isMeshRenderActive;
 
         bool _isLightActive;
 
@@ -155,7 +155,7 @@ namespace EpicTool
         // 피킹을 판단할 변수
         bool _isPickedObject;
 
-        bool _IsSetPisckable;
+       // bool _IsSetPisckable;
 
         std::string _isPickedObjectName;
 
