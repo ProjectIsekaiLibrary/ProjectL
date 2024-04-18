@@ -121,6 +121,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
 	ResourceManager::GetInstance()->AddParticle(particle3);
 
+	SetPickingTexture();
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
