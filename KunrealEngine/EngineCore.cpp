@@ -64,7 +64,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	std::vector<DirectX::XMFLOAT3> vertices;
 	std::vector<unsigned int> indices;
 	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
-	//GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
+	GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
 
 	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	navigationInstance.HandleBuild(1);
@@ -122,16 +122,16 @@ void KunrealEngine::EngineCore::Update()
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
 	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
-	navigationInstance.MoveTempObstacle(pos.first,pos.second);
+	navigationInstance.MoveTempObstacle(pos.first, pos.second);
 	
 	// 장애물 설치 테스트
 	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
 	{
-		RemoveObstacle();
+		//RemoveObstacle();
 	}
 	else if (inputInstance->MouseButtonDown(0))
 	{
-//		MakeObstacle();
+		//MakeObstacle();
 	}
 
 	CheckMousePosition();
