@@ -14,8 +14,8 @@
 EpicTool::InspectorWindow::InspectorWindow()
 	:_gameObjectlist(NULL), _selectedObjectIndex(0), _tranform(nullptr), _meshState(false), _cameraFix(false)//, _selectedMesh(0)
 	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
-	, _isMeshRenderActive(true), _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
-	_pointAmbient{0}, _pointSpecular{0}, _isPickedObject{false}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
+	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
+	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
 	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0)
 { 
 																			
@@ -548,6 +548,8 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Camera>(Kunreal
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->SetActive(_isCameraActive);
 	}
 
+
+
 	if (ImGui::Button("SetMainCamera"))
 	{
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
@@ -614,23 +616,39 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 		_comboDiffuseSelect = -1;
 	}
 
-	_isMeshRenderActive = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetActivated();
+	bool isMeshRenderActive = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetActivated();
 
-	if (ImGui::Checkbox("SetActiveMesh", &_isMeshRenderActive))
+	if (ImGui::Checkbox("SetActiveMesh", &isMeshRenderActive))
 	{
-		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetActive(_isMeshRenderActive);
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetActive(isMeshRenderActive);
 	}
 
-	_IsSetPisckable = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetPickableState();
+	bool isSetPisckable = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetPickableState();
 
-	if (ImGui::Checkbox("SetPisckable", &_IsSetPisckable))
+	if (ImGui::Checkbox("SetPisckable", &isSetPisckable))
 	{
 		if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
 		{
-			_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(_IsSetPisckable);
+			_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(isSetPisckable);
 		}
 	}
 
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
+	{
+		bool isCartoonState = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetCartoonState();
+
+		if (ImGui::Checkbox("SetCartoonRender", &isCartoonState))
+		{
+			_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetCartoonState(isCartoonState);
+		}
+
+		bool isShadowState = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetShadowState();
+
+		if (ImGui::Checkbox("SetShadow", &isShadowState))
+		{
+			_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetShadowState(isShadowState);
+		}
+	}
     ComboControl(_meshList, _meshListEditor, _comboMeshSelect, "Mesh", instance);
 
 	ImGui::Spacing();
