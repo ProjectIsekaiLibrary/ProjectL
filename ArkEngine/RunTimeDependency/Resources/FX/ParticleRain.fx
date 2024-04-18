@@ -20,18 +20,8 @@ cbuffer cbPerFrame
 
 cbuffer cbFixed
 {
-    // 입자 가속을 위한 알짜 상수 가속도
-    float3 gAccelW = { 0.0f, 7.8f, 0.0f };
-    
-    // 텍스쳐를 사각형 전체에 입히는 텍스쳐 좌표들
-    // 점 입자를 사각형으로 확장할 때 쓰임
-    float2 gQuadTex[4] =
-    {
-        float2(0.0f, 1.0f),
-        float2(0.0f, 0.0f),
-        float2(1.0f, 1.0f),
-        float2(1.0f, 0.0f)
-    };
+	// Net constant acceleration used to accerlate the particles.
+    float3 gAccelW = { -1.0f, -9.8f, 0.0f };
 };
 
 // 입자 텍스처 적용을 위한 텍스쳐 배열
@@ -61,18 +51,6 @@ DepthStencilState NoDepthWrites
     DepthWriteMask = ZERO;
 };
 
-BlendState AdditiveBlending
-{
-    AlphaToCoverageEnable = FALSE;
-    BlendEnable[0] = TRUE;
-    SrcBlend = SRC_ALPHA;
-    DestBlend = ONE;
-    BlendOp = ADD;
-    SrcBlendAlpha = ZERO;
-    DestBlendAlpha = ONE;
-    BlendOpAlpha = ADD;
-    RenderTargetWriteMask[0] = 0x0F;
-};
 
 // 보조 함수
 float3 RandUnitVec3(float offset)
@@ -86,6 +64,17 @@ float3 RandUnitVec3(float offset)
     
     // 단위 구로 투영한다
     return normalize(v);
+}
+
+float3 RandVec3(float offset)
+{
+	// Use game time plus offset to sample random texture.
+    float u = (gGameTime + offset);
+
+	// coordinates in [-1,1]
+    float3 v = gRandomTex.SampleLevel(samLinear, u, 0).xyz;
+
+    return v;
 }
 
 // 스트림 출력 전용 기법
@@ -109,7 +98,7 @@ Particle StreamOutVS(Particle vin)
 // 스트림 출력 전용 기하 쉐이더는 개 입자의 방출과 기존 입자의
 // 파괴만 담당한다. 입자 시스템마다 입자의 생성, 파괴 규칙이 다를 것이므로,
 // 이 부분의 구현 역시 입자 시스템마다 다를 필요가 있다.
-[maxvertexcount(2)]
+[maxvertexcount(6)]
 void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
 {
     gin[0].Age += gTimeStep;
@@ -117,20 +106,23 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
     if (gin[0].Type == PT_EMITTER)
     {
         // 새 입자를 방출할 시간이 되었는가?
-        if (gin[0].Age > 0.005f)
+        if (gin[0].Age > 0.002f)
         {
-            float3 vRandom = RandUnitVec3(0.0f);
-            vRandom.x *= 0.5f;
-            vRandom.z *= 0.5f;
-            
-            Particle p;
-            p.InitialPosW = gEmitPosW.xyz;
-            p.InitialVelW = 4.0f * vRandom;
-            p.SizeW = float2(3.0f, 3.0f);   // 파티클 사각형의 크기를 정한다
-            p.Age = 0.0f;
-            p.Type = PT_FLARE;
-            
-            ptStream.Append(p);
+            for (int i = 0; i < 5; ++i)
+            {
+				// Spread rain drops out above the camera.
+                float3 vRandom = 35.0f * RandVec3((float) i / 5.0f);
+                vRandom.y = 20.0f;
+
+                Particle p;
+                p.InitialPosW = gEmitPosW.xyz + vRandom;
+                p.InitialVelW = float3(0.0f, 0.0f, 0.0f);
+                p.SizeW = float2(1.0f, 1.0f);
+                p.Age = 0.0f;
+                p.Type = PT_FLARE;
+
+                ptStream.Append(p);
+            }
             
             // 방출할 시간을 재설정한다
             gin[0].Age = 0.0f;
@@ -143,7 +135,7 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
     {
         // 여기에서 입자를 유지할 조건들을 지정한다
         // 구체적인 조건은 입자 시스템마다 다를 수 있다
-        if (gin[0].Age <= 1.0f)
+        if (gin[0].Age <= 3.0f)
             ptStream.Append(gin[0]);
     }
 }
@@ -169,8 +161,6 @@ technique11 StreamOutTech
 struct VertexOut
 {
     float3 PosW : POSITION;
-    float2 SizeW : SIZE;
-    float4 Color : COLOR;
     uint Type : TYPE;
 };
 
@@ -183,12 +173,6 @@ VertexOut DrawVS(Particle vin)
     // 상수 가속 공식
     vout.PosW = 0.5f * t * t * gAccelW + t * vin.InitialVelW + vin.InitialPosW;
      
-    
-    // 시간에 따른 색상 감소
-    float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / 1.0f);
-    vout.Color = float4(1.0f, 1.0f, 1.0f, opacity);
-    
-    vout.SizeW = vin.SizeW;
     vout.Type = vin.Type;
     
     return vout;
@@ -200,51 +184,36 @@ struct GeoOut
 {
     float4 PosH : SV_Position;
 
-    float4 Color : COLOR;
-
     float2 Tex : TEXCOORD0;
 };
 
 // 렌더링용 기하 쉐이더는 그냥 점을 카메라를 향한 사각형으로 확장한다
-[maxvertexcount(4)]
-void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
+[maxvertexcount(2)]
+void DrawGS(point VertexOut gin[1], inout LineStream<GeoOut> lineStream)
 {
     // 방출기 입자는 그리지 않는다
     if (gin[0].Type != PT_EMITTER)
     {
-      // 빌보드가 카메라를 향하게 하는 세계 행렬을 계산한다
-        float3 look = normalize(gEyePosW.xyz - gin[0].PosW);
-        float3 right = normalize(cross(float3(0, 1, 0), look));
-        float3 up = cross(look, right);
-  
-      // 사각형을 구성하는 삼각형 띠 정점들을 계산한다
-        float halfWidth = 0.5f * gin[0].SizeW.x;
-        float halfHeight = 0.5f * gin[0].SizeW.y;
-      
-        float4 v[4];
-        v[0] = float4(gin[0].PosW + halfWidth * right - halfHeight * up, 1.0f);
-        v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
-        v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
-        v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
-  
-      // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력한다
-        GeoOut gout;
-      [unroll]
-        for (int i = 0; i < 4; ++i)
-        {
-            gout.PosH = mul(v[i], gViewProj);
-            gout.Tex = gQuadTex[i];
-            gout.Color = gin[0].Color;
-            triStream.Append(gout);
-        }
+		// Slant line in acceleration direction.
+        float3 p0 = gin[0].PosW;
+        float3 p1 = gin[0].PosW + 0.07f * gAccelW;
+
+        GeoOut v0;
+        v0.PosH = mul(float4(p0, 1.0f), gViewProj);
+        v0.Tex = float2(0.0f, 0.0f);
+        lineStream.Append(v0);
+
+        GeoOut v1;
+        v1.PosH = mul(float4(p1, 1.0f), gViewProj);
+        v1.Tex = float2(1.0f, 1.0f);
+        lineStream.Append(v1);
     }
    
 }
 
 float4 DrawPS(GeoOut pin) : SV_TARGET
 {
-    return gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
-    //return float4(1.0f, 0.0f, 0.0f, 1.0f);
+    return gTexArray.Sample(samLinear, float3(pin.Tex, 0));
 }
 
 technique11 DrawTech
@@ -255,7 +224,6 @@ technique11 DrawTech
         SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
         SetPixelShader(CompileShader(ps_5_0, DrawPS()));
 
-        SetBlendState(AdditiveBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
         SetDepthStencilState(NoDepthWrites, 0);
     }
 }
