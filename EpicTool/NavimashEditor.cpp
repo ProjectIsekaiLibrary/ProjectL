@@ -6,7 +6,7 @@
 #include <fstream>
 
 EpicTool::NavimashEditor::NavimashEditor()
-	:_naviIndex(0), _agentHeight(0), _agentRadius(0), _agentMaxClimb(0), _agentMaxSlope(0)
+	:_naviIndex(0), _agentHeight(2.0f), _agentRadius(1.2f), _agentMaxClimb(0.9f), _agentMaxSlope(45.0f)
 {
 
 }
@@ -72,6 +72,11 @@ void EpicTool::NavimashEditor::ShowWindow()
 	{
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 		_navimashEditor->HandleBuild(_naviIndex);
+
+		std::vector<DirectX::XMFLOAT3> vertices;
+		std::vector<unsigned int> indices;
+		_navimashEditor->GetNavmeshRenderInfo(0, vertices, indices);
+		GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
 	}
 
 	ImGui::SameLine();
