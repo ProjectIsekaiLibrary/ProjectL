@@ -11,6 +11,7 @@
 struct ID3D11Device;
 struct ID3D11DeviceContext;
 struct ID3D11DepthStencilView;
+struct ID3D11ShaderResourceView;
 
 namespace ArkEngine
 {
@@ -33,6 +34,10 @@ namespace ArkEngine
 			ID3D11RasterizerState* GetSolidRS();
 			ID3D11RasterizerState* GetWireRS();
 			ID3D11RasterizerState* GetShadowRS();
+			ID3D11ShaderResourceView* GetRandomTex();
+
+		public:
+			void SetRandomTex(ID3D11ShaderResourceView* randomTex);
 
 
 		private:
@@ -43,6 +48,10 @@ namespace ArkEngine
 			ID3D11RasterizerState* _solidRS;
 			ID3D11RasterizerState* _wireRS;
 			ID3D11RasterizerState* _shadowRS;
+
+			// 파티클 관련
+			// 리소스 매니저에서 관리해야 할까 하다가 래핑하기 싫어서...
+			ID3D11ShaderResourceView* _randomTexSRV;
 		};
 	}
 }

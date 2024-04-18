@@ -23,9 +23,12 @@ class ASEParser;
 
 namespace ArkEngine
 {
+	class ParticleResource;
+
 	namespace ArkDX11
 	{
 		class ArkBuffer;
+		class ParticleSystem;
 	}
 }
 
@@ -207,6 +210,20 @@ namespace ArkEngine
 			void AddArkBuffer(const std::string& bufferName, ArkEngine::ArkDX11::ArkBuffer* buffer);
 
 		public:
+			// 렌더링 할 오브젝트들은 담아놓은 백터 반환
+			const std::vector<ArkEngine::ArkDX11::ParticleSystem*>& GetParticleList();
+			
+			// 렌더링 할 오브젝트들을 담아놓은 백터
+			void AddParticle(ArkEngine::ArkDX11::ParticleSystem* particle);
+			
+			// 특정 렌더링하던 오브젝트를 삭제
+			void DeleteParticle(ArkEngine::ArkDX11::ParticleSystem* particle);
+
+		public:
+			ParticleResource* GetParticleResource(const std::string& particleName);
+			void AddParticleResource(const std::string& particleName, ParticleResource* particleResource);
+
+		public:
 			void ReleaseAll();
 
 		private:
@@ -255,6 +272,12 @@ namespace ArkEngine
 		private:
 			// 존재하는 모든 텍스쳐 이름 리스트 // 갖고있는게 비효율적인가 고민 중
 			std::vector<std::string> _textureNameList;
+
+		private:
+			// 모든 파티클 리스트
+			std::vector<ArkEngine::ArkDX11::ParticleSystem*> _particleList;
+			// Particle에서 사용되는 리소스 리스트
+			std::unordered_map<std::string, ParticleResource*> _particleResourceList;
 
 		private:
 			unsigned int _objectIndex;
