@@ -37,12 +37,15 @@ namespace KunrealEngine
 		void RightAttackOnce();
 		void SpellAttack();
 		void CallAttack();
+		void TestPattern();
 
 	private:
 		// 패턴에 필요한 subObject들
 		GameObject* _leftHand;
 		GameObject* _rightHand;
 		GameObject* _call;
+
+		DirectX::XMFLOAT3 _test = { 0.0f, 0.0f, -10.0f };
 
 	private:
 		// Call 거리 체크용

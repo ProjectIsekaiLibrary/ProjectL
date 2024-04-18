@@ -122,6 +122,10 @@ namespace ArkEngine
 			virtual GInterface::GraphicsPointLight* CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range) override;
 
 		public:
+			virtual GInterface::GraphicsParticle* CreateParticle(const std::string& particleName, const std::string& fileName, unsigned int maxParticle) override;
+			virtual void DeleteParticle(GInterface::GraphicsParticle* particle) override;
+
+		public:
 			// End 키를 눌렀을때 활성화되는 텍스트
 			virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) override;
 			virtual void DrawColorText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) override;
