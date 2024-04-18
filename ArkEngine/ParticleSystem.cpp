@@ -21,7 +21,10 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitDirW = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
-	
+
+	_emitVelocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_particleSize = DirectX::XMFLOAT2(0.0f, 0.0f);
+
 	Initialize(std::wstring(fileName.begin(), fileName.end()), _maxParticles);
 }
 
@@ -34,6 +37,9 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitDirW = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
+
+	_emitVelocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_particleSize = DirectX::XMFLOAT2(0.0f, 0.0f);
 
 	std::vector<std::wstring> newStringVec;
 
@@ -85,6 +91,17 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEmitDir(const DirectX::XMFLOAT3& emi
 	_emitDirW = emitDirW;
 }
 
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleSize(const DirectX::XMFLOAT2& particleSize)
+{
+	_particleSize = particleSize;
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocity(float particleSpeed, bool isRandom)
+{
+	_emitVelocity = DirectX::XMFLOAT3(particleSpeed, particleSpeed, particleSpeed);
+	_isRandom = isRandom;
+}
+
 void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
 {
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
@@ -95,7 +112,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstri
 	}
 
 	auto particleResource = ResourceManager::GetInstance()->GetParticleResource(_particleName);
-	
+
 	// 이미 만들어진 파티클을 위한 리소스가 존재하지 않는다면
 	if (particleResource == nullptr)
 	{
@@ -158,7 +175,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::wstring& fileName
 		BuildDrawStreamVB();
 
 		_texArraySRV = particleResource->GetTexArray();
-		
+
 		_initVB = particleResource->GetInitVB();
 	}
 
@@ -175,8 +192,6 @@ void ArkEngine::ArkDX11::ParticleSystem::Update(float deltaTime, float gameTime)
 {
 	_gameTime += gameTime;
 	_timeStep = deltaTime;
-
-	_age = deltaTime;
 }
 
 void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
@@ -206,6 +221,8 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 	SetTexArray(_texArraySRV);
 	SetRandomTex(_arkDevice->GetRandomTex());
 
+	SetParticleSizeW(_particleSize);
+	SetEmitVelocityW(_emitVelocity);
 
 	// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
 	// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
@@ -226,7 +243,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 	dc->SOSetTargets(1, &_streamOutVB, &offset);
 
 	D3DX11_TECHNIQUE_DESC techDesc;
-	 _streamOutTech->GetDesc(&techDesc);
+	_streamOutTech->GetDesc(&techDesc);
 	for (unsigned int p = 0; p < techDesc.Passes; ++p)
 	{
 		_streamOutTech->GetPassByIndex(p)->Apply(0, dc);
@@ -356,7 +373,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 
 	ID3D11Texture2D* textureArray = nullptr;
 	hr = _arkDevice->GetDevice()->CreateTexture2D(&texArrayDesc, nullptr, &textureArray);
-	if (FAILED(hr)) 
+	if (FAILED(hr))
 	{
 		return nullptr; // 텍스처 생성 실패
 	}
@@ -364,7 +381,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	// 개별 이미지들을 텍스처 배열에 복사한다
 	for (UINT i = 0; i < fileNameList.size(); ++i)
 	{
-		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel) 
+		for (UINT mipLevel = 0; mipLevel < metadata[i].mipLevels; ++mipLevel)
 		{
 			const DirectX::Image* img = scratchImage[i].GetImage(mipLevel, 0, 0);
 			_arkDevice->GetDeviceContext()->UpdateSubresource
@@ -393,7 +410,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	hr = _arkDevice->GetDevice()->CreateShaderResourceView(textureArray, &srvDesc, &srv);
 	textureArray->Release(); // 텍스처 배열 사용이 끝났으므로 메모리 해제
 
-	if (FAILED(hr)) 
+	if (FAILED(hr))
 	{
 		return nullptr; // SRV 생성 실패
 	}
@@ -570,6 +587,10 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEffect()
 	_emitDirWEffect = effect->GetVariableByName("gEmitDirW")->AsVector();
 	_texArray = effect->GetVariableByName("gTexArray")->AsShaderResource();
 	_randomTex = effect->GetVariableByName("gRandomTex")->AsShaderResource();
+
+	_particleSizeEffect = effect->GetVariableByName("gParticleSize")->AsVector();
+	_emitVelocityEffect = effect->GetVariableByName("gEmitVelocity")->AsVector();
+	_isRandomEffect = effect->GetVariableByName("gIsRandom")->AsScalar();
 }
 
 float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
@@ -577,7 +598,6 @@ float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float max
 	std::random_device rd;
 	std::mt19937 generator(rd());
 	std::uniform_real_distribution<> dist(minNum, maxNum);
-	//std::uniform_int_distribution<> dist(minNum, maxNum);
 
 	return dist(generator);
 }
@@ -620,4 +640,15 @@ void ArkEngine::ArkDX11::ParticleSystem::SetTexArray(ID3D11ShaderResourceView* t
 void ArkEngine::ArkDX11::ParticleSystem::SetRandomTex(ID3D11ShaderResourceView* tex)
 {
 	_randomTex->SetResource(tex);
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleSizeW(const DirectX::XMFLOAT2& v)
+{
+	_particleSizeEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT2));
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocityW(const DirectX::XMFLOAT3& v)
+{
+	_emitVelocityEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
+	_isRandomEffect->SetBool(_isRandom);
 }

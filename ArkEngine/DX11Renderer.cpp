@@ -105,11 +105,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-	auto particle = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 200);
+	auto particle = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 10000);
+	particle->SetEmitPos(DirectX::XMFLOAT3{ 20.0f, 10.0f, 0.0f });
+	particle->SetEmitVelocity(10.0f, true);
 	ResourceManager::GetInstance()->AddParticle(particle);
 
 	auto particle2 = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 200);
 	particle2->SetEmitPos(DirectX::XMFLOAT3{ 10.0f, 10.0f, 0.0f });
+	particle2->SetEmitVelocity(10.0f, true);
 	ResourceManager::GetInstance()->AddParticle(particle2);	SetPickingTexture();
 }
 
@@ -345,6 +348,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// particle을 그린다
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
+		index->SetParticleSize(DirectX::XMFLOAT2(3.0f, 3.0f));
 		index->Draw(_mainCamera);
 	}
 	// UI IMAGE 렌더링
