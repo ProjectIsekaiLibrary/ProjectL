@@ -33,6 +33,7 @@ namespace GInterface
 	class GraphicsPointLight;
 	class GraphicsDebug;
 	class GraphicsImage;
+	class GraphicsParticle;
 
 	class GraphicsInterface
 	{
@@ -111,6 +112,11 @@ namespace GInterface
 		virtual GInterface::GraphicsDirLight* CreateDirectionalLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& direction) abstract;
 		virtual GInterface::GraphicsPointLight* CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range) abstract;
 
+	public:
+		// 파티클 생성
+		virtual GInterface::GraphicsParticle* CreateParticle(const std::string& particleName, const std::string& fileName, unsigned int maxParticle) abstract;
+		// 파티클 삭제
+		virtual void DeleteParticle(GInterface::GraphicsParticle* particle) abstract;
 
 	public:
 		// End 키를 통해 텍스트 출력 활성화 / 비활성화

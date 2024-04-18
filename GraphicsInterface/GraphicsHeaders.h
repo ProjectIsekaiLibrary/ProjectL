@@ -7,4 +7,5 @@
 #include "../GraphicsInterface/GraphicsLight.h"
 #include "../GraphicsInterface/GraphicsDirLight.h"
 #include "../GraphicsInterface/GraphicsPointLight.h"
+#include "../GraphicsInterface/GraphicsParticle.h"
 #include "../GraphicsInterface/GraphicsStruct.h"
