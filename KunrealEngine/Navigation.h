@@ -120,6 +120,7 @@ namespace KunrealEngine
 
 		// 네비매쉬를 빌드하기 위해 vertex와 index를 제공해주는 함수(예정)
 		void GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices);
+	
 	private:
 		int rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, struct TileCacheData* tiles, const int maxTiles);
 		void getTilePos(const float* pos, int& tx, int& ty);
@@ -128,6 +129,8 @@ namespace KunrealEngine
 		// sp, sq를 기반으로 장애물의 ref 값을 반환하는 함수. sp,sq가 뭔진 아직 나도 모르겠음
 		dtObstacleRef hitTestObstacle(const dtTileCache* tc, const float* sq);
 		static bool isectSegAABB(const float* sq,const float* amin, const float* amax,float& tmin, float& tmax);
+		DirectX::XMFLOAT3 vertex(const float* pos);
+	
 	private:
 		static const int PACKAGESIZE = 5;
 

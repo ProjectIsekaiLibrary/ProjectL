@@ -366,522 +366,561 @@ namespace KunrealEngine
 
 	void Navigation::GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices)
 	{
+// 		const dtNavMesh* navmesh = _package[index]._navMesh;
+// 		// NavMesh에서 모든 타일을 반복하여 처리
+// 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
+// 		{
+// 			const dtMeshTile* tile = navmesh->getTile(i);
+// 			if (!tile || !tile->header) continue;
+// 		
+// 			// 타일의 폴리곤을 반복하여 처리
+// 			for (int j = 0; j < tile->header->polyCount; ++j)
+// 			{
+// 				const dtPoly* poly = &tile->polys[j];
+// 				if (poly->getType() == DT_POLYTYPE_GROUND)
+// 				{
+// 					// 폴리곤의 vertex 인덱스를 추출하여 indices에 추가
+// 					for (int k = 0; k < poly->vertCount; ++k)
+// 					{
+// 						const int vertIndex = poly->verts[k];
+// 						indices.push_back(vertices.size()); // 인덱스 추가
+// 						// 타일 내 vertex 좌표를 추출하여 vertices에 추가
+// 						const float* pos = &tile->verts[vertIndex * 3]; 
+// 						vertices.push_back(DirectX::XMFLOAT3(pos[0], pos[1], pos[2]));
+// 					}
+// 				}
+// 			}
+// 		}
 		const dtNavMesh* navmesh = _package[index]._navMesh;
-		const dtMeshTile* tile = navmesh->getTile(index);
-
-		// NavMesh에서 모든 타일을 반복하여 처리
 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
 		{
 			const dtMeshTile* tile = navmesh->getTile(i);
-			if (!tile || !tile->header) continue;
+			if (tile->header == nullptr)
+			{
+				return;
+			}
 
-			// 타일의 폴리곤을 반복하여 처리
 			for (int j = 0; j < tile->header->polyCount; ++j)
 			{
-				const dtPoly* poly = &tile->polys[j];
-				if (poly->getType() == DT_POLYTYPE_GROUND)
+				const dtPoly* p = &tile->polys[j];
+				const dtPolyDetail* pd = &tile->detailMeshes[j];
+
+				for (int k = 0; k < pd->triCount; ++k)
 				{
-					// 폴리곤의 vertex 인덱스를 추출하여 indices에 추가
-					for (int k = 0; k < poly->vertCount; ++k)
+					const unsigned char* t = &tile->detailTris[(pd->triBase + k) * 4];
+					for (int y = 0; y < 3; ++y)
 					{
-						const int vertIndex = poly->verts[k];
-						indices.push_back(vertices.size()); // 인덱스 추가
-						// 타일 내 vertex 좌표를 추출하여 vertices에 추가
-						const float* pos = &tile->verts[vertIndex * 3];
-						vertices.push_back(DirectX::XMFLOAT3(pos[0], pos[1], pos[2]));
+						if (t[y] < p->vertCount)
+						{
+							DirectX::XMFLOAT3 vert(vertex(&tile->verts[p->verts[t[y]] * 3]));
+							vertices.push_back(vert);
+						}
+						else
+						{
+							DirectX::XMFLOAT3 vert(vertex(&tile->detailVerts[(pd->vertBase + t[y] - p->vertCount) * 3]));
+							vertices.push_back(vert);
+						}
 					}
 				}
 			}
-		}
+ 		}
 	}
 
-int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)
-{
-	if (!_geom || !_geom->getMesh() || !_geom->getChunkyMesh())
+	int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)
 	{
-		_ctx->log(RC_LOG_ERROR, "buildTile: Input mesh is not specified.");
-		return 0;
-	}
-
-	FastLZCompressor comp;
-	RasterizationContext rc;
-
-	const float* verts = _geom->getMesh()->getVerts();
-	const int nverts = _geom->getMesh()->getVertCount();
-	const rcChunkyTriMesh* chunkyMesh = _geom->getChunkyMesh();
-
-	// Tile bounds.
-	const float tcs = cfg.tileSize * cfg.cs;
-
-	rcConfig tcfg;
-	memcpy(&tcfg, &cfg, sizeof(tcfg));
-
-	tcfg.bmin[0] = cfg.bmin[0] + tx * tcs;
-	tcfg.bmin[1] = cfg.bmin[1];
-	tcfg.bmin[2] = cfg.bmin[2] + ty * tcs;
-	tcfg.bmax[0] = cfg.bmin[0] + (tx + 1) * tcs;
-	tcfg.bmax[1] = cfg.bmax[1];
-	tcfg.bmax[2] = cfg.bmin[2] + (ty + 1) * tcs;
-	tcfg.bmin[0] -= tcfg.borderSize * tcfg.cs;
-	tcfg.bmin[2] -= tcfg.borderSize * tcfg.cs;
-	tcfg.bmax[0] += tcfg.borderSize * tcfg.cs;
-	tcfg.bmax[2] += tcfg.borderSize * tcfg.cs;
-
-	// Allocate voxel heightfield where we rasterize our input data to.
-	rc.solid = rcAllocHeightfield();
-	if (!rc.solid)
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
-		return 0;
-	}
-	if (!rcCreateHeightfield(_ctx, *rc.solid, tcfg.width, tcfg.height, tcfg.bmin, tcfg.bmax, tcfg.cs, tcfg.ch))
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
-		return 0;
-	}
-
-	// Allocate array that can hold triangle flags.
-	// If you have multiple meshes you need to process, allocate
-	// and array which can hold the max number of triangles you need to process.
-	rc.triareas = new unsigned char[chunkyMesh->maxTrisPerChunk];
-	if (!rc.triareas)
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'm_triareas' (%d).", chunkyMesh->maxTrisPerChunk);
-		return 0;
-	}
-
-	float tbmin[2], tbmax[2];
-	tbmin[0] = tcfg.bmin[0];
-	tbmin[1] = tcfg.bmin[2];
-	tbmax[0] = tcfg.bmax[0];
-	tbmax[1] = tcfg.bmax[2];
-	int cid[512];// TODO: Make grow when returning too many items.
-	const int ncid = rcGetChunksOverlappingRect(chunkyMesh, tbmin, tbmax, cid, 512);
-	if (!ncid)
-	{
-		return 0; // empty
-	}
-
-	for (int i = 0; i < ncid; ++i)
-	{
-		const rcChunkyTriMeshNode& node = chunkyMesh->nodes[cid[i]];
-		const int* tris = &chunkyMesh->tris[node.i * 3];
-		const int ntris = node.n;
-
-		memset(rc.triareas, 0, ntris * sizeof(unsigned char));
-		rcMarkWalkableTriangles(_ctx, tcfg.walkableSlopeAngle,
-			verts, nverts, tris, ntris, rc.triareas);
-
-		if (!rcRasterizeTriangles(_ctx, verts, nverts, tris, rc.triareas, ntris, *rc.solid, tcfg.walkableClimb))
-			return 0;
-	}
-
-	// Once all geometry is rasterized, we do initial pass of filtering to
-	// remove unwanted overhangs caused by the conservative rasterization
-	// as well as filter spans where the character cannot possibly stand.
-	if (_filterLowHangingObstacles)
-		rcFilterLowHangingWalkableObstacles(_ctx, tcfg.walkableClimb, *rc.solid);
-	if (_filterLedgeSpans)
-		rcFilterLedgeSpans(_ctx, tcfg.walkableHeight, tcfg.walkableClimb, *rc.solid);
-	if (_filterWalkableLowHeightSpans)
-		rcFilterWalkableLowHeightSpans(_ctx, tcfg.walkableHeight, *rc.solid);
-
-
-	rc.chf = rcAllocCompactHeightfield();
-	if (!rc.chf)
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'chf'.");
-		return 0;
-	}
-	if (!rcBuildCompactHeightfield(_ctx, tcfg.walkableHeight, tcfg.walkableClimb, *rc.solid, *rc.chf))
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build compact data.");
-		return 0;
-	}
-
-	// Erode the walkable area by agent radius.
-	if (!rcErodeWalkableArea(_ctx, tcfg.walkableRadius, *rc.chf))
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not erode.");
-		return 0;
-	}
-
-	// (Optional) Mark areas.
-	const ConvexVolume* vols = _geom->getConvexVolumes();
-	for (int i = 0; i < _geom->getConvexVolumeCount(); ++i)
-	{
-		rcMarkConvexPolyArea(_ctx, vols[i].verts, vols[i].nverts,
-			vols[i].hmin, vols[i].hmax,
-			(unsigned char)vols[i].area, *rc.chf);
-	}
-
-	rc.lset = rcAllocHeightfieldLayerSet();
-	if (!rc.lset)
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'lset'.");
-		return 0;
-	}
-	if (!rcBuildHeightfieldLayers(_ctx, *rc.chf, tcfg.borderSize, tcfg.walkableHeight, *rc.lset))
-	{
-		_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build heighfield layers.");
-		return 0;
-	}
-
-	rc.ntiles = 0;
-	for (int i = 0; i < rcMin(rc.lset->nlayers, MAX_LAYERS); ++i)
-	{
-		TileCacheData* tile = &rc.tiles[rc.ntiles++];
-		const rcHeightfieldLayer* layer = &rc.lset->layers[i];
-
-		// Store header
-		dtTileCacheLayerHeader header;
-		header.magic = DT_TILECACHE_MAGIC;
-		header.version = DT_TILECACHE_VERSION;
-
-		// Tile layer location in the navmesh.
-		header.tx = tx;
-		header.ty = ty;
-		header.tlayer = i;
-		dtVcopy(header.bmin, layer->bmin);
-		dtVcopy(header.bmax, layer->bmax);
-
-		// Tile info.
-		header.width = (unsigned char)layer->width;
-		header.height = (unsigned char)layer->height;
-		header.minx = (unsigned char)layer->minx;
-		header.maxx = (unsigned char)layer->maxx;
-		header.miny = (unsigned char)layer->miny;
-		header.maxy = (unsigned char)layer->maxy;
-		header.hmin = (unsigned short)layer->hmin;
-		header.hmax = (unsigned short)layer->hmax;
-
-		dtStatus status = dtBuildTileCacheLayer(&comp, &header, layer->heights, layer->areas, layer->cons,
-			&tile->data, &tile->dataSize);
-		if (dtStatusFailed(status))
+		if (!_geom || !_geom->getMesh() || !_geom->getChunkyMesh())
 		{
+			_ctx->log(RC_LOG_ERROR, "buildTile: Input mesh is not specified.");
 			return 0;
+		}
+
+		FastLZCompressor comp;
+		RasterizationContext rc;
+
+		const float* verts = _geom->getMesh()->getVerts();
+		const int nverts = _geom->getMesh()->getVertCount();
+		const rcChunkyTriMesh* chunkyMesh = _geom->getChunkyMesh();
+
+		// Tile bounds.
+		const float tcs = cfg.tileSize * cfg.cs;
+
+		rcConfig tcfg;
+		memcpy(&tcfg, &cfg, sizeof(tcfg));
+
+		tcfg.bmin[0] = cfg.bmin[0] + tx * tcs;
+		tcfg.bmin[1] = cfg.bmin[1];
+		tcfg.bmin[2] = cfg.bmin[2] + ty * tcs;
+		tcfg.bmax[0] = cfg.bmin[0] + (tx + 1) * tcs;
+		tcfg.bmax[1] = cfg.bmax[1];
+		tcfg.bmax[2] = cfg.bmin[2] + (ty + 1) * tcs;
+		tcfg.bmin[0] -= tcfg.borderSize * tcfg.cs;
+		tcfg.bmin[2] -= tcfg.borderSize * tcfg.cs;
+		tcfg.bmax[0] += tcfg.borderSize * tcfg.cs;
+		tcfg.bmax[2] += tcfg.borderSize * tcfg.cs;
+
+		// Allocate voxel heightfield where we rasterize our input data to.
+		rc.solid = rcAllocHeightfield();
+		if (!rc.solid)
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'solid'.");
+			return 0;
+		}
+		if (!rcCreateHeightfield(_ctx, *rc.solid, tcfg.width, tcfg.height, tcfg.bmin, tcfg.bmax, tcfg.cs, tcfg.ch))
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not create solid heightfield.");
+			return 0;
+		}
+
+		// Allocate array that can hold triangle flags.
+		// If you have multiple meshes you need to process, allocate
+		// and array which can hold the max number of triangles you need to process.
+		rc.triareas = new unsigned char[chunkyMesh->maxTrisPerChunk];
+		if (!rc.triareas)
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'm_triareas' (%d).", chunkyMesh->maxTrisPerChunk);
+			return 0;
+		}
+
+		float tbmin[2], tbmax[2];
+		tbmin[0] = tcfg.bmin[0];
+		tbmin[1] = tcfg.bmin[2];
+		tbmax[0] = tcfg.bmax[0];
+		tbmax[1] = tcfg.bmax[2];
+		int cid[512];// TODO: Make grow when returning too many items.
+		const int ncid = rcGetChunksOverlappingRect(chunkyMesh, tbmin, tbmax, cid, 512);
+		if (!ncid)
+		{
+			return 0; // empty
+		}
+
+		for (int i = 0; i < ncid; ++i)
+		{
+			const rcChunkyTriMeshNode& node = chunkyMesh->nodes[cid[i]];
+			const int* tris = &chunkyMesh->tris[node.i * 3];
+			const int ntris = node.n;
+
+			memset(rc.triareas, 0, ntris * sizeof(unsigned char));
+			rcMarkWalkableTriangles(_ctx, tcfg.walkableSlopeAngle,
+				verts, nverts, tris, ntris, rc.triareas);
+
+			if (!rcRasterizeTriangles(_ctx, verts, nverts, tris, rc.triareas, ntris, *rc.solid, tcfg.walkableClimb))
+				return 0;
+		}
+
+		// Once all geometry is rasterized, we do initial pass of filtering to
+		// remove unwanted overhangs caused by the conservative rasterization
+		// as well as filter spans where the character cannot possibly stand.
+		if (_filterLowHangingObstacles)
+			rcFilterLowHangingWalkableObstacles(_ctx, tcfg.walkableClimb, *rc.solid);
+		if (_filterLedgeSpans)
+			rcFilterLedgeSpans(_ctx, tcfg.walkableHeight, tcfg.walkableClimb, *rc.solid);
+		if (_filterWalkableLowHeightSpans)
+			rcFilterWalkableLowHeightSpans(_ctx, tcfg.walkableHeight, *rc.solid);
+
+
+		rc.chf = rcAllocCompactHeightfield();
+		if (!rc.chf)
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'chf'.");
+			return 0;
+		}
+		if (!rcBuildCompactHeightfield(_ctx, tcfg.walkableHeight, tcfg.walkableClimb, *rc.solid, *rc.chf))
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build compact data.");
+			return 0;
+		}
+
+		// Erode the walkable area by agent radius.
+		if (!rcErodeWalkableArea(_ctx, tcfg.walkableRadius, *rc.chf))
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not erode.");
+			return 0;
+		}
+
+		// (Optional) Mark areas.
+		const ConvexVolume* vols = _geom->getConvexVolumes();
+		for (int i = 0; i < _geom->getConvexVolumeCount(); ++i)
+		{
+			rcMarkConvexPolyArea(_ctx, vols[i].verts, vols[i].nverts,
+				vols[i].hmin, vols[i].hmax,
+				(unsigned char)vols[i].area, *rc.chf);
+		}
+
+		rc.lset = rcAllocHeightfieldLayerSet();
+		if (!rc.lset)
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Out of memory 'lset'.");
+			return 0;
+		}
+		if (!rcBuildHeightfieldLayers(_ctx, *rc.chf, tcfg.borderSize, tcfg.walkableHeight, *rc.lset))
+		{
+			_ctx->log(RC_LOG_ERROR, "buildNavigation: Could not build heighfield layers.");
+			return 0;
+		}
+
+		rc.ntiles = 0;
+		for (int i = 0; i < rcMin(rc.lset->nlayers, MAX_LAYERS); ++i)
+		{
+			TileCacheData* tile = &rc.tiles[rc.ntiles++];
+			const rcHeightfieldLayer* layer = &rc.lset->layers[i];
+
+			// Store header
+			dtTileCacheLayerHeader header;
+			header.magic = DT_TILECACHE_MAGIC;
+			header.version = DT_TILECACHE_VERSION;
+
+			// Tile layer location in the navmesh.
+			header.tx = tx;
+			header.ty = ty;
+			header.tlayer = i;
+			dtVcopy(header.bmin, layer->bmin);
+			dtVcopy(header.bmax, layer->bmax);
+
+			// Tile info.
+			header.width = (unsigned char)layer->width;
+			header.height = (unsigned char)layer->height;
+			header.minx = (unsigned char)layer->minx;
+			header.maxx = (unsigned char)layer->maxx;
+			header.miny = (unsigned char)layer->miny;
+			header.maxy = (unsigned char)layer->maxy;
+			header.hmin = (unsigned short)layer->hmin;
+			header.hmax = (unsigned short)layer->hmax;
+
+			dtStatus status = dtBuildTileCacheLayer(&comp, &header, layer->heights, layer->areas, layer->cons,
+				&tile->data, &tile->dataSize);
+			if (dtStatusFailed(status))
+			{
+				return 0;
+			}
+		}
+
+		// Transfer ownsership of tile data from build context to the caller.
+		int n = 0;
+		for (int i = 0; i < rcMin(rc.ntiles, maxTiles); ++i)
+		{
+			tiles[n++] = rc.tiles[i];
+			rc.tiles[i].data = 0;
+			rc.tiles[i].dataSize = 0;
+		}
+
+		return n;
+	}
+
+	/// END HANDLE BUILD
+
+	void Navigation::getTilePos(const float* pos, int& tx, int& ty)
+	{
+		if (!_geom) return;
+
+		const float* bmin = _geom->getNavMeshBoundsMin();
+
+		const float ts = _tileSize * _cellSize;
+		tx = (int)((pos[0] - bmin[0]) / ts);
+		ty = (int)((pos[2] - bmin[2]) / ts);
+	}
+
+	void Navigation::renderCachedTile(const int tx, const int ty, const int type)
+	{
+		// 		if (_tileCache)
+		// 			drawDetail(&m_dd, m_tileCache, tx, ty, type);
+	}
+
+	void Navigation::renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view)
+	{
+		// 		if (m_tileCache)
+		// 			drawDetailOverlay(m_tileCache, tx, ty, proj, model, view);
+	}
+
+	void Navigation::AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height)
+	{
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._tileCache)
+				return;
+
+			float p[3];
+			p[0] = pos.x;
+			p[1] = pos.y - 0.5f;
+			p[2] = pos.z;
+
+			_package[i]._tileCache->addObstacle(p, radius, height, 0);
 		}
 	}
 
-	// Transfer ownsership of tile data from build context to the caller.
-	int n = 0;
-	for (int i = 0; i < rcMin(rc.ntiles, maxTiles); ++i)
+	void Navigation::AddBoxTempObstacle(DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax)
 	{
-		tiles[n++] = rc.tiles[i];
-		rc.tiles[i].data = 0;
-		rc.tiles[i].dataSize = 0;
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._tileCache)
+				return;
+
+			float p[3];
+			p[0] = bmin.x;
+			p[1] = bmin.y - 0.5f;
+			p[2] = bmin.z;
+
+			float p1[3];
+			p1[0] = bmax.x;
+			p1[1] = bmax.y - 0.5f;
+			p1[2] = bmax.z;
+
+			_package[i]._tileCache->addBoxObstacle(p, p1, 0);
+		}
 	}
 
-	return n;
-}
-
-/// END HANDLE BUILD
-
-void Navigation::getTilePos(const float* pos, int& tx, int& ty)
-{
-	if (!_geom) return;
-
-	const float* bmin = _geom->getNavMeshBoundsMin();
-
-	const float ts = _tileSize * _cellSize;
-	tx = (int)((pos[0] - bmin[0]) / ts);
-	ty = (int)((pos[2] - bmin[2]) / ts);
-}
-
-void Navigation::renderCachedTile(const int tx, const int ty, const int type)
-{
-	// 		if (_tileCache)
-	// 			drawDetail(&m_dd, m_tileCache, tx, ty, type);
-}
-
-void Navigation::renderCachedTileOverlay(const int tx, const int ty, double* proj, double* model, int* view)
-{
-	// 		if (m_tileCache)
-	// 			drawDetailOverlay(m_tileCache, tx, ty, proj, model, view);
-}
-
-void Navigation::AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height)
-{
-	for (int i = 0; i < PACKAGESIZE; i++)
+	void Navigation::RemoveTempObstacle(DirectX::XMFLOAT3 pos)
 	{
-		if (!_package[i]._tileCache)
-			return;
+		for (int i = 0; i < PACKAGESIZE; i++)
+		{
+			if (!_package[i]._tileCache)
+				return;
 
-		float p[3];
-		p[0] = pos.x;
-		p[1] = pos.y - 0.5f;
-		p[2] = pos.z;
+			float p[3];
+			p[0] = pos.x;
+			p[1] = pos.y;
+			p[2] = pos.z;
 
-		_package[i]._tileCache->addObstacle(p, radius, height, 0);
+			dtObstacleRef ref = hitTestObstacle(_package[i]._tileCache, p);
+			_package[i]._tileCache->removeObstacle(ref);
+		}
 	}
-}
 
-void Navigation::AddBoxTempObstacle(DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax)
-{
-	for (int i = 0; i < PACKAGESIZE; i++)
+	void Navigation::MoveTempObstacle(DirectX::XMFLOAT3 bpos, DirectX::XMFLOAT3 npos)
 	{
-		if (!_package[i]._tileCache)
+		if (!_package[0]._tileCache)
 			return;
-
-		float p[3];
-		p[0] = bmin.x;
-		p[1] = bmin.y - 0.5f;
-		p[2] = bmin.z;
 
 		float p1[3];
-		p1[0] = bmax.x;
-		p1[1] = bmax.y - 0.5f;
-		p1[2] = bmax.z;
+		p1[0] = bpos.x;
+		p1[1] = bpos.y;
+		p1[2] = bpos.z;
 
-		_package[i]._tileCache->addBoxObstacle(p, p1, 0);
-	}
-}
+		dtObstacleRef ref = hitTestObstacle(_package[0]._tileCache, p1);
+		_package[0]._tileCache->removeObstacle(ref);
 
-void Navigation::RemoveTempObstacle(DirectX::XMFLOAT3 pos)
-{
-	for (int i = 0; i < PACKAGESIZE; i++)
-	{
-		if (!_package[i]._tileCache)
+		if (!_package[0]._tileCache)
 			return;
 
-		float p[3];
-		p[0] = pos.x;
-		p[1] = pos.y;
-		p[2] = pos.z;
+		float p2[3];
+		p2[0] = npos.x;
+		p2[1] = npos.y - 0.5f;
+		p2[2] = npos.z;
 
-		dtObstacleRef ref = hitTestObstacle(_package[i]._tileCache, p);
-		_package[i]._tileCache->removeObstacle(ref);
+		_package[0]._tileCache->addObstacle(p2, 5, 5, 0);
 	}
-}
 
-void Navigation::MoveTempObstacle(DirectX::XMFLOAT3 bpos, DirectX::XMFLOAT3 npos)
-{
-	if (!_package[0]._tileCache)
-		return;
-
-	float p1[3];
-	p1[0] = bpos.x;
-	p1[1] = bpos.y;
-	p1[2] = bpos.z;
-
-	dtObstacleRef ref = hitTestObstacle(_package[0]._tileCache, p1);
-	_package[0]._tileCache->removeObstacle(ref);
-
-	if (!_package[0]._tileCache)
-		return;
-
-	float p2[3];
-	p2[0] = npos.x;
-	p2[1] = npos.y - 0.5f;
-	p2[2] = npos.z;
-
-	_package[0]._tileCache->addObstacle(p2, 5, 5, 0);
-}
-
-void Navigation::ClearAllTempObstacles()
-{
-	for (int i = 0; i < PACKAGESIZE; i++)
+	void Navigation::ClearAllTempObstacles()
 	{
-		if (!_package[i]._tileCache)
-			return;
-		for (int f = 0; f < _package[i]._tileCache->getObstacleCount(); ++f)
+		for (int i = 0; i < PACKAGESIZE; i++)
 		{
-			const dtTileCacheObstacle* ob = _package[i]._tileCache->getObstacle(f);
-			if (ob->state == DT_OBSTACLE_EMPTY) continue;
-			_package[i]._tileCache->removeObstacle(_package[0]._tileCache->getObstacleRef(ob));
-		}
-	}
-}
-
-std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> Navigation::FindStraightPath(int index)
-{
-#define PACKAGE _package[index]
-
-	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> failContainer;
-	if (!PACKAGE._navMesh || !PACKAGE._navQuery)
-		return failContainer;
-
-	PACKAGE._navQuery->findPath(PACKAGE._startRef, PACKAGE._endRef, PACKAGE._startPos, PACKAGE._endPos, &(PACKAGE._filter)
-		, PACKAGE._path, &(PACKAGE._pathCount), PACKAGE.MAX_POLYS);
-	PACKAGE._navQuery->findStraightPath(PACKAGE._startPos, PACKAGE._endPos, PACKAGE._path, PACKAGE._pathCount, PACKAGE._straightPath
-		, PACKAGE._straightPathFlags, PACKAGE._straightPathPolys, &(PACKAGE._nstraightPath)
-		, PACKAGE.MAX_POLYS, DT_STRAIGHTPATH_ALL_CROSSINGS);
-
-	return GetPath(index);
-}
-
-std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> Navigation::GetPath(int index)
-{
-	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> result;
-
-	for (int i = 0; i < _package[index]._nstraightPath - 1; ++i)
-	{
-		DirectX::XMFLOAT3 strindex;
-		DirectX::XMFLOAT3 nxtindex;
-
-		strindex.x = _package[index]._straightPath[i * 3];
-		strindex.y = _package[index]._straightPath[i * 3 + 1] + 0.4f;
-		strindex.z = _package[index]._straightPath[i * 3 + 2];
-
-		nxtindex.x = _package[index]._straightPath[(i + 1) * 3];
-		nxtindex.y = _package[index]._straightPath[(i + 1) * 3 + 1] + 0.4f;
-		nxtindex.z = _package[index]._straightPath[(i + 1) * 3 + 2];
-
-		result.push_back(std::make_pair(strindex, nxtindex));
-	}
-
-	return result;
-}
-
-DirectX::XMFLOAT3 Navigation::FindRaycastPath(int index)
-{
-#define PACKAGE _package[index]
-
-	DirectX::XMFLOAT3 result = {};
-
-	float t = 0;
-	PACKAGE._pathCount = 0;
-	PACKAGE._nstraightPath = 2;
-	PACKAGE._straightPath[0] = PACKAGE._startPos[0];
-	PACKAGE._straightPath[1] = PACKAGE._startPos[1];
-	PACKAGE._straightPath[2] = PACKAGE._startPos[2];
-	dtStatus status = PACKAGE._navQuery->raycast(PACKAGE._startRef, PACKAGE._startPos, PACKAGE._endPos
-		, &PACKAGE._filter, DT_RAYCAST_USE_COSTS
-		, &PACKAGE._hit, PACKAGE._RaycastPathPolys);
-	if (PACKAGE._hit.t > 1)
-	{
-		// No hit
-		dtVcopy(PACKAGE._hitPos, PACKAGE._endPos);
-	}
-	else
-	{
-		// Hit
-		dtVlerp(PACKAGE._hitPos, PACKAGE._startPos, PACKAGE._endPos, PACKAGE._hit.t);
-	}
-	// Adjust height.
-	if (PACKAGE._pathCount > 0)
-	{
-		float h = 0;
-		PACKAGE._navQuery->getPolyHeight(PACKAGE._path[PACKAGE._pathCount - 1], PACKAGE._hitPos, &h);
-		PACKAGE._hitPos[1] = h;
-	}
-	result.x = PACKAGE._hitPos[0];
-	result.y = PACKAGE._hitPos[1];
-	result.z = PACKAGE._hitPos[2];
-
-	return result;
-}
-
-void Navigation::SetSEpos(int index, float sx, float sy, float sz, float ex, float ey, float ez)
-{
-	_package[index]._startPos[0] = sx;
-	_package[index]._startPos[1] = sy;
-	_package[index]._startPos[2] = sz;
-	_package[index]._navQuery->findNearestPoly(_package[index]._startPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._startRef), 0);
-
-	_package[index]._endPos[0] = ex;
-	_package[index]._endPos[1] = ey;
-	_package[index]._endPos[2] = ez;
-	_package[index]._navQuery->findNearestPoly(_package[index]._endPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._endRef), 0);
-}
-
-void Navigation::SetSEpos(int index, DirectX::XMFLOAT3 startPosition, DirectX::XMFLOAT3 endPosition)
-{
-	SetSEpos(index, startPosition.x, startPosition.y, startPosition.z
-		, startPosition.x, startPosition.y, startPosition.z);
-}
-
-void Navigation::SetStartpos(int index, float x, float y, float z)
-{
-	_package[index]._startPos[0] = x;
-	_package[index]._startPos[1] = y;
-	_package[index]._startPos[2] = z;
-	_package[index]._navQuery->findNearestPoly(_package[index]._startPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._startRef), 0);
-}
-
-void Navigation::SetStartpos(int index, DirectX::XMFLOAT3 position)
-{
-	SetStartpos(index, position.x, position.y, position.z);
-}
-
-void Navigation::SetEndpos(int index, float x, float y, float z)
-{
-	_package[index]._endPos[0] = x;
-	_package[index]._endPos[1] = y;
-	_package[index]._endPos[2] = z;
-	_package[index]._navQuery->findNearestPoly(_package[index]._endPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._endRef), 0);
-}
-
-void Navigation::SetEndpos(int index, DirectX::XMFLOAT3 position)
-{
-	SetEndpos(index, position.x, position.y, position.z);
-}
-
-void Navigation::SetAgent(int index, float agentHeight, float agentMaxSlope, float agentRadius, float agentMaxClimb)
-{
-
-}
-
-dtObstacleRef Navigation::hitTestObstacle(const dtTileCache* tc, const float* sq)
-{
-	float tmin = FLT_MAX;
-	const dtTileCacheObstacle* obmin = nullptr;
-	for (int i = 0; i < tc->getObstacleCount(); ++i)
-	{
-		const dtTileCacheObstacle* ob = tc->getObstacle(i);
-		if (ob->state == DT_OBSTACLE_EMPTY)
-			continue;
-
-		float bmin[3], bmax[3], t0, t1;
-		tc->getObstacleBounds(ob, bmin, bmax);
-
-		if (Navigation::isectSegAABB(sq, bmin, bmax, t0, t1))
-		{
-			if (t0 < tmin)
+			if (!_package[i]._tileCache)
+				return;
+			for (int f = 0; f < _package[i]._tileCache->getObstacleCount(); ++f)
 			{
-				tmin = t0;
-				obmin = ob;
+				const dtTileCacheObstacle* ob = _package[i]._tileCache->getObstacle(f);
+				if (ob->state == DT_OBSTACLE_EMPTY) continue;
+				_package[i]._tileCache->removeObstacle(_package[0]._tileCache->getObstacleRef(ob));
 			}
 		}
 	}
-	return tc->getObstacleRef(obmin);
-}
 
-bool Navigation::isectSegAABB(const float* sq, const float* amin, const float* amax, float& tmin, float& tmax)
-{
-	static const float EPS = 1e-6f;
-
-	float d[3];
-	float sp[3] = { 0.0f, 0.0f, 0.0f }; // Assuming the origin of the ray is at (0, 0, 0)
-	rcVsub(d, sq, sp);
-	tmin = 0;  // set to -FLT_MAX to get first hit on line
-	tmax = FLT_MAX;        // set to max distance ray can travel (for segment)
-
-	// For all three slabs
-	for (int i = 0; i < 3; i++)
+	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> Navigation::FindStraightPath(int index)
 	{
-		if (fabsf(d[i]) < EPS)
+#define PACKAGE _package[index]
+
+		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> failContainer;
+		if (!PACKAGE._navMesh || !PACKAGE._navQuery)
+			return failContainer;
+
+		PACKAGE._navQuery->findPath(PACKAGE._startRef, PACKAGE._endRef, PACKAGE._startPos, PACKAGE._endPos, &(PACKAGE._filter)
+			, PACKAGE._path, &(PACKAGE._pathCount), PACKAGE.MAX_POLYS);
+		PACKAGE._navQuery->findStraightPath(PACKAGE._startPos, PACKAGE._endPos, PACKAGE._path, PACKAGE._pathCount, PACKAGE._straightPath
+			, PACKAGE._straightPathFlags, PACKAGE._straightPathPolys, &(PACKAGE._nstraightPath)
+			, PACKAGE.MAX_POLYS, DT_STRAIGHTPATH_ALL_CROSSINGS);
+
+		return GetPath(index);
+	}
+
+	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> Navigation::GetPath(int index)
+	{
+		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> result;
+
+		for (int i = 0; i < _package[index]._nstraightPath - 1; ++i)
 		{
-			// Ray is parallel to slab. No hit if origin not within slab
-			if (sp[i] < amin[i] || sp[i] > amax[i])
-				return false;
+			DirectX::XMFLOAT3 strindex;
+			DirectX::XMFLOAT3 nxtindex;
+
+			strindex.x = _package[index]._straightPath[i * 3];
+			strindex.y = _package[index]._straightPath[i * 3 + 1] + 0.4f;
+			strindex.z = _package[index]._straightPath[i * 3 + 2];
+
+			nxtindex.x = _package[index]._straightPath[(i + 1) * 3];
+			nxtindex.y = _package[index]._straightPath[(i + 1) * 3 + 1] + 0.4f;
+			nxtindex.z = _package[index]._straightPath[(i + 1) * 3 + 2];
+
+			result.push_back(std::make_pair(strindex, nxtindex));
+		}
+
+		return result;
+	}
+
+	DirectX::XMFLOAT3 Navigation::FindRaycastPath(int index)
+	{
+#define PACKAGE _package[index]
+
+		DirectX::XMFLOAT3 result = {};
+
+		float t = 0;
+		PACKAGE._pathCount = 0;
+		PACKAGE._nstraightPath = 2;
+		PACKAGE._straightPath[0] = PACKAGE._startPos[0];
+		PACKAGE._straightPath[1] = PACKAGE._startPos[1];
+		PACKAGE._straightPath[2] = PACKAGE._startPos[2];
+		dtStatus status = PACKAGE._navQuery->raycast(PACKAGE._startRef, PACKAGE._startPos, PACKAGE._endPos
+			, &PACKAGE._filter, DT_RAYCAST_USE_COSTS
+			, &PACKAGE._hit, PACKAGE._RaycastPathPolys);
+		if (PACKAGE._hit.t > 1)
+		{
+			// No hit
+			dtVcopy(PACKAGE._hitPos, PACKAGE._endPos);
 		}
 		else
 		{
-			// Compute intersection t value of ray with near and far plane of slab
-			const float ood = 1.0f / d[i];
-			float t1 = (amin[i] - sp[i]) * ood;
-			float t2 = (amax[i] - sp[i]) * ood;
-			// Make t1 be intersection with near plane, t2 with far plane
-			if (t1 > t2) rcSwap(t1, t2);
-			// Compute the intersection of slab intersections intervals
-			if (t1 > tmin) tmin = t1;
-			if (t2 < tmax) tmax = t2;
-			// Exit with no collision as soon as slab intersection becomes empty
-			if (tmin > tmax) return false;
+			// Hit
+			dtVlerp(PACKAGE._hitPos, PACKAGE._startPos, PACKAGE._endPos, PACKAGE._hit.t);
 		}
+		// Adjust height.
+		if (PACKAGE._pathCount > 0)
+		{
+			float h = 0;
+			PACKAGE._navQuery->getPolyHeight(PACKAGE._path[PACKAGE._pathCount - 1], PACKAGE._hitPos, &h);
+			PACKAGE._hitPos[1] = h;
+		}
+		result.x = PACKAGE._hitPos[0];
+		result.y = PACKAGE._hitPos[1];
+		result.z = PACKAGE._hitPos[2];
+
+		return result;
 	}
 
-	return true;
-}
+	void Navigation::SetSEpos(int index, float sx, float sy, float sz, float ex, float ey, float ez)
+	{
+		_package[index]._startPos[0] = sx;
+		_package[index]._startPos[1] = sy;
+		_package[index]._startPos[2] = sz;
+		_package[index]._navQuery->findNearestPoly(_package[index]._startPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._startRef), 0);
+
+		_package[index]._endPos[0] = ex;
+		_package[index]._endPos[1] = ey;
+		_package[index]._endPos[2] = ez;
+		_package[index]._navQuery->findNearestPoly(_package[index]._endPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._endRef), 0);
+	}
+
+	void Navigation::SetSEpos(int index, DirectX::XMFLOAT3 startPosition, DirectX::XMFLOAT3 endPosition)
+	{
+		SetSEpos(index, startPosition.x, startPosition.y, startPosition.z
+			, startPosition.x, startPosition.y, startPosition.z);
+	}
+
+	void Navigation::SetStartpos(int index, float x, float y, float z)
+	{
+		_package[index]._startPos[0] = x;
+		_package[index]._startPos[1] = y;
+		_package[index]._startPos[2] = z;
+		_package[index]._navQuery->findNearestPoly(_package[index]._startPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._startRef), 0);
+	}
+
+	void Navigation::SetStartpos(int index, DirectX::XMFLOAT3 position)
+	{
+		SetStartpos(index, position.x, position.y, position.z);
+	}
+
+	void Navigation::SetEndpos(int index, float x, float y, float z)
+	{
+		_package[index]._endPos[0] = x;
+		_package[index]._endPos[1] = y;
+		_package[index]._endPos[2] = z;
+		_package[index]._navQuery->findNearestPoly(_package[index]._endPos, _package[index]._polyPickExt, &(_package[index]._filter), &(_package[index]._endRef), 0);
+	}
+
+	void Navigation::SetEndpos(int index, DirectX::XMFLOAT3 position)
+	{
+		SetEndpos(index, position.x, position.y, position.z);
+	}
+
+	void Navigation::SetAgent(int index, float agentHeight, float agentMaxSlope, float agentRadius, float agentMaxClimb)
+	{
+		_package[index]._agentsetting._agentHeight = agentHeight;
+		_package[index]._agentsetting._agentMaxSlope = agentMaxSlope;
+		_package[index]._agentsetting._agentRadius = agentRadius;
+		_package[index]._agentsetting._agentMaxClimb = agentMaxClimb;
+	}
+
+	dtObstacleRef Navigation::hitTestObstacle(const dtTileCache* tc, const float* sq)
+	{
+		float tmin = FLT_MAX;
+		const dtTileCacheObstacle* obmin = nullptr;
+		for (int i = 0; i < tc->getObstacleCount(); ++i)
+		{
+			const dtTileCacheObstacle* ob = tc->getObstacle(i);
+			if (ob->state == DT_OBSTACLE_EMPTY)
+				continue;
+
+			float bmin[3], bmax[3], t0, t1;
+			tc->getObstacleBounds(ob, bmin, bmax);
+
+			if (Navigation::isectSegAABB(sq, bmin, bmax, t0, t1))
+			{
+				if (t0 < tmin)
+				{
+					tmin = t0;
+					obmin = ob;
+				}
+			}
+		}
+		return tc->getObstacleRef(obmin);
+	}
+
+	bool Navigation::isectSegAABB(const float* sq, const float* amin, const float* amax, float& tmin, float& tmax)
+	{
+		static const float EPS = 1e-6f;
+
+		float d[3];
+		float sp[3] = { 0.0f, 0.0f, 0.0f }; // Assuming the origin of the ray is at (0, 0, 0)
+		rcVsub(d, sq, sp);
+		tmin = 0;  // set to -FLT_MAX to get first hit on line
+		tmax = FLT_MAX;        // set to max distance ray can travel (for segment)
+
+		// For all three slabs
+		for (int i = 0; i < 3; i++)
+		{
+			if (fabsf(d[i]) < EPS)
+			{
+				// Ray is parallel to slab. No hit if origin not within slab
+				if (sp[i] < amin[i] || sp[i] > amax[i])
+					return false;
+			}
+			else
+			{
+				// Compute intersection t value of ray with near and far plane of slab
+				const float ood = 1.0f / d[i];
+				float t1 = (amin[i] - sp[i]) * ood;
+				float t2 = (amax[i] - sp[i]) * ood;
+				// Make t1 be intersection with near plane, t2 with far plane
+				if (t1 > t2) rcSwap(t1, t2);
+				// Compute the intersection of slab intersections intervals
+				if (t1 > tmin) tmin = t1;
+				if (t2 < tmax) tmax = t2;
+				// Exit with no collision as soon as slab intersection becomes empty
+				if (tmin > tmax) return false;
+			}
+		}
+
+		return true;
+	}
+
+	DirectX::XMFLOAT3 Navigation::vertex(const float* pos)
+	{
+		return DirectX::XMFLOAT3(pos[0], pos[1], pos[2]);
+	}
 }
