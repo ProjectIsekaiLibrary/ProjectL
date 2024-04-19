@@ -76,6 +76,11 @@ namespace ArkEngine
 			// 카메라의 위치 가져오기
 			virtual const DirectX::XMFLOAT3 GetCameraPos() override;
 
+		public:
+			virtual const DirectX::XMFLOAT3 GetRightVector() override;
+			virtual const DirectX::XMFLOAT3 GetLookVector() override;
+			virtual const DirectX::XMFLOAT3 GetUpVector() override;
+
 		private:
 			// pos, target, worldUp을 통해 look, right, up 백터를 설정 후 view 행렬 업데이트
 			void LookAt(const DirectX::XMFLOAT3& pos, const DirectX::XMFLOAT3& target, DirectX::XMFLOAT3& worldUp);

@@ -122,7 +122,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
 	ResourceManager::GetInstance()->AddParticle(particle3);
 
-	SetPickingTexture();}
+	SetPickingTexture();
+}
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
 {
@@ -339,7 +340,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		{
 			if (index->GetRenderingState() && index->GetActive())
 			{
-				index->Render();
+				if (index->GetName() != "navMesh")
+				{
+					index->Render();
+				}
 			}
 		}
 
@@ -351,6 +355,21 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 		// DrawDebugText를 통해 생성된 모든 디버그용 폰트 렌더링
 		_font->Render();
+	}
+
+	// 디버그용이지만 일단 분리
+	{
+		// 프러스텀 컬링용, 메쉬 크기만큼의 디버그용 오브젝트 렌더링
+		for (const auto& index : ResourceManager::GetInstance()->GetDebugObjectList())
+		{
+			if (index->GetName() == "navMesh")
+			{
+				if (index->GetActive())
+				{
+					index->Render();
+				}
+			}
+		}
 	}
 
 	// particle을 그린다
@@ -495,13 +514,27 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDeb
 
 void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugMap(const std::string& name)
 {
+	auto vec = ResourceManager::GetInstance()->GetDebugObjectList();
+	for (int i = 0; i < vec.size(); i++)
+	{
+		if (vec[i]->GetName() == name)
+		{
+			vec[i]->ReleaseWithBuffer();
+
+			vec.erase(vec.begin() + i);
+
+			return;
+		}
+	}
+}
+
+GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::GetDebugObject(const std::string& name)
+{
 	for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
 	{
 		if (index->GetName() == name)
 		{
-			index->ReleaseWithBuffer();
-			
-			return;
+			return static_cast<DebugObject*> (index);
 		}
 	}
 }
@@ -788,7 +821,7 @@ UINT ArkEngine::ArkDX11::DX11Renderer::Picking(int mouseX, int mouseY)
 }
 
 const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::GetMyPosition(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& targetPos)
-{	
+{
 	DirectX::XMVECTOR myPos = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), DirectX::XMLoadFloat3(&direction));
 
 	float scaleFactor = 200.0f;
@@ -913,7 +946,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRV(testdef));
 	}
-	
+
 }
 
 void* ArkEngine::ArkDX11::DX11Renderer::GetDevice()

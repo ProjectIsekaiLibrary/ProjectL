@@ -69,6 +69,8 @@ namespace GInterface
 
 		virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) abstract;
 
+		virtual GInterface::GraphicsDebug* GetDebugObject(const std::string& name) abstract;
+
 		virtual void DeleteDebugMap(const std::string& name) abstract;
 
 	public:
