@@ -113,17 +113,53 @@ void KunrealEngine::Camera::RotateCamera(float pitch, float yaw)
 
 void KunrealEngine::Camera::CameraStrafe(float deltaTime)
 {
-	_camera->Strafe(deltaTime);
+	auto rightVec = _camera->GetRightVector();
+	DirectX::XMVECTOR right = DirectX::XMLoadFloat3(&rightVec);
+
+	DirectX::XMVECTOR move = DirectX::XMVectorReplicate(deltaTime);
+
+	auto cameraVec = _camera->GetCameraPosition();
+	DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&cameraVec);
+
+	// 카메라를 앞뒤로 이동시킴
+	DirectX::XMFLOAT3 finalPos;
+	DirectX::XMStoreFloat3(&finalPos, DirectX::XMVectorMultiplyAdd(right, move, position));
+
+	_transform->SetPosition(finalPos.x, finalPos.y, finalPos.z);
 }
 
 void KunrealEngine::Camera::CameraWalk(float deltaTime)
 {
-	_camera->Walk(deltaTime);
+	auto lookVec = _camera->GetLookVector();
+	DirectX::XMVECTOR look = DirectX::XMLoadFloat3(&lookVec);
+
+	DirectX::XMVECTOR move = DirectX::XMVectorReplicate(deltaTime);
+
+	auto cameraVec = _camera->GetCameraPosition();
+	DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&cameraVec);
+
+	// 카메라를 앞뒤로 이동시킴
+	DirectX::XMFLOAT3 finalPos;
+	DirectX::XMStoreFloat3(&finalPos, DirectX::XMVectorMultiplyAdd(look, move, position));
+
+	_transform->SetPosition(finalPos.x, finalPos.y, finalPos.z);
 }
 
 void KunrealEngine::Camera::CameraUpDown(float deltaTime)
 {
-	_camera->UpDown(deltaTime);
+	auto upVec = _camera->GetUpVector();
+	DirectX::XMVECTOR up = DirectX::XMLoadFloat3(&upVec);
+
+	DirectX::XMVECTOR move = DirectX::XMVectorReplicate(deltaTime);
+
+	auto cameraVec = _camera->GetCameraPosition();
+	DirectX::XMVECTOR position = DirectX::XMLoadFloat3(&cameraVec);
+
+	// 카메라를 앞뒤로 이동시킴
+	DirectX::XMFLOAT3 finalPos;
+	DirectX::XMStoreFloat3(&finalPos, DirectX::XMVectorMultiplyAdd(up, move, position));
+
+	_transform->SetPosition(finalPos.x, finalPos.y, finalPos.z);
 }
 
 void KunrealEngine::Camera::MoveCamera()
@@ -180,27 +216,27 @@ void KunrealEngine::Camera::MoveToDebug()
 
 	if (InputSystem::GetInstance()->KeyInput(KEY::A))
 	{
-		SetCameraPosition(-20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
+		CameraStrafe(-20.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::D))
 	{
-		SetCameraPosition(20.0f * TimeManager::GetInstance().GetDeltaTime() + x, y, z);
+		CameraStrafe(20.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::W))
 	{
-		SetCameraPosition(x, y, z + 20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraWalk(20.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::S))
 	{
-		SetCameraPosition(x, y, z - 20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraWalk(-20.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::Q))
 	{
-		SetCameraPosition(x, y - 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
+		CameraUpDown(-20.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::E))
 	{
-		SetCameraPosition(x, y + 20.0f * TimeManager::GetInstance().GetDeltaTime(), z);
+		CameraUpDown(20.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::R))
 	{
