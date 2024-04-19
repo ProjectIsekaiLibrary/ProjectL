@@ -104,6 +104,12 @@ void KunrealEngine::Camera::SetTargetPosition(float posX, float posY, float posZ
 	_camera->SetTargetPosition(targetPos);
 }
 
+
+DirectX::XMFLOAT3 KunrealEngine::Camera::GetTargetPosition()
+{
+	return this->_targetPosition;
+}
+
 void KunrealEngine::Camera::RotateCamera(float pitch, float yaw)
 {
 	DirectX::XMFLOAT2 angle(pitch, yaw);
