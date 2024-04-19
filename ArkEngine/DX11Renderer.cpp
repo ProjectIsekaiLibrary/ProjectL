@@ -492,6 +492,20 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDeb
 	delete debugObject;
 }
 
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugMap(const std::string& name)
+{
+	for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
+	{
+		if (index->GetName() == name)
+		{
+			index->ReleaseWithBuffer();
+			
+			return;
+		}
+	}
+}
+
 void ArkEngine::ArkDX11::DX11Renderer::CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color)
 {
 	auto lineList = ResourceManager::GetInstance()->GetLineObjectList();
