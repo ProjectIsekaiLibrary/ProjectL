@@ -105,11 +105,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-	auto particle = new ArkEngine::ArkDX11::ParticleSystem("Laser", "Resources/Textures/Particles/Shockwave.dds", 1000);
+	auto particle = new ArkEngine::ArkDX11::ParticleSystem("Laser", "Resources/Textures/Particles/flare.dds", 1000);
 	particle->SetEmitPos(DirectX::XMFLOAT3{ 20.0f, 10.0f, 0.0f });
 	particle->SetEmitVelocity(20.0f, false);
 	particle->SetParticleTime(1.0f, 1.0f);
-	particle->SetParticleColor(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+	//particle->SetParticleColor(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 	ResourceManager::GetInstance()->AddParticle(particle);
 
 	auto particle2 = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 1000);
@@ -117,7 +117,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	particle2->SetEmitVelocity(4.0f, true);
 	particle2->SetParticleSize(DirectX::XMFLOAT2(5.0f, 5.0f));
 	particle2->SetParticleTime(1.0f, 1.0f);
-	particle2->SetParticleColor(DirectX::XMFLOAT3(1.0f, 0.0f, 1.0f));
+	//particle2->SetParticleColor(DirectX::XMFLOAT3(1.0f, 0.0f, 1.0f));
 	ResourceManager::GetInstance()->AddParticle(particle2);
 
 	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
