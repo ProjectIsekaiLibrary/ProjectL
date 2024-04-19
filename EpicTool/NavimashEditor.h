@@ -7,6 +7,11 @@ namespace KunrealEngine
 	class Navigation;
 }
 
+namespace GInterface
+{
+	class GraphicsDebug;
+}
+
 struct ImDrawList;
 struct ImVec2;
 
@@ -35,5 +40,7 @@ namespace EpicTool
 		float _agentMaxSlope;
 
 		KunrealEngine::Navigation* _navimashEditor;
+
+		std::vector<GInterface::GraphicsDebug*> _navmeshpolys;
 	};
 }

@@ -60,12 +60,6 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0);
-	
-	std::vector<DirectX::XMFLOAT3> vertices;
-	std::vector<unsigned int> indices;
-	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
-	GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
-
 	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	navigationInstance.HandleBuild(1);
 	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
@@ -186,38 +180,6 @@ void KunrealEngine::EngineCore::Update()
 	else
 	{
 		//GRAPHICS->DrawDebugText(800, 50, 60, "%s", "TargetObj : None");
-	}
-
-	auto x = testCamera->GetComponent<Transform>()->GetPosition().x;
-	auto y = testCamera->GetComponent<Transform>()->GetPosition().y;
-	auto z = testCamera->GetComponent<Transform>()->GetPosition().z;
-
-
-	SoundSystem::GetInstance().updateListenerPosition(x,y,z);
-
-	if (inputInstance->KeyDown(KEY::LBRACKET))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Change3Dmode(0);
-	}
-	else if (inputInstance->KeyDown(KEY::RBRACKET))
-	{
-		zeolight->GetComponent<SoundPlayer>()->RemoveSound(0);
-	}
-	else if (inputInstance->KeyDown(KEY::_1))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Play(0);
-	}
-	else if (inputInstance->KeyDown(KEY::_2))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Play(1);
-	}
-	else if (inputInstance->KeyDown(KEY::_3))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Play(2);
-	}
-	else if (inputInstance->KeyDown(KEY::O))
-	{
-		zeolight->GetComponent<SoundPlayer>()->StopAll();
 	}
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
@@ -388,15 +350,6 @@ void KunrealEngine::EngineCore::PlayGround()
 		//	NPC로써 가지고 있어야할 컴포넌트
 	zeolight->AddComponent<Zeolight>();
 	zeolight->GetComponent<Zeolight>()->SetInteractionRange(10);
-		// 워프용 비석에 필요한 부분은 아님. 그냥 사운드 테스트용으로 붙은거.
-	zeolight->AddComponent<SoundPlayer>();
-	zeolight->GetComponent<SoundPlayer>()->CreateSoundInfo("Resources/Sound/An_die_Freude.wav",true,true);
-	zeolight->GetComponent<SoundPlayer>()->CreateSound(0);
-	zeolight->GetComponent<SoundPlayer>()->CreateSoundInfo("Resources/Sound/Keyboard_typing.wav",true,true);
-	zeolight->GetComponent<SoundPlayer>()->CreateSound(1);
-	zeolight->GetComponent<SoundPlayer>()->CreateSoundInfo("Resources/Sound/soundch1.wav",true,true);
-	zeolight->GetComponent<SoundPlayer>()->CreateSound(2);
-	KunrealEngine::SoundSystem::GetInstance().GetSoundPathList();
 
 
 	// Plane 

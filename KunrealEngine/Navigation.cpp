@@ -18,7 +18,7 @@ namespace KunrealEngine
 		return headerSize + gridSize * 4;
 	}
 
-	PathFindbox::PathFindbox()
+	PathFindPack::PathFindPack()
 		: _startRef(0), _endRef(0), _startPos(), _endPos(), _filter(), _path(), _pathCount(0), _polyPickExt()
 		// Straight-pathfind를 위해 필요한 부분들
 		, _straightPath(), _straightPathFlags(), _straightPathPolys(), _nstraightPath(0)
@@ -33,7 +33,7 @@ namespace KunrealEngine
 		_navQuery = new dtNavMeshQuery();
 	}
 
-	PathFindbox::~PathFindbox()
+	PathFindPack::~PathFindPack()
 	{
 		delete _navMesh;
 		delete _navQuery;
@@ -431,6 +431,19 @@ namespace KunrealEngine
 			indices.push_back(i);
 			indices.push_back(i + 1);
 		}
+	}
+
+	int Navigation::GetPackageSize()
+	{
+		return PACKAGESIZE;
+	}
+
+	void Navigation::GetAgent(int index, float& agentHeight, float& agentMaxSlope, float& agentRadius, float& agentMaxClimb)
+	{
+		agentHeight = _package[index]._agentsetting._agentHeight;
+		agentMaxSlope =	_package[index]._agentsetting._agentMaxSlope;
+		agentRadius = _package[index]._agentsetting._agentMaxClimb;
+		agentMaxClimb =	_package[index]._agentsetting._agentRadius;
 	}
 
 	int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)
