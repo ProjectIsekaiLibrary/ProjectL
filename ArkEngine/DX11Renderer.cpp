@@ -122,7 +122,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
 	ResourceManager::GetInstance()->AddParticle(particle3);
 
-	SetPickingTexture();}
+	SetPickingTexture();
+}
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
 {
@@ -495,12 +496,15 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDeb
 
 void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugMap(const std::string& name)
 {
-	for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
+	auto vec = ResourceManager::GetInstance()->GetDebugObjectList();
+	for (int i = 0; i < vec.size(); i++)
 	{
-		if (index->GetName() == name)
+		if (vec[i]->GetName() == name)
 		{
-			index->ReleaseWithBuffer();
-			
+			vec[i]->ReleaseWithBuffer();
+
+			vec.erase(vec.begin() + i);
+
 			return;
 		}
 	}
@@ -788,7 +792,7 @@ UINT ArkEngine::ArkDX11::DX11Renderer::Picking(int mouseX, int mouseY)
 }
 
 const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::GetMyPosition(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& targetPos)
-{	
+{
 	DirectX::XMVECTOR myPos = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), DirectX::XMLoadFloat3(&direction));
 
 	float scaleFactor = 200.0f;
@@ -913,7 +917,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRV(testdef));
 	}
-	
+
 }
 
 void* ArkEngine::ArkDX11::DX11Renderer::GetDevice()

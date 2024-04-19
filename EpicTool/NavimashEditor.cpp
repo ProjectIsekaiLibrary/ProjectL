@@ -73,6 +73,8 @@ void EpicTool::NavimashEditor::ShowWindow()
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 		_navimashEditor->HandleBuild(_naviIndex);
 
+		GRAPHICS->DeleteDebugMap("navMesh");
+
 		std::vector<DirectX::XMFLOAT3> vertices;
 		std::vector<unsigned int> indices;
 		_navimashEditor->GetNavmeshRenderInfo(0, vertices, indices);

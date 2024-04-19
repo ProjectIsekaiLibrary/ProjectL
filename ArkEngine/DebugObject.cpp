@@ -207,8 +207,7 @@ void ArkEngine::ArkDX11::DebugObject::Finalize()
 
 void ArkEngine::ArkDX11::DebugObject::ReleaseWithBuffer()
 {
-	_indexBuffer->Release();
-	_vertexBuffer->Release();
+	ResourceManager::GetInstance()->DeleteResource(_objectName);
 
 	Finalize();
 }
