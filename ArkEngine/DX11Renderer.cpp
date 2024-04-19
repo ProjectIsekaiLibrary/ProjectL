@@ -340,7 +340,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		{
 			if (index->GetRenderingState() && index->GetActive())
 			{
-				index->Render();
+				if (index->GetName() != "navMesh")
+				{
+					index->Render();
+				}
 			}
 		}
 
@@ -352,6 +355,21 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 		// DrawDebugText를 통해 생성된 모든 디버그용 폰트 렌더링
 		_font->Render();
+	}
+
+	// 디버그용이지만 일단 분리
+	{
+		// 프러스텀 컬링용, 메쉬 크기만큼의 디버그용 오브젝트 렌더링
+		for (const auto& index : ResourceManager::GetInstance()->GetDebugObjectList())
+		{
+			if (index->GetName() == "navMesh")
+			{
+				if (index->GetActive())
+				{
+					index->Render();
+				}
+			}
+		}
 	}
 
 	// particle을 그린다
@@ -506,6 +524,17 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugMap(const std::string& name)
 			vec.erase(vec.begin() + i);
 
 			return;
+		}
+	}
+}
+
+GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::GetDebugObject(const std::string& name)
+{
+	for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
+	{
+		if (index->GetName() == name)
+		{
+			return static_cast<DebugObject*> (index);
 		}
 	}
 }

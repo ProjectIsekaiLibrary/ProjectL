@@ -94,6 +94,7 @@ namespace ArkEngine
 			virtual GInterface::GraphicsDebug* CreateMapDebug(const char* objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec) override;
 			virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) override;
 			virtual void DeleteDebugMap(const std::string& name) override;
+			virtual GInterface::GraphicsDebug* GetDebugObject(const std::string& name) override;
 
 		public:
 			virtual void CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color) override;
