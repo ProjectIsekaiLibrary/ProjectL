@@ -97,7 +97,7 @@ unsigned int ArkEngine::ResourceManager::GetObjectIndex()
 	return _objectIndex;
 }
 
-const std::vector<ArkEngine::IDebugObject*>& ArkEngine::ResourceManager::GetDebugObjectList()
+std::vector<ArkEngine::IDebugObject*>& ArkEngine::ResourceManager::GetDebugObjectList()
 {
 	return _debugList;
 }

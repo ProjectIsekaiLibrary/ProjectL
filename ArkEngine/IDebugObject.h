@@ -38,7 +38,11 @@ namespace ArkEngine
 
 		virtual void Finalize() abstract;
 
+		virtual void ReleaseWithBuffer() abstract;
+
 	public:
+		virtual const std::string GetName() abstract;
+
 		virtual bool GetRenderingState() abstract;
 		virtual void SetRenderingState(bool tf) abstract;
 

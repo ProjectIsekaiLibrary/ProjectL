@@ -204,6 +204,19 @@ void ArkEngine::ArkDX11::DebugObject::Finalize()
 	_effect = nullptr;
 }
 
+
+void ArkEngine::ArkDX11::DebugObject::ReleaseWithBuffer()
+{
+	ResourceManager::GetInstance()->DeleteResource(_objectName);
+
+	Finalize();
+}
+
+const std::string ArkEngine::ArkDX11::DebugObject::GetName()
+{
+	return _objectName;
+}
+
 bool ArkEngine::ArkDX11::DebugObject::GetRenderingState()
 {
 	return _isRendering;

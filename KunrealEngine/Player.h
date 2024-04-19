@@ -22,6 +22,7 @@ namespace KunrealEngine
 			ABILITY,			// 스킬 사용		// 스킬 구성에 따라 나뉠 예정
 			STAGGERED,			// 플레이어가 무력화 되었을 때		// 상태이상 등
 			PARALYSIS,			// 경직
+			SWEEP,				// 날아가는중
 			DEAD				// 사망
 		};
 

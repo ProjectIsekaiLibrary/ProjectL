@@ -72,13 +72,13 @@ void KunrealEngine::PlayerMove::Update()
 	}
 
 	/// µð¹ö±ë¿ë
-	if (_stopover.size() > 0)
-	{
-		for (const auto& path : _stopover)
-		{
-			GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
-		}
-	}
+	//if (_stopover.size() > 0)
+	//{
+	//	for (const auto& path : _stopover)
+	//	{
+	//		GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
+	//	}
+	//}
 
 	//MoveToTarget(_targetPos, 15.f * TimeManager::GetInstance().GetDeltaTime());
 	//PlayerDash(_targetPos, _playerComp->_playerInfo._dashSpeed * TimeManager::GetInstance().GetDeltaTime());

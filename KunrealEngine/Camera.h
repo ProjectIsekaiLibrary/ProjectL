@@ -65,6 +65,9 @@ namespace KunrealEngine
 		// 카메라의 타겟 위치 설정
 		void SetTargetPosition(float posX, float posY, float posZ);
 
+		// 카메라의 타겟 위치 반환
+		DirectX::XMFLOAT3 GetTargetPosition();
+
 		// 카메라의 각도 전환
 		void RotateCamera(float pitch, float yaw);
 

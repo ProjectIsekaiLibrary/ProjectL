@@ -1,7 +1,10 @@
 #include "Player.h"
 #include "Transform.h"
+#include "InputSystem.h"
 #include "PlayerAbility.h"
 #include "PlayerMove.h"
+
+#include "Transform.h"
 
 KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE)
@@ -103,6 +106,14 @@ void KunrealEngine::Player::AnimateByStatus()
 				break;
 			case KunrealEngine::Player::Status::PARALYSIS:
 				GetOwner()->GetComponent<Animator>()->Play("Paralysis2", 30.0f * _playerInfo._speedScale, false);
+				break;
+			case KunrealEngine::Player::Status::SWEEP:
+				GetOwner()->GetComponent<Animator>()->Play("Sweep", 30.0f * _playerInfo._speedScale, false);
+
+				if (GetOwner()->GetComponent<Animator>()->GetCurrentFrame() == GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+				{
+					GetOwner()->GetComponent<Animator>()->Pause();
+				}
 				break;
 			case KunrealEngine::Player::Status::DEAD:
 				GetOwner()->GetComponent<Animator>()->Play("Death", 30.0f * _playerInfo._speedScale, false);

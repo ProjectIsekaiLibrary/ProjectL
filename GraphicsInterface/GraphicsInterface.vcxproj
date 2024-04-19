@@ -159,6 +159,7 @@
     <ClInclude Include="GraphicsImage.h" />
     <ClInclude Include="GraphicsInterface.h" />
     <ClInclude Include="GraphicsLight.h" />
+    <ClInclude Include="GraphicsParticle.h" />
     <ClInclude Include="GraphicsPointLight.h" />
     <ClInclude Include="GraphicsRenderable.h" />
     <ClInclude Include="GraphicsStruct.h" />

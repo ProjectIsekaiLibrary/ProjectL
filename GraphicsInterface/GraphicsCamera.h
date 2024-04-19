@@ -28,11 +28,12 @@ namespace GInterface
 		virtual void RotateCamera(const DirectX::XMFLOAT2& angle) abstract;
 
 	public:
-		// 카메라 좌우 이동
-		virtual void Strafe(float deltaTime) abstract;
-		// 카메라 앞뒤 이동
-		virtual void Walk(float deltaTime) abstract;
-		// 카메라 위아래 이동
-		virtual void UpDown(float deltaTime) abstract;
+		// 카메라가 바라보는 방향에서 오른쪽을 향하는 벡터 가져오기
+		virtual const DirectX::XMFLOAT3 GetRightVector() abstract;
+		// 카메라가 바라보는 방향 벡터 가져오기
+		virtual const DirectX::XMFLOAT3 GetLookVector() abstract;
+		// 카메라가 바라보는 방향에서 위를 향하는 백터 가져오기
+		virtual const DirectX::XMFLOAT3 GetUpVector() abstract;
+
 	};
 }

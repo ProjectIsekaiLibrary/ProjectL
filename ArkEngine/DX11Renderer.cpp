@@ -113,6 +113,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	auto particle2 = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 1000);
 	particle2->SetEmitPos(DirectX::XMFLOAT3{ 10.0f, 10.0f, 0.0f });
+
 	particle2->SetEmitVelocity(4.0f, true);
 	particle2->SetParticleSize(DirectX::XMFLOAT2(5.0f, 5.0f));
 	particle2->SetParticleTime(1.0f, 1.0f);
@@ -339,7 +340,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		{
 			if (index->GetRenderingState() && index->GetActive())
 			{
-				index->Render();
+				if (index->GetName() != "navMesh")
+				{
+					index->Render();
+				}
 			}
 		}
 
@@ -351,6 +355,21 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 		// DrawDebugText를 통해 생성된 모든 디버그용 폰트 렌더링
 		_font->Render();
+	}
+
+	// 디버그용이지만 일단 분리
+	{
+		// 프러스텀 컬링용, 메쉬 크기만큼의 디버그용 오브젝트 렌더링
+		for (const auto& index : ResourceManager::GetInstance()->GetDebugObjectList())
+		{
+			if (index->GetName() == "navMesh")
+			{
+				if (index->GetActive())
+				{
+					index->Render();
+				}
+			}
+		}
 	}
 
 	// particle을 그린다
@@ -490,6 +509,34 @@ GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::CreateMapDebug(cons
 void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDebug* debugObject)
 {
 	delete debugObject;
+}
+
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugMap(const std::string& name)
+{
+	auto vec = ResourceManager::GetInstance()->GetDebugObjectList();
+	for (int i = 0; i < vec.size(); i++)
+	{
+		if (vec[i]->GetName() == name)
+		{
+			vec[i]->ReleaseWithBuffer();
+
+			vec.erase(vec.begin() + i);
+
+			return;
+		}
+	}
+}
+
+GInterface::GraphicsDebug* ArkEngine::ArkDX11::DX11Renderer::GetDebugObject(const std::string& name)
+{
+	for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
+	{
+		if (index->GetName() == name)
+		{
+			return static_cast<DebugObject*> (index);
+		}
+	}
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color)
@@ -712,6 +759,18 @@ GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLig
 	return LightManager::GetInstance()->GetPointLightInterface();
 }
 
+
+GInterface::GraphicsParticle* ArkEngine::ArkDX11::DX11Renderer::CreateParticle(const std::string& particleName, const std::string& fileName, unsigned int maxParticle)
+{
+	return nullptr;
+}
+
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteParticle(GInterface::GraphicsParticle* particle)
+{
+
+}
+
 void ArkEngine::ArkDX11::DX11Renderer::SetPickingTexture()
 {
 	D3D11_TEXTURE2D_DESC texCopyDesc;
@@ -762,7 +821,7 @@ UINT ArkEngine::ArkDX11::DX11Renderer::Picking(int mouseX, int mouseY)
 }
 
 const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::GetMyPosition(const DirectX::XMFLOAT3& direction, const DirectX::XMFLOAT3& targetPos)
-{	
+{
 	DirectX::XMVECTOR myPos = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), DirectX::XMLoadFloat3(&direction));
 
 	float scaleFactor = 200.0f;
@@ -887,7 +946,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRV(testdef));
 	}
-	
+
 }
 
 void* ArkEngine::ArkDX11::DX11Renderer::GetDevice()
