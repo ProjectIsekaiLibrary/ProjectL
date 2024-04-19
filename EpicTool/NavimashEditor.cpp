@@ -44,8 +44,20 @@ void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowP
 	}
 
 	//drawList->AddCircleFilled(center, radius, IM_COL32(255, 0, 0, 255));
-	drawList->AddCircle(ImVec2(center.x, center.y - ( _agentMaxClimb * 20.0f)), radius, IM_COL32(0, 255, 0, 255));
+	drawList->AddCircle(ImVec2(center.x, center.y - (_agentMaxClimb * 20.0f)), radius, IM_COL32(0, 255, 0, 255));
 	//drawList->AddCircleFilled(ImVec2(center.x, center.y + height), radius, IM_COL32(255, 0, 0, 255));
+}
+
+void EpicTool::NavimashEditor::UnDrawAll()
+{
+	for (auto navpoly : _navmeshpolys)
+	{
+		if (navpoly == nullptr)
+		{
+			continue;
+		}
+		navpoly->SetActive(false);
+	}
 }
 
 void EpicTool::NavimashEditor::ShowWindow()
@@ -70,26 +82,18 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Show"))
 	{
-		if (_navmeshpolys[_naviIndex] == nullptr)
+		if (_navmeshpolys[_naviIndex] != nullptr)
 		{
-			return;
+			UnDrawAll();
+			_navmeshpolys[_naviIndex]->SetActive(true);
 		}
-
-		for (auto navpoly : _navmeshpolys)
-		{
-			if (navpoly == nullptr)
-			{
-				continue;
-			}
-			navpoly->SetActive(false);
-		}
-		_navmeshpolys[_naviIndex]->SetActive(true);
 	}
 
 	ImGui::SameLine();
 
 	if (ImGui::Button("Build"))
 	{
+		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 		_navimashEditor->HandleBuild(_naviIndex);
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
@@ -97,25 +101,32 @@ void EpicTool::NavimashEditor::ShowWindow()
 			GRAPHICS->DeleteDebugObject(_navmeshpolys[_naviIndex]);
 			_navmeshpolys[_naviIndex] = nullptr;
 		}
-		
+
 		std::string name = "navmesh";
 		name += std::to_string(_naviIndex);
+		UnDrawAll();
 
 		std::vector<DirectX::XMFLOAT3> vertices;
 		std::vector<unsigned int> indices;
-		_navimashEditor->GetNavmeshRenderInfo(0, vertices, indices);
+		_navimashEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
 		_navmeshpolys[_naviIndex] = GRAPHICS->CreateMapDebug(name.c_str(), vertices, indices);
-		//_navmeshpolys[_naviIndex]->SetActive(false);
 	}
-
-	_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 
 	ImGui::SameLine();
 
-	ImGui::InputInt("ObjectIndex", &_naviIndex);
-	
-	if (ImGui::Button("Build")|| ImGui::Button("Build"))
+	if (ImGui::InputInt("ObjectIndex", &_naviIndex))
 	{
+		int maxindex = _navimashEditor->GetPackageSize() - 1;
+
+		if (_naviIndex > maxindex)
+		{
+			_naviIndex = maxindex;
+		}
+		else if (_naviIndex < 0)
+		{
+			_naviIndex = 0;
+		}
+
 		_navimashEditor->GetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 	}
 

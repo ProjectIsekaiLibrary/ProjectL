@@ -155,11 +155,6 @@ void ArkEngine::ArkDX11::DebugObject::Render()
 
 	deviceContext->RSSetState(_arkDevice->GetWireRS());
 
-	if (_objectName == "navMesh")
-	{
-		deviceContext->RSSetState(_arkDevice->GetSolidRS());
-	}
-
 	UINT stride = sizeof(ArkEngine::ArkDX11::PosColor);
 	UINT offset = 0;
 
