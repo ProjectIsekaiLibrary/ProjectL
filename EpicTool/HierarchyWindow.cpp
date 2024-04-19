@@ -10,8 +10,8 @@
 #include <algorithm>
 
 EpicTool::HierarchyWindow::HierarchyWindow()
-    : _createEmptyCount(1), _cubeCount(1), _sphereCount(1), _draggedIndex(-1), _dropTargetIndex(-1), _gameObjectlist(NULL),
-	_hierarchyWindowX1(0), _hierarchyWindowX2(0), _hierarchyWindowY1(0), _hierarchyWindowY2(0), _isDragged(false), _payloadIndex(0), _show_Context_Menu(false)
+    : _createEmptyCount(1), _cubeCount(1), _sphereCount(1), _draggedIndex(-1), _dropTargetIndex(-1), _gameObjectlist(NULL), _tempgameObjectList(NULL),
+	_hierarchyWindowX1(0), _hierarchyWindowX2(0), _hierarchyWindowY1(0), _hierarchyWindowY2(0), _isDragged(false), _payloadIndex(0), _show_Context_Menu(false), _isListUpdate(false)
 {
 
 }
@@ -31,6 +31,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 {
 	if (_gameObjectlist.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size())
 	{
+		_tempgameObjectList = _gameObjectlist;
 		_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
 		if (selectedObjectIndex != -1)
 		{
@@ -103,22 +104,22 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
         for (int i = 0; i < _gameObjectlist.size(); ++i)
         {
 
-   //         ImGui::PushID(i);         		
-			//if (i != 0)
-			//{
-			//	CheckInDentParent(_gameObjectlist[i], _gameObjectlist[i - 1]);		
-			//}
+            ImGui::PushID(i);         		
+			if (i != 0)
+			{
+				CheckInDentParent(_gameObjectlist[i], _gameObjectlist[i - 1]);		
+			}
 
-			//bool activated = _gameObjectlist[i]->GetActivated();
+			bool activated = _gameObjectlist[i]->GetActivated();
 
-			//if (!activated)
-			//{
-			//	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // 회색 텍스트 색상
-			//}
-			//else
-			//{
-			//	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
-			//}
+			if (!activated)
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // 회색 텍스트 색상
+			}
+			else
+			{
+				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
+			}
 
 			
 			if (ImGui::Selectable(_gameObjectlist[i]->GetObjectName().c_str(), (i == selectedObjectIndex)))  // 드래그 앤 드롭 UI 처리중
@@ -143,7 +144,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 				}
 			}
 
-			/*ImGui::PopStyleColor();
+			ImGui::PopStyleColor();
 
 
 			if (i != 0)
@@ -154,7 +155,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 			HandleDragAndDrop(i, selectedObjectIndex, _gameObjectlist);
 
 
-			ImGui::PopID();*/
+			ImGui::PopID();
         }
 
         if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
@@ -312,6 +313,7 @@ void EpicTool::HierarchyWindow::HandleDragAndDrop(int index, int& selected, std:
 				{
 					CheckChildListFromDown(gameObjectlist, index, payloadIndex);
 				}
+				_isListUpdate = true;
 			}
 		}
 		ImGui::EndDragDropTarget();
@@ -326,12 +328,12 @@ void EpicTool::HierarchyWindow::CheckChildListFromUp(std::vector<KunrealEngine::
 
 	gameObjectlist[index + 1]->SetParent(gameObjectlist[index]);
 
-	if (gameObjectlist[index + 1]->CheckChild() == true)   // 위치를 옮기고 
-	{
-		payloadIndex++;
-		index++;
-		CheckChildListFromUp(gameObjectlist, index, payloadIndex);
-	}
+	//if (gameObjectlist[index + 1]->CheckChild() == true)   // 위치를 옮기고 
+	//{
+	//	payloadIndex++;
+	//	index++;
+	//	CheckChildListFromUp(gameObjectlist, index, payloadIndex);
+	//}
 }  
 
 void EpicTool::HierarchyWindow::CheckChildListFromDown(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex)
@@ -344,53 +346,61 @@ void EpicTool::HierarchyWindow::CheckChildListFromDown(std::vector<KunrealEngine
 
 	gameObjectlist[index]->SetParent(gameObjectlist[index - 1]);
 
-	if (gameObjectlist[index]->CheckChild() == true)
-	{
-		CheckChildListFromDown(gameObjectlist, index, payloadIndex);
-	}
+	//if (gameObjectlist[index]->CheckChild() == true)
+	//{
+	//	CheckChildListFromDown(gameObjectlist, index, payloadIndex);
+	//}
 }
 
 void EpicTool::HierarchyWindow::CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject)
 {
 	
-	if (gameObject->GetParent())
-	{
-		if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
+		if (gameObject->GetParent())
 		{
-			ImGui::Indent();
-			CheckInDent(gameObject->GetParent());
-		}
-		else
-		{
-			int currentObjectNum = 0;
-			for (int i = 0; i < _gameObjectlist.size(); i++)
+			if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
 			{
-				for (int j = 0; j < _gameObjectlist.size(); j++)
-				{
-					if (_gameObjectlist[j]->GetObjectName() == gameObject->GetObjectName())
-					{
-						currentObjectNum = j;
-					}
-				}
-				if (_gameObjectlist[i]->GetObjectName() == gameObject->GetParent()->GetObjectName())
-				{
-					if (i < currentObjectNum)
-					{
-						KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
-						_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
-						_gameObjectlist.insert(_gameObjectlist.begin() + (i + 1), currentObject);
-					}
-					else if (i > currentObjectNum)
-					{
-						KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
-						_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
-						_gameObjectlist.insert(_gameObjectlist.begin() + i, currentObject);
-					}
-				}
+				ImGui::Indent();
+				CheckInDent(gameObject->GetParent());
 			}
-			ImGui::Indent();
-		}		
-	}
+			else
+			{
+				int currentObjectNum = 0;
+				for (int i = 0; i < _gameObjectlist.size(); i++)
+				{
+					for (int j = 0; j < _gameObjectlist.size(); j++)
+					{
+						if (_gameObjectlist[j]->GetObjectName() == gameObject->GetObjectName())
+						{
+							currentObjectNum = j;
+						}
+					}
+					if (_gameObjectlist[i]->GetObjectName() == gameObject->GetParent()->GetObjectName())
+					{
+
+						if (_tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() || _isListUpdate == true)
+						{
+							if (i < currentObjectNum)
+							{
+								KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
+								_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
+								_gameObjectlist.insert(_gameObjectlist.begin() + (i + 1), currentObject);
+							}
+							else if (i > currentObjectNum)
+							{
+								KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
+								_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
+								_gameObjectlist.insert(_gameObjectlist.begin() + i, currentObject);
+							}
+
+							_tempgameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();
+						}
+					}
+				}
+				ImGui::Indent();
+			}
+		}
+		_isListUpdate = false;
+	
 }
 
 void EpicTool::HierarchyWindow::CheckInDent(KunrealEngine::GameObject* gameObject)
@@ -406,15 +416,21 @@ void EpicTool::HierarchyWindow::CheckUninDentParent(KunrealEngine::GameObject* g
 {
 	if (gameObject->GetParent())
 	{
-		if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
-		{ 			
-			ImGui::Unindent();
-			CheckUninDent(gameObject->GetParent());
-		}
-		else
-		{
-			ImGui::Unindent();
-		}
+		
+			if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
+			{
+				ImGui::Unindent();
+				CheckUninDent(gameObject->GetParent());
+			}
+			else
+			{
+				if (_tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() || _isListUpdate == true)
+				{
+					ImGui::Unindent();
+				}
+				ImGui::Unindent();
+			}
+		
 	}
 }
 
