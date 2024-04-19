@@ -163,6 +163,24 @@ void KunrealEngine::GameObject::SetParent(GameObject* obj)
 	}
 }
 
+void KunrealEngine::GameObject::DetachFromParent()
+{
+	// 부모에 이 오브젝트와의 관계를 해제하라고 전달
+	_parent->DetachChild(this);
+}
+
+void KunrealEngine::GameObject::DetachChild(GameObject* child)
+{
+	auto iter = find(this->_childContainer.begin(), this->_childContainer.end(), child);
+
+	if (iter != _childContainer.end())
+	{
+		child->_transform->RecalculateTransform();
+		this->_childContainer.erase(iter);
+		child->_parent = nullptr;
+	}
+}
+
 KunrealEngine::GameObject* KunrealEngine::GameObject::GetParent()
 {
 	if (_parent != nullptr)
@@ -218,7 +236,31 @@ void KunrealEngine::GameObject::MoveToScene(Scene* scene)
 
 void KunrealEngine::GameObject::MoveToScene(std::string sceneName)
 {
+	// 매개변수로 받은 이름과 일치하는 scene 탐색
+	auto sceneIter = find_if(SceneManager::GetInstance().GetSceneList()->begin(), SceneManager::GetInstance().GetSceneList()->end(), [&](Scene* scene)
+		{
+			return scene->GetSceneName() == sceneName;
+		});
 
+	// 있다면
+	if (sceneIter != SceneManager::GetInstance().GetSceneList()->end())
+	{
+		// 해당 scene에 이 오브젝트 추가
+		(*sceneIter)->AddObject(this);
+
+		// 기존 scene에서 이 오브젝트 삭제
+		auto objectIter = find(GetObjectScene()->GetObjectList().begin(), GetObjectScene()->GetObjectList().end(), this);
+		if (objectIter != GetObjectScene()->GetObjectList().end())
+		{
+			GetObjectScene()->GetObjectList().erase(objectIter);
+		}
+
+		// 이동한 scene과 현재 scene이 다르다면 비활성화	// 그래픽스 쪽에서 render 하지 않기 위해
+		if (SceneManager::GetInstance().GetCurrentScene() != (*sceneIter))
+		{
+			SetActive(false);
+		}
+	}
 }
 
 void KunrealEngine::GameObject::SetActive(bool active)
