@@ -16,7 +16,7 @@ EpicTool::InspectorWindow::InspectorWindow()
 	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
 	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
 	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
-	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0)
+	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}
 { 
 																			
 }																			
@@ -540,6 +540,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Camera>(Kunreal
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Camera>();
 	}
 
+	if (ImGui::DragFloat3("SetTargetPosition", _setTargetPosition))
+	{
+		instance->SetTargetPosition(_setTargetPosition[0], _setTargetPosition[1], _setTargetPosition[2]);
+	}
 
 	_isCameraActive = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->GetActivated();
 
@@ -548,16 +552,12 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Camera>(Kunreal
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->SetActive(_isCameraActive);
 	}
 
-
-
 	if (ImGui::Button("SetMainCamera"))
 	{
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
 	}
 
-
 	DrawComponentPiece<bool>(_cameraFix, "FixCamera");
-
    
 	if (_cameraFix == true)
 	{
