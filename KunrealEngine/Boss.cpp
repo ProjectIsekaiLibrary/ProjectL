@@ -22,7 +22,8 @@ KunrealEngine::Boss::Boss()
 	_maxColliderOnCount(1),
 	_isStart(false), _isHit(false), _isRotateFinish(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
-	_stopover(), _nodeCount(0), _direction(), _prevPos()
+	_stopover(), _nodeCount(0), _direction(), _prevPos(),
+	_isMoving(false), _isRotate(false)
 {
 
 }
@@ -147,7 +148,10 @@ void KunrealEngine::Boss::Update()
 	// 캐릭터가 이동시
 	if (InputSystem::GetInstance()->MouseButtonUp(1) || InputSystem::GetInstance()->KeyDown(KEY::SPACE))
 	{
+		// 이동, 회전 관련된 것들 초기화해줌
 		_isRotateFinish = false;
+		_isMoving = false;
+		_nodeCount = 0;
 	}
 
 	Hit();
@@ -311,7 +315,7 @@ void KunrealEngine::Boss::Idle()
 	_nowPattern->Initialize();
 
 	// Chase로 상태 변환
-	_status = BossStatus::CHASE;	
+	_status = BossStatus::CHASE;
 }
 
 void KunrealEngine::Boss::Chase()
@@ -346,7 +350,7 @@ void KunrealEngine::Boss::Chase()
 	}
 
 	// 보스가 플레이어를 바라보게 되었을 때
- 	if (_isRotateFinish)
+	if (_isRotateFinish)
 	{
 		// 패턴 사거리보다 플레이어와의 거리가 가까울 경우 공격 시행
 		if (_distance <= patternRange + _nowPattern->_rangeOffset)
@@ -364,7 +368,10 @@ void KunrealEngine::Boss::Chase()
 			if (_distance - patternRange <= 50.0f)
 			{
 				// 보스와 플레이어의 갈 수 있는 길을 노드로 계산
-				UpdateMoveNode();
+				if (_isMoving == false)
+				{
+					UpdateMoveNode();
+				}
 
 				// 계산한 노드 백터가 존재한다면
 				if (_stopover.size() > 0)
@@ -381,7 +388,7 @@ void KunrealEngine::Boss::Chase()
 				}
 
 				// 모든 노드를 읽어 보스가 플레이어를 다 쫓아갔다면
-				if (_nodeCount >= _stopover.size()+1)
+				if (_nodeCount >= _stopover.size())
 				{
 					// 패턴 준비 상태로 변경
 					_status = BossStatus::PATTERN_READY;
@@ -582,6 +589,10 @@ void KunrealEngine::Boss::CoreAttack()
 
 void KunrealEngine::Boss::PatternEnd()
 {
+	// 다음 패턴을 위해 초기화
+	_isMoving = false;
+	_isRotateFinish = false;
+
 	// 이전 패턴 인덱스 저장
 	_exPatternIndex = _patternIndex;
 
@@ -669,7 +680,7 @@ float KunrealEngine::Boss::CalculateAngle(const DirectX::XMFLOAT3& bossPosition,
 	}
 }
 
-bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed, float patternRange)
+bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& targetPos, float speed, float patternRange)
 {
 	float moveSpeed = speed * TimeManager::GetInstance().GetDeltaTime();
 
@@ -703,7 +714,7 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed,
 	}
 }
 
-bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 targetPos, float speed, float patternRange)
+bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed, float patternRange)
 {
 	float moveSpeed = speed * TimeManager::GetInstance().GetDeltaTime();
 
@@ -734,8 +745,6 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFL
 
 void KunrealEngine::Boss::TeleportToPlayer()
 {
-	_prevPos = _bossTransform->GetPosition();
-
 	auto playerDirection = _player->GetComponent<Player>()->GetDirectionVector();
 	auto originPlayerPos = _playerTransform->GetPosition();
 	auto currentPosVec = DirectX::XMLoadFloat3(&originPlayerPos);
@@ -767,6 +776,35 @@ void KunrealEngine::Boss::TeleportToPlayer()
 	_bossTransform->SetRotation(bossRotation.x, 180 + playerRotation.y, bossRotation.z);
 }
 
+
+void KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool lookAtPlayer)
+{
+	// 타겟 포지션으로의 경로 계산
+	DirectX::XMVECTOR targetVec = DirectX::XMLoadFloat3(&targetPos);
+
+	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+		targetVec.m128_f32[0], 0.0f, targetVec.m128_f32[2]);
+
+	_stopover = Navigation::GetInstance().FindStraightPath(1);
+
+	if (_stopover.empty())
+	{
+		return;
+	}
+
+	auto bossRotation = _bossTransform->GetRotation();
+	auto playerRotation = _playerTransform->GetRotation();
+
+	auto target = _stopover.back().second;
+	_bossTransform->SetPosition(target.x, 0.0f, target.z);
+
+	// 플레이어를 바라보도록 
+	if (lookAtPlayer)
+	{
+		_bossTransform->SetRotation(bossRotation.x, 180 + playerRotation.y, bossRotation.z);
+	}
+}
+
 bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 {
 	// 회전 속도
@@ -787,7 +825,7 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 		// 회전 속도만큼 회전
 		_bossTransform->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y - speed, _bossTransform->GetRotation().z);
 	}
-	
+
 	// 현재의 각도가 목표로 하는 각도의 오차범위 내에 있을 경우
 	if (angle - errorRange <= _bossTransform->GetRotation().y && _bossTransform->GetRotation().y <= angle + errorRange)
 	{
@@ -804,7 +842,80 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 	{
 		return false;
 	}
+}
 
+
+bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast)
+{
+	// 타겟 방향으로 회전을 원할때
+	bool finshRoate = true;
+	if (roateToTarget == true)
+	{
+		finshRoate = RotateToTarget(targetPos);
+	}
+
+	// 회전이 끝난다면
+	if (finshRoate == true)
+	{
+		// 이 함수에 처음 들어와서 한번도 움직여지지 않았다면 길찾기 (한번만 들어오도록)
+		if (_isMoving == false)
+		{
+			// 앞에 물체가 있을때 거기까지만 이동시키고 싶다면
+			if (rayCast)
+			{
+				// 가로막힌 물체의 포지션을 찾고
+				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+					targetPos.x, targetPos.y, targetPos.z);
+
+				auto targetPos = Navigation::GetInstance().FindRaycastPath(1);
+
+				// 그 물체의 포지션을 기반으로 네비메쉬 길찾기
+				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+					targetPos.x, targetPos.y, targetPos.z);
+
+				_stopover = Navigation::GetInstance().FindStraightPath(1);
+			}
+			// 그냥 타겟 포지션까지 네비메쉬로 길찾기
+			else
+			{
+				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+					targetPos.x, targetPos.y, targetPos.z);
+
+				_stopover = Navigation::GetInstance().FindStraightPath(1);
+			}
+
+			// 이제 움직이기 시작
+			_isMoving = true;
+		}
+
+		// 길이 남아있다면
+		if (_stopover.size() > 0)
+		{
+			// 타겟을 향하여 이동
+			auto trs = _bossTransform->GetPosition();
+			auto isChasing = MoveToTarget(trs, _stopover[_nodeCount].second, _info._moveSpeed);
+
+			// 노드만큼 쫓아갔다면
+			if (!isChasing)
+			{
+				// 다음 노드를 기반으로 이동
+				_nodeCount++;
+			}
+
+			// 모든 노드를 읽어 보스가 타겟에 도착했다면
+			if (_nodeCount >= _stopover.size())
+			{
+				// 다음 로직을 위해 초기화
+				_nodeCount = 0;
+				_isRotate = false;
+				_isRotateFinish = false;
+
+				return true;
+			}
+		}
+	}
+
+	return false;
 }
 
 const DirectX::XMVECTOR KunrealEngine::Boss::GetDirection()
@@ -832,6 +943,27 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 	}
 }
 
+bool KunrealEngine::Boss::RotateToTarget(const DirectX::XMFLOAT3& targetPos)
+{
+	auto bossPosition = _bossTransform->GetPosition();
+	// 패턴의 사거리를 받아옴
+	if (!_isRotate)
+	{
+		// 보스와 플레이어 사이의 각도를 측정
+		auto angle = CalculateAngle(bossPosition, targetPos);
+
+		// 보스가 플레이어를 바라보게 함
+		_isRotate = LookAtPlayer(angle, _info._rotationSpeed);
+	}
+
+	if (_isRotate)
+	{
+		return true;
+	}
+
+	return false;
+}
+
 void KunrealEngine::Boss::SetTexture()
 {
 
@@ -855,11 +987,11 @@ const std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> KunrealEngine::Boss::GetBo
 
 void KunrealEngine::Boss::UpdateMoveNode()
 {
- 	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
 		_playerTransform->GetPosition().x, _playerTransform->GetPosition().y, _playerTransform->GetPosition().z);
- 
+
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
- 	_nodeCount = 0;
+	_nodeCount = 0;
 }
 
 
@@ -878,7 +1010,40 @@ void KunrealEngine::Boss::CalculateDirection()
 	DirectX::XMStoreFloat3(&_direction, direction);
 }
 
-void KunrealEngine::Boss::UpdateMoveNode(DirectX::XMFLOAT3 targetPos)
+bool KunrealEngine::Boss::MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)
+{
+	float moveSpeed = speed * TimeManager::GetInstance().GetDeltaTime();
+
+	auto bossPosition = _bossTransform->GetPosition();
+
+	_distance = ToolBox::GetDistance(bossPosition, targetPos);
+
+	// 패턴 거리 내에 타겟이 존재하지 않을 경우
+	if (_distance > 1.0f)
+	{
+		// 플레이어 이동
+		_prevPos = startPos;
+		_boss->GetComponent<Animator>()->Play("Run", speed, true);
+
+		DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&startPos);
+
+		DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), currentPosVec);
+
+		direction = DirectX::XMVector3Normalize(direction);
+
+		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
+		_bossTransform->SetPosition(newPosition.m128_f32[0], 0.0f, newPosition.m128_f32[2]);
+
+		return true;
+	}
+
+	else
+	{
+		return false;
+	}
+}
+
+void KunrealEngine::Boss::UpdateMoveNode(DirectX::XMFLOAT3& targetPos)
 {
 	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
 		targetPos.x, targetPos.y, targetPos.z);

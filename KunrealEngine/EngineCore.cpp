@@ -122,16 +122,16 @@ void KunrealEngine::EngineCore::Update()
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
 	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
-	navigationInstance.MoveTempObstacle(pos.first,pos.second);
+	navigationInstance.MoveTempObstacle(pos.first, pos.second);
 	
 	// 장애물 설치 테스트
 	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
 	{
-		RemoveObstacle();
+		//RemoveObstacle();
 	}
 	else if (inputInstance->MouseButtonDown(0))
 	{
-//		MakeObstacle();
+		//MakeObstacle();
 	}
 
 	CheckMousePosition();

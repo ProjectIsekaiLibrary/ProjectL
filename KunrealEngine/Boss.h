@@ -92,6 +92,20 @@ namespace KunrealEngine
 
 		void SetSubObject(bool tf);
 
+		/// 보스 패턴 구현할때 가져다 쓰세요.
+	public:
+		// 플레이어 바라보도록 회전시키기
+		bool RotateToTarget(const DirectX::XMFLOAT3& targetPos);
+		
+		// 특정 포지션으로 이동시키기 (raycast true시 무언가에 막히면 거기까지만 찾아감)
+		bool Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast);
+
+		// 플레이어를 바라보도록 텔레포트
+		void TeleportToPlayer();
+
+		// 지정한 곳으로 텔레포트
+		void Teleport(const DirectX::XMFLOAT3 &targetPos, bool lookAtPlayer);
+
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
@@ -100,21 +114,21 @@ namespace KunrealEngine
 		void SetSubObjectScene();
 
 	private:
+		bool LookAtPlayer(float angle, float rotateSpeed);
+
 		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 
-		bool MoveToPlayer(DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
+		bool MoveToPlayer(DirectX::XMFLOAT3& targetPos, float speed, float patternRange);
 
-		bool MoveToPlayer(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 targetPos, float speed, float patternRange);
-
-		void TeleportToPlayer();
-
-		bool LookAtPlayer(float agnle, float rotateSpeed);
+		bool MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed, float patternRange);
 
 		void UpdateMoveNode();
 
-		void UpdateMoveNode(DirectX::XMFLOAT3 targetPos);
+		void UpdateMoveNode(DirectX::XMFLOAT3& targetPos);
 
 		void CalculateDirection();
+
+		bool MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 
 	protected:
 		BossStatus _status;
@@ -154,6 +168,10 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _direction;
 
 		DirectX::XMFLOAT3 _prevPos;
+
+	private:
+		bool _isMoving;
+		bool _isRotate;
 
 	private:
 		Coroutine_Func(patternEnd)

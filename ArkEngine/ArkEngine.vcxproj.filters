@@ -453,10 +453,10 @@
     <FxCompile Include="RunTimeDependency\Resources\FX\LightHelper.fx">
       <Filter>FX</Filter>
     </FxCompile>
-    <FxCompile Include="RunTimeDependency\Resources\FX\ParticleFire.fx">
+    <FxCompile Include="..\Bin\x64\Debug\Resources\FX\ParticleRain.fx">
       <Filter>FX</Filter>
     </FxCompile>
-    <FxCompile Include="..\Bin\x64\Debug\Resources\FX\ParticleRain.fx">
+    <FxCompile Include="..\Bin\x64\Debug\Resources\FX\ParticleFire.fx">
       <Filter>FX</Filter>
     </FxCompile>
   </ItemGroup>
