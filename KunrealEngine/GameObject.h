@@ -65,6 +65,13 @@ namespace KunrealEngine
 		// 부모 오브젝트 설정
 		void SetParent(GameObject* obj);
 
+		/// 부모자식 관계만 제거할 뿐 메모리를 해제하는 것이 아니니 참고
+		// 부모 자식관계 해제		// 부모로부터 독립
+		void DetachFromParent();
+
+		// 부모 자식관계 해제		// 특정 자식 오브젝트 해제
+		void DetachChild(GameObject* child);
+
 		// 부모 오브젝트 반환
 		GameObject* GetParent();
 
@@ -76,6 +83,10 @@ namespace KunrealEngine
 
 		// 현재 소속된 scene 반환
 		Scene* GetObjectScene();
+
+		// 소속된 scene을 바꿔주는 함수
+		void MoveToScene(Scene* scene);
+		void MoveToScene(std::string sceneName);
 
 		// 활성화 여부를 정해주는 함수
 		// true = 활성화 / false = 비활성화

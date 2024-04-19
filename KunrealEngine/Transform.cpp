@@ -57,7 +57,7 @@ void KunrealEngine::Transform::OnTriggerExit()
 
 void KunrealEngine::Transform::SetActive(bool active)
 {
-	/// Transform은 active 여부와 상관없이 돌아가는게 맞을까
+	
 }
 
 void KunrealEngine::Transform::SetRotation(float x, float y, float z)

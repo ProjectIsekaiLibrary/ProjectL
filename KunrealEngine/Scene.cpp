@@ -187,7 +187,7 @@ std::string KunrealEngine::Scene::GetSceneName()
 	return this->_sceneName;
 }
 
-std::vector<KunrealEngine::GameObject*> KunrealEngine::Scene::GetObjectList()
+std::vector<KunrealEngine::GameObject*>& KunrealEngine::Scene::GetObjectList()
 {
 	return this->_objectList;
 } 
