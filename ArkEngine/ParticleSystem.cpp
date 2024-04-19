@@ -19,7 +19,8 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	_texArraySRV(nullptr),
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
-	_particleFadeTime(1.0f), _particleLifeTime(1.0f)
+	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
+	_particleColorEffect(nullptr)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -27,6 +28,7 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 
 	_emitVelocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_particleSize = DirectX::XMFLOAT2(0.0f, 0.0f);
+	_particleColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	Initialize(std::wstring(fileName.begin(), fileName.end()), _maxParticles);
 }
@@ -38,7 +40,8 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	_texArraySRV(nullptr),
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
-	_particleFadeTime(1.0f), _particleLifeTime(1.0f)
+	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
+	_particleColorEffect(nullptr)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -46,6 +49,7 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 
 	_emitVelocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_particleSize = DirectX::XMFLOAT2(0.0f, 0.0f);
+	_particleColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	std::vector<std::wstring> newStringVec;
 
@@ -100,11 +104,13 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEmitDir(const DirectX::XMFLOAT3& emi
 	_emitDirW = emitDirW;
 }
 
+// 파티클의 텍스쳐 크기를 결정하는 함수
 void ArkEngine::ArkDX11::ParticleSystem::SetParticleSize(const DirectX::XMFLOAT2& particleSize)
 {
 	_particleSize = particleSize;
 }
 
+// 파티클의 방출속도를 결정하는 함수
 void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocity(float particleSpeed, bool isRandom)
 {
 	if (_particleName == "Laser")
@@ -118,10 +124,20 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocity(float particleSpeed, bo
 	_isRandom = isRandom;
 }
 
+// 파티클의 사라지는 시간을 결정하는 함수(파티클 입자가 점점 사라지는 시간, 파티클이 완전히 사라지는 시간)
+// ex) paeticleFadeTime = 1.0f 라면 1초동안 점점 투명해진다
+// 통상적으로 particleFadeTime이 particleLifeTime보다 작게 설정한다
 void ArkEngine::ArkDX11::ParticleSystem::SetParticleTime(float particleFadeTime, float particleLifeTime)
 {
 	_particleFadeTime = particleFadeTime;
 	_particleLifeTime = particleLifeTime;
+}
+
+// 파티클의 RGB값을 설정해준다.
+// 1.0f, 1.0f, 1.0f이면 원본텍스쳐의 색상이 나온다
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleColor(const DirectX::XMFLOAT3& particleColor)
+{
+	_particleColor = particleColor;
 }
 
 void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
@@ -246,6 +262,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 	SetParticleSizeW(_particleSize);
 	SetEmitVelocityW(_emitVelocity);
 	SetParticleTimeW(_particleFadeTime, _particleLifeTime);
+	SetParticleColorW(_particleColor);
 
 	// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
 	// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
@@ -624,6 +641,7 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEffect()
 	_isRandomEffect = effect->GetVariableByName("gIsRandom")->AsScalar();
 	_particleFadeTimeEffect = effect->GetVariableByName("gParticleFadeTime")->AsScalar();
 	_particleLifeTimeEffect = effect->GetVariableByName("gParticleLifeTime")->AsScalar();
+	_particleColorEffect = effect->GetVariableByName("gParticleColor")->AsVector();
 }
 
 float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
@@ -690,4 +708,9 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleTimeW(float f1, float f2)
 {
 	_particleFadeTimeEffect->SetFloat(f1);
 	_particleLifeTimeEffect->SetFloat(f2);
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleColorW(const DirectX::XMFLOAT3& v)
+{
+	_particleColorEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }
