@@ -130,101 +130,18 @@ void KunrealEngine::EngineCore::Update()
 
 	CheckMousePosition();
 
-	if (inputInstance->MouseButtonUp(1))
+	if (inputInstance->KeyUp(KEY::CAPSLOCK))
 	{
-		int a = 10;
+		sceneInstance.GetCurrentScene()->GetGameObject("Player")->MoveToScene(sceneInstance.GetScene("NewWorld"));
 	}
-
-	//ninaveh->GetComponent<Animator>()->Play(0, 20.0f, true);
-
 	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
-	//GRAPHICS->DrawDebugText(100, 100, 20, "1610배마owner정기훈 : %f", sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<Transform>()->GetPosition().x);
-	//GRAPHICS->DrawDebugText(100, 300, 30, "%s", sceneInstance.GetCurrentScene()->GetSceneName().c_str());
-	//GRAPHICS->DrawDebugText(500, 500, 30, "Player HP : %f", player->GetComponent<Player>()->GetPlayerData()._hp);
-
-	// 물리 정보 교환 테스트
-	BoxCollider* colA = sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<BoxCollider>();
-	BoxCollider* colB = sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<BoxCollider>();
-	BoxCollider* playerCol = sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<BoxCollider>();
-
-	Transform* trr = sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>();
-
-	if (trr->GetPosition().x > 20.f)
-	{
-		moveTo = false;
-	}
-
-	if (trr->GetPosition().x < -20.f)
-	{
-		moveTo = true;
-	}
-
-	if (moveTo)
-	{
-		trr->SetPosition(trr->GetPosition().x + 0.11f, 5.f, 0.f);
-	}
-	else
-	{
-		trr->SetPosition(trr->GetPosition().x - 0.11f, 5.f, 0.f);
-	}
-	//sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Knife")->GetComponent<Transform>()->GetPosition().x + 0.1f, 0.f, 0.f);
-
-	//sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->SetPosition(sceneInstance.GetCurrentScene()->GetGameObject("Rock")->GetComponent<Transform>()->GetPosition().x + 0.1f, 5.f, 0.f);
-
-
-
-	if (playerCol->GetTargetObject() != nullptr)
-	{
-		//GRAPHICS->DrawDebugText(800, 50, 60, "%s%s", "TargetObj : ", playerCol->GetTargetObject()->GetObjectName().c_str());
-	}
-	else
-	{
-		//GRAPHICS->DrawDebugText(800, 50, 60, "%s", "TargetObj : None");
-	}
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
 	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
 	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
 
-	// 플레이어 상태
-	if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::IDLE)
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : IDLE");
-	}
-	else if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::WALK)
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : WALK");
-	}
-	else if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::DASH)
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : DASH");
-	}
-	else
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : Idontknow");
-	}
-
 	Updatecoroutine();
-
-
-	// 플레이어 상태
-	if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::IDLE)
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : IDLE");
-	}
-	else if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::WALK)
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : WALK");
-	}
-	else if (player->GetComponent<Player>()->GetPlayerStatus() == Player::Status::DASH)
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : DASH");
-	}
-	else
-	{
-		//GRAPHICS->DrawDebugText(200, 300, 20, "Player Status : Idontknow");
-	}
 }
 
 void KunrealEngine::EngineCore::LateUpdate()
@@ -401,7 +318,6 @@ void KunrealEngine::EngineCore::PlayGround()
 	auto c1 = sceneInstance.GetCurrentScene()->CreateObject("Knife");
 	auto c2 = sceneInstance.GetCurrentScene()->CreateObject("Rock");
 
-
 	c1->AddComponent<BoxCollider>();
 	c1->GetComponent<BoxCollider>()->SetBoxSize(5.f, 10.f, 10.f);
 	c1->AddComponent<MeshRenderer>();
@@ -461,6 +377,8 @@ void KunrealEngine::EngineCore::PlayGround()
 			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
 		}
 	}
+
+	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()

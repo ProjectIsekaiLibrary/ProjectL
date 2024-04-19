@@ -314,3 +314,18 @@ const DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetCameraPos()
 {
 	return _positionVector;
 }
+
+const DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetRightVector()
+{
+	return _rightVector;
+}
+
+const DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetLookVector()
+{
+	return _lookVector;
+}
+
+const DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetUpVector()
+{
+	return _upVector;
+}
