@@ -41,7 +41,6 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 	_draggedIndex = -1;
 	_dropTargetIndex = -1;
 	int childCound = 0;
-
 	_DebugType = DebugType::None;
  
 	// 딜리트 키로 오브젝트 삭제
@@ -104,22 +103,22 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
         for (int i = 0; i < _gameObjectlist.size(); ++i)
         {
 
-            ImGui::PushID(i);         		
-			if (i != 0)
-			{
-				CheckInDentParent(_gameObjectlist[i], _gameObjectlist[i - 1]);		
-			}
+   //         ImGui::PushID(i);         		
+			//if (i != 0)
+			//{
+			//	CheckInDentParent(_gameObjectlist[i], _gameObjectlist[i - 1]);		
+			//}
 
-			bool activated = _gameObjectlist[i]->GetActivated();
+			//bool activated = _gameObjectlist[i]->GetActivated();
 
-			if (!activated)
-			{
-				ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // 회색 텍스트 색상
-			}
-			else
-			{
-				ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
-			}
+			//if (!activated)
+			//{
+			//	ImGui::PushStyleColor(ImGuiCol_Text, ImVec4(0.5f, 0.5f, 0.5f, 1.0f)); // 회색 텍스트 색상
+			//}
+			//else
+			//{
+			//	ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
+			//}
 
 			
 			if (ImGui::Selectable(_gameObjectlist[i]->GetObjectName().c_str(), (i == selectedObjectIndex)))  // 드래그 앤 드롭 UI 처리중
@@ -144,7 +143,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 				}
 			}
 
-			ImGui::PopStyleColor();
+			/*ImGui::PopStyleColor();
 
 
 			if (i != 0)
@@ -153,9 +152,9 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 			}
 
 			HandleDragAndDrop(i, selectedObjectIndex, _gameObjectlist);
-			
 
-            ImGui::PopID();			
+
+			ImGui::PopID();*/
         }
 
         if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
@@ -349,11 +348,6 @@ void EpicTool::HierarchyWindow::CheckChildListFromDown(std::vector<KunrealEngine
 	{
 		CheckChildListFromDown(gameObjectlist, index, payloadIndex);
 	}
-}
-
-void EpicTool::HierarchyWindow::ApplyIndentToChildObjects(int parentIndex, std::vector<KunrealEngine::GameObject*>& gameobjectlist)
-{
-
 }
 
 void EpicTool::HierarchyWindow::CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject)

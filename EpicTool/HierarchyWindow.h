@@ -47,8 +47,6 @@ namespace EpicTool
         void CheckChildListFromUp(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex);
 
         void CheckChildListFromDown(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex);
-
-        void ApplyIndentToChildObjects(int parentIndex, std::vector<KunrealEngine::GameObject*>& gameobjectlist);
    
         void CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject);
 
