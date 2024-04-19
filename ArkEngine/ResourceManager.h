@@ -107,7 +107,7 @@ namespace ArkEngine
 
 		public:
 			// 모든 디버그 오브젝트들은 담아놓은 백터 반환
-			const std::vector<ArkEngine::IDebugObject*>& GetDebugObjectList();
+			std::vector<ArkEngine::IDebugObject*>& GetDebugObjectList();
 
 			void AddDebugObject(ArkEngine::IDebugObject* object);
 

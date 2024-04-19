@@ -71,8 +71,11 @@ namespace ArkEngine
 			void Update(ArkEngine::ICamera* p_Camera) override;
 			void Render() override;
 			void Finalize() override;
+			virtual void ReleaseWithBuffer() override;
 
 		public:
+			virtual const std::string GetName() override;
+
 			virtual bool GetRenderingState() override;
 			virtual void SetRenderingState(bool tf) override;
 

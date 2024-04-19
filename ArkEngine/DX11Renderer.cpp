@@ -113,6 +113,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	auto particle2 = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 1000);
 	particle2->SetEmitPos(DirectX::XMFLOAT3{ 10.0f, 10.0f, 0.0f });
+
 	particle2->SetEmitVelocity(4.0f, true);
 	particle2->SetParticleSize(DirectX::XMFLOAT2(5.0f, 5.0f));
 	particle2->SetParticleTime(1.0f, 1.0f);
@@ -121,8 +122,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
 	ResourceManager::GetInstance()->AddParticle(particle3);
 
-	SetPickingTexture();
-}
+	SetPickingTexture();}
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
 {
@@ -492,6 +492,20 @@ void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugObject(GInterface::GraphicsDeb
 	delete debugObject;
 }
 
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteDebugMap(const std::string& name)
+{
+	for (auto index : ResourceManager::GetInstance()->GetDebugObjectList())
+	{
+		if (index->GetName() == name)
+		{
+			index->ReleaseWithBuffer();
+			
+			return;
+		}
+	}
+}
+
 void ArkEngine::ArkDX11::DX11Renderer::CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color)
 {
 	auto lineList = ResourceManager::GetInstance()->GetLineObjectList();
@@ -710,6 +724,18 @@ GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLig
 	CreatePoLight(amb, dif, spec, pos, range);
 
 	return LightManager::GetInstance()->GetPointLightInterface();
+}
+
+
+GInterface::GraphicsParticle* ArkEngine::ArkDX11::DX11Renderer::CreateParticle(const std::string& particleName, const std::string& fileName, unsigned int maxParticle)
+{
+	return nullptr;
+}
+
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteParticle(GInterface::GraphicsParticle* particle)
+{
+
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::SetPickingTexture()

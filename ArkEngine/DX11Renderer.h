@@ -93,6 +93,7 @@ namespace ArkEngine
 			virtual GInterface::GraphicsDebug* CreateDebugSphere(const char* objectName, float radius) override;
 			virtual GInterface::GraphicsDebug* CreateMapDebug(const char* objectName, std::vector<DirectX::XMFLOAT3>& vertexVec, std::vector<unsigned int>& indexVec) override;
 			virtual void DeleteDebugObject(GInterface::GraphicsDebug* debugObject) override;
+			virtual void DeleteDebugMap(const std::string& name) override;
 
 		public:
 			virtual void CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color) override;
@@ -120,6 +121,10 @@ namespace ArkEngine
 		public:
 			virtual GInterface::GraphicsDirLight* CreateDirectionalLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& direction) override;
 			virtual GInterface::GraphicsPointLight* CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range) override;
+
+		public:
+			virtual GInterface::GraphicsParticle* CreateParticle(const std::string& particleName, const std::string& fileName, unsigned int maxParticle) override;
+			virtual void DeleteParticle(GInterface::GraphicsParticle* particle) override;
 
 		public:
 			// End 키를 눌렀을때 활성화되는 텍스트
