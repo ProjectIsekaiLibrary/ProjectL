@@ -18,9 +18,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 0.0,
-                "position_y": 30.0,
-                "position_z": -55.0,
+                "position_x": -29.71479034423828,
+                "position_y": 16.12666130065918,
+                "position_z": 15.025911331176758,
                 "rotation_x": -9.0,
                 "rotation_y": -17.0,
                 "rotation_z": 0.0,
@@ -46,6 +46,7 @@
                     "cube/cube"
                 ],
                 "Normal": [
+                    "Resources/Textures/cube/"
                 ]
             },
             "meshRenderingState": true,
@@ -476,21 +477,23 @@
             },
             "meshRenderingState": true,
             "name": "staircase",
-            "parent": {},
+            "parent": {
+                "ParentName": "staircase (1)"
+            },
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 12.510883331298828,
+                "position_x": 249.0296630859375,
                 "position_y": 0.0,
-                "position_z": 42.01995849609375,
+                "position_z": 0.0,
                 "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
+                "rotation_y": -0.0,
+                "rotation_z": -0.0,
+                "scale_x": 1.0,
+                "scale_y": 1.0,
+                "scale_z": 1.0
             }
         }
     },
@@ -720,9 +723,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -28.428022384643555,
+                "position_x": -28.65157127380371,
                 "position_y": 0.0,
-                "position_z": 32.20323944091797,
+                "position_z": 35.53893280029297,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -878,9 +881,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 51.87982177734375,
-                "position_y": 0.0,
-                "position_z": 29.42911148071289,
+                "position_x": 50.41918182373047,
+                "position_y": -1.9073486328125e-06,
+                "position_z": 30.62345314025879,
                 "rotation_x": 0.0,
                 "rotation_y": 32.0,
                 "rotation_z": 0.0,
@@ -917,9 +920,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 69.20238494873047,
-                "position_y": 0.0,
-                "position_z": 18.280895233154297,
+                "position_x": 67.88642120361328,
+                "position_y": 9.876641797745833e-07,
+                "position_z": 20.480112075805664,
                 "rotation_x": 0.0,
                 "rotation_y": -147.0,
                 "rotation_z": 0.0,
@@ -956,9 +959,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 35.2161865234375,
-                "position_y": 0.0,
-                "position_z": 40.54380798339844,
+                "position_x": 33.642574310302734,
+                "position_y": -1.9073486328125e-06,
+                "position_z": 41.728294372558594,
                 "rotation_x": 0.0,
                 "rotation_y": -147.0,
                 "rotation_z": 0.0,
@@ -1036,9 +1039,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 93.32232666015625,
+                "position_x": 93.17623138427734,
                 "position_y": -3.0149974822998047,
-                "position_z": -8.397394180297852,
+                "position_z": -7.514791488647461,
                 "rotation_x": 348.11199951171875,
                 "rotation_y": -39.97200012207031,
                 "rotation_z": 59.4109992980957,
@@ -1075,11 +1078,11 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 78.09722900390625,
-                "position_y": 0.0,
-                "position_z": -37.217472076416016,
+                "position_x": 85.20022583007813,
+                "position_y": -9.5367431640625e-07,
+                "position_z": -38.16645431518555,
                 "rotation_x": 0.0,
-                "rotation_y": 0.0,
+                "rotation_y": 22.0,
                 "rotation_z": 0.0,
                 "scale_x": 0.20000000298023224,
                 "scale_y": 0.20000000298023224,
@@ -1397,15 +1400,15 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -26.75275230407715,
-                "position_y": 0.0,
-                "position_z": -90.689453125,
+                "position_x": -26.37424087524414,
+                "position_y": 1.961024281627033e-06,
+                "position_z": -95.84393310546875,
                 "rotation_x": 0.0,
-                "rotation_y": -43.0,
+                "rotation_y": -10.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.20000000298023224,
-                "scale_y": 0.20000000298023224,
-                "scale_z": 0.20000000298023224
+                "scale_x": 0.25,
+                "scale_y": 0.25,
+                "scale_z": 0.25
             }
         }
     },
@@ -1561,9 +1564,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 78.5018081665039,
+                "position_x": 79.02232360839844,
                 "position_y": -2.3698503971099854,
-                "position_z": -72.627197265625,
+                "position_z": -69.77629089355469,
                 "rotation_x": -15.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -1682,11 +1685,11 @@
             "transform": {
                 "position_x": -88.22596740722656,
                 "position_y": 3.3332705697830534e-06,
-                "position_z": -54.51182174682617,
+                "position_z": -54.07032012939453,
                 "rotation_x": 0.0,
                 "rotation_y": -101.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
+                "scale_x": 0.10999999940395355,
                 "scale_y": 0.10000000149011612,
                 "scale_z": 0.10000000149011612
             }
@@ -1953,11 +1956,11 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 40.409000396728516,
-                "position_y": -1.3528857231140137,
-                "position_z": -88.61444854736328,
+                "position_x": 42.950111389160156,
+                "position_y": -1.35288667678833,
+                "position_z": -87.30293273925781,
                 "rotation_x": 0.0,
-                "rotation_y": 72.0,
+                "rotation_y": 66.0,
                 "rotation_z": 0.0,
                 "scale_x": 0.10000000149011612,
                 "scale_y": 0.10000000149011612,
@@ -1992,15 +1995,15 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -98.28746795654297,
+                "position_x": -100.60941314697266,
                 "position_y": -2.426724910736084,
                 "position_z": -34.38203048706055,
                 "rotation_x": 17.0,
-                "rotation_y": 7.0,
+                "rotation_y": -7.0,
                 "rotation_z": -83.0,
-                "scale_x": 0.07500000298023224,
-                "scale_y": 0.07500000298023224,
-                "scale_z": 0.07500000298023224
+                "scale_x": 0.10499999672174454,
+                "scale_y": 0.10499999672174454,
+                "scale_z": 0.10499999672174454
             }
         }
     },
@@ -2065,16 +2068,16 @@
                 ]
             },
             "meshRenderingState": true,
-            "name": "Create Empty",
+            "name": "Rock",
             "parent": {},
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 59.552650451660156,
-                "position_y": 0.0,
-                "position_z": -77.64225006103516,
+                "position_x": 63.88039779663086,
+                "position_y": 8.486268825436127e-07,
+                "position_z": -76.17774963378906,
                 "rotation_x": 0.0,
                 "rotation_y": -161.0,
                 "rotation_z": 0.0,
@@ -2217,201 +2220,6 @@
             "lightType": {},
             "meshRenderer": {
                 "Diffuse": [
-                    "Resources/Textures/SM_bush_01/M_leaves_standard_04.png"
-                ],
-                "Mesh": [
-                    "SM_bush_01/SM_bush_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_bush_01/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "bush",
-            "parent": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 60.719329833984375,
-                "position_y": 0.0,
-                "position_z": -38.992515563964844,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.20000000298023224,
-                "scale_y": 0.20000000298023224,
-                "scale_z": 0.20000000298023224
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_bush_01/M_leaves_standard_04.png"
-                ],
-                "Mesh": [
-                    "SM_bush_01/SM_bush_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_bush_01/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "bush (1)",
-            "parent": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -16.149951934814453,
-                "position_y": 0.0,
-                "position_z": -69.395751953125,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.20000000298023224,
-                "scale_y": 0.20000000298023224,
-                "scale_z": 0.20000000298023224
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_bush_01/M_leaves_standard_04.png"
-                ],
-                "Mesh": [
-                    "SM_bush_01/SM_bush_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_bush_01/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "bush (2)",
-            "parent": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -42.230220794677734,
-                "position_y": 0.0,
-                "position_z": -7.005863189697266,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.20000000298023224,
-                "scale_y": 0.20000000298023224,
-                "scale_z": 0.20000000298023224
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_bush_01/M_leaves_standard_04.png"
-                ],
-                "Mesh": [
-                    "SM_bush_01/SM_bush_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_bush_01/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "bush (3)",
-            "parent": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 42.14744567871094,
-                "position_y": 0.0,
-                "position_z": -7.005863189697266,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.20000000298023224,
-                "scale_y": 0.20000000298023224,
-                "scale_z": 0.20000000298023224
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_bush_01/M_leaves_standard_04.png"
-                ],
-                "Mesh": [
-                    "SM_bush_01/SM_bush_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_bush_01/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "bush (4)",
-            "parent": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 42.14744567871094,
-                "position_y": 0.0,
-                "position_z": -68.87800598144531,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.20000000298023224,
-                "scale_y": 0.20000000298023224,
-                "scale_z": 0.20000000298023224
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
                     "Resources/Textures/SM_rubble_ruins_01/M_stoneblocks_ruins_BaseMap.png"
                 ],
                 "Mesh": [
@@ -2468,9 +2276,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 79.7818603515625,
-                "position_y": 0.0,
-                "position_z": 1.5794589519500732,
+                "position_x": 79.07817840576172,
+                "position_y": 8.737322900742583e-07,
+                "position_z": 4.412406921386719,
                 "rotation_x": 0.0,
                 "rotation_y": -105.0,
                 "rotation_z": 0.0,
@@ -2511,12 +2319,51 @@
             "transform": {
                 "position_x": 91.85992431640625,
                 "position_y": -5.234216213226318,
-                "position_z": -18.722309112548828,
+                "position_z": -19.865880966186523,
                 "rotation_x": 0.0,
                 "rotation_y": 27.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.15000000596046448,
+                "scale_x": 0.1899999976158142,
                 "scale_y": 0.1899999976158142,
+                "scale_z": 0.1899999976158142
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_rubble_ruins_01/M_stoneblocks_ruins_BaseMap.png"
+                ],
+                "Mesh": [
+                    "SM_rubble_ruins_01/SM_rubble_ruins_01"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_rubble_ruins_01/M_stoneblocks_ruins_Normal.png"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "rock (1) (1)",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 85.93238067626953,
+                "position_y": 0.0,
+                "position_z": -10.438764572143555,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.15000000596046448,
+                "scale_y": 0.15000000596046448,
                 "scale_z": 0.15000000596046448
             }
         }
