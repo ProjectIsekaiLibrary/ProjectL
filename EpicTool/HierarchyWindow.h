@@ -47,8 +47,6 @@ namespace EpicTool
         void CheckChildListFromUp(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex);
 
         void CheckChildListFromDown(std::vector<KunrealEngine::GameObject*>& gameObjectlist, int& index, int& payloadIndex);
-
-        void ApplyIndentToChildObjects(int parentIndex, std::vector<KunrealEngine::GameObject*>& gameobjectlist);
    
         void CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject);
 
@@ -78,6 +76,9 @@ namespace EpicTool
         // 오브젝트 리스트
         std::vector<KunrealEngine::GameObject*> _gameObjectlist;
 
+        // 오브젝트 리스트가 업데이트 되었을때 보존용
+        std::vector<KunrealEngine::GameObject*> _tempgameObjectList;
+
         // 드래그시 출현하는 반투명 박스 위치
 	private:
 		DebugWindow* _debugWindow;  // 디버그 테스트용 객체
@@ -95,6 +96,8 @@ namespace EpicTool
         int _payloadIndex;
         bool _show_Context_Menu;
         bool _indentCheck;
+
+        bool _isListUpdate;
     };
 }
 

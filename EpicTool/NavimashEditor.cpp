@@ -68,6 +68,13 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	ImGui::SliderFloat("Max Slope", &_agentMaxSlope, 0.0f, 90.0f);
 
+	if (ImGui::Button("Show"))
+	{
+
+	}
+
+	ImGui::SameLine();
+
 	if (ImGui::Button("Build"))
 	{
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
