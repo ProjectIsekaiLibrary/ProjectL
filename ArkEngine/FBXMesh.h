@@ -152,6 +152,21 @@ namespace ArkEngine
 			virtual void SetCartoonRendering(bool tf) override;
 			virtual bool GetCartoonRenderingState() override;
 
+		public:
+			virtual const std::string& GetName() override;
+			virtual const std::string& GetEffectName() override;
+
+			virtual std::vector<ID3D11ShaderResourceView*>& GetDiffuseSRV() override;
+			virtual std::vector<ID3D11ShaderResourceView*>& GetNormalSRV() override;
+			virtual std::vector<ID3D11ShaderResourceView*>& GetEmmisionSRV() override;
+
+			virtual ArkEngine::ArkDX11::FBXAnimator* GetAnimator() override;
+			virtual const DirectX::XMMATRIX GetTransformMat() override;
+			virtual ArkEngine::ArkDX11::FBXMesh* GetParentMesh() override;
+			virtual unsigned int GetParentBoneIndex() override;
+			virtual DirectX::XMMATRIX GetParentBoneTransform() override;
+			virtual const DirectX::XMFLOAT4 GetColor() override;
+
 		private:
 			std::string _simpleModelName;
 			std::string _fileName;
@@ -230,6 +245,8 @@ namespace ArkEngine
 			unsigned int _objectIndex;
 
 			float _color[4];
+			DirectX::XMFLOAT4 _colorVec;
+
 			bool _haveShadow;
 
 			bool _applyCartoonRendering;
@@ -267,7 +284,7 @@ namespace ArkEngine
 			std::vector<Matrix> _boneTransforms;
 
 			/// Animator
-			std::unique_ptr<FBXAnimator> _animator;
+			FBXAnimator* _animator;
 
 		private:
 			FBXMesh* _parentMesh;

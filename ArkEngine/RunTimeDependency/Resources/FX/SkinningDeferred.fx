@@ -8,9 +8,9 @@
 
 cbuffer cbPerObject
 {
-    float4x4 gWorld;
-    float4x4 gWorldInvTranspose;
-    float4x4 gWorldViewProj;
+    float4x4 gWorld[100];
+    float4x4 gWorldInvTranspose[100];
+    float4x4 gWorldViewProj[100];
     float4x4 gTexTransform;
     Material gMaterial;
 };
@@ -24,11 +24,9 @@ cbuffer cbSkinned
 Texture2D gDiffuseMap;
 Texture2D gNormalMap;
 Texture2D gEmissiveMap;
-
-
-TextureCube gCubeMap;
-float4 gColor;
 float gCartoon;
+
+float4 gColor[100];
 
 SamplerState samAnisotropic
 {
@@ -67,6 +65,8 @@ struct VertexOut
     float3 NormalW : NORMAL;
     float2 Tex : TEXCOORD0;
     float3 TangentW : TANGENT;
+
+    uint InstanceID : BLENDINDICES1;
 };
 
 struct PSOut
@@ -85,7 +85,7 @@ struct PSOut2
     float4 Color : SV_Target0;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 {
     VertexOut vout;
 
@@ -112,32 +112,19 @@ VertexOut VS(VertexIn vin)
 
 
 	// Transform to world space space.
-    vout.PosW = mul(float4(posL, 1.0f), gWorld).xyz;
-    vout.NormalW = mul(normalL, (float3x3) gWorldInvTranspose);
-    vout.TangentW = mul(vin.TangentL, (float3x3) gWorld);
+    vout.PosW = mul(float4(posL, 1.0f), gWorld[instanceID]).xyz;
+    vout.NormalW = mul(normalL, (float3x3) gWorldInvTranspose[instanceID]);
+    vout.TangentW = mul(vin.TangentL, (float3x3) gWorld[instanceID]);
     
 	// Transform to homogeneous clip space.
-    vout.PosH = mul(float4(posL, 1.0f), gWorldViewProj);
+    vout.PosH = mul(float4(posL, 1.0f), gWorldViewProj[instanceID]);
 
 	// Output vertex attributes for interpolation across triangle.
     vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
-	///vout.Tex = vin.Tex;
+
     
-    //float4x4 lightViewMatrix = gLightViewMatrix;
-    //float3 dirZ = -normalize(gWorldLightPosition.xyz);
-    //float3 up = float3(0.0f, 1.0f, 0.0f);
-    //float3 dirX = cross(up, dirZ);
-    //float3 dirY = cross(dirZ, dirX);
-    //
-    //lightViewMatrix = float4x4(
-    //float4(dirX, -dot(gWorldLightPosition.xyz, dirX)),
-    //float4(dirY, -dot(gWorldLightPosition.xyz, dirY)),
-    //float4(dirZ, -dot(gWorldLightPosition.xyz, dirZ)),
-    //float4(0.0f, 0.0f, 0.0f, 1.0f));
-    //
-    //lightViewMatrix = transpose(lightViewMatrix);
-    
-    
+    vout.InstanceID = instanceID;
+
     return vout;
 }
 
@@ -164,7 +151,7 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.Emissive = float4(emissive, 1.0f);
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
     output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
-    output.Color = gColor;
+    output.Color = gColor[pin.InstanceID];
     
     return output;
 }

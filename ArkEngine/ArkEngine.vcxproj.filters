@@ -141,6 +141,9 @@
     <Filter Include="ArkEngine\Interface\IDebug">
       <UniqueIdentifier>{eda9442d-133f-4f10-aa21-a13a7c40aa76}</UniqueIdentifier>
     </Filter>
+    <Filter Include="MeshRenderer">
+      <UniqueIdentifier>{97ac8e3f-167e-4a73-a179-eee14b47036e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -296,6 +299,9 @@
     <ClInclude Include="ParticleResource.h">
       <Filter>Particle</Filter>
     </ClInclude>
+    <ClInclude Include="MeshRenderer.h">
+      <Filter>MeshRenderer</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11Renderer.cpp">
@@ -417,6 +423,9 @@
     </ClCompile>
     <ClCompile Include="ParticleResource.cpp">
       <Filter>Particle</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshRenderer.cpp">
+      <Filter>MeshRenderer</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

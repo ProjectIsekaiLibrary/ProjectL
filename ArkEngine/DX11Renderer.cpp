@@ -31,6 +31,7 @@
 #include "DWFont.h"
 #include "ILineObject.h"
 #include "LineObject.h"
+#include "MeshRenderer.h"
 #include "ParticleSystem.h"
 
 #include "DX11Renderer.h"
@@ -255,8 +256,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 광원의 위치에 카메라로 설정
 	const auto& lightIndexList = LightManager::GetInstance()->GetActiveIndexList();
 
-
-
 	// 빛이 있다면
 	if (lightIndexList.empty() == false)
 	{
@@ -266,20 +265,26 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		// 쉐도우 버퍼에 광원시점에서의 물체들의 깊이값을 기록할 준비 
 		BeginShadowRender();
 
-		for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
+		for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
 		{
-			// 그림자는 프러스텀에 안들어와도 그려질 수 있으니 그려지고 있는 모든 물체에 대해
-			if (index->GetRenderingState())
-			{
-				// 그림자를 갖지 않도록 설정한 물체 외에
-				if (index->GetShadowState() == true)
-				{
-					index->SetMainCamera(_mainCamera);
-					// 1번 패스로 렌더링 (그림자 용) -> 픽셀 쉐이더에서 (0,0,0,0)만 출력
-					index->Render(1);
-				}
-			}
+			index->SetMainCamera(_mainCamera);
+			index->ShadowRender();
 		}
+
+		//for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
+		//{
+		//	// 그림자는 프러스텀에 안들어와도 그려질 수 있으니 그려지고 있는 모든 물체에 대해
+		//	if (index->GetRenderingState())
+		//	{
+		//		// 그림자를 갖지 않도록 설정한 물체 외에
+		//		if (index->GetShadowState() == true)
+		//		{
+		//			index->SetMainCamera(_mainCamera);
+		//			// 1번 패스로 렌더링 (그림자 용) -> 픽셀 쉐이더에서 (0,0,0,0)만 출력
+		//			index->Render(1);
+		//		}
+		//	}
+		//}
 
 		// 광원 시점에서 기존 시점에서의 카메라로 되돌림
 		_mainCamera = _originMainCamera;
@@ -288,22 +293,27 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 디퍼드 버퍼에 기존 카메라 시점에서의 오브젝트들을 렌더링 하기 위한 준비
 	BeginRender();
 
-
-
-	for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
+	for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
 	{
-		// 그려지고 프러스텀 내에 들어온 (시야에 들어온) 오브젝트들만
-		if (index->GetRenderingState() && index->GetInsideFrustumState())
-		{
-			index->SetMainCamera(_mainCamera);
-
-			testCullingNum++;
-			DrawDebugText(1500, 0, 40, "Rendered Object : %d", testCullingNum);
-			// 0번 패스로 렌더링
-			index->Render(0);
-		}
+		index->SetMainCamera(_mainCamera);
+		index->Render();
 	}
 
+	//for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
+	//{
+	//	auto a = ResourceManager::GetInstance()->GetRenderableList();
+	//
+	//	// 그려지고 프러스텀 내에 들어온 (시야에 들어온) 오브젝트들만
+	//	if (index->GetRenderingState() && index->GetInsideFrustumState())
+	//	{
+	//		index->SetMainCamera(_mainCamera);
+	//		
+	//		testCullingNum++;
+	//		DrawDebugText(1500, 0, 40, "Rendered Object : %d", testCullingNum);
+	//		// 0번 패스로 렌더링
+	//		index->Render(0);
+	//	}
+	//}
 
 
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
@@ -458,6 +468,12 @@ GInterface::GraphicsRenderable* ArkEngine::ArkDX11::DX11Renderer::CreateRenderab
 
 void ArkEngine::ArkDX11::DX11Renderer::DeleteRenderable(GInterface::GraphicsRenderable* renderable)
 {
+	ArkEngine::IRenderable* tempObject = dynamic_cast<ArkEngine::IRenderable*>(renderable);
+
+	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(tempObject->GetName());
+
+	meshRenderer->DeleteMeshInList(tempObject);
+
 	renderable->Delete();
 }
 

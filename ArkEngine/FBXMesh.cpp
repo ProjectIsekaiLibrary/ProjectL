@@ -21,6 +21,7 @@
 #include "../FbxLoader/Utils.h"
 #include "FBXAnimator.h"
 #include "DWFont.h"
+#include "MeshRenderer.h"
 
 #include "FBXMesh.h"
 
@@ -45,6 +46,17 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_mainCamera(nullptr)
 {
 	Initialize();
+
+	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(fileName);
+
+	if (meshRenderer == nullptr)
+	{
+		auto mesh = new MeshRenderer(this);
+	}
+	else
+	{
+		meshRenderer->AddMeshInList(this);
+	}
 }
 
 ArkEngine::ArkDX11::FBXMesh::~FBXMesh()
@@ -105,19 +117,20 @@ void ArkEngine::ArkDX11::FBXMesh::Initialize()
 
 
 	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Cube);
-}
 
-void ArkEngine::ArkDX11::FBXMesh::Update(ArkEngine::ICamera* p_Camera)
-{
-	if (_havePlayedAnimation)
+	if (_animator != nullptr)
 	{
 		_effectName = "Resources/FX/SkinningDeferred.fx";
 
 		_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>(_effectName);
 		_effect = _arkEffect->GetEffect();
+
 		SetEffect();
 	}
+}
 
+void ArkEngine::ArkDX11::FBXMesh::Update(ArkEngine::ICamera* p_Camera)
+{
 	//auto camera = static_cast<ArkEngine::ArkDX11::Camera*>(p_Camera);
 	//
 	//DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
@@ -343,6 +356,10 @@ void ArkEngine::ArkDX11::FBXMesh::Render(int passIndex)
 
 void ArkEngine::ArkDX11::FBXMesh::Finalize()
 {
+	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
+
+	meshRenderer->DeleteMeshInList(this);
+
 	_parentMesh = nullptr;
 
 	delete _debugObject;
@@ -379,6 +396,8 @@ void ArkEngine::ArkDX11::FBXMesh::Finalize()
 	_fxWorldInvTranspose->Release();
 	_fxWorld->Release();
 
+	delete _animator;
+
 	delete _meshTransform;
 
 	_arkEffect = nullptr;
@@ -403,6 +422,15 @@ bool ArkEngine::ArkDX11::FBXMesh::GetRenderingState()
 
 void ArkEngine::ArkDX11::FBXMesh::SetRenderingState(bool tf)
 {
+	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
+	
+	meshRenderer->DeleteMeshInList(this);
+	
+	if (tf == true)
+	{
+		meshRenderer->AddMeshInList(this);
+	}
+
 	_isRendering = tf;
 
 	_debugObject->SetActive(tf);
@@ -539,7 +567,7 @@ void ArkEngine::ArkDX11::FBXMesh::SetEmissiveTexture(int index, const char* text
 
 void ArkEngine::ArkDX11::FBXMesh::SetAnimator()
 {
-	_animator = std::make_unique<FBXAnimator>();
+	_animator = new FBXAnimator();
 }
 
 const GInterface::Material ArkEngine::ArkDX11::FBXMesh::GetMaterial()
@@ -820,6 +848,11 @@ void ArkEngine::ArkDX11::FBXMesh::ConvertHashToRGBA(int hashValue)
 	_color[1] = g / 255.0f;
 	_color[2] = b / 255.0f;
 	_color[3] = a / 255.0f;
+
+	_colorVec.x = _color[0];
+	_colorVec.y = _color[1];
+	_colorVec.z = _color[2];
+	_colorVec.w = _color[3];
 }
 
 const DirectX::XMMATRIX ArkEngine::ArkDX11::FBXMesh::GetWorldTransform()
@@ -851,6 +884,72 @@ void ArkEngine::ArkDX11::FBXMesh::SetCartoonRendering(bool tf)
 bool ArkEngine::ArkDX11::FBXMesh::GetCartoonRenderingState()
 {
 	return _applyCartoonRendering;
+}
+
+
+const std::string& ArkEngine::ArkDX11::FBXMesh::GetName()
+{
+	return _fileName;
+}
+
+
+const std::string& ArkEngine::ArkDX11::FBXMesh::GetEffectName()
+{
+	return _effectName;
+}
+
+
+std::vector<ID3D11ShaderResourceView*>& ArkEngine::ArkDX11::FBXMesh::GetDiffuseSRV()
+{
+	return _diffuseMapSRV;
+}
+
+
+std::vector<ID3D11ShaderResourceView*>& ArkEngine::ArkDX11::FBXMesh::GetNormalSRV()
+{
+	return _normalMapSRV;
+}
+
+
+std::vector<ID3D11ShaderResourceView*>& ArkEngine::ArkDX11::FBXMesh::GetEmmisionSRV()
+{
+	return _emissionMapSRV;
+}
+
+
+ArkEngine::ArkDX11::FBXAnimator* ArkEngine::ArkDX11::FBXMesh::GetAnimator()
+{
+	return _animator;
+}
+
+
+const DirectX::XMMATRIX ArkEngine::ArkDX11::FBXMesh::GetTransformMat()
+{
+	return _meshTransform->GetTransformMatrix();
+}
+
+
+ArkEngine::ArkDX11::FBXMesh* ArkEngine::ArkDX11::FBXMesh::GetParentMesh()
+{
+	return _parentMesh;
+}
+
+unsigned int ArkEngine::ArkDX11::FBXMesh::GetParentBoneIndex()
+{
+	return _parentBoneIndex;
+}
+
+
+DirectX::XMMATRIX ArkEngine::ArkDX11::FBXMesh::GetParentBoneTransform()
+{
+	auto trs = DirectX::XMLoadFloat4x4(&_parentBoneTrasnform);
+	return trs;
+}
+
+
+const DirectX::XMFLOAT4 ArkEngine::ArkDX11::FBXMesh::GetColor()
+{
+	return _colorVec;
 }
 
 /// <summary>

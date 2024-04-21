@@ -23,6 +23,7 @@ class ASEParser;
 
 namespace ArkEngine
 {
+	class MeshRenderer;
 	class ParticleResource;
 
 	namespace ArkDX11
@@ -104,6 +105,14 @@ namespace ArkEngine
 			void DeleteRenderable(ArkEngine::IRenderable* renderable);
 
 			unsigned int GetObjectIndex();
+
+		public:
+			// 인스턴싱을 활용하여 렌더링하기 위한 renderer를 가져옴
+			std::vector<ArkEngine::MeshRenderer*>& GetAllMeshRenderer();
+			// 인스턴싱을 활용하여 렌더링하기 위한 renderer를 가져옴
+			ArkEngine::MeshRenderer* GetMeshRenderer(const std::string& fileName);
+			// 인스턴싱을 활용하여 렌더링하기 위한 renderer를 만듬
+			void AddMeshRenderer(ArkEngine::MeshRenderer* meshRenderer);			
 
 		public:
 			// 모든 디버그 오브젝트들은 담아놓은 백터 반환
@@ -232,6 +241,8 @@ namespace ArkEngine
 		private:
 			// 존재하는 모든 그릴 수 있는 오브젝트들
 			std::vector<IRenderable*> _renderableList;
+
+			std::vector<MeshRenderer*> _meshRendererList;
 
 			std::vector<IDebugObject*> _debugList;
 

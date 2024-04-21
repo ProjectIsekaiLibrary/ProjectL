@@ -186,6 +186,16 @@ void KunrealEngine::EngineCore::PlayGround()
 	testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
 
+	// Plane 
+	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
+	plane->AddComponent<MeshRenderer>();
+	plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
+	//plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
+	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
+	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
+	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
+
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
 	player->AddComponent<MeshRenderer>();
@@ -268,17 +278,6 @@ void KunrealEngine::EngineCore::PlayGround()
 	zeolight->AddComponent<Zeolight>();
 	zeolight->GetComponent<Zeolight>()->SetInteractionRange(10);
 
-
-	// Plane 
-	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
-	plane->AddComponent<MeshRenderer>();
-	plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
-	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
-	//plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
-	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
-	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
-	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
-
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
 	auto list = GRAPHICS->GetCubeMapList();
@@ -344,12 +343,12 @@ void KunrealEngine::EngineCore::PlayGround()
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT3(100.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
 	//GRAPHICS->DeleteAllLine();
 	// Test
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		std::string name = "rightCube" + std::to_string(i);
 		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
 		cube1->AddComponent<MeshRenderer>();
-		cube1->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+		cube1->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich", true);
 		cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
 		cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
 		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
@@ -361,7 +360,7 @@ void KunrealEngine::EngineCore::PlayGround()
 		}
 	}
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		std::string name = "leftCube" + std::to_string(i);
 		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);

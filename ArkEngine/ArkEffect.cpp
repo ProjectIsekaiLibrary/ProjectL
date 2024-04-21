@@ -97,7 +97,7 @@ D3D11_INPUT_ELEMENT_DESC* ArkEngine::ArkDX11::ArkEffect::GetInputDesc(const char
 		vertexDesc[1] = { "NORMAL", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 12, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 		vertexDesc[2] = { "TEXCOORD", 0, DXGI_FORMAT_R32G32_FLOAT, 0, 24, D3D11_INPUT_PER_VERTEX_DATA, 0 };
 		vertexDesc[3] = { "TANGENT", 0, DXGI_FORMAT_R32G32B32_FLOAT, 0, 32, D3D11_INPUT_PER_VERTEX_DATA, 0 };
-
+		
 		_vertexDescIndex = 4;
 	}
 	else if (stringEffect.find("Skinning") != std::string::npos)
