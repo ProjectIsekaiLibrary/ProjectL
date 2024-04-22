@@ -24,7 +24,7 @@ namespace KunrealEngine
 	};
 
 	// 이 PathFIndbox는 네비매쉬를 배열로 관리하기 편하도록 구성 요소들을 묶은 것
-	struct _DECLSPEC PathFindbox
+	struct _DECLSPEC PathFindPack
 	{
 		class dtNavMesh* _navMesh;
 		class dtNavMeshQuery* _navQuery;
@@ -60,8 +60,8 @@ namespace KunrealEngine
 		// Temp-Obstacle을 위해 필요한 부분
 		class dtTileCache* _tileCache;
 
-		PathFindbox();
-		~PathFindbox();
+		PathFindPack();
+		~PathFindPack();
 	};
 
 	class _DECLSPEC Navigation
@@ -120,6 +120,10 @@ namespace KunrealEngine
 
 		// 네비매쉬를 빌드하기 위해 vertex와 index를 제공해주는 함수(예정)
 		void GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices);
+		// 패키지(네비매쉬 배열) 사이즈 가져오기
+		int GetPackageSize();
+		// 현재 에이전트 세팅을 반환
+		void GetAgent(int index, float& agentHeight, float& agentMaxSlope, float& agentRadius, float& agentMaxClimb);
 	
 	private:	// 이거는 private라고!!!!! 가져다 쓰다가 소문자로 시작하는 함수 보이면 쓰지 말라고!!!
 
@@ -139,7 +143,7 @@ namespace KunrealEngine
 		static const int PACKAGESIZE = 5;
 
 		class InputGeom* _geom;
-		PathFindbox _package[PACKAGESIZE];
+		PathFindPack _package[PACKAGESIZE];
 
 		bool _keepInterResults;
 		float _totalBuildTimeMs;

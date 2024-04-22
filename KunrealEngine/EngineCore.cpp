@@ -60,12 +60,6 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0);
-	
-	std::vector<DirectX::XMFLOAT3> vertices;
-	std::vector<unsigned int> indices;
-	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
-	GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
-
 	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
 	navigationInstance.HandleBuild(1);
 	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
@@ -142,38 +136,6 @@ void KunrealEngine::EngineCore::Update()
 	}
 	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
-	auto x = testCamera->GetComponent<Transform>()->GetPosition().x;
-	auto y = testCamera->GetComponent<Transform>()->GetPosition().y;
-	auto z = testCamera->GetComponent<Transform>()->GetPosition().z;
-
-
-	SoundSystem::GetInstance().updateListenerPosition(x,y,z);
-
-	if (inputInstance->KeyDown(KEY::LBRACKET))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Change3Dmode(0);
-	}
-	else if (inputInstance->KeyDown(KEY::RBRACKET))
-	{
-		zeolight->GetComponent<SoundPlayer>()->RemoveSound(0);
-	}
-	else if (inputInstance->KeyDown(KEY::_1))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Play(0);
-	}
-	else if (inputInstance->KeyDown(KEY::_2))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Play(1);
-	}
-	else if (inputInstance->KeyDown(KEY::_3))
-	{
-		zeolight->GetComponent<SoundPlayer>()->Play(2);
-	}
-	else if (inputInstance->KeyDown(KEY::O))
-	{
-		zeolight->GetComponent<SoundPlayer>()->StopAll();
-	}
-
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
 	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
@@ -223,6 +185,16 @@ void KunrealEngine::EngineCore::PlayGround()
 	
 	testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
+
+	// Plane 
+	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
+	plane->AddComponent<MeshRenderer>();
+	plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
+	//plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
+	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
+	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
+	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
@@ -305,26 +277,6 @@ void KunrealEngine::EngineCore::PlayGround()
 		//	NPC로써 가지고 있어야할 컴포넌트
 	zeolight->AddComponent<Zeolight>();
 	zeolight->GetComponent<Zeolight>()->SetInteractionRange(10);
-		// 워프용 비석에 필요한 부분은 아님. 그냥 사운드 테스트용으로 붙은거.
-	zeolight->AddComponent<SoundPlayer>();
-	zeolight->GetComponent<SoundPlayer>()->CreateSoundInfo("Resources/Sound/An_die_Freude.wav",true,true);
-	zeolight->GetComponent<SoundPlayer>()->CreateSound(0);
-	zeolight->GetComponent<SoundPlayer>()->CreateSoundInfo("Resources/Sound/Keyboard_typing.wav",true,true);
-	zeolight->GetComponent<SoundPlayer>()->CreateSound(1);
-	zeolight->GetComponent<SoundPlayer>()->CreateSoundInfo("Resources/Sound/soundch1.wav",true,true);
-	zeolight->GetComponent<SoundPlayer>()->CreateSound(2);
-	KunrealEngine::SoundSystem::GetInstance().GetSoundPathList();
-
-
-	// Plane 
-	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
-	plane->AddComponent<MeshRenderer>();
-	plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
-	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
-	//plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
-	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
-	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
-	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
@@ -391,12 +343,12 @@ void KunrealEngine::EngineCore::PlayGround()
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT3(100.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
 	//GRAPHICS->DeleteAllLine();
 	// Test
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		std::string name = "rightCube" + std::to_string(i);
 		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
 		cube1->AddComponent<MeshRenderer>();
-		cube1->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
+		cube1->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich", true);
 		cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
 		cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
 		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
@@ -408,7 +360,7 @@ void KunrealEngine::EngineCore::PlayGround()
 		}
 	}
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 50; i++)
 	{
 		std::string name = "leftCube" + std::to_string(i);
 		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);

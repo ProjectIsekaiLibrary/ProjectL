@@ -2,6 +2,7 @@
 #include "ASEParser.h"
 #include "ArkBuffer.h"
 #include "ParsingStructs.h"
+#include "MeshRenderer.h"
 #include "ResourceManager.h"
 
 ArkEngine::ResourceManager* ArkEngine::ResourceManager::instance = nullptr;
@@ -95,6 +96,31 @@ void ArkEngine::ResourceManager::DeleteRenderable(ArkEngine::IRenderable* render
 unsigned int ArkEngine::ResourceManager::GetObjectIndex()
 {
 	return _objectIndex;
+}
+
+
+std::vector<ArkEngine::MeshRenderer*>& ArkEngine::ResourceManager::GetAllMeshRenderer()
+{
+	return _meshRendererList;
+}
+
+
+ArkEngine::MeshRenderer* ArkEngine::ResourceManager::GetMeshRenderer(const std::string& fileName)
+{
+	for (auto& index : _meshRendererList)
+	{
+		if (index->GetName() == fileName)
+		{
+			return index;
+		}
+	}
+
+	return nullptr;
+}
+
+void ArkEngine::ResourceManager::AddMeshRenderer(ArkEngine::MeshRenderer* meshRenderer)
+{
+	_meshRendererList.emplace_back(meshRenderer);
 }
 
 std::vector<ArkEngine::IDebugObject*>& ArkEngine::ResourceManager::GetDebugObjectList()

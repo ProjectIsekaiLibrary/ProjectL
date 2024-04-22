@@ -10,7 +10,14 @@
 namespace ArkEngine
 {
 	class ICamera;
+	
+	namespace ArkDX11
+	{
+		class FBXAnimator;
+		class FBXMesh;
+	}
 }
+
 
 namespace ArkEngine
 {
@@ -63,5 +70,23 @@ namespace ArkEngine
 
 	public:
 		virtual bool GetInsideFrustumState() abstract;
+
+	public:
+		virtual const std::string& GetName() abstract;
+		virtual const std::string& GetEffectName() abstract;
+
+		virtual bool GetCartoonRenderingState() abstract;
+
+		virtual std::vector<ID3D11ShaderResourceView*>& GetDiffuseSRV() abstract;
+		virtual std::vector<ID3D11ShaderResourceView*>& GetNormalSRV() abstract;
+		virtual std::vector<ID3D11ShaderResourceView*>& GetEmmisionSRV() abstract;
+
+		virtual ArkEngine::ArkDX11::FBXAnimator* GetAnimator() abstract;
+		virtual const DirectX::XMMATRIX GetTransformMat() abstract;
+		virtual ArkEngine::ArkDX11::FBXMesh* GetParentMesh() abstract;
+		virtual unsigned int GetParentBoneIndex() abstract;
+		virtual DirectX::XMMATRIX GetParentBoneTransform() abstract;
+		virtual const DirectX::XMFLOAT4 GetColor() abstract;
+
 	};
 }

@@ -1,3 +1,4 @@
+
 //=============================================================================
 // Basic.fx by Frank Luna (C) 2011 All Rights Reserved.
 //
@@ -5,24 +6,23 @@
 //=============================================================================
 
 #include "LightHelper.fx"
- 
+
 cbuffer cbPerObject
 {
-    float4x4 gWorld;
-    float4x4 gWorldInvTranspose;
-    float4x4 gWorldViewProj;
+    float4x4 gWorld[100];
+    float4x4 gWorldInvTranspose[100];
+    float4x4 gWorldViewProj[100];
     float4x4 gTexTransform;
     Material gMaterial;
-}; 
+};
 
 // Nonnumeric values cannot be added to a cbuffer.
 Texture2D gDiffuseMap;
 Texture2D gNormalMap;
 Texture2D gEmissiveMap;
-
-TextureCube gCubeMap;
-float4 gColor;
 float gCartoon;
+
+float4 gColor[100];
 
 SamplerState samAnisotropic
 {
@@ -48,6 +48,7 @@ struct VertexOut
     float3 NormalW : NORMAL;
     float2 Tex : TEXCOORD;
     float3 TangentW : TANGENT;
+    uint InstanceID : BLENDINDICES;
 };
 
 struct PSOut
@@ -66,50 +67,50 @@ struct PSOut2
     float4 Color : SV_Target0;
 };
 
-VertexOut VS(VertexIn vin)
+VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 {
     VertexOut vout;
-	
-	// Transform to world space space.
-    vout.PosW = mul(float4(vin.PosL, 1.0f), gWorld).xyz;
-    vout.NormalW = mul(vin.NormalL, (float3x3) gWorldInvTranspose);
-    vout.TangentW = mul(vin.TangentL, (float3x3) gWorld);
-	// Transform to homogeneous clip space.    
-    vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
-	
-	// Output vertex attributes for interpolation across triangle.
-    vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
-	//vout.Tex = vin.Tex;
 
+    // Transform to world space space.
+    vout.PosW = mul(float4(vin.PosL, 1.0f), gWorld[instanceID]).xyz;
+    vout.NormalW = mul(vin.NormalL, (float3x3) gWorldInvTranspose[instanceID]);
+    vout.TangentW = mul(vin.TangentL, (float3x3) gWorld[instanceID]);
+    // Transform to homogeneous clip space.    
+    vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj[instanceID]);
+
+    // Output vertex attributes for interpolation across triangle.
+    vout.Tex = mul(float4(vin.Tex, 0.0f, 1.0f), gTexTransform).xy;
+    //vout.Tex = vin.Tex;
+    vout.InstanceID = instanceID;
 
     return vout;
 }
- 
+
 PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 {
     PSOut output;
-    
-	// Interpolating normal can unnormalize it, so normalize it.
+
+    // Interpolating normal can unnormalize it, so normalize it.
     pin.NormalW = normalize(pin.NormalW);
-    
+
     float3 normalMap = gNormalMap.Sample(samAnisotropic, pin.Tex).xyz;
-    
+
     float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
 
     float3 emissive = gEmissiveMap.Sample(samAnisotropic, pin.Tex).xyz;
-    
+
     float4 orthonormalizedTangent;
-    
+
     float4 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW, orthonormalizedTangent);
-    
+
     output.Position = float4(pin.PosW, 1.0f);
     output.Diffuse = float4(diffuse, 1.0f);
     output.BumpedNormal = bumpedNormal;
     output.Emissive = float4(emissive, 1.0f);
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
     output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
-    output.Color = gColor;
-    
+    output.Color = gColor[pin.InstanceID];
+
     return output;
 }
 

@@ -220,6 +220,7 @@
     <ClInclude Include="LightManager.h" />
     <ClInclude Include="LineObject.h" />
     <ClInclude Include="MathConverter.h" />
+    <ClInclude Include="MeshRenderer.h" />
     <ClInclude Include="ModelAnimation.h" />
     <ClInclude Include="ParsingStructs.h" />
     <ClInclude Include="ParticleEffect.h" />
@@ -262,6 +263,7 @@
     <ClCompile Include="IPointLight.cpp" />
     <ClCompile Include="LightManager.cpp" />
     <ClCompile Include="LineObject.cpp" />
+    <ClCompile Include="MeshRenderer.cpp" />
     <ClCompile Include="ModelAnimation.cpp" />
     <ClCompile Include="ParsingStructs.cpp" />
     <ClCompile Include="ParticleEffect.cpp" />

@@ -8,7 +8,6 @@
 EpicTool::NavimashEditor::NavimashEditor()
 	:_naviIndex(0), _agentHeight(2.0f), _agentRadius(1.2f), _agentMaxClimb(0.9f), _agentMaxSlope(45.0f)
 {
-
 }
 
 EpicTool::NavimashEditor::~NavimashEditor()
@@ -19,6 +18,7 @@ EpicTool::NavimashEditor::~NavimashEditor()
 void EpicTool::NavimashEditor::Initialize()
 {
 	_navimashEditor = &KunrealEngine::Navigation::GetInstance();
+	_navmeshpolys.resize(_navimashEditor->GetPackageSize());
 }
 
 void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height)
@@ -44,8 +44,20 @@ void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowP
 	}
 
 	//drawList->AddCircleFilled(center, radius, IM_COL32(255, 0, 0, 255));
-	drawList->AddCircle(ImVec2(center.x, center.y - ( _agentMaxClimb * 20.0f)), radius, IM_COL32(0, 255, 0, 255));
+	drawList->AddCircle(ImVec2(center.x, center.y - (_agentMaxClimb * 20.0f)), radius, IM_COL32(0, 255, 0, 255));
 	//drawList->AddCircleFilled(ImVec2(center.x, center.y + height), radius, IM_COL32(255, 0, 0, 255));
+}
+
+void EpicTool::NavimashEditor::UnDrawAll()
+{
+	for (auto navpoly : _navmeshpolys)
+	{
+		if (navpoly == nullptr)
+		{
+			continue;
+		}
+		navpoly->SetActive(false);
+	}
 }
 
 void EpicTool::NavimashEditor::ShowWindow()
@@ -70,7 +82,11 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Show"))
 	{
-
+		if (_navmeshpolys[_naviIndex] != nullptr)
+		{
+			UnDrawAll();
+			_navmeshpolys[_naviIndex]->SetActive(true);
+		}
 	}
 
 	ImGui::SameLine();
@@ -80,21 +96,41 @@ void EpicTool::NavimashEditor::ShowWindow()
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 		_navimashEditor->HandleBuild(_naviIndex);
 
-		GRAPHICS->DeleteDebugMap("navMesh");
+		if (_navmeshpolys[_naviIndex] != nullptr)
+		{
+			GRAPHICS->DeleteDebugObject(_navmeshpolys[_naviIndex]);
+			_navmeshpolys[_naviIndex] = nullptr;
+		}
+
+		std::string name = "navmesh";
+		name += std::to_string(_naviIndex);
+		UnDrawAll();
 
 		std::vector<DirectX::XMFLOAT3> vertices;
 		std::vector<unsigned int> indices;
-		_navimashEditor->GetNavmeshRenderInfo(0, vertices, indices);
-		GRAPHICS->CreateMapDebug("navMesh", vertices, indices);
+		_navimashEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
+		_navmeshpolys[_naviIndex] = GRAPHICS->CreateMapDebug(name.c_str(), vertices, indices);
 	}
 
 	ImGui::SameLine();
 
-	ImGui::InputInt("ObjectIndex", &_naviIndex);
+	if (ImGui::InputInt("ObjectIndex", &_naviIndex))
+	{
+		int maxindex = _navimashEditor->GetPackageSize() - 1;
+
+		if (_naviIndex > maxindex)
+		{
+			_naviIndex = maxindex;
+		}
+		else if (_naviIndex < 0)
+		{
+			_naviIndex = 0;
+		}
+
+		_navimashEditor->GetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
+	}
 
 	DrawCylinder(ImGui::GetWindowDrawList(), windowPos, windowSize, 70.0f, 350.0f, (_agentRadius * 20.0f), (_agentHeight * 20.0f));
-
-
 
 	ImGui::End();
 

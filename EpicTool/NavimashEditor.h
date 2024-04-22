@@ -7,6 +7,11 @@ namespace KunrealEngine
 	class Navigation;
 }
 
+namespace GInterface
+{
+	class GraphicsDebug;
+}
+
 struct ImDrawList;
 struct ImVec2;
 
@@ -24,9 +29,12 @@ namespace EpicTool
 		virtual void ShowWindow(bool* _open, std::vector<Object>& object) override; // 기능없음
 
 		void Initialize();
-		void DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height);
 
 	private:
+		void DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height);
+		void UnDrawAll();
+	private:
+
 		int _naviIndex;
 
 		float _agentHeight;
@@ -35,5 +43,7 @@ namespace EpicTool
 		float _agentMaxSlope;
 
 		KunrealEngine::Navigation* _navimashEditor;
+
+		std::vector<GInterface::GraphicsDebug*> _navmeshpolys;
 	};
 }
