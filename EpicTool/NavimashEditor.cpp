@@ -80,17 +80,6 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	ImGui::SliderFloat("Max Slope", &_agentMaxSlope, 0.0f, 90.0f);
 
-	if (ImGui::Button("Show"))
-	{
-		if (_navmeshpolys[_naviIndex] != nullptr)
-		{
-			UnDrawAll();
-			_navmeshpolys[_naviIndex]->SetActive(true);
-		}
-	}
-
-	ImGui::SameLine();
-
 	if (ImGui::Button("Build"))
 	{
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
@@ -131,6 +120,22 @@ void EpicTool::NavimashEditor::ShowWindow()
 	}
 
 	DrawCylinder(ImGui::GetWindowDrawList(), windowPos, windowSize, 70.0f, 350.0f, (_agentRadius * 20.0f), (_agentHeight * 20.0f));
+
+	if (ImGui::Button("Show"))
+	{
+		if (_navmeshpolys[_naviIndex] != nullptr)
+		{
+			UnDrawAll();
+			_navmeshpolys[_naviIndex]->SetActive(true);
+		}
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Hide"))
+	{
+		UnDrawAll();
+	}
 
 	ImGui::End();
 
