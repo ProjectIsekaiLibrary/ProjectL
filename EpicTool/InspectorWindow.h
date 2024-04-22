@@ -251,6 +251,8 @@ namespace EpicTool
         bool _isNewSoundLoop;
         int _isNewSoundVol;
 
+        float _setTargetPosition[3];
+
     };
 
 

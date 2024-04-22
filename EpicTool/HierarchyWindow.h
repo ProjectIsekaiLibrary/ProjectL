@@ -57,6 +57,10 @@ namespace EpicTool
         void CheckUninDent(KunrealEngine::GameObject* gameObject);
 
         void GetHierarchyList(std::vector<KunrealEngine::GameObject*>& instance);
+
+        void UpdateObjectList(int& selectedObjectIndex);
+
+        void IndentAll(int indentLevel);
     private:
         // 각 오브젝트의 갯수
         int _createEmptyCount;   
@@ -97,7 +101,8 @@ namespace EpicTool
         bool _show_Context_Menu;
         bool _indentCheck;
 
-        bool _isListUpdate;
+        bool _isListUpdatePlus;
+        bool _isListUpdateDel;
     };
 }
 

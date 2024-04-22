@@ -12,6 +12,9 @@
     <Filter Include="Source Files\Entry Point">
       <UniqueIdentifier>{2ce0d388-b3c5-4888-a6f6-a90728a6be52}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Serialize">
+      <UniqueIdentifier>{ef14d5d8-1027-44b9-84e5-264c1a224eca}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="WinMain.cpp">
@@ -20,10 +23,16 @@
     <ClCompile Include="GameClient.cpp">
       <Filter>Source Files\Entry Point</Filter>
     </ClCompile>
+    <ClCompile Include="Deserialize.cpp">
+      <Filter>Source Files\Serialize</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="GameClient.h">
       <Filter>Source Files\Entry Point</Filter>
+    </ClInclude>
+    <ClInclude Include="Deserialize.h">
+      <Filter>Source Files\Serialize</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
