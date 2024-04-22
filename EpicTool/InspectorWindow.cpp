@@ -540,6 +540,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Camera>(Kunreal
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Camera>();
 	}
 
+	_setTargetPosition[0] = instance->GetTargetPosition().x;
+	_setTargetPosition[1] = instance->GetTargetPosition().y;
+	_setTargetPosition[2] = instance->GetTargetPosition().z;
+
 	if (ImGui::DragFloat3("SetTargetPosition", _setTargetPosition))
 	{
 		instance->SetTargetPosition(_setTargetPosition[0], _setTargetPosition[1], _setTargetPosition[2]);
