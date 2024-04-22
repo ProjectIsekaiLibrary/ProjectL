@@ -59,6 +59,8 @@ namespace EpicTool
         void GetHierarchyList(std::vector<KunrealEngine::GameObject*>& instance);
 
         void UpdateObjectList(int& selectedObjectIndex);
+
+        void IndentAll(int indentLevel);
     private:
         // 각 오브젝트의 갯수
         int _createEmptyCount;   

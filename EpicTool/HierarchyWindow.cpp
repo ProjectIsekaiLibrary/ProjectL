@@ -135,15 +135,13 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 		}
 	}
 
+	int previousIndentLevel = 0;
+
 	// µé¿©¾²±â
 	for (int i = 0; i < _gameObjectlist.size(); ++i)
 	{
 
 		ImGui::PushID(i);
-		if (i != 0)
-		{
-			CheckInDentParent(_gameObjectlist[i], _gameObjectlist[i - 1]);
-		}
 
 		bool activated = _gameObjectlist[i]->GetActivated();
 
@@ -156,7 +154,28 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 			ImGui::PushStyleColor(ImGuiCol_Text, ImGui::GetStyle().Colors[ImGuiCol_Text]);
 		}
 
+		int currentIndentLevel = 0;
+		KunrealEngine::GameObject* currentObject = _gameObjectlist[i];
+		while (currentObject->GetParent() != nullptr)
+		{
+			currentObject = currentObject->GetParent();
+			++currentIndentLevel;
+		}
 
+		// µé¿©¾²±â ·¹º§ Ã¼Å©
+		if (currentIndentLevel > previousIndentLevel)
+		{
+			IndentAll(currentIndentLevel - previousIndentLevel);
+		}
+		else if (currentIndentLevel < previousIndentLevel)
+		{
+			for (int j = currentIndentLevel; j < previousIndentLevel; ++j)
+			{
+				ImGui::Unindent();
+			}
+		}
+
+		// ¸®½ºÆ® Ãâ·Â
 		if (ImGui::Selectable(_gameObjectlist[i]->GetObjectName().c_str(), (i == selectedObjectIndex)))  // µå·¡±× ¾Ø µå·Ó UI Ã³¸®Áß
 		{
 			if (i == selectedObjectIndex)
@@ -181,17 +200,13 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 
 		ImGui::PopStyleColor();
 
-
-		if (i != 0)
-		{
-			CheckUninDentParent(_gameObjectlist[i], _gameObjectlist[i - 1]);
-		}
-
 		// µå·¡±× ¾Ø µå·Ó
 		HandleDragAndDrop(i, selectedObjectIndex, _gameObjectlist);
 
+		previousIndentLevel = currentIndentLevel;
 
 		ImGui::PopID();
+
     }
 
         if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
@@ -353,56 +368,56 @@ void EpicTool::HierarchyWindow::CheckChildListFromDown(std::vector<KunrealEngine
 	//}
 }
 
-void EpicTool::HierarchyWindow::CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject)
-{
-	
-		if (gameObject->GetParent())
-		{
-			if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
-			{
-				ImGui::Indent();
-				CheckInDent(gameObject->GetParent());
-			}
-			else
-			{
-				int currentObjectNum = 0;
-				for (int i = 0; i < _gameObjectlist.size(); i++)
-				{
-					for (int j = 0; j < _gameObjectlist.size(); j++)
-					{
-						if (_gameObjectlist[j]->GetObjectName() == gameObject->GetObjectName())
-						{
-							currentObjectNum = j;
-						}
-					}
-					if (_gameObjectlist[i]->GetObjectName() == gameObject->GetParent()->GetObjectName())
-					{
-
-						if (_isListUpdatePlus == true) // _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() || ¸¦ »© ºÃÀ½
-						{
-							if (i < currentObjectNum)
-							{
-								KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
-								_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
-								_gameObjectlist.insert(_gameObjectlist.begin() + (i + 1), currentObject);    
-							}
-							else if (i > currentObjectNum)
-							{
-								KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
-								_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
-								_gameObjectlist.insert(_gameObjectlist.begin() + i, currentObject);
-							}
-
-							_tempgameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();
-						}
-					}
-				}
-				ImGui::Indent();
-			}
-		}
-		//_isListUpdatePlus = false;
-	
-}
+//void EpicTool::HierarchyWindow::CheckInDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject)
+//{
+//	
+//		if (gameObject->GetParent())
+//		{
+//			if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
+//			{
+//				ImGui::Indent();
+//				CheckInDent(gameObject->GetParent());
+//			}
+//			else
+//			{
+//				int currentObjectNum = 0;
+//				for (int i = 0; i < _gameObjectlist.size(); i++)
+//				{
+//					for (int j = 0; j < _gameObjectlist.size(); j++)
+//					{
+//						if (_gameObjectlist[j]->GetObjectName() == gameObject->GetObjectName())
+//						{
+//							currentObjectNum = j;
+//						}
+//					}
+//					if (_gameObjectlist[i]->GetObjectName() == gameObject->GetParent()->GetObjectName())
+//					{
+//
+//						if (_isListUpdatePlus == true) // _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() || ¸¦ »© ºÃÀ½
+//						{
+//							if (i < currentObjectNum)
+//							{
+//								KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
+//								_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
+//								_gameObjectlist.insert(_gameObjectlist.begin() + (i + 1), currentObject);    
+//							}
+//							else if (i > currentObjectNum)
+//							{
+//								KunrealEngine::GameObject* currentObject = _gameObjectlist[currentObjectNum];
+//								_gameObjectlist.erase(_gameObjectlist.begin() + currentObjectNum);
+//								_gameObjectlist.insert(_gameObjectlist.begin() + i, currentObject);
+//							}
+//
+//							_tempgameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();
+//						}
+//					}
+//				}
+//				ImGui::Indent();
+//			}
+//		}
+//		//_isListUpdatePlus = false;
+//	
+//}
 
 void EpicTool::HierarchyWindow::CheckInDent(KunrealEngine::GameObject* gameObject)
 {
@@ -413,29 +428,29 @@ void EpicTool::HierarchyWindow::CheckInDent(KunrealEngine::GameObject* gameObjec
 	}
 }
 
-void EpicTool::HierarchyWindow::CheckUninDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject)
-{
-	if (gameObject->GetParent())
-	{
-		
-		if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
-		{
-			ImGui::Unindent();
-			CheckUninDent(gameObject->GetParent());
-		}
-		else
-		{
-			//if (_isListUpdatePlus == true) //  _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() ||  ¸¦ »©ºÃÀ½
-			//{
-			//	//ImGui::Unindent();
-			//	_isListUpdatePlus = false;
-			//}
-			
-			ImGui::Unindent();
-		}
-		
-	}
-}
+//void EpicTool::HierarchyWindow::CheckUninDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject)
+//{
+//	if (gameObject->GetParent())
+//	{
+//		
+//		if (previousGameObject->GetParent() != nullptr && (gameObject->GetParent()->GetObjectName() == previousGameObject->GetObjectName() || gameObject->GetParent()->GetObjectName() == previousGameObject->GetParent()->GetObjectName()))
+//		{
+//			ImGui::Unindent();
+//			CheckUninDent(gameObject->GetParent());
+//		}
+//		else
+//		{
+//			//if (_isListUpdatePlus == true) //  _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() ||  ¸¦ »©ºÃÀ½
+//			//{
+//			//	//ImGui::Unindent();
+//			//	_isListUpdatePlus = false;
+//			//}
+//			
+//			ImGui::Unindent();
+//		}
+//		
+//	}
+//}
 
 void EpicTool::HierarchyWindow::CheckUninDent(KunrealEngine::GameObject* gameObject)
 {
@@ -469,5 +484,13 @@ void EpicTool::HierarchyWindow::UpdateObjectList(int& selectedObjectIndex)
 		_tempgameObjectList = _gameObjectlist;
 		_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
 
+	}
+}
+
+void EpicTool::HierarchyWindow::IndentAll(int indentLevel)
+{
+	for (int i = 0; i < indentLevel; ++i)
+	{
+		ImGui::Indent();
 	}
 }
