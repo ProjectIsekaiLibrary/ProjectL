@@ -99,7 +99,8 @@ namespace EpicTool
         bool _show_Context_Menu;
         bool _indentCheck;
 
-        bool _isListUpdate;
+        bool _isListUpdatePlus;
+        bool _isListUpdateDel;
     };
 }
 

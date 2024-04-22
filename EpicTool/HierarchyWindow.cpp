@@ -11,7 +11,7 @@
 
 EpicTool::HierarchyWindow::HierarchyWindow()
     : _createEmptyCount(1), _cubeCount(1), _sphereCount(1), _draggedIndex(-1), _dropTargetIndex(-1), _gameObjectlist(NULL), _tempgameObjectList(NULL),
-	_hierarchyWindowX1(0), _hierarchyWindowX2(0), _hierarchyWindowY1(0), _hierarchyWindowY2(0), _isDragged(false), _payloadIndex(0), _show_Context_Menu(false), _isListUpdate(false)
+	_hierarchyWindowX1(0), _hierarchyWindowX2(0), _hierarchyWindowY1(0), _hierarchyWindowY2(0), _isDragged(false), _payloadIndex(0), _show_Context_Menu(false), _isListUpdatePlus(false), _isListUpdateDel(false)
 {
 
 }
@@ -125,6 +125,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 					_deleteObjectName = _gameObjectlist[selectedObjectIndex]->GetObjectName();
 					DeleteObject(_gameObjectlist, selectedObjectIndex);
 					_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
+					_isListUpdateDel = true;
 
 				}
 			}
@@ -202,7 +203,8 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 
         // "Hierarchy" 윈도우 내에서 컨텍스트 메뉴 호출
         
-
+		_isListUpdatePlus = false;
+		_isListUpdateDel = false;
 
 		
 }
@@ -290,6 +292,17 @@ void EpicTool::HierarchyWindow::HandleDragAndDrop(int index, int& selected, std:
 		{
 			int payloadIndex = *(const int*)payload->Data;  // payloadIndex : 드래그 한 인덱스, index : 드롭 할 인덱스 
 
+
+
+			if (_isListUpdateDel == true)
+			{
+				--payloadIndex;
+			}
+			else if(_isListUpdatePlus == true)
+			{
+				++payloadIndex;
+			}
+
 			// 드래그한 오브젝트를 드롭한 오브젝트 아래로 이동
 			if (index != payloadIndex)
 			{
@@ -365,7 +378,7 @@ void EpicTool::HierarchyWindow::CheckInDentParent(KunrealEngine::GameObject* gam
 					if (_gameObjectlist[i]->GetObjectName() == gameObject->GetParent()->GetObjectName())
 					{
 
-						if (_isListUpdate == true) // _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() || 를 빼 봤음
+						if (_isListUpdatePlus == true) // _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() || 를 빼 봤음
 						{
 							if (i < currentObjectNum)
 							{
@@ -387,7 +400,7 @@ void EpicTool::HierarchyWindow::CheckInDentParent(KunrealEngine::GameObject* gam
 				ImGui::Indent();
 			}
 		}
-		_isListUpdate = false;
+		//_isListUpdatePlus = false;
 	
 }
 
@@ -412,11 +425,12 @@ void EpicTool::HierarchyWindow::CheckUninDentParent(KunrealEngine::GameObject* g
 		}
 		else
 		{
-			if (_isListUpdate == true) //  _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() ||  를 빼봤음
-			{
-				//ImGui::Unindent();
-				_isListUpdate = false;
-			}
+			//if (_isListUpdatePlus == true) //  _tempgameObjectList.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size() ||  를 빼봤음
+			//{
+			//	//ImGui::Unindent();
+			//	_isListUpdatePlus = false;
+			//}
+			
 			ImGui::Unindent();
 		}
 		
@@ -440,10 +454,20 @@ void EpicTool::HierarchyWindow::GetHierarchyList(std::vector<KunrealEngine::Game
 
 void EpicTool::HierarchyWindow::UpdateObjectList(int& selectedObjectIndex)
 {
+
 	if (_gameObjectlist.size() != KunrealEngine::GetCurrentScene()->GetObjectList().size())
 	{
+		if (_gameObjectlist.size() > KunrealEngine::GetCurrentScene()->GetObjectList().size())
+		{
+			_isListUpdateDel = true;
+		}
+		else if (_gameObjectlist.size() < KunrealEngine::GetCurrentScene()->GetObjectList().size())
+		{
+			_isListUpdatePlus = true;
+		}
+
 		_tempgameObjectList = _gameObjectlist;
 		_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
-		_isListUpdate = true;
+
 	}
 }
