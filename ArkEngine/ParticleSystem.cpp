@@ -140,6 +140,10 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleColor(const DirectX::XMFLOAT
 	_particleColor = particleColor;
 }
 
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleRotation(const DirectX::XMFLOAT3& rotation)
+{
+}
+
 void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
 {
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
@@ -564,6 +568,7 @@ void ArkEngine::ArkDX11::ParticleSystem::BuildVB()
 	ZeroMemory(&p, sizeof(Particle));
 	p.Age = 0.0f;
 	p.Type = 0;
+	//p.Rotation = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	D3D11_SUBRESOURCE_DATA vinitData;
 	vinitData.pSysMem = &p;
@@ -601,6 +606,7 @@ void ArkEngine::ArkDX11::ParticleSystem::BuildDrawStreamVB()
 	ZeroMemory(&p, sizeof(Particle));
 	p.Age = 0.0f;
 	p.Type = 0;
+	//p.Rotation = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	// Create the ping-pong buffers for stream-out and drawing.
 	//
@@ -713,4 +719,8 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleTimeW(float f1, float f2)
 void ArkEngine::ArkDX11::ParticleSystem::SetParticleColorW(const DirectX::XMFLOAT3& v)
 {
 	_particleColorEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleRotationW(const DirectX::XMFLOAT3& v)
+{
 }
