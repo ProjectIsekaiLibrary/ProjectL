@@ -24,12 +24,13 @@ cbuffer cbPerFrame
     float gParticleLifeTime; // 파티클이 유지되는 시간
     float3 gParticleColor; // 파티클의 색상
     float3 gParticleRoatation;
+    float3 gAccelW;
 };
 
 cbuffer cbFixed
 {
     // 입자 가속을 위한 알짜 상수 가속도
-    float3 gAccelW = { 0.0f, 7.8f, 0.0f };
+    //float3 gAccelW = { 0.0f, 7.8f, 0.0f };
     
     // 텍스쳐를 사각형 전체에 입히는 텍스쳐 좌표들
     // 점 입자를 사각형으로 확장할 때 쓰임
@@ -170,11 +171,11 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
             //p.InitialPosW = mul(gEmitPosW.xyz, float3x3(rotationMatrix));
             if (gIsRandom == true)
             {
-                p.InitialVelW = gEmitVelocity * vRandom;
+                p.InitialVelW = gEmitVelocity * vRandom * gEmitDirW;
             }
             else
             {
-                p.InitialVelW = gEmitVelocity;
+                p.InitialVelW = gEmitVelocity * gEmitDirW;
             }
            
            //p.SizeW = float2(5.0f, 5.0f);   // 파티클 사각형의 크기를 정한다
