@@ -28,6 +28,8 @@ namespace KunrealEngine
 	class EngineCore;
 }
 
+class Deserialize;
+
 namespace GameClient 
 {
 	class GameClient
@@ -72,6 +74,9 @@ namespace GameClient
 
 		// 윈도우 프로시저 생성
 		static LRESULT CALLBACK WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam);
+	
+	private:
+		Deserialize* _deserialize;
 	};
 }
 

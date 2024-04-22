@@ -1,4 +1,5 @@
 #include "GameClient.h"
+#include "Deserialize.h"
 #include "../KunrealEngine/KunrealAPI.h"
 
 KunrealEngine::EngineCore* engineInstance = KunrealEngine::CreateEngine();
@@ -104,6 +105,11 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 
 	engineInstance->Initialize(_hWnd, hInstance, _screenWidth, _screenHeight);
 	//KunrealEngine::ChangeScene("Main");
+
+	std::string testMap = "mapTest2.json";
+
+	_deserialize = new Deserialize();
+	_deserialize->Initialize(testMap);
 
 	return S_OK;
 }
