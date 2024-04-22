@@ -27,7 +27,7 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	_emitDirW = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 	_emitVelocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	_particleSize = DirectX::XMFLOAT2(0.0f, 0.0f);
+	_particleSize = DirectX::XMFLOAT2(1.0f, 1.0f);
 	_particleColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	Initialize(std::wstring(fileName.begin(), fileName.end()), _maxParticles);
@@ -48,7 +48,7 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	_emitDirW = DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f);
 
 	_emitVelocity = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-	_particleSize = DirectX::XMFLOAT2(0.0f, 0.0f);
+	_particleSize = DirectX::XMFLOAT2(1.0f, 1.0f);
 	_particleColor = DirectX::XMFLOAT3(1.0f, 1.0f, 1.0f);
 
 	std::vector<std::wstring> newStringVec;
@@ -138,6 +138,19 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleTime(float particleFadeTime,
 void ArkEngine::ArkDX11::ParticleSystem::SetParticleColor(const DirectX::XMFLOAT3& particleColor)
 {
 	_particleColor = particleColor;
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& particleDirection)
+{
+	_particleDirection = particleDirection;
+	if (_particleName == "Laser")
+	{
+		SetEmitDir(DirectX::XMFLOAT3{ 1.0f, 0.0f, 1.0f });
+	}
+	else
+	{
+		SetEmitDir(DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f });
+	}
 }
 
 void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
@@ -263,6 +276,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 	SetEmitVelocityW(_emitVelocity);
 	SetParticleTimeW(_particleFadeTime, _particleLifeTime);
 	SetParticleColorW(_particleColor);
+	SetParticleDirectionW(_particleDirection);
 
 	// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
 	// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
@@ -642,6 +656,7 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEffect()
 	_particleFadeTimeEffect = effect->GetVariableByName("gParticleFadeTime")->AsScalar();
 	_particleLifeTimeEffect = effect->GetVariableByName("gParticleLifeTime")->AsScalar();
 	_particleColorEffect = effect->GetVariableByName("gParticleColor")->AsVector();
+	_particleDirectionEffect = effect->GetVariableByName("gAccelW")->AsVector();
 }
 
 float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
@@ -713,4 +728,9 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleTimeW(float f1, float f2)
 void ArkEngine::ArkDX11::ParticleSystem::SetParticleColorW(const DirectX::XMFLOAT3& v)
 {
 	_particleColorEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
+}
+
+void ArkEngine::ArkDX11::ParticleSystem::SetParticleDirectionW(const DirectX::XMFLOAT3& v)
+{
+	_particleDirectionEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }
