@@ -39,7 +39,14 @@ void KunrealEngine::Projectile::Update()
 
 void KunrealEngine::Projectile::LateUpdate()
 {
-	
+	if (_condition())
+	{
+		this->GetOwner()->SetActive(false);
+	}
+	else
+	{
+		this->GetOwner()->SetActive(true);
+	}
 }
 
 void KunrealEngine::Projectile::OnTriggerEnter()
@@ -96,4 +103,9 @@ KunrealEngine::BoxCollider* KunrealEngine::Projectile::GetCollider()
 DirectX::XMVECTOR KunrealEngine::Projectile::GetDirection()
 {
 	return this->_direction;
+}
+
+void KunrealEngine::Projectile::SetDestoryCondition(std::function<bool()> cond)
+{
+	_condition = cond;
 }
