@@ -16,12 +16,21 @@ cbuffer cbPerFrame
     float gGameTime;
     float gTimeStep;
     float4x4 gViewProj;
+    
+    float3 gEmitVelocity;
+    float2 gParticleSize;
+    bool gIsRandom;
+    float gParticleFadeTime; // 파티클이 투명해지는 시간
+    float gParticleLifeTime; // 파티클이 유지되는 시간
+    float3 gParticleColor; // 파티클의 색상
+    float3 gParticleRoatation;
+    float3 gAccelW;
 };
 
 cbuffer cbFixed
 {
     // 입자 가속을 위한 알짜 상수 가속도
-    float3 gAccelW = { 0.0f, 7.8f, 0.0f };
+    //float3 gAccelW = { 0.0f, 7.8f, 0.0f };
     
     // 텍스쳐를 사각형 전체에 입히는 텍스쳐 좌표들
     // 점 입자를 사각형으로 확장할 때 쓰임
@@ -86,11 +95,42 @@ float3 RandUnitVec3(float offset)
     
     // 단위 구로 투영한다
     return normalize(v);
+    //return v;
+}
+
+float3 RandNum(float offset)
+{
+    // 게임 시간 더하기 오프셋을 무작위 텍스처 추출을 위한
+    // 텍스처 좌표로 사용한다
+    float u = (gGameTime + offset);
+    
+    // 벡터 성분들의 범위는 [-1, 1]이다
+    float3 v = gRandomTex.SampleLevel(samLinear, u, 0).xyz;
+    
+    float3 scaledVector = 0.25 * (v + float3(1.0, 1.0, 1.0)) + 0.5;
+    
+    // 단위 구로 투영한다
+    return normalize(scaledVector);
+    //return v;
+}
+
+// 회전 행렬을 만드는 함수
+float3x3 RotationMatrixY(float angle)
+{
+    float cosA = cos(angle);
+    float sinA = sin(angle);
+    
+    return float3x3(
+        cosA, 0, sinA,
+        0, 1, 0,
+        -sinA, 0, cosA
+    );
 }
 
 // 스트림 출력 전용 기법
 #define PT_EMITTER 0
 #define PT_FLARE 1
+#define PT_LASER 2
 
 struct Particle
 {
@@ -105,6 +145,7 @@ Particle StreamOutVS(Particle vin)
 {
     return vin;
 }
+
 
 // 스트림 출력 전용 기하 쉐이더는 개 입자의 방출과 기존 입자의
 // 파괴만 담당한다. 입자 시스템마다 입자의 생성, 파괴 규칙이 다를 것이므로,
@@ -121,19 +162,32 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
         {
             float3 vRandom = RandUnitVec3(0.0f);
             vRandom.x *= 0.5f;
+           //vRandom.y *= 0.5f;
             vRandom.z *= 0.5f;
+            
             
             Particle p;
             p.InitialPosW = gEmitPosW.xyz;
-            p.InitialVelW = 4.0f * vRandom;
-            p.SizeW = float2(3.0f, 3.0f);   // 파티클 사각형의 크기를 정한다
+            //p.InitialPosW = mul(gEmitPosW.xyz, float3x3(rotationMatrix));
+            if (gIsRandom == true)
+            {
+                p.InitialVelW = gEmitVelocity * vRandom * gEmitDirW;
+            }
+            else
+            {
+                p.InitialVelW = gEmitVelocity * gEmitDirW;
+            }
+           
+           //p.SizeW = float2(5.0f, 5.0f);   // 파티클 사각형의 크기를 정한다
+            p.SizeW = gParticleSize; // 파티클 사각형의 크기를 정한다
             p.Age = 0.0f;
             p.Type = PT_FLARE;
-            
+           
             ptStream.Append(p);
-            
-            // 방출할 시간을 재설정한다
+           
+           // 방출할 시간을 재설정한다
             gin[0].Age = 0.0f;
+            
         }
         
         // 방출기 입자 하나는 항상 유지한다
@@ -143,7 +197,7 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
     {
         // 여기에서 입자를 유지할 조건들을 지정한다
         // 구체적인 조건은 입자 시스템마다 다를 수 있다
-        if (gin[0].Age <= 1.0f)
+        if (gin[0].Age <= gParticleLifeTime)
             ptStream.Append(gin[0]);
     }
 }
@@ -185,11 +239,13 @@ VertexOut DrawVS(Particle vin)
      
     
     // 시간에 따른 색상 감소
-    float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / 1.0f);
-    vout.Color = float4(1.0f, 1.0f, 1.0f, opacity);
+    float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / gParticleFadeTime);
+    vout.Color = float4(gParticleColor, opacity);
     
     vout.SizeW = vin.SizeW;
     vout.Type = vin.Type;
+    
+
     
     return vout;
 
@@ -216,7 +272,9 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
         float3 look = normalize(gEyePosW.xyz - gin[0].PosW);
         float3 right = normalize(cross(float3(0, 1, 0), look));
         float3 up = cross(look, right);
-  
+        //float3 up = cross(right, look);
+        
+        
       // 사각형을 구성하는 삼각형 띠 정점들을 계산한다
         float halfWidth = 0.5f * gin[0].SizeW.x;
         float halfHeight = 0.5f * gin[0].SizeW.y;
@@ -226,7 +284,7 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
         v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
         v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
         v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
-  
+      
       // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력한다
         GeoOut gout;
       [unroll]

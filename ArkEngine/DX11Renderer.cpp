@@ -38,6 +38,8 @@
 
 static int testdef = 9;
 
+static float testAngle = 0.0f;
+
 GInterface::GraphicsInterface* CreateGraphicsEngine()
 {
 	return new ArkEngine::ArkDX11::DX11Renderer();
@@ -106,10 +108,17 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-	auto particle = new ArkEngine::ArkDX11::ParticleSystem("Laser", "Resources/Textures/Particles/flare.dds", 1000);
+	auto particle = new ArkEngine::ArkDX11::ParticleSystem("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
 	particle->SetEmitPos(DirectX::XMFLOAT3{ 20.0f, 10.0f, 0.0f });
-	particle->SetEmitVelocity(20.0f, false);
-	particle->SetParticleTime(1.0f, 1.0f);
+	particle->SetEmitVelocity(30.0f, false);
+	particle->SetParticleTime(3.0f, 1.3f);
+	// 일단 임시 땜빵용 코드이다 방출 각도를 새밀하게 조절할수 있는게 아니다
+	// x = 90, z = 90 우상
+	// x = -90, z = 90 좌상
+	// x = -90, z = -90 좌하
+	// x = 90, z = -90 우하
+	// 90이 아니더라고 비율만 같으면 된다
+	//particle->SetParticleDirection(DirectX::XMFLOAT3{0.0f, 0.0f, -90.0f});
 	//particle->SetParticleColor(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 	ResourceManager::GetInstance()->AddParticle(particle);
 
@@ -117,9 +126,12 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	particle2->SetEmitPos(DirectX::XMFLOAT3{ 10.0f, 10.0f, 0.0f });
 
 	particle2->SetEmitVelocity(4.0f, true);
-	particle2->SetParticleSize(DirectX::XMFLOAT2(5.0f, 5.0f));
-	particle2->SetParticleTime(1.0f, 1.0f);
+	particle2->SetParticleSize(DirectX::XMFLOAT2(4.0f, 4.0f));
+	particle2->SetParticleTime(1.0f, 3.0f);
 	//particle2->SetParticleColor(DirectX::XMFLOAT3(1.0f, 0.0f, 1.0f));
+	particle2->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 7.0f, 0.0f });
+
+
 	ResourceManager::GetInstance()->AddParticle(particle2);
 
 	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
@@ -384,9 +396,13 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		}
 	}
 
+	float testing = 0.16f;
+	testAngle += testing;
+
 	// particle을 그린다
 	auto laserParticle = ResourceManager::GetInstance()->GetParticleList()[0];
-	laserParticle->SetParticleSize(DirectX::XMFLOAT2(laserParticle->GetRandomFloat(0.3f, 1.f) * 5.0f, 30.0f));
+	laserParticle->SetParticleSize(DirectX::XMFLOAT2(laserParticle->GetRandomFloat(0.3f, 1.f) * 30.0f, 10.0f));
+	laserParticle->SetParticleDirection(DirectX::XMFLOAT3(90.0f, 0.0f, testAngle));
 
 	auto rainParticle = ResourceManager::GetInstance()->GetParticleList()[2];
 	rainParticle->SetEmitPos(_mainCamera->GetCameraPos());

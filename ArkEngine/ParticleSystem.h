@@ -57,6 +57,7 @@ namespace ArkEngine
 			void SetEmitVelocity(float emitVelocity, bool isRandom);
 			void SetParticleTime(float particleFadeTime, float particleLifeTime);
 			void SetParticleColor(const DirectX::XMFLOAT3& particleColor);
+			void SetParticleDirection(const DirectX::XMFLOAT3& particleRotaion);
 
 			float GetRandomFloat(float minNum, float maxNum);
 			void SetEyePos(const DirectX::XMFLOAT3& eyePosW);
@@ -118,7 +119,7 @@ namespace ArkEngine
 			ID3DX11EffectScalarVariable* _particleFadeTimeEffect;
 			ID3DX11EffectScalarVariable* _particleLifeTimeEffect;
 			ID3DX11EffectVectorVariable* _particleColorEffect;
-
+			ID3DX11EffectVectorVariable* _particleDirectionEffect;
 
 			ID3DX11EffectShaderResourceVariable* _texArray;
 			ID3DX11EffectShaderResourceVariable* _randomTex;
@@ -126,6 +127,7 @@ namespace ArkEngine
 			DirectX::XMFLOAT3 _emitVelocity;
 			DirectX::XMFLOAT2 _particleSize;
 			DirectX::XMFLOAT3 _particleColor;
+			DirectX::XMFLOAT3 _particleDirection;
 		private:
 			std::string _particleName;
 			ArkDevice* _arkDevice;
@@ -148,6 +150,7 @@ namespace ArkEngine
 
 			void SetParticleTimeW(float f1, float f2);
 			void SetParticleColorW(const DirectX::XMFLOAT3& v);
+			void SetParticleDirectionW(const DirectX::XMFLOAT3& v);
 		};
 	}
 
