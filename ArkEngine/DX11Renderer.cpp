@@ -108,7 +108,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-	auto particle = new ArkEngine::ArkDX11::ParticleSystem("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	auto particle = new ArkEngine::ParticleSystem("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
 	particle->SetEmitPos(DirectX::XMFLOAT3{ 20.0f, 10.0f, 0.0f });
 	particle->SetEmitVelocity(30.0f, false);
 	particle->SetParticleTime(3.0f, 1.3f);
@@ -122,7 +122,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	//particle->SetParticleColor(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
 	ResourceManager::GetInstance()->AddParticle(particle);
 
-	auto particle2 = new ArkEngine::ArkDX11::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 1000);
+	auto particle2 = new ArkEngine::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 1000);
 	particle2->SetEmitPos(DirectX::XMFLOAT3{ 10.0f, 10.0f, 0.0f });
 
 	particle2->SetEmitVelocity(4.0f, true);
@@ -134,7 +134,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	ResourceManager::GetInstance()->AddParticle(particle2);
 
-	auto particle3 = new ArkEngine::ArkDX11::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
+	auto particle3 = new ArkEngine::ParticleSystem("Rain", "Resources/Textures/Particles/raindrop.dds", 10000);
 	ResourceManager::GetInstance()->AddParticle(particle3);
 
 	SetPickingTexture();
@@ -402,7 +402,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// particle을 그린다
 	auto laserParticle = ResourceManager::GetInstance()->GetParticleList()[0];
 	laserParticle->SetParticleSize(DirectX::XMFLOAT2(laserParticle->GetRandomFloat(0.3f, 1.f) * 30.0f, 10.0f));
-	laserParticle->SetParticleDirection(DirectX::XMFLOAT3(90.0f, 0.0f, testAngle));
+	laserParticle->SetParticleDirection(DirectX::XMFLOAT3(90.0f, 0.0f, 0.0));
 
 	auto rainParticle = ResourceManager::GetInstance()->GetParticleList()[2];
 	rainParticle->SetEmitPos(_mainCamera->GetCameraPos());

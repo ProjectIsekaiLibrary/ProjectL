@@ -437,19 +437,19 @@ void ArkEngine::ResourceManager::AddArkBuffer(const std::string& bufferName, Ark
 }
 
 
-const std::vector<ArkEngine::ArkDX11::ParticleSystem*>& ArkEngine::ResourceManager::GetParticleList()
+const std::vector<ArkEngine::ParticleSystem*>& ArkEngine::ResourceManager::GetParticleList()
 {
 	return _particleList;
 }
 
 
-void ArkEngine::ResourceManager::AddParticle(ArkEngine::ArkDX11::ParticleSystem* particle)
+void ArkEngine::ResourceManager::AddParticle(ArkEngine::ParticleSystem* particle)
 {
 	_particleList.emplace_back(particle);
 }
 
 
-void ArkEngine::ResourceManager::DeleteParticle(ArkEngine::ArkDX11::ParticleSystem* particle)
+void ArkEngine::ResourceManager::DeleteParticle(ArkEngine::ParticleSystem* particle)
 {
 	_particleList.erase(std::remove(_particleList.begin(), _particleList.end(), particle), _particleList.end());
 
