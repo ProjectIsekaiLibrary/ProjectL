@@ -88,9 +88,7 @@ namespace EpicTool
         std::vector<std::string> _lightList;
 
         int _selectedObjectIndex;
-
         int _selectedObjectIndex2;
-
 
     private:
         // 컴포넌트를 쓰기 위한 임의 변수

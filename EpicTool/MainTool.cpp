@@ -364,8 +364,6 @@ void EpicTool::MainTool::ShowWindowFunction()
 
 void EpicTool::MainTool::LoopImGuiRender(ImGuiIO& io)
 {
-    ShowWindowFunction();
-
     // Rendering
     ImGui::Render();
     const float clear_color_with_alpha[4] = { _clearColor.x * _clearColor.w, _clearColor.y * _clearColor.w, _clearColor.z * _clearColor.w, _clearColor.w };
@@ -386,6 +384,8 @@ void EpicTool::MainTool::LoopImGuiRender(ImGuiIO& io)
 void EpicTool::MainTool::UpdateAll()
 {
      _core->UpdateAll();
+	 ShowWindowFunction();
+
 }
 
 void EpicTool::MainTool::RenderAll(ImGuiIO& io)

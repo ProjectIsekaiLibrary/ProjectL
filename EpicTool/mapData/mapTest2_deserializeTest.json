@@ -18,9 +18,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 10.062413215637207,
-                "position_y": 26.900259017944336,
-                "position_z": 3.4244401454925537,
+                "position_x": -11.591022491455078,
+                "position_y": 47.0,
+                "position_z": -93.95134735107422,
                 "rotation_x": -9.0,
                 "rotation_y": -17.0,
                 "rotation_z": 0.0,
@@ -1494,7 +1494,9 @@
         "POD": {
             "animationFrame": -431602080.0,
             "collider": {},
-            "customComponent": {},
+            "customComponent": {
+                "Player": true
+            },
             "image": {},
             "light": {},
             "lightType": {},
@@ -1521,11 +1523,11 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -49.47652816772461,
+                "position_x": -24.874650955200195,
                 "position_y": 0.0,
-                "position_z": -62.74220657348633,
+                "position_z": -3.9297633171081543,
                 "rotation_x": 0.0,
-                "rotation_y": 0.0,
+                "rotation_y": -166.07046508789063,
                 "rotation_z": 0.0,
                 "scale_x": 0.05000000074505806,
                 "scale_y": 0.05000000074505806,
@@ -2363,6 +2365,164 @@
                 "scale_x": 0.15000000596046448,
                 "scale_y": 0.15000000596046448,
                 "scale_z": 0.15000000596046448
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {
+                "BoxSize_x": 6.0,
+                "BoxSize_y": 18.0,
+                "BoxSize_z": 10.0,
+                "Offset_x": 0.0,
+                "Offset_y": -1.5,
+                "Offset_z": 0.0
+            },
+            "customComponent": {
+                "Kamen": true
+            },
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga",
+                    "Resources/Textures/Lich/T_Lich_1_D.tga"
+                ],
+                "Mesh": [
+                    "Lich/Lich"
+                ],
+                "Normal": [
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga",
+                    "Resources/Textures/Lich/T_Lich_N.tga"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "Create Empty",
+            "parent": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -49.47652816772461,
+                "position_y": 0.0,
+                "position_z": -64.32999420166016,
+                "rotation_x": 0.0,
+                "rotation_y": 180.0,
+                "rotation_z": 0.0,
+                "scale_x": 1.0,
+                "scale_y": 1.0,
+                "scale_z": 1.0
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {
+                "BoxSize_x": 10.0,
+                "BoxSize_y": 10.0,
+                "BoxSize_z": 10.0,
+                "Offset_x": 0.0,
+                "Offset_y": 0.0,
+                "Offset_z": 0.0
+            },
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/cube/"
+                ],
+                "Mesh": [
+                    "cube/cube"
+                ],
+                "Normal": [
+                    "Resources/Textures/cube/"
+                ]
+            },
+            "meshRenderingState": false,
+            "name": "call",
+            "parent": {
+                "ParentName": "Create Empty"
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 0.0,
+                "position_y": 0.0,
+                "position_z": 0.0,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 1.0,
+                "scale_y": 1.0,
+                "scale_z": 1.0
             }
         }
     }
