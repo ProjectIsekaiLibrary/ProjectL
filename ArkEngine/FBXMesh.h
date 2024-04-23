@@ -147,9 +147,6 @@ namespace ArkEngine
 			virtual unsigned int GetParentBoneIndex() override;
 			virtual DirectX::XMMATRIX GetParentBoneTransform() override;
 			virtual const DirectX::XMFLOAT4 GetColor() override;
-			virtual unsigned int GetDiffuseTextureIndex(int index) override;
-			virtual unsigned int GetNormalTextureIndex(int index) override;
-			virtual unsigned int GetEmissionTextureIndex(int index) override;
 
 		private:
 			std::string _simpleModelName;
@@ -240,11 +237,6 @@ namespace ArkEngine
 			DirectX::XMFLOAT4X4 _parentBoneTrasnform;
 			int _parentBoneIndex;
 			DirectX::XMFLOAT4X4 _transformEffectedByParent;
-
-		private:
-			std::vector<unsigned int> _diffuseIndex;
-			std::vector<unsigned int> _normalIndex;
-			std::vector<unsigned int> _emissionIndex;
 		};
 	}
 }

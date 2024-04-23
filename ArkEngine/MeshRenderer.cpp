@@ -17,22 +17,13 @@ ArkEngine::MeshRenderer::MeshRenderer(IRenderable* mesh)
 	_effect(nullptr), _tech(nullptr), _fxBoneTransforms(nullptr),
 	_fxWorld(nullptr), _fxWorldInvTranspose(nullptr), _fxworldViewProj(nullptr),
 	_fxTexTransform(nullptr), _fxMaterial(nullptr), _diffuseMap(nullptr), _normalMap(nullptr), _emissionMap(nullptr),
-	_fxColor(nullptr), _fxCartoon(nullptr),
-	_fxDiffuse(nullptr), _fxNormal(nullptr), _fxEmissive(nullptr)
+	_fxColor(nullptr), _fxCartoon(nullptr)
 {
 	Initialize(mesh);
-
-	_diffuseMapSrvArray.emplace_back(nullptr);
-	_normalMapSrvArray.emplace_back(nullptr);
-	_emissionMapSrvArray.emplace_back(nullptr);
 }
 
 ArkEngine::MeshRenderer::~MeshRenderer()
 {
-	_fxDiffuse->Release();
-	_fxNormal->Release();
-	_fxEmissive->Release();
-
 	_fxCartoon->Release();
 	_fxColor->Release();
 
@@ -62,54 +53,6 @@ void ArkEngine::MeshRenderer::DeleteMeshInList(IRenderable* mesh)
 {
 	_shadowList.erase(std::remove(_shadowList.begin(), _shadowList.end(), mesh), _shadowList.end());
 	_meshList.erase(std::remove(_meshList.begin(), _meshList.end(), mesh), _meshList.end());
-}
-
-int ArkEngine::MeshRenderer::SetDiffuseTexture(ID3D11ShaderResourceView* texture)
-{
-	auto iter = std::find(_diffuseMapSrvArray.begin(), _diffuseMapSrvArray.end(), texture);
-
-	if (iter != _diffuseMapSrvArray.end())
-	{
-		unsigned int index = static_cast<unsigned int>(std::distance(_diffuseMapSrvArray.begin(), iter));
-		return index;
-	}
-	else
-	{
-		_diffuseMapSrvArray.emplace_back(texture);
-		return _diffuseMapSrvArray.size() - 1;
-	}
-}
-
-int ArkEngine::MeshRenderer::SetNormalTexture(ID3D11ShaderResourceView* texture)
-{
-	auto iter = std::find(_normalMapSrvArray.begin(), _normalMapSrvArray.end(), texture);
-
-	if (iter != _normalMapSrvArray.end())
-	{
-		unsigned int index = static_cast<unsigned int>(std::distance(_normalMapSrvArray.begin(), iter));
-		return index;
-	}
-	else
-	{
-		_normalMapSrvArray.emplace_back(texture);
-		return _normalMapSrvArray.size() - 1;
-	}
-}
-
-int ArkEngine::MeshRenderer::SetEmissionTexture(ID3D11ShaderResourceView* texture)
-{
-	auto iter = std::find(_emissionMapSrvArray.begin(), _emissionMapSrvArray.end(), texture);
-
-	if (iter != _emissionMapSrvArray.end())
-	{
-		unsigned int index = static_cast<unsigned int>(std::distance(_emissionMapSrvArray.begin(), iter));
-		return index;
-	}
-	else
-	{
-		_emissionMapSrvArray.emplace_back(texture);
-		return _emissionMapSrvArray.size() - 1;
-	}
 }
 
 void ArkEngine::MeshRenderer::Render()
@@ -155,31 +98,22 @@ void ArkEngine::MeshRenderer::Render()
 			_fxMaterial->SetRawValue(&_material[i], 0, sizeof(ArkEngine::ArkDX11::Material));
 		}
 
-		_diffuseMap->SetResourceArray(&_diffuseMapSrvArray[0], 0, static_cast<uint32_t>(_diffuseMapSrvArray.size()));
-		
-		_normalMap->SetResourceArray(&_normalMapSrvArray[0], 0, static_cast<uint32_t>(_normalMapSrvArray.size()));
-		
-		_emissionMap->SetResourceArray(&_emissionMapSrvArray[0], 0, static_cast<uint32_t>(_emissionMapSrvArray.size()));
-
 		D3DX11_TECHNIQUE_DESC techDesc;
 		_tech->GetDesc(&techDesc);
 
 		auto nowMesh = _meshes[i];
 
-		_diffuseMapIndexArray.clear();
-		_normalMapIndexArray.clear();
-		_emissionMapIndexArray.clear();
 		_colorList.clear();
 		_worldList.clear();
 		_worldInvList.clear();
 		_worldViewProjList.clear();
 
+		_diffuseMap->SetResource(_meshList[0]->GetDiffuseSRV()[i]);
+		_normalMap->SetResource(_meshList[0]->GetNormalSRV()[i]);
+		_emissionMap->SetResource(_meshList[0]->GetEmmisionSRV()[i]);
+
 		for (auto index : _renderList)
 		{
-			_diffuseMapIndexArray.emplace_back(index->GetDiffuseTextureIndex(i));
-			_normalMapIndexArray.emplace_back(index->GetNormalTextureIndex(i));
-			_emissionMapIndexArray.emplace_back(index->GetEmissionTextureIndex(i));
-
 			_colorList.emplace_back(index->GetColor());
 
 			DirectX::XMMATRIX world = index->GetTransformMat();
@@ -247,8 +181,6 @@ void ArkEngine::MeshRenderer::Render()
 		}
 
 		_fxColor->SetFloatVectorArray(reinterpret_cast<float*>(&_colorList[0]), 0, static_cast<uint32_t>(_colorList.size()));
-
-		_fxDiffuse->SetIntArray(&_diffuseMapIndexArray[0], 0, static_cast<uint32_t>(_diffuseMapIndexArray.size()));
 
 		_tech->GetPassByIndex(0)->Apply(0, deviceContext);
 		deviceContext->DrawIndexedInstanced(nowMesh->indexNum, _renderList.size(), 0, 0, 0);
@@ -414,8 +346,4 @@ void ArkEngine::MeshRenderer::SetEffect(IRenderable* mesh)
 	_fxColor = _effect->GetVariableByName("gColor")->AsVector();
 
 	_fxCartoon = _effect->GetVariableByName("gCartoon")->AsScalar();
-
-	_fxDiffuse = _effect->GetVariableByName("gDiffuseIndex")->AsScalar();
-	_fxNormal = _effect->GetVariableByName("gNormalIndex")->AsScalar();
-	_fxEmissive = _effect->GetVariableByName("gEmissiveIndex")->AsScalar();
 }

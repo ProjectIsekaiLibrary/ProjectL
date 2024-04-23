@@ -87,8 +87,5 @@ namespace ArkEngine
 		virtual unsigned int GetParentBoneIndex() abstract;
 		virtual DirectX::XMMATRIX GetParentBoneTransform() abstract;
 		virtual const DirectX::XMFLOAT4 GetColor() abstract;
-		virtual unsigned int GetDiffuseTextureIndex(int index) abstract;
-		virtual unsigned int GetNormalTextureIndex(int index) abstract;
-		virtual unsigned int GetEmissionTextureIndex(int index) abstract;
 	};
 }

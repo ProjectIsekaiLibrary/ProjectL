@@ -45,12 +45,6 @@ namespace ArkEngine
 		void DeleteMeshInList(IRenderable* mesh);
 
 	public:
-		int SetDiffuseTexture(ID3D11ShaderResourceView* texture);
-		int SetNormalTexture(ID3D11ShaderResourceView* texture);
-		int SetEmissionTexture(ID3D11ShaderResourceView* texture);
-
-
-	public:
 		void Render();
 
 		void ShadowRender();
@@ -85,7 +79,6 @@ namespace ArkEngine
 		std::vector<DirectX::XMFLOAT4X4> _worldInvList;
 		std::vector<DirectX::XMFLOAT4X4> _worldViewProjList;
 
-
 		// 오브젝트마다 일치하는 것
 	private:
 		std::vector<ID3D11Buffer*> _vertexBuffer;
@@ -111,26 +104,11 @@ namespace ArkEngine
 		ID3DX11EffectVectorVariable* _fxColor;
 		ID3DX11EffectScalarVariable* _fxCartoon;
 
-		ID3DX11EffectScalarVariable* _fxDiffuse;
-		ID3DX11EffectScalarVariable* _fxNormal;
-		ID3DX11EffectScalarVariable* _fxEmissive;
-
-
 	private:
 		// 기초 세팅 가져오기
 		ArkEngine::ArkDX11::ArkDevice* _arkDevice;
 		ArkEngine::ArkDX11::ArkEffect* _arkEffect;
 
 		ICamera* _mainCamera;
-
-		std::vector<ID3D11ShaderResourceView*> _diffuseMapSrvArray;
-		std::vector<ID3D11ShaderResourceView*> _normalMapSrvArray;
-		std::vector<ID3D11ShaderResourceView*> _emissionMapSrvArray;
-
-		std::vector<int> _diffuseMapIndexArray;
-		std::vector<int> _normalMapIndexArray;
-		std::vector<int> _emissionMapIndexArray;
-
 	};
 }
-

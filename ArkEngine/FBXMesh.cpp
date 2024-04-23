@@ -34,8 +34,7 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_meshCount(0), _boneIndexNum(0),
 	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
 	_animator(nullptr),
-	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent(),
-	_diffuseIndex(0), _normalIndex(0), _emissionIndex(0)
+	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent()
 {
 	Initialize();
 }
@@ -94,6 +93,17 @@ void ArkEngine::ArkDX11::FBXMesh::Initialize()
 
 
 	_debugObject = new DebugObject(_fileName, DebugObject::eDebugType::Cube);
+
+	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
+
+	if (meshRenderer == nullptr)
+	{
+		auto mesh = new MeshRenderer(this);
+	}
+	else
+	{
+		meshRenderer->AddMeshInList(this);
+	}
 }
 
 void ArkEngine::ArkDX11::FBXMesh::Update(ArkEngine::ICamera* p_Camera)
@@ -238,17 +248,6 @@ void ArkEngine::ArkDX11::FBXMesh::SetDiffuseTexture(int index, const char* textu
 			_diffuseMapSRV[index] = newTexture->GetDiffuseMapSRV();
 		}
 	}
-
-	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
-	
-	if (_diffuseMapSRV[index] != nullptr)
-	{
-		_diffuseIndex[index] =  meshRenderer->SetDiffuseTexture(_diffuseMapSRV[index]);
-	}
-	else
-	{
-		_diffuseIndex[index] = 0;
-	}
 }
 
 void ArkEngine::ArkDX11::FBXMesh::SetNormalTexture(int index, const char* textureName)
@@ -276,17 +275,6 @@ void ArkEngine::ArkDX11::FBXMesh::SetNormalTexture(int index, const char* textur
 			ArkTexture* newTexture = new ArkTexture(finalTextureName.c_str());
 			_normalMapSRV[index] = newTexture->GetDiffuseMapSRV();
 		}
-	}
-
-	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
-
-	if (_normalMapSRV[index] != nullptr)
-	{
-		_normalIndex[index] = meshRenderer->SetNormalTexture(_normalMapSRV[index]);
-	}
-	else
-	{
-		_normalIndex[index] = 0;
 	}
 }
 
@@ -316,17 +304,6 @@ void ArkEngine::ArkDX11::FBXMesh::SetEmissiveTexture(int index, const char* text
 
 			_emissionMapSRV[index] = newTexture->GetDiffuseMapSRV();
 		}
-	}
-
-	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
-
-	if (_emissionMapSRV[index] != nullptr)
-	{
-		_emissionIndex[index] = meshRenderer->SetEmissionTexture(_emissionMapSRV[index]);
-	}
-	else
-	{
-		_emissionIndex[index] = 0;
 	}
 }
 
@@ -685,24 +662,6 @@ const DirectX::XMFLOAT4 ArkEngine::ArkDX11::FBXMesh::GetColor()
 	return _colorVec;
 }
 
-
-unsigned int ArkEngine::ArkDX11::FBXMesh::GetDiffuseTextureIndex(int index)
-{
-	return _diffuseIndex[index];
-}
-
-
-unsigned int ArkEngine::ArkDX11::FBXMesh::GetNormalTextureIndex(int index)
-{
-	return _normalIndex[index];
-}
-
-
-unsigned int ArkEngine::ArkDX11::FBXMesh::GetEmissionTextureIndex(int index)
-{
-	return _emissionIndex[index];
-}
-
 /// <summary>
 /// FBX용 추가한것
 /// </summary>
@@ -913,10 +872,6 @@ void ArkEngine::ArkDX11::FBXMesh::ReadMaterial(std::wstring fileName)
 	_normalMapSRV.resize(_meshes.size());
 	_emssiveTextureName.resize(_meshes.size());
 	_emissionMapSRV.resize(_meshes.size());
-	_diffuseIndex.resize(_meshes.size());
-	_normalIndex.resize(_meshes.size());
-	_emissionIndex.resize(_meshes.size());
-
 
 	auto modelMaterialData = ResourceManager::GetInstance()->GetModelMaterial(fileName);
 
@@ -1030,19 +985,6 @@ void ArkEngine::ArkDX11::FBXMesh::ReadMaterial(std::wstring fileName)
 		ResourceManager::GetInstance()->AddModelMaterial(fileName, materialData);
 
 		modelMaterialData = materialData;
-	}
-
-	
-	/// 일단 여기에 추가
-	auto meshRenderer = ResourceManager::GetInstance()->GetMeshRenderer(_fileName);
-
-	if (meshRenderer == nullptr)
-	{
-		auto mesh = new MeshRenderer(this);
-	}
-	else
-	{
-		meshRenderer->AddMeshInList(this);
 	}
 	
 	for (int index = 0; index < _meshes.size(); index++)
