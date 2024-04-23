@@ -1,11 +1,12 @@
 #pragma once
 #include <functional>
 #include "CommonHeader.h"
-#include "MeshRenderer.h"
-#include "ImageRenderer.h"
 
 namespace KunrealEngine
 {
+	class MeshRenderer;
+	class ImageRenderer;
+
 	class Ability
 	{
 		friend class EventManager;

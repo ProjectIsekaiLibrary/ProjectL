@@ -178,3 +178,23 @@ void KunrealEngine::Transform::RecalculateTransform()
 
 	this->_rotation = ToolBox::QuaternionToEulerAngles(quaternion);
 }
+
+void KunrealEngine::Transform::RevertToOriginal()
+{
+	DirectX::XMFLOAT4X4 temp = this->GetOwner()->GetParent()->GetComponent<Transform>()->GetWorldTM();
+	DirectX::XMMATRIX parentMatrix = DirectX::XMLoadFloat4x4(&temp);
+	DirectX::XMMATRIX localMatrix = DirectX::XMLoadFloat4x4(&this->_worldTM);
+
+	DirectX::XMMATRIX inverse = DirectX::XMMatrixInverse(nullptr, parentMatrix);
+	DirectX::XMMATRIX recalcMatrix = localMatrix * inverse;
+
+	DirectX::XMVECTOR scale, quaternion, translation;
+
+	DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, recalcMatrix);
+	DirectX::XMStoreFloat3(&this->_position, translation);
+	DirectX::XMStoreFloat4(&this->_quaternion, quaternion);
+	DirectX::XMStoreFloat3(&this->_scale, scale);
+
+	this->_rotation = ToolBox::QuaternionToEulerAngles(quaternion);
+}
+

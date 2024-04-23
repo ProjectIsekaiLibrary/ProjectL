@@ -1,5 +1,6 @@
 #pragma once
 #include <DirectXMath.h>
+#include <functional>
 #include "CommonHeader.h"
 #include "Component.h"
 
@@ -36,9 +37,10 @@ namespace KunrealEngine
 		void SetActive(bool active) override;
 
 	private:
-		BoxCollider* _collider;			// 충돌 감지해주는 컴포넌트
-		MeshRenderer* _mesh;			// 투사체를 그려줄 3D 물체
-		DirectX::XMVECTOR _direction;	// 플레이어가 바라보는 방향벡터
+		BoxCollider* _collider;				// 충돌 감지해주는 컴포넌트
+		MeshRenderer* _mesh;				// 투사체를 그려줄 3D 물체
+		DirectX::XMVECTOR _direction;		// 플레이어가 바라보는 방향벡터
+		std::function<bool()> _condition;	// 투사체 소멸 조건
 
 	public:
 		// 투사체 정보 생성	// 매개변수로 플레이어 넣어줘야함
@@ -53,6 +55,9 @@ namespace KunrealEngine
 			
 		// 방향벡터 반환 (플레이어의 방향벡터)
 		DirectX::XMVECTOR GetDirection();
+
+		// 소멸 조건 설정
+		void SetDestoryCondition(std::function<bool()> cond);
 	};
 }
 
