@@ -35,7 +35,7 @@ void KunrealEngine::EventManager::SetBossObject()
 	/// 스테이지에 따라서 보스 객체 정해주는거 필요
 }
 
-void KunrealEngine::EventManager::CalculateDamageToBoss(Ability abil)
-{
-	//_boss->GetComponent<Kamen>()->GetInfo()._hp - abil._damage;
-}
+//void KunrealEngine::EventManager::CalculateDamageToBoss(Ability abil)
+//{
+//	//_boss->GetComponent<Kamen>()->GetInfo()._hp - abil._damage;
+//}

@@ -255,9 +255,6 @@
     <ClInclude Include="EventManager.h">
       <Filter>Source Files\Component\Script\EventManager</Filter>
     </ClInclude>
-    <ClInclude Include="AbilityGenerator.h">
-      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityClass</Filter>
-    </ClInclude>
     <ClInclude Include="Projectile.h">
       <Filter>Source Files\Component\Script\Player\PlayerAbility\Projectile</Filter>
     </ClInclude>
@@ -379,9 +376,6 @@
     </ClCompile>
     <ClCompile Include="EventManager.cpp">
       <Filter>Source Files\Component\Script\EventManager</Filter>
-    </ClCompile>
-    <ClCompile Include="AbilityGeneratorcpp.cpp">
-      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityClass</Filter>
     </ClCompile>
     <ClCompile Include="Projectile.cpp">
       <Filter>Source Files\Component\Script\Player\PlayerAbility\Projectile</Filter>

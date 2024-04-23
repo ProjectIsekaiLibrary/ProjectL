@@ -524,25 +524,14 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Camera>(Kunreal
 {
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Camera");
 
-    bool isComponent = false;
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "Camera")
-		{
-			isComponent = true;
-		}
-	}
-
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Camera>();
 	}
 
-	_setTargetPosition[0] = instance->GetTargetPosition().x;
-	_setTargetPosition[1] = instance->GetTargetPosition().y;
-	_setTargetPosition[2] = instance->GetTargetPosition().z;
+	_setTargetPosition[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->GetTargetPosition().x;
+	_setTargetPosition[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->GetTargetPosition().y;
+	_setTargetPosition[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Camera>()->GetTargetPosition().z;
 
 	if (ImGui::DragFloat3("SetTargetPosition", _setTargetPosition))
 	{
@@ -591,22 +580,8 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f),"MeshRenderer");
 
     bool meshState = false;
-    bool isComponent = false;
 
-
-        
-    _compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList) 
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "MeshRenderer")
-		{
-			isComponent = true;
-		}
-	}
-       
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>() == NULL) // 깡통 추가
 	{
 	    _gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::MeshRenderer>();
 	}
@@ -754,20 +729,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 {
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Light");
 
-	bool isComponent = false;
-	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "Light")
-		{
-			isComponent = true;
-			
-		}
-	}
-
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Light>();
 	}
@@ -781,7 +743,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 
 	ComboControl(_lightList, _lightList, _comboLightSelect, "Light", instance);
 
-	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetLightStatus() && _selectedObjectIndex2 != _selectedObjectIndex) // 예쁜 모양은 아님
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetLightStatus()) // 예쁜 모양은 아님
 	{																																					// 해당 코드는 임시로, 엔진초기화 함수에서 예시코드를 작성했을때 사용되는 부분이다
 		_ambient[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetAmbient().x;
 		_ambient[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetAmbient().y;
@@ -816,8 +778,6 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 		_pointSpecular[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetSpecular().y;
 		_pointSpecular[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetSpecular().z;
 		_pointSpecular[3] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetSpecular().w;
-
-		_selectedObjectIndex2 = _selectedObjectIndex;
 	}
 
 
@@ -873,20 +833,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::ImageRenderer>(
 {
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "ImageRenderer");
 
-	bool isComponent = false;
-
-	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "ImageRenderer")
-		{
-			isComponent = true;
-		}
-	}
-
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::ImageRenderer>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::ImageRenderer>();
 	}
@@ -899,7 +846,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::ImageRenderer>(
 	}
 
 
-	ComboControl(_textureList, _TextureListEditor, _comboImageSelect, "Image", instance);  // 스트링은 잘 넘기는데 이상하게 검은 텍스쳐가 나옴
+	ComboControl(_textureList, _TextureListEditor, _comboImageSelect, "Image", instance);
 
 	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::ImageRenderer>());
 
@@ -918,21 +865,8 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::SoundPlayer>(Ku
 
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "SoundPlayer");
 
-	 //빈 깡통 추가하는 부분, 예외가 필요없다면 필요없음
-	bool isComponent = false;
-	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "SoundPlayer")
-		{
-			isComponent = true;
-		}
-	}
-
 	// 추상클래스를 인스턴스화 할 수 없습니다 => 아직 엔진상에서 컴포넌트가 아닌듯
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::SoundPlayer>();
 	}
@@ -962,24 +896,12 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 	bool isComponent = false;
 	bool isNewSetting = false;
 
-	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "BoxCollider")
-		{
-			isComponent = true;
-		}
-	}
-
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::BoxCollider>();
 		isNewSetting = true;
 	}
 
-	// 
 	if (isNewSetting != true)
 	{
 		_offset[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().x;
@@ -990,7 +912,6 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 		_boxSize[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().y;
 		_boxSize[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().z;
 	}
-
 
 	if(ImGui::DragFloat3("Offset", _offset))
 	{
@@ -1018,20 +939,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Player>(Kunreal
 {
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Player");
 
-	bool isComponent = false;
-
-	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "Player")
-		{
-			isComponent = true;
-		}
-	}
-
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Player>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Player>();
 	}
@@ -1053,24 +961,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Kamen>(KunrealE
 {
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Kamen");
 
-	bool isComponent = false;
-
-	_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
-	for (auto componentName : _compoenetList)
-	{
-		std::string checkName = componentName->GetComponentName();
-		if (checkName == "Kamen")
-		{
-			isComponent = true;
-		}
-	}
-
-	if (isComponent == false) // 깡통 추가
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Kamen>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Kamen>();
 	}
-
 
 	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Kamen>());
 
@@ -1081,10 +975,6 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Kamen>(KunrealE
 
 void EpicTool::InspectorWindow::Initialize()
 {
-	
-	//_gameObjectlist = KunrealEngine::GetCurrentScene()->
-	//	GetObjectList();
-
     _meshList = KunrealEngine::GraphicsSystem::GetInstance().GetRenderableList();
 
     _textureList = KunrealEngine::GraphicsSystem::GetInstance().GetTextureList();
@@ -1175,7 +1065,6 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 	if (_selectedObjectIndex != -1)
 	{
 		_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
-
 		SetSelectObject();
 
 		if (selectedComponentIndex)
@@ -1232,6 +1121,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			ImGui::Spacing();
 		}
 
+		_compoenetList = _gameObjectlist[_selectedObjectIndex]->GetComponentList();
 
 		for (auto componentlist : _compoenetList)
 		{
@@ -1375,7 +1265,6 @@ void EpicTool::InspectorWindow::IsCheckItem(bool& Item)
 	}
 }
 
-
 void EpicTool::InspectorWindow::SetMeshObjectEditor(std::vector<std::string>& meshList, int selectedItem)
 {
     if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus())
@@ -1389,9 +1278,6 @@ void EpicTool::InspectorWindow::SetMeshObjectEditor(std::vector<std::string>& me
         _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetMeshObject(meshList[selectedItem].c_str());
     }
 }
-
-
-
 
 void EpicTool::InspectorWindow::GetDebugType(DebugType& instance)
 {

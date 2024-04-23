@@ -175,7 +175,7 @@ void KunrealEngine::GameObject::DetachChild(GameObject* child)
 
 	if (iter != _childContainer.end())
 	{
-		child->_transform->RecalculateTransform();
+		//child->_transform->RevertToOriginal();
 		this->_childContainer.erase(iter);
 		child->_parent = nullptr;
 	}

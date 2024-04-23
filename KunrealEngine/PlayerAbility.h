@@ -3,10 +3,12 @@
 #include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
-#include "Ability.h"
+#include "Player.h"
 
 namespace KunrealEngine
 {
+	class Ability;
+
 	class _DECLSPEC PlayerAbility : public Component
 	{
 	public:
@@ -26,9 +28,12 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
-		Ability* _currentSkill;
 	private:
 		std::vector<Ability*> _abilityContainer;
+		Player* _playerComp;
+
+	private:
+		void CreateAbility1();
 
 	public:
 		void AddToContanier(Ability* abil);

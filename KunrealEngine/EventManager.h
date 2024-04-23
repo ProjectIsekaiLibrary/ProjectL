@@ -42,6 +42,6 @@ namespace KunrealEngine
 		void SetBossObject();
 
 		// 플레이어가 보스에게 주는 데미지 계산
-		void CalculateDamageToBoss(Ability abil);
+		//void CalculateDamageToBoss(Ability abil);
 	};
 }

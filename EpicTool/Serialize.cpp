@@ -87,118 +87,120 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 				}
 			}
 
-			if ((gameObject->GetComponent<KunrealEngine::MeshRenderer>()) != NULL)
+			if (gameObject->GetComponent<KunrealEngine::Player>() == NULL || gameObject->GetComponent<KunrealEngine::Kamen>() == NULL)
 			{
-				std::vector<std::string> meshDiffuseJson;
-				std::vector<std::string> meshNormalJson;
-
-				for (const auto& diffuseJson : gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures())
+				if ((gameObject->GetComponent<KunrealEngine::MeshRenderer>()) != NULL)
 				{
-					meshDiffuseJson.push_back(diffuseJson);
+					std::vector<std::string> meshDiffuseJson;
+					std::vector<std::string> meshNormalJson;
+
+					for (const auto& diffuseJson : gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetTextures())
+					{
+						meshDiffuseJson.push_back(diffuseJson);
+					}
+					for (const auto& NormalJson : gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetNormals())
+					{
+						meshNormalJson.push_back(NormalJson);
+					}
+
+					pod.meshRenderingState = gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetRenderingState();
+
+					pod.meshRenderer["Mesh"].push_back(gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshName());
+					pod.meshRenderer["Diffuse"] = meshDiffuseJson;
+					pod.meshRenderer["Normal"] = meshNormalJson;
+
+					//pod.animationFrame = gameObject->GetComponent<KunrealEngine::Animator>()->GetCurrentFrame();
 				}
-				for (const auto& NormalJson : gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetNormals())
+
+				if ((gameObject->GetComponent<KunrealEngine::Light>()) != NULL)
 				{
-					meshNormalJson.push_back(NormalJson);
+
+					if (gameObject->GetComponent<KunrealEngine::Light>()->GetLightType() == KunrealEngine::LightType::DirectionalLight)
+					{
+						pod.lightType["LightType"] = "DirectionalLight";
+
+						pod.light["Ambient_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().x;
+						pod.light["Ambient_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().y;
+						pod.light["Ambient_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().z;
+						pod.light["Ambient_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().w;
+
+						pod.light["Diffuse_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().x;
+						pod.light["Diffuse_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().y;
+						pod.light["Diffuse_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().z;
+						pod.light["Diffuse_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().w;
+
+						pod.light["Direction_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDirection().x;
+						pod.light["Direction_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDirection().y;
+						pod.light["Direction_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDirection().z;
+
+						pod.light["Specular_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().x;
+						pod.light["Specular_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().y;
+						pod.light["Specular_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().z;
+						pod.light["Specular_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().w;
+					}
+					else if (gameObject->GetComponent<KunrealEngine::Light>()->GetLightType() == KunrealEngine::LightType::PointLight)
+					{
+						pod.lightType["LightType"] = "PointLight";
+
+						pod.light["Ambient_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().x;
+						pod.light["Ambient_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().y;
+						pod.light["Ambient_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().z;
+						pod.light["Ambient_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().w;
+
+						pod.light["Diffuse_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().x;
+						pod.light["Diffuse_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().y;
+						pod.light["Diffuse_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().z;
+						pod.light["Diffuse_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().w;
+
+						pod.light["Specular_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().x;
+						pod.light["Specular_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().y;
+						pod.light["Specular_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().z;
+						pod.light["Specular_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().w;
+
+						pod.light["Range"] = gameObject->GetComponent<KunrealEngine::Light>()->GetPointRange();
+					}
 				}
 
-				pod.meshRenderingState = gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetRenderingState();
 
-				pod.meshRenderer["Mesh"].push_back(gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshName());
-				pod.meshRenderer["Diffuse"] = meshDiffuseJson;
-				pod.meshRenderer["Normal"] = meshNormalJson;
+				if ((gameObject->GetComponent<KunrealEngine::ImageRenderer>()) != NULL)
+				{
+					pod.image["ImageName"] = gameObject->GetComponent<KunrealEngine::ImageRenderer>()->GetImageName();  // 현재 가지고 있는 이미지를 get 할 수 없음
 
-				//pod.animationFrame = gameObject->GetComponent<KunrealEngine::Animator>()->GetCurrentFrame();
+					if (gameObject->GetComponent<KunrealEngine::ImageRenderer>()->GetImageStatus() == true)
+					{
+						pod.image["ImageStatus"] = "True";
+					}
+					else if (gameObject->GetComponent<KunrealEngine::ImageRenderer>()->GetImageStatus() == false)
+					{
+						pod.image["ImageStatus"] = "False";
+					}
+				}
+
+
+				// 콜라이더
+				if ((gameObject->GetComponent<KunrealEngine::BoxCollider>()) != NULL)
+				{
+					pod.collider["Offset_x"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().x;
+					pod.collider["Offset_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().y;
+					pod.collider["Offset_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().z;
+
+					pod.collider["BoxSize_x"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().x;
+					pod.collider["BoxSize_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().y;
+					pod.collider["BoxSize_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().z;
+				}
+
+
+				if ((gameObject->GetComponent<KunrealEngine::SoundPlayer>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
+				{
+					for (int i = 0; i < gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList.size(); ++i)
+					{
+						pod.sound_Name.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._soundPath);
+						pod.sound_Is3D.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._is3DSound);
+						pod.sound_IsLoop.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._isLoop);
+						pod.sound_Volume.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._volume);
+					}
+				}
 			}
-
-			if ((gameObject->GetComponent<KunrealEngine::Light>()) != NULL)
-			{
-
-				if (gameObject->GetComponent<KunrealEngine::Light>()->GetLightType() == KunrealEngine::LightType::DirectionalLight)
-				{
-					pod.lightType["LightType"] = "DirectionalLight";
-
-					pod.light["Ambient_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().x;
-					pod.light["Ambient_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().y;
-					pod.light["Ambient_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().z;
-					pod.light["Ambient_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().w;
-
-					pod.light["Diffuse_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().x;
-					pod.light["Diffuse_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().y;
-					pod.light["Diffuse_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().z;
-					pod.light["Diffuse_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().w;
-
-					pod.light["Direction_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDirection().x;
-					pod.light["Direction_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDirection().y;
-					pod.light["Direction_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDirection().z;
-
-					pod.light["Specular_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().x;
-					pod.light["Specular_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().y;
-					pod.light["Specular_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().z;
-					pod.light["Specular_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().w;
-				}
-				else if (gameObject->GetComponent<KunrealEngine::Light>()->GetLightType() == KunrealEngine::LightType::PointLight)
-				{
-					pod.lightType["LightType"] = "PointLight";
-
-					pod.light["Ambient_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().x;
-					pod.light["Ambient_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().y;
-					pod.light["Ambient_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().z;
-					pod.light["Ambient_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().w;
-
-					pod.light["Diffuse_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().x;
-					pod.light["Diffuse_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().y;
-					pod.light["Diffuse_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().z;
-					pod.light["Diffuse_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetDiffuse().w;
-
-					pod.light["Specular_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().x;
-					pod.light["Specular_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().y;
-					pod.light["Specular_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().z;
-					pod.light["Specular_w"] = gameObject->GetComponent<KunrealEngine::Light>()->GetSpecular().w;
-
-					pod.light["Range"] = gameObject->GetComponent<KunrealEngine::Light>()->GetPointRange();
-				}
-			}
-
-
-			if ((gameObject->GetComponent<KunrealEngine::ImageRenderer>()) != NULL)
-			{
-				pod.image["ImageName"] = gameObject->GetComponent<KunrealEngine::ImageRenderer>()->GetImageName();  // 현재 가지고 있는 이미지를 get 할 수 없음
-
-				if (gameObject->GetComponent<KunrealEngine::ImageRenderer>()->GetImageStatus() == true)
-				{
-					pod.image["ImageStatus"] = "True";
-				}
-				else if (gameObject->GetComponent<KunrealEngine::ImageRenderer>()->GetImageStatus() == false)
-				{
-					pod.image["ImageStatus"] = "False";
-				}
-			}
-
-
-			// 콜라이더
-			if ((gameObject->GetComponent<KunrealEngine::BoxCollider>()) != NULL)
-			{
-				pod.collider["Offset_x"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().x;
-				pod.collider["Offset_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().y;
-				pod.collider["Offset_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().z;
-
-				pod.collider["BoxSize_x"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().x;
-				pod.collider["BoxSize_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().y;
-				pod.collider["BoxSize_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().z;
-			}
-		
-
-			if ((gameObject->GetComponent<KunrealEngine::SoundPlayer>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
-			{
-				for (int i = 0; i < gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList.size(); ++i)
-				{
-					pod.sound_Name.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._soundPath);
-					pod.sound_Is3D.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._is3DSound);
-					pod.sound_IsLoop.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._isLoop);
-					pod.sound_Volume.push_back(gameObject->GetComponent<KunrealEngine::SoundPlayer>()->_soundList[i]._volume);			
-				}
-			}
-
 
 			nlohmann::json serializedData;
 

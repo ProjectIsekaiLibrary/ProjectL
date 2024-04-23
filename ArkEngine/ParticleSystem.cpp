@@ -12,7 +12,7 @@
 #include "ParticleSystem.h"
 
 
-ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleName, const std::string& fileName, unsigned int maxParticle)
+ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const std::string& fileName, unsigned int maxParticle)
 	: _particleName(particleName), _maxParticles(maxParticle), _firstRun(true), _fileName(fileName),
 	_gameTime(0), _timeStep(0), _age(0),
 	_initVB(nullptr), _drawVB(nullptr), _streamOutVB(nullptr),
@@ -33,7 +33,7 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	Initialize(std::wstring(fileName.begin(), fileName.end()), _maxParticles);
 }
 
-ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleName, const std::vector<std::string>& fileNameList, unsigned int maxParticle)
+ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const std::vector<std::string>& fileNameList, unsigned int maxParticle)
 	:_particleName(particleName), _maxParticles(maxParticle), _firstRun(true),
 	_gameTime(0), _timeStep(0), _age(0),
 	_initVB(nullptr), _drawVB(nullptr), _streamOutVB(nullptr),
@@ -62,7 +62,7 @@ ArkEngine::ArkDX11::ParticleSystem::ParticleSystem(const std::string& particleNa
 	Initialize(newStringVec, _maxParticles);
 }
 
-ArkEngine::ArkDX11::ParticleSystem::~ParticleSystem()
+ArkEngine::ParticleSystem::~ParticleSystem()
 {
 	_isRandomEffect->Release();
 	_emitVelocityEffect->Release();
@@ -84,34 +84,34 @@ ArkEngine::ArkDX11::ParticleSystem::~ParticleSystem()
 	_drawVB->Release();
 }
 
-float ArkEngine::ArkDX11::ParticleSystem::GetAge() const
+float ArkEngine::ParticleSystem::GetAge() const
 {
 	return _age;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEyePos(const DirectX::XMFLOAT3& eyePosW)
+void ArkEngine::ParticleSystem::SetEyePos(const DirectX::XMFLOAT3& eyePosW)
 {
 	_eyePosW = eyePosW;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEmitPos(const DirectX::XMFLOAT3& emitPosW)
+void ArkEngine::ParticleSystem::SetEmitPos(const DirectX::XMFLOAT3& emitPosW)
 {
 	_emitPosW = emitPosW;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEmitDir(const DirectX::XMFLOAT3& emitDirW)
+void ArkEngine::ParticleSystem::SetEmitDir(const DirectX::XMFLOAT3& emitDirW)
 {
 	_emitDirW = emitDirW;
 }
 
 // 파티클의 텍스쳐 크기를 결정하는 함수
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleSize(const DirectX::XMFLOAT2& particleSize)
+void ArkEngine::ParticleSystem::SetParticleSize(const DirectX::XMFLOAT2& particleSize)
 {
 	_particleSize = particleSize;
 }
 
 // 파티클의 방출속도를 결정하는 함수
-void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocity(float particleSpeed, bool isRandom)
+void ArkEngine::ParticleSystem::SetEmitVelocity(float particleSpeed, bool isRandom)
 {
 	if (_particleName == "Laser")
 	{
@@ -127,7 +127,7 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocity(float particleSpeed, bo
 // 파티클의 사라지는 시간을 결정하는 함수(파티클 입자가 점점 사라지는 시간, 파티클이 완전히 사라지는 시간)
 // ex) paeticleFadeTime = 1.0f 라면 1초동안 점점 투명해진다
 // 통상적으로 particleFadeTime이 particleLifeTime보다 작게 설정한다
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleTime(float particleFadeTime, float particleLifeTime)
+void ArkEngine::ParticleSystem::SetParticleTime(float particleFadeTime, float particleLifeTime)
 {
 	_particleFadeTime = particleFadeTime;
 	_particleLifeTime = particleLifeTime;
@@ -135,12 +135,12 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleTime(float particleFadeTime,
 
 // 파티클의 RGB값을 설정해준다.
 // 1.0f, 1.0f, 1.0f이면 원본텍스쳐의 색상이 나온다
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleColor(const DirectX::XMFLOAT3& particleColor)
+void ArkEngine::ParticleSystem::SetParticleColor(const DirectX::XMFLOAT3& particleColor)
 {
 	_particleColor = particleColor;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& particleDirection)
+void ArkEngine::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& particleDirection)
 {
 	_particleDirection = particleDirection;
 	if (_particleName == "Laser")
@@ -153,7 +153,7 @@ void ArkEngine::ArkDX11::ParticleSystem::SetParticleDirection(const DirectX::XMF
 	}
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
+void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
 {
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
@@ -193,7 +193,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::vector<std::wstri
 }
 
 
-void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::wstring& fileName, unsigned int maxParticle)
+void ArkEngine::ParticleSystem::Initialize(const std::wstring& fileName, unsigned int maxParticle)
 {
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
@@ -233,19 +233,19 @@ void ArkEngine::ArkDX11::ParticleSystem::Initialize(const std::wstring& fileName
 	SetEffect();
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::Reset()
+void ArkEngine::ParticleSystem::Reset()
 {
 	_firstRun = true;
 	_age = 0.0f;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::Update(float deltaTime, float gameTime)
+void ArkEngine::ParticleSystem::Update(float deltaTime, float gameTime)
 {
 	_gameTime += gameTime;
 	_timeStep = deltaTime;
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
+void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 {
 	auto dc = _arkDevice->GetDeviceContext();
 
@@ -339,7 +339,7 @@ void ArkEngine::ArkDX11::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 	_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 }
 
-ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateRandomTextureSRV()
+ID3D11ShaderResourceView* ArkEngine::ParticleSystem::CreateRandomTextureSRV()
 {
 	auto device = _arkDevice->GetDevice();
 
@@ -391,7 +391,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateRandomTextur
 	return _arkDevice->GetRandomTex();
 }
 
-ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArraySRV(const std::vector<std::wstring>& fileNameList)
+ID3D11ShaderResourceView* ArkEngine::ParticleSystem::CreateTexture2DArraySRV(const std::vector<std::wstring>& fileNameList)
 {
 	std::vector<DirectX::TexMetadata> metadata(fileNameList.size());
 	std::vector<DirectX::ScratchImage> scratchImage(fileNameList.size());
@@ -475,7 +475,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 }
 
 
-ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArraySRV(const std::wstring& fileName)
+ID3D11ShaderResourceView* ArkEngine::ParticleSystem::CreateTexture2DArraySRV(const std::wstring& fileName)
 {
 	std::vector<DirectX::TexMetadata> metadata(1);
 	std::vector<DirectX::ScratchImage> scratchImage(1);
@@ -558,7 +558,7 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::ParticleSystem::CreateTexture2DArr
 	return srv; // 생성된 Shader Resource View 반환
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::BuildVB()
+void ArkEngine::ParticleSystem::BuildVB()
 {
 	auto device = _arkDevice->GetDevice();
 	//
@@ -595,7 +595,7 @@ void ArkEngine::ArkDX11::ParticleSystem::BuildVB()
 }
 
 
-void ArkEngine::ArkDX11::ParticleSystem::BuildDrawStreamVB()
+void ArkEngine::ParticleSystem::BuildDrawStreamVB()
 {
 	auto device = _arkDevice->GetDevice();
 	//
@@ -625,7 +625,7 @@ void ArkEngine::ArkDX11::ParticleSystem::BuildDrawStreamVB()
 	(device->CreateBuffer(&vbd, 0, &_streamOutVB));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEffect()
+void ArkEngine::ParticleSystem::SetEffect()
 {
 	if (_fileName == "Resources/Textures/Particles/raindrop.dds")
 	{
@@ -659,7 +659,7 @@ void ArkEngine::ArkDX11::ParticleSystem::SetEffect()
 	_particleDirectionEffect = effect->GetVariableByName("gAccelW")->AsVector();
 }
 
-float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
+float ArkEngine::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
 {
 	std::random_device rd;
 	std::mt19937 generator(rd());
@@ -668,69 +668,69 @@ float ArkEngine::ArkDX11::ParticleSystem::GetRandomFloat(float minNum, float max
 	return dist(generator);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetViewProj(DirectX::CXMMATRIX m)
+void ArkEngine::ParticleSystem::SetViewProj(DirectX::CXMMATRIX m)
 {
 	_viewProjEffect->SetMatrix(reinterpret_cast<const float*>(&m));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetGameTime(float f)
+void ArkEngine::ParticleSystem::SetGameTime(float f)
 {
 	_gameTimeEffect->SetFloat(f);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetTimeStep(float f)
+void ArkEngine::ParticleSystem::SetTimeStep(float f)
 {
 	_timeStepEffect->SetFloat(f);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEyePosW(const DirectX::XMFLOAT3& v)
+void ArkEngine::ParticleSystem::SetEyePosW(const DirectX::XMFLOAT3& v)
 {
 	_eyePosWEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEmitPosW(const DirectX::XMFLOAT3& v)
+void ArkEngine::ParticleSystem::SetEmitPosW(const DirectX::XMFLOAT3& v)
 {
 	_emitPosWEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEmitDirW(const DirectX::XMFLOAT3& v)
+void ArkEngine::ParticleSystem::SetEmitDirW(const DirectX::XMFLOAT3& v)
 {
 	_emitDirWEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetTexArray(ID3D11ShaderResourceView* tex)
+void ArkEngine::ParticleSystem::SetTexArray(ID3D11ShaderResourceView* tex)
 {
 	_texArray->SetResource(tex);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetRandomTex(ID3D11ShaderResourceView* tex)
+void ArkEngine::ParticleSystem::SetRandomTex(ID3D11ShaderResourceView* tex)
 {
 	_randomTex->SetResource(tex);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleSizeW(const DirectX::XMFLOAT2& v)
+void ArkEngine::ParticleSystem::SetParticleSizeW(const DirectX::XMFLOAT2& v)
 {
 	_particleSizeEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT2));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetEmitVelocityW(const DirectX::XMFLOAT3& v)
+void ArkEngine::ParticleSystem::SetEmitVelocityW(const DirectX::XMFLOAT3& v)
 {
 	_emitVelocityEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 	_isRandomEffect->SetBool(_isRandom);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleTimeW(float f1, float f2)
+void ArkEngine::ParticleSystem::SetParticleTimeW(float f1, float f2)
 {
 	_particleFadeTimeEffect->SetFloat(f1);
 	_particleLifeTimeEffect->SetFloat(f2);
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleColorW(const DirectX::XMFLOAT3& v)
+void ArkEngine::ParticleSystem::SetParticleColorW(const DirectX::XMFLOAT3& v)
 {
 	_particleColorEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }
 
-void ArkEngine::ArkDX11::ParticleSystem::SetParticleDirectionW(const DirectX::XMFLOAT3& v)
+void ArkEngine::ParticleSystem::SetParticleDirectionW(const DirectX::XMFLOAT3& v)
 {
 	_particleDirectionEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
 }

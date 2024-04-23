@@ -132,7 +132,7 @@ void KunrealEngine::EngineCore::Update()
 
 	if (inputInstance->KeyUp(KEY::CAPSLOCK))
 	{
-		sceneInstance.GetCurrentScene()->GetGameObject("Player")->MoveToScene(sceneInstance.GetScene("NewWorld"));
+		//sceneInstance.GetCurrentScene()->GetGameObject("BaeSung")->AddComponent<BoxCollider>();
 	}
 	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
@@ -353,7 +353,7 @@ void KunrealEngine::EngineCore::PlayGround()
 		cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
 		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
 		cube1->GetComponent<Transform>()->SetPosition(40.0f, 2.0f, 50.0f - 10.0f * i);
-
+		
 		if (i % 2 == 0)
 		{
 			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
@@ -370,7 +370,7 @@ void KunrealEngine::EngineCore::PlayGround()
 		//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
 		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
 		cube1->GetComponent<Transform>()->SetPosition(-40.0f, 2.0f, 50.0f - 10.0f * i);
-
+	
 		if (i % 2 == 1)
 		{
 			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);

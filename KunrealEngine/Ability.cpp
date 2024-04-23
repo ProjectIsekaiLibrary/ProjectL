@@ -1,6 +1,8 @@
 #include "Ability.h"
 #include "SceneManager.h"
 #include "Scene.h"
+#include "MeshRenderer.h"
+#include "ImageRenderer.h"
 
 KunrealEngine::Ability::Ability()
 	:_damage(0), _stamina(0), _staggerDamage(0), _cooldown(0), _range(0), _isActivated(false), _isUsable(true), _isHit(false)

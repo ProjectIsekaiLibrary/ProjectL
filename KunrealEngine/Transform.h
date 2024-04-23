@@ -76,7 +76,6 @@ namespace KunrealEngine
 		// 부모 오브젝트가 생겼을 때 transform 재계산
 		void RecalculateTransform();
 
-		// 부모 자식 관계를 해제할 때
 		void RevertToOriginal();
 	};
 }
