@@ -25,13 +25,10 @@ namespace DirectX
 
 namespace ArkEngine
 {
-	class ICamera;
 	class IDebugObject;
 
 	namespace ArkDX11
 	{
-		class ArkEffect;
-		class ArkDevice;
 		class Transform;
 		class Animator;
 
@@ -41,18 +38,6 @@ namespace ArkEngine
 		//class DirectionalLight;
 	}
 }
-
-
-struct ID3DX11Effect;
-struct ID3DX11EffectTechnique;
-
-struct ID3DX11EffectVariable;
-struct ID3DX11EffectScalarVariable;
-struct ID3DX11EffectMatrixVariable;
-struct ID3DX11EffectVectorVariable;
-struct ID3DX11EffectShaderResourceVariable;
-
-struct ID3D11ShaderResourceView;
 
 /// ±èÇöÀç Ãß°¡
 struct ModelMesh;
@@ -65,7 +50,6 @@ namespace ArkEngine
 		{
 		public:
 			FBXMesh(const std::string& fileName, bool isSolid = true);
-			FBXMesh(std::vector<DirectX::XMFLOAT3> vertexVec, std::vector<unsigned int> indexVec, bool isSold = true);
 			~FBXMesh();
 
 		public:
@@ -130,9 +114,6 @@ namespace ArkEngine
 		public:
 			virtual bool GetInsideFrustumState() override;
 
-		private:
-			void SetEffect();
-
 		public:
 
 		private:
@@ -166,6 +147,9 @@ namespace ArkEngine
 			virtual unsigned int GetParentBoneIndex() override;
 			virtual DirectX::XMMATRIX GetParentBoneTransform() override;
 			virtual const DirectX::XMFLOAT4 GetColor() override;
+			virtual unsigned int GetDiffuseTextureIndex(int index) override;
+			virtual unsigned int GetNormalTextureIndex(int index) override;
+			virtual unsigned int GetEmissionTextureIndex(int index) override;
 
 		private:
 			std::string _simpleModelName;
@@ -175,43 +159,13 @@ namespace ArkEngine
 			std::vector<std::string> _normalTextureName;
 			std::vector<std::string> _emssiveTextureName;
 
-
-			ID3DX11Effect* _effect;
-			ID3DX11EffectTechnique* _tech;
-
-			// cbPerObject
-			ID3DX11EffectMatrixVariable* _fxWorld;
-			ID3DX11EffectMatrixVariable* _fxWorldInvTranspose;
-			ID3DX11EffectMatrixVariable* _fxWorldViewProj;
-			ID3DX11EffectMatrixVariable* _fxTexTransform;
-			ID3DX11EffectVariable* _fxMaterial;
-
-			// cbSkinned
-			ID3DX11EffectMatrixVariable* _fxBoneTransforms;
-
-			ID3DX11EffectShaderResourceVariable* _diffuseMap;
-
 			std::vector<ID3D11ShaderResourceView*> _diffuseMapSRV;
-
-			ID3DX11EffectShaderResourceVariable* _normalMap;
 
 			std::vector<ID3D11ShaderResourceView*> _normalMapSRV;
 
-			ID3DX11EffectShaderResourceVariable* _emissionMap;
-
 			std::vector<ID3D11ShaderResourceView*> _emissionMapSRV;
 
-			ID3DX11EffectShaderResourceVariable* _cubeMap;
-
-			ID3DX11EffectVectorVariable* _fxColor;
-
-			ID3DX11EffectScalarVariable* _fxCartoon;
-
 			std::vector<DirectX::XMFLOAT4X4> _boneTMList;
-
-			DirectX::XMFLOAT4X4 _world;
-			DirectX::XMFLOAT4X4 _view;
-			DirectX::XMFLOAT4X4 _proj;
 
 			std::vector<ID3D11Buffer*> _vertexBuffer;
 			std::vector<ID3D11Buffer*> _indexBuffer;
@@ -220,8 +174,6 @@ namespace ArkEngine
 			std::vector<ArkEngine::ArkDX11::Material> _material;
 
 		private:
-			ArkEngine::ArkDX11::ArkDevice* _arkDevice;
-			ArkEngine::ArkDX11::ArkEffect* _arkEffect;
 			UINT _totalVertexCount;
 			UINT _totalIndexCount;
 			ArkEngine::ArkDX11::Transform* _meshTransform;
@@ -229,15 +181,12 @@ namespace ArkEngine
 		private:
 			IDebugObject* _debugObject;
 
-		private:
-			ArkEngine::ICamera* _mainCamera;
+			bool _isSolid;
 
 		private:
 			bool _havePlayedAnimation;
 			bool _isAnimationPlaying;
 			bool _isRendering;
-
-			bool _isSolid;
 
 		private:
 			bool _isPickable;
@@ -291,6 +240,11 @@ namespace ArkEngine
 			DirectX::XMFLOAT4X4 _parentBoneTrasnform;
 			int _parentBoneIndex;
 			DirectX::XMFLOAT4X4 _transformEffectedByParent;
+
+		private:
+			std::vector<unsigned int> _diffuseIndex;
+			std::vector<unsigned int> _normalIndex;
+			std::vector<unsigned int> _emissionIndex;
 		};
 	}
 }

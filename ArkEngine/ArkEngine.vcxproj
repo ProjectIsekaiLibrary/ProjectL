@@ -157,6 +157,9 @@
       <Command>xcopy "$(Projectdir)RunTimeDependency" "$(targetdir)" /D /E /C /Q /H /R /Y /K
 </Command>
     </PostBuildEvent>
+    <FxCompile>
+      <ShaderModel>5.0</ShaderModel>
+    </FxCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>

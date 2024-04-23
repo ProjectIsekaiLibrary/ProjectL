@@ -49,7 +49,7 @@ void ArkEngine::ArkDX11::ArkEffect::CreateEffect(const char* effectName)
 
 	LPCWSTR tempEffectName = reinterpret_cast<LPCWSTR>(unicodeString);
 
-	D3DCompileFromFile(tempEffectName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, NULL, "fx_5_0", D3D10_SHADER_DEBUG, 0, &compiledShader, &compilationMsgs);
+	D3DCompileFromFile(tempEffectName, NULL, D3D_COMPILE_STANDARD_FILE_INCLUDE, NULL, "fx_5_0", D3DCOMPILE_DEBUG, 0, &compiledShader, &compilationMsgs);
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 	D3DX11CreateEffectFromMemory(compiledShader->GetBufferPointer(), compiledShader->GetBufferSize(), 0, arkDevice->GetDevice(), &_effect);
 	

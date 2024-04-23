@@ -35,17 +35,17 @@ KunrealEngine::Boss::~Boss()
 		delete index;
 	}
 
-	auto collider = _boss->GetComponent<BoxCollider>();
-	if (collider != nullptr)
-	{
-		_boss->DeleteComponent(collider);
-	}
-
-	auto meshRenderer = _boss->GetComponent<MeshRenderer>();
-	if (meshRenderer != nullptr)
-	{
-		_boss->DeleteComponent(meshRenderer);
-	}
+	//auto collider = _boss->GetComponent<BoxCollider>();
+	//if (collider != nullptr)
+	//{
+	//	_boss->DeleteComponent(collider);
+	//}
+	//
+	//auto meshRenderer = _boss->GetComponent<MeshRenderer>();
+	//if (meshRenderer != nullptr)
+	//{
+	//	_boss->DeleteComponent(meshRenderer);
+	//}
 }
 
 
