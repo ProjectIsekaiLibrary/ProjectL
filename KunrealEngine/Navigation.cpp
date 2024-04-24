@@ -190,7 +190,7 @@ namespace KunrealEngine
 		return;
 	}
 
-	void Navigation::saveAll(int index, const char* path)
+	void Navigation::SaveAll(int index, const char* path)
 	{
 		if (!_package[index]._tileCache) return;
 
