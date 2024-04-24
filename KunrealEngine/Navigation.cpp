@@ -189,6 +189,46 @@ namespace KunrealEngine
 		return;
 	}
 
+	void Navigation::saveAll(int index, const char* path)
+	{
+		if (!_package[index]._tileCache) return;
+
+		FILE* fp = fopen(path, "wb");
+		if (!fp)
+			return;
+
+		// Store header.
+		TileCacheSetHeader header;
+		header.magic = TILECACHESET_MAGIC;
+		header.version = TILECACHESET_VERSION;
+		header.numTiles = 0;
+		for (int i = 0; i < _package[index]._tileCache->getTileCount(); ++i)
+		{
+			const dtCompressedTile* tile = _package[index]._tileCache->getTile(i);
+			if (!tile || !tile->header || !tile->dataSize) continue;
+			header.numTiles++;
+		}
+		memcpy(&header.cacheParams, _package[index]._tileCache->getParams(), sizeof(dtTileCacheParams));
+		memcpy(&header.meshParams, _package[index]._navMesh->getParams(), sizeof(dtNavMeshParams));
+		fwrite(&header, sizeof(TileCacheSetHeader), 1, fp);
+
+		// Store tiles.
+		for (int i = 0; i < _package[index]._tileCache->getTileCount(); ++i)
+		{
+			const dtCompressedTile* tile = _package[index]._tileCache->getTile(i);
+			if (!tile || !tile->header || !tile->dataSize) continue;
+
+			TileCacheTileHeader tileHeader;
+			tileHeader.tileRef = _package[index]._tileCache->getTileRef(tile);
+			tileHeader.dataSize = tile->dataSize;
+			fwrite(&tileHeader, sizeof(tileHeader), 1, fp);
+
+			fwrite(tile->data, tile->dataSize, 1, fp);
+		}
+
+		fclose(fp);
+	}
+
 	bool Navigation::HandleBuild(int index)
 	{
 		dtStatus status;
