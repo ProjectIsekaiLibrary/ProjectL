@@ -56,6 +56,9 @@ namespace ArkEngine
 		void Draw(ArkEngine::ICamera* p_Camera);
 
 	public:
+		virtual void Start() override;
+		virtual void Stop() override;
+
 		virtual void Reset() override;
 		virtual void SetEmitPos(const DirectX::XMFLOAT3& emitPosW) override;
 		virtual void SetParticleSize(const DirectX::XMFLOAT2& particleSize) override;
@@ -157,6 +160,10 @@ namespace ArkEngine
 		void SetParticleTimeW(float f1, float f2);
 		void SetParticleColorW(const DirectX::XMFLOAT3& v);
 		void SetParticleDirectionW(const DirectX::XMFLOAT3& v);
+
+	private:
+		void SetParticleState(bool isStart);
+		bool _isStart;
 	};
 }
 

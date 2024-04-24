@@ -20,7 +20,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
-	_particleColorEffect(nullptr)
+	_particleColorEffect(nullptr), _isStart(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -41,7 +41,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
-	_particleColorEffect(nullptr)
+	_particleColorEffect(nullptr), _isStart(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -247,96 +247,109 @@ void ArkEngine::ParticleSystem::Update(float deltaTime, float gameTime)
 
 void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 {
-	auto dc = _arkDevice->GetDeviceContext();
-
-	auto cameraView = p_Camera->GetViewMatrix();
-	auto cameraProj = p_Camera->GetProjMatrix();
-
-	DirectX::XMMATRIX VP = cameraView * cameraProj;
-
-	// 입력 조립기 단계를 설정
-	dc->IASetInputLayout(_arkEffect->GetInputLayOut());
-	dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
-	dc->RSSetState(_arkDevice->GetSolidRS());
-
-	unsigned int stride = sizeof(Particle);
-	unsigned int offset = 0;
-
-	// 상수들을 설정한다
-	SetViewProj(VP);
-	SetGameTime(_gameTime);
-	SetTimeStep(_timeStep);
-	SetEyePosW(_eyePosW);
-	SetEmitPosW(_emitPosW);
-	SetEmitDirW(_emitDirW);
-	SetTexArray(_texArraySRV);
-	SetRandomTex(_arkDevice->GetRandomTex());
-
-	SetParticleSizeW(_particleSize);
-	SetEmitVelocityW(_emitVelocity);
-	SetParticleTimeW(_particleFadeTime, _particleLifeTime);
-	SetParticleColorW(_particleColor);
-	SetParticleDirectionW(_particleDirection);
-
-	// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
-	// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
-	if (_firstRun)
+	if (_isStart == true)
 	{
-		// _initVB이 먼저 CPU에 올라가서 나머지들을 불러온다
-		// 선봉대장 같은 역할
-		dc->IASetVertexBuffers(0, 1, &_initVB, &stride, &offset);
-	}
-	else
-	{
-		dc->IASetVertexBuffers(0, 1, &_drawVB, &stride, &offset);
-	}
+		auto dc = _arkDevice->GetDeviceContext();
 
-	// 현재 입자 목록을 스트림 출력 전용 기법으로 그려서 입자들을 갱신한다
-	// 갱신된 입자들은 스트림 출력을 통해서 대상 정점 버퍼에 기록된다
-	// SO단계에 버텍스 버퍼를 _streamOutVB에 바인딩해주는 함수
-	dc->SOSetTargets(1, &_streamOutVB, &offset);
+		auto cameraView = p_Camera->GetViewMatrix();
+		auto cameraProj = p_Camera->GetProjMatrix();
 
-	D3DX11_TECHNIQUE_DESC techDesc;
-	_streamOutTech->GetDesc(&techDesc);
-	for (unsigned int p = 0; p < techDesc.Passes; ++p)
-	{
-		_streamOutTech->GetPassByIndex(p)->Apply(0, dc);
+		DirectX::XMMATRIX VP = cameraView * cameraProj;
 
+		// 입력 조립기 단계를 설정
+		dc->IASetInputLayout(_arkEffect->GetInputLayOut());
+		dc->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_POINTLIST);
+		dc->RSSetState(_arkDevice->GetSolidRS());
+
+		unsigned int stride = sizeof(Particle);
+		unsigned int offset = 0;
+
+		// 상수들을 설정한다
+		SetViewProj(VP);
+		SetGameTime(_gameTime);
+		SetTimeStep(_timeStep);
+		SetEyePosW(_eyePosW);
+		SetEmitPosW(_emitPosW);
+		SetEmitDirW(_emitDirW);
+		SetTexArray(_texArraySRV);
+		SetRandomTex(_arkDevice->GetRandomTex());
+
+		SetParticleSizeW(_particleSize);
+		SetEmitVelocityW(_emitVelocity);
+		SetParticleTimeW(_particleFadeTime, _particleLifeTime);
+		SetParticleColorW(_particleColor);
+		SetParticleDirectionW(_particleDirection);
+
+		// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
+		// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
 		if (_firstRun)
 		{
-			// 선봉대장은 하나이기때문에 개수가 1개로 정해져 있다
-			dc->Draw(1, 0);
-			_firstRun = false;
+			// _initVB이 먼저 CPU에 올라가서 나머지들을 불러온다
+			// 선봉대장 같은 역할
+			dc->IASetVertexBuffers(0, 1, &_initVB, &stride, &offset);
 		}
 		else
 		{
-			// 정점 개수를 정확히 알 수 없기 때문에
+			dc->IASetVertexBuffers(0, 1, &_drawVB, &stride, &offset);
+		}
+
+		// 현재 입자 목록을 스트림 출력 전용 기법으로 그려서 입자들을 갱신한다
+		// 갱신된 입자들은 스트림 출력을 통해서 대상 정점 버퍼에 기록된다
+		// SO단계에 버텍스 버퍼를 _streamOutVB에 바인딩해주는 함수
+		dc->SOSetTargets(1, &_streamOutVB, &offset);
+
+		D3DX11_TECHNIQUE_DESC techDesc;
+		_streamOutTech->GetDesc(&techDesc);
+		for (unsigned int p = 0; p < techDesc.Passes; ++p)
+		{
+			_streamOutTech->GetPassByIndex(p)->Apply(0, dc);
+
+			if (_firstRun)
+			{
+				// 선봉대장은 하나이기때문에 개수가 1개로 정해져 있다
+				dc->Draw(1, 0);
+				_firstRun = false;
+			}
+			else
+			{
+				// 정점 개수를 정확히 알 수 없기 때문에
+				dc->DrawAuto();
+			}
+		}
+
+		// 스트림 전용 패스가 끝났다. 정점 버퍼를 때어낸다
+		ID3D11Buffer* bufferArray[1] = { 0 };
+		dc->SOSetTargets(1, bufferArray, &offset);
+
+		// 정점 버퍼들을 맞바꾼다
+		std::swap(_drawVB, _streamOutVB);
+
+		// 방금 스트림 출력된, 갱신된 입자를 화면에 드린다
+		dc->IASetVertexBuffers(0, 1, &_drawVB, &stride, &offset);
+
+		_drawTech->GetDesc(&techDesc);
+		for (unsigned int p = 0; p < techDesc.Passes; ++p)
+		{
+			_drawTech->GetPassByIndex(p)->Apply(0, dc);
+
 			dc->DrawAuto();
 		}
+
+		SetEyePos(p_Camera->GetCameraPos());
+
+		float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 	}
+}
 
-	// 스트림 전용 패스가 끝났다. 정점 버퍼를 때어낸다
-	ID3D11Buffer* bufferArray[1] = { 0 };
-	dc->SOSetTargets(1, bufferArray, &offset);
+void ArkEngine::ParticleSystem::Start()
+{
+	SetParticleState(true);
+}
 
-	// 정점 버퍼들을 맞바꾼다
-	std::swap(_drawVB, _streamOutVB);
-
-	// 방금 스트림 출력된, 갱신된 입자를 화면에 드린다
-	dc->IASetVertexBuffers(0, 1, &_drawVB, &stride, &offset);
-
-	_drawTech->GetDesc(&techDesc);
-	for (unsigned int p = 0; p < techDesc.Passes; ++p)
-	{
-		_drawTech->GetPassByIndex(p)->Apply(0, dc);
-
-		dc->DrawAuto();
-	}
-
-	SetEyePos(p_Camera->GetCameraPos());
-
-	float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
+void ArkEngine::ParticleSystem::Stop()
+{
+	SetParticleState(false);
 }
 
 ID3D11ShaderResourceView* ArkEngine::ParticleSystem::CreateRandomTextureSRV()
@@ -733,4 +746,9 @@ void ArkEngine::ParticleSystem::SetParticleColorW(const DirectX::XMFLOAT3& v)
 void ArkEngine::ParticleSystem::SetParticleDirectionW(const DirectX::XMFLOAT3& v)
 {
 	_particleDirectionEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
+}
+
+void ArkEngine::ParticleSystem::SetParticleState(bool isStart)
+{
+	_isStart = isStart;
 }
