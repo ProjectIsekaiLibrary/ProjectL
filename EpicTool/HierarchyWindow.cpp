@@ -162,12 +162,14 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 			++currentIndentLevel;
 		}
 
+
 		// 들여쓰기 레벨 체크
 		if (currentIndentLevel > previousIndentLevel)
 		{
 			IndentAll(currentIndentLevel - previousIndentLevel);
 		}
-		else if (currentIndentLevel < previousIndentLevel)
+
+		if (currentIndentLevel < previousIndentLevel)
 		{
 			for (int j = currentIndentLevel; j < previousIndentLevel; ++j)
 			{
@@ -200,8 +202,12 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 
 		ImGui::PopStyleColor();
 
+
+
 		// 드래그 앤 드롭
 		HandleDragAndDrop(i, selectedObjectIndex, _gameObjectlist);
+
+
 
 		previousIndentLevel = currentIndentLevel;
 
