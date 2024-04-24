@@ -80,6 +80,8 @@ namespace KunrealEngine
 
 		// path 에서 이미 빌드된 네비매쉬 파일을 읽어옵니다. .bin파일
 		void LoadAll(const char* path, int index);
+		// path 에서 빌드된 네비매쉬 파일을 저장합니다. .bin파일
+		void saveAll(int index, const char* path);
 		// 네비매쉬를 직접 빌드 하기
 		bool HandleBuild(int index);
 		// 네비매쉬를 업데이트 한다.
