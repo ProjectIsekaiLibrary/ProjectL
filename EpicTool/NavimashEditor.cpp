@@ -119,6 +119,38 @@ void EpicTool::NavimashEditor::ShowWindow()
 		_navimashEditor->GetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 	}
 
+	std::string fileNameStr;
+	std::string fileNameStr2;
+	char fileName[255];
+
+	ImGui::InputText("FileName", fileName, sizeof(fileName));
+
+	fileNameStr = "Resources/NaviMesh";
+	fileNameStr2 = fileName;
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Save"))
+	{
+		_navimashEditor->saveAll(_naviIndex, (fileNameStr + fileNameStr2).c_str());
+	}
+
+
+	//if(ImGui::Combo("LoadList",))
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Load"))
+	{
+
+	}
+
+	if (ImGui::Button("ResetList"))
+	{
+
+	}
+
+
 	DrawCylinder(ImGui::GetWindowDrawList(), windowPos, windowSize, 70.0f, 350.0f, (_agentRadius * 20.0f), (_agentHeight * 20.0f));
 
 	if (ImGui::Button("Show"))
