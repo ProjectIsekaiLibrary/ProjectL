@@ -72,6 +72,8 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		15.0f			// »ç°Å¸®
 	);
 
+
+
 	shot->SetLogic([]() 
 		{
 			//Projectile* projectile = new Projectile();

@@ -493,6 +493,7 @@ void KunrealEngine::Boss::Attack()
 
 				// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 				_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+				_player->GetComponent<Player>()->SetHitState(0);
 			}
 		}
 	}

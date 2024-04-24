@@ -20,12 +20,12 @@ KunrealEngine::Player::Player()
 		1.0f			// speedScale
 	), _directionVector()
 {
-	
+
 }
 
 KunrealEngine::Player::~Player()
 {
-	
+
 }
 
 void KunrealEngine::Player::Initialize()
@@ -38,42 +38,43 @@ void KunrealEngine::Player::Initialize()
 
 void KunrealEngine::Player::Release()
 {
-	
+
 }
 
 void KunrealEngine::Player::FixedUpdate()
 {
-	
+
 }
 
 void KunrealEngine::Player::Update()
 {
 	AnimateByStatus();
+	AfterHit();
 }
 
 void KunrealEngine::Player::LateUpdate()
 {
-	
+
 }
 
 void KunrealEngine::Player::OnTriggerEnter()
 {
-	
+
 }
 
 void KunrealEngine::Player::OnTriggerStay()
 {
-	
+
 }
 
 void KunrealEngine::Player::OnTriggerExit()
 {
-	
+
 }
 
 void KunrealEngine::Player::SetActive(bool active)
 {
-	
+
 }
 
 void KunrealEngine::Player::AnimateByStatus()
@@ -121,6 +122,35 @@ void KunrealEngine::Player::AnimateByStatus()
 			default:
 				break;
 		}
+	}
+}
+
+void KunrealEngine::Player::SetHitState(int patternType)
+{
+	/// 보스쪽에서 타입을 ENUM으로 바꾸면 매개변수도 변경예정
+	if (patternType == 0)
+	{
+		_playerStatus = Status::PARALYSIS;
+	}
+	else
+	{
+		_playerStatus = Status::SWEEP;
+	}
+}
+
+void KunrealEngine::Player::AfterHit()
+{
+	if (_playerStatus == Status::PARALYSIS)
+	{
+		if (GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+		{
+			_playerStatus = Status::IDLE;
+		}
+
+	}
+	else if (_playerStatus == Status::SWEEP)
+	{
+
 	}
 }
 
