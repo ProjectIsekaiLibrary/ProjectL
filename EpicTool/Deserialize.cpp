@@ -32,10 +32,10 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 		{
 			std::string objectName = jsonItem["POD"]["name"];
 			KunrealEngine::GameObject* object = nullptr;
-			if (KunrealEngine::GetCurrentScene()->GetGameObject(objectName) == nullptr)
-			{
+			//if (KunrealEngine::GetCurrentScene()->GetGameObject(objectName) == nullptr)
+			//{
 				object = KunrealEngine::GetCurrentScene()->CreateObject(objectName);
-			}
+			//}
 
 			if (object)
 			{

@@ -19,6 +19,9 @@ void EpicTool::NavimashEditor::Initialize()
 {
 	_navimashEditor = &KunrealEngine::Navigation::GetInstance();
 	_navmeshpolys.resize(_navimashEditor->GetPackageSize());
+	_filePath = "Resources/Navimesh/";
+
+	_fileNameList = _navimashEditor->GetNavimeshPathList();
 }
 
 void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height)
@@ -63,6 +66,8 @@ void EpicTool::NavimashEditor::UnDrawAll()
 void EpicTool::NavimashEditor::ShowWindow()
 {
 
+	char fileName[255] = {0};
+	int selectedItem = -1;
 	ImGui::Begin("Navimash");
 
 	ImVec2 windowPos = ImGui::GetWindowPos();
@@ -118,6 +123,48 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 		_navimashEditor->GetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 	}
+
+
+	if (ImGui::InputText("FileName", fileName, sizeof(fileName)))
+	{
+		_fileNameStr = fileName;
+	}
+	
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Save"))
+	{
+		_navimashEditor->SaveAll(_naviIndex, (_filePath + _fileNameStr).c_str());
+	}
+
+
+	if (ImGui::Combo("LoadList", &selectedItem, [](void* data, int idx, const char** out_text)
+	{
+			auto& items = *static_cast<std::vector<std::string>*>(data);
+			if (idx < 0 || idx >= static_cast<int>(items.size()))
+				return false;
+			*out_text = items[idx].c_str();
+			return true;
+	},
+	static_cast<void*>(&_fileNameList), static_cast<int>(_fileNameList.size())))
+	{
+		_selectedfileName = _fileNameList[selectedItem];
+	}
+
+	ImGui::SameLine();
+
+	if (ImGui::Button("Load"))
+	{
+		_navimashEditor->LoadAll(_selectedfileName.c_str(), _naviIndex);
+	}
+
+	if (ImGui::Button("ResetList"))
+	{
+		_fileNameList = _navimashEditor->GetNavimeshPathList();
+	}
+
+	ImGui::SameLine();
 
 	DrawCylinder(ImGui::GetWindowDrawList(), windowPos, windowSize, 70.0f, 350.0f, (_agentRadius * 20.0f), (_agentHeight * 20.0f));
 

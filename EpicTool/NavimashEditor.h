@@ -45,5 +45,14 @@ namespace EpicTool
 		KunrealEngine::Navigation* _navimashEditor;
 
 		std::vector<GInterface::GraphicsDebug*> _navmeshpolys;
+
+
+	private:
+		std::string _filePath;
+		std::string _fileNameStr;
+
+		std::string _selectedfileName;
+
+		std::vector<std::string> _fileNameList;
 	};
 }
