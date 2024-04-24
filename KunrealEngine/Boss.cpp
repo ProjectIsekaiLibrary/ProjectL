@@ -487,6 +487,7 @@ void KunrealEngine::Boss::Attack()
 
 				// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 				_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+				_player->GetComponent<Player>()->SetHitState(0);
 
 				// 현재 로직이 데미지를 준 후에 메쉬를 꺼야하는가 판단
 				auto index = _nowPattern->_logicIndex;
@@ -496,8 +497,7 @@ void KunrealEngine::Boss::Attack()
 				{
 					// 메쉬를 꺼버림
 					object->GetComponent<MeshRenderer>()->SetActive(false);
-				}
-			}
+				}			}
 		}
 	}
 }

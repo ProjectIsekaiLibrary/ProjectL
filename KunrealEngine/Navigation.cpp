@@ -1,6 +1,7 @@
 //#include <math.h>
 #include <stdio.h>
 #include <string.h>
+#include <filesystem>
 
 #include "Navigation.h"
 #include "RecastDump.h"
@@ -187,6 +188,46 @@ namespace KunrealEngine
 
 		_package[index]._navQuery->init(_package[index]._navMesh, 2048);
 		return;
+	}
+
+	void Navigation::SaveAll(int index, const char* path)
+	{
+		if (!_package[index]._tileCache) return;
+
+		FILE* fp = fopen(path, "wb");
+		if (!fp)
+			return;
+
+		// Store header.
+		TileCacheSetHeader header;
+		header.magic = TILECACHESET_MAGIC;
+		header.version = TILECACHESET_VERSION;
+		header.numTiles = 0;
+		for (int i = 0; i < _package[index]._tileCache->getTileCount(); ++i)
+		{
+			const dtCompressedTile* tile = _package[index]._tileCache->getTile(i);
+			if (!tile || !tile->header || !tile->dataSize) continue;
+			header.numTiles++;
+		}
+		memcpy(&header.cacheParams, _package[index]._tileCache->getParams(), sizeof(dtTileCacheParams));
+		memcpy(&header.meshParams, _package[index]._navMesh->getParams(), sizeof(dtNavMeshParams));
+		fwrite(&header, sizeof(TileCacheSetHeader), 1, fp);
+
+		// Store tiles.
+		for (int i = 0; i < _package[index]._tileCache->getTileCount(); ++i)
+		{
+			const dtCompressedTile* tile = _package[index]._tileCache->getTile(i);
+			if (!tile || !tile->header || !tile->dataSize) continue;
+
+			TileCacheTileHeader tileHeader;
+			tileHeader.tileRef = _package[index]._tileCache->getTileRef(tile);
+			tileHeader.dataSize = tile->dataSize;
+			fwrite(&tileHeader, sizeof(tileHeader), 1, fp);
+
+			fwrite(tile->data, tile->dataSize, 1, fp);
+		}
+
+		fclose(fp);
 	}
 
 	bool Navigation::HandleBuild(int index)
@@ -444,6 +485,24 @@ namespace KunrealEngine
 		agentMaxSlope =	_package[index]._agentsetting._agentMaxSlope;
 		agentRadius = _package[index]._agentsetting._agentMaxClimb;
 		agentMaxClimb =	_package[index]._agentsetting._agentRadius;
+	}
+
+	std::vector<std::string> KunrealEngine::Navigation::GetNavimeshPathList()
+	{
+		namespace fs = std::filesystem;
+		std::string directory = "Resources/Navimesh";
+		std::vector<std::string> fileNames;
+
+		// Iterate over the files in the directory
+		for (const auto& entry : fs::directory_iterator(directory)) {
+			// Check if it's a regular file
+			if (fs::is_regular_file(entry)) {
+				// Get the filename from the path and add it to the vector
+				fileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		return fileNames;
 	}
 
 	int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)

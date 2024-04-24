@@ -120,6 +120,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	// 90이 아니더라고 비율만 같으면 된다
 	//particle->SetParticleDirection(DirectX::XMFLOAT3{0.0f, 0.0f, -90.0f});
 	//particle->SetParticleColor(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f));
+	particle->Start();
 	ResourceManager::GetInstance()->AddParticle(particle);
 
 	auto particle2 = new ArkEngine::ParticleSystem("BasicFire", "Resources/Textures/Particles/flare.dds", 1000);
@@ -130,7 +131,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	particle2->SetParticleTime(1.0f, 3.0f);
 	//particle2->SetParticleColor(DirectX::XMFLOAT3(1.0f, 0.0f, 1.0f));
 	particle2->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 7.0f, 0.0f });
-
+	particle2->Start();
 
 	ResourceManager::GetInstance()->AddParticle(particle2);
 
