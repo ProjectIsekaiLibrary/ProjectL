@@ -176,9 +176,13 @@ void EpicTool::DataControlWindow::LoadToFile(const std::string& filePath)
 			_loadFilePath = chosenPath;
 
 			free(outPath);
+			
+			//for (auto currentObject : KunrealEngine::GetCurrentScene()->GetObjectList()) // 여기는 나중에 쓸 넘어갈때 다 지우는 부분
+			//{
+			//	KunrealEngine::GetCurrentScene()->DeleteGameObject(currentObject->GetObjectName());
+			//}
 
-
-			KunrealEngine::GetCurrentScene()->GetObjectList().clear();
+			//KunrealEngine::GetCurrentScene()->GetObjectList().clear(); 
 
 			Deserialize* _deserialize = new Deserialize();
 			_deserialize->Initialize(_loadFilePath);			

@@ -6,6 +6,7 @@ namespace KunrealEngine
 {
 	class MeshRenderer;
 	class ImageRenderer;
+	class Projectile;
 
 	class Ability
 	{
@@ -35,6 +36,7 @@ namespace KunrealEngine
 
 		MeshRenderer* _effect;		/// 이펙트 클래스가 따로 없어서 임시로 여기가 바뀌어야함
 		ImageRenderer* _icon;		// 스킬 아이콘
+		Projectile* _projectile;	// 투사체
 
 		std::function<void()> _abilityLogic;	// 스킬 로직
 
@@ -52,6 +54,9 @@ namespace KunrealEngine
 
 		// 스킬이 어떻게 작동할 것인가 설정
 		void SetLogic(std::function<void()> logic);
+
+		// 투사체 정보 설정
+		void SetProjectile(Projectile* projectile);
 	};
 }
 

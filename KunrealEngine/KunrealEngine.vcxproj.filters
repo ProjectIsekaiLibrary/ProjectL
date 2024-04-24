@@ -139,6 +139,9 @@
     <Filter Include="Source Files\System\ButtonSystem">
       <UniqueIdentifier>{9cc9c8b5-064e-471f-84c5-f64a038267b7}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Component\Particle">
+      <UniqueIdentifier>{38cd1510-4be1-4c98-a21d-aec1cdd571e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -273,6 +276,9 @@
     <ClInclude Include="NavigationStruct.h">
       <Filter>Source Files\System\Navigation</Filter>
     </ClInclude>
+    <ClInclude Include="Particle.h">
+      <Filter>Source Files\Component\Particle</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -397,6 +403,9 @@
     </ClCompile>
     <ClCompile Include="NavigationStruct.cpp">
       <Filter>Source Files\System\Navigation</Filter>
+    </ClCompile>
+    <ClCompile Include="Particle.cpp">
+      <Filter>Source Files\Component\Particle</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

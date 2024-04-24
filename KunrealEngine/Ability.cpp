@@ -3,10 +3,11 @@
 #include "Scene.h"
 #include "MeshRenderer.h"
 #include "ImageRenderer.h"
+#include "Projectile.h"
 
 KunrealEngine::Ability::Ability()
 	:_damage(0), _stamina(0), _staggerDamage(0), _cooldown(0), _range(0), _isActivated(false), _isUsable(true), _isHit(false)
-	, _effect(nullptr), _icon(nullptr)
+	, _effect(nullptr), _icon(nullptr), _projectile(nullptr)
 {
 
 }
@@ -88,4 +89,9 @@ void KunrealEngine::Ability::SetRange(float range)
 void KunrealEngine::Ability::SetLogic(std::function<void()> logic)
 {
 	this->_abilityLogic = logic;
+}
+
+void KunrealEngine::Ability::SetProjectile(Projectile* projectile)
+{
+	this->_projectile = projectile;
 }

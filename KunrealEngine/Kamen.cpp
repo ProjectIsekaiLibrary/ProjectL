@@ -1,10 +1,11 @@
 #include <functional>
+#include "ToolBox.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _callPostion(0.0f)
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _callMoveDistance(0.0f)
 {
 	BossBasicInfo info;
 
@@ -253,6 +254,9 @@ void KunrealEngine::Kamen::CallAttack()
 		{
 			if (_maxColliderOnCount > 0)
 			{
+				// 메쉬 키기
+				_call->GetComponent<MeshRenderer>()->SetActive(true);
+				// 콜라이더 키기
 				_call->GetComponent<BoxCollider>()->SetActive(true);
 			}
 
@@ -263,25 +267,31 @@ void KunrealEngine::Kamen::CallAttack()
 			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
 			
 			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+			auto callNowPos = _call->GetComponent<Transform>()->GetPosition();
+			auto distance = ToolBox::GetDistance(nowPos, callNowPos);
 			
-			if (_callPostion < pattern->_range)
+			if (distance < pattern->_range)
 			{
-				_callPostion += 20.0f * TimeManager::GetInstance().GetDeltaTime();
+				_callMoveDistance += 20.0f * TimeManager::GetInstance().GetDeltaTime();
 			}
 			else
 			{
-				_callPostion = 0.0f;
+				animator->Stop();
+				isAnimationPlaying = false;
 			}
 
 
 			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callPostion));
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
 
 			_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 		}
 
 		if (isAnimationPlaying == false)
 		{
+			_call->GetComponent<MeshRenderer>()->SetActive(false);
+			_call->GetComponent<BoxCollider>()->SetActive(false);
 			return false;
 		}
 
@@ -292,12 +302,12 @@ void KunrealEngine::Kamen::CallAttack()
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(CreateBackStepLogic(pattern, 50.0f, 30.0f));
 
-	pattern->SetLogic(logic);
+	pattern->SetLogic(logic, false);
 	
 	std::function<void()> init = [pattern, this]()
 	{
 		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
-		_callPostion = 0.0f;
+		_callMoveDistance = 0.0f;
 	};
 	
 	// 이니셜라이즈 로직 함수 넣어주기
