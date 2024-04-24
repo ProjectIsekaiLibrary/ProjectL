@@ -51,6 +51,7 @@ namespace ArkEngine
 		ParticleSystem(const std::string& particleName, const std::vector<std::string>& fileNameList, unsigned int maxParticle);
 		~ParticleSystem();
 
+
 	public:
 		void Update(float deltaTime, float gameTime);
 		void Draw(ArkEngine::ICamera* p_Camera);
