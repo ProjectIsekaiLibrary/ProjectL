@@ -126,6 +126,8 @@ namespace KunrealEngine
 		int GetPackageSize();
 		// 현재 에이전트 세팅을 반환
 		void GetAgent(int index, float& agentHeight, float& agentMaxSlope, float& agentRadius, float& agentMaxClimb);
+		// 현재 네비매쉬 폴더 내 저장되어 있는 네비매쉬들을 가져옴
+		std::vector<std::string> GetSoundPathList();
 	
 	private:	// 이거는 private라고!!!!! 가져다 쓰다가 소문자로 시작하는 함수 보이면 쓰지 말라고!!!
 
@@ -186,21 +188,6 @@ namespace KunrealEngine
 		int _cacheRawSize;
 		int _cacheLayerCount;
 		unsigned int _cacheBuildMemUsage;
-
-		enum DrawMode
-		{
-			DRAWMODE_NAVMESH,
-			DRAWMODE_NAVMESH_TRANS,
-			DRAWMODE_NAVMESH_BVTREE,
-			DRAWMODE_NAVMESH_NODES,
-			DRAWMODE_NAVMESH_PORTALS,
-			DRAWMODE_NAVMESH_INVIS,
-			DRAWMODE_MESH,
-			DRAWMODE_CACHE_BOUNDS,
-			MAX_DRAWMODE
-		};
-
-		DrawMode _drawMode;
 
 		int _maxTiles;
 		int _maxPolysPerTile;
