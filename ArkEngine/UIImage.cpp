@@ -24,8 +24,6 @@ ArkEngine::ArkDX11::UIImage::UIImage(const std::string& imageName, unsigned int 
 
 ArkEngine::ArkDX11::UIImage::~UIImage()
 {	
-	ResourceManager::GetInstance()->DeleteUIImage(this);
-
 	delete _meshTransform;
 
 	_arkEffect = nullptr;

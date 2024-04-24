@@ -100,6 +100,11 @@ namespace KunrealEngine
 		// 특정 포지션으로 이동시키기 (raycast true시 무언가에 막히면 거기까지만 찾아감)
 		bool Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast);
 
+		std::function<bool()> CreateBackStepLogic(BossPattern* pattern, float moveSpeed, float distance);
+		
+		// 백스탭 이동
+		bool BackStep(float speed, float distance);
+
 		// 플레이어를 바라보도록 텔레포트
 		void TeleportToPlayer();
 

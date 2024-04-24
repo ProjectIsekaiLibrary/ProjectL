@@ -3,6 +3,7 @@
 #include <functional>
 #include "SceneManager.h"
 #include "Scene.h"
+#include "Animator.h"
 #include "GameObject.h"
 
 // 보스의 상태
@@ -67,12 +68,21 @@ private:
 
 struct BossPattern
 {
+	enum class eAttackState
+	{
+		eNone,
+		eParalysis,		// 경직
+		ePush			// 피격
+	};
+
+
 	BossPattern()
 		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _rangeOffset(5.0f),
 		_isActive(true), _maxColliderOnCount(1), _subObject(),
-		_logic(nullptr), _initializeLogic(nullptr)
+		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _logicIndex(0)
 	{
+
 	}
 
 	~BossPattern()
@@ -82,9 +92,29 @@ struct BossPattern
 			KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->DeleteGameObject(object);
 		}
 	}
+	bool Play() 
+	{ 
+		if (_logicIndex < _logic.size())
+		{
+			bool logicPlaying = _logic[_logicIndex]();
 
-	bool Play() { if (_logic!= nullptr) return _logic(); }		// 패턴 실행 함수
-	void Initialize() { if (_initializeLogic != nullptr) _initializeLogic(); }	// 초기화 실행 함수
+			if (logicPlaying == false)
+			{
+				auto object = KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS");
+				object->GetComponent<KunrealEngine::Animator>()->Stop();
+
+				_logicIndex++;
+			}
+
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	}
+	//bool Play() { if (_logic!= nullptr) return _logic(); }		// 패턴 실행 함수
+	void Initialize() { if (_initializeLogic != nullptr) _logicIndex = 0; _initializeLogic(); }	// 초기화 실행 함수
 	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };
@@ -98,8 +128,9 @@ struct BossPattern
 	BossPattern& SetRangeOffset(float rangeOffset) { _rangeOffset = rangeOffset; return *this; };
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
 	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; return *this; };
-	BossPattern& SetLogic(std::function<bool()> logic) { _logic = logic; return *this; };
+	BossPattern& SetLogic(std::function<bool()> logic) { _logic.emplace_back(logic); return *this; };
 	BossPattern& SetInitializeLogic(std::function<void()> initialize) { _initializeLogic = initialize; return *this; };
+	BossPattern& SetAttackState(eAttackState attackState) { _attackState = attackState; return *this; };
 
 	std::string _patternName;		// 패턴 이름
 
@@ -126,11 +157,16 @@ struct BossPattern
 
 	bool _isActive;					// 패턴 활성화 여부
 
-	std::function<bool()> _logic;	// 패턴 로직
+	//경직인지 피격인지
+	eAttackState _attackState;		// 패턴 상태 여부
+
+	std::vector<std::function<bool()>> _logic;	// 패턴 로직
 
 	std::function<void()> _initializeLogic;	// 매 패턴 초기화해줘야할 것들을 담아놓음
 
 	unsigned int _maxColliderOnCount; // 패턴 중 콜라이더가 켜지는 횟수 지정 (기본 1)
 
 	std::vector<KunrealEngine::GameObject*> _subObject;
+
+	unsigned int _logicIndex;
 };

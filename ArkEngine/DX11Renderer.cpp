@@ -408,7 +408,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	rainParticle->SetEmitPos(_mainCamera->GetCameraPos());
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
-
 		index->Draw(_mainCamera);
 	}
 	// UI IMAGE ·»´õ¸µ
