@@ -98,12 +98,12 @@ void KunrealEngine::Kamen::SetBossCollider()
 
 void KunrealEngine::Kamen::CreatePattern()
 {
-	LeftAttackOnce();
-	RightAttackOnce();
-	SpellAttack();
+	//LeftAttackOnce();
+	//RightAttackOnce();
+	//SpellAttack();
 	CallAttack();
 
-	TestPattern();
+	//TestPattern();
 }
 
 void KunrealEngine::Kamen::LeftAttackOnce()
@@ -234,6 +234,7 @@ void KunrealEngine::Kamen::CallAttack()
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(2.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call").SetRangeOffset(-10.0f);
 	pattern->SetMaxColliderCount(1);
+	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
 	_call = _boss->GetObjectScene()->CreateObject("call");
 	_call->AddComponent<BoxCollider>();
@@ -286,10 +287,13 @@ void KunrealEngine::Kamen::CallAttack()
 
 		return true;
 	};
+
 	
 	// 로직 함수 실행 가능하도록 넣어주기
-	pattern->SetLogic(logic);
+	pattern->SetLogic(CreateBackStepLogic(pattern, 50.0f, 30.0f));
 
+	pattern->SetLogic(logic);
+	
 	std::function<void()> init = [pattern, this]()
 	{
 		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
@@ -298,32 +302,6 @@ void KunrealEngine::Kamen::CallAttack()
 	
 	// 이니셜라이즈 로직 함수 넣어주기
 	pattern->SetInitializeLogic(init);
-
-	_basicPattern.emplace_back(pattern);
-}
-
-void KunrealEngine::Kamen::TestPattern()
-{
-	BossPattern* pattern = new BossPattern();
-
-	pattern->SetPatternName("test");
-
-	pattern->SetAnimName("test").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(2.0f);
-	pattern->SetIsWarning(true).SetWarningName("test");
-
-	std::function<bool()> logic = [pattern, this]()
-	{
-		auto moveFinish = Move(_test, 20.0f, false, true);
-		
-		if (moveFinish == true)
-		{
-			return false;
-		}
-		
-		return true;
-	};
-
-	pattern->SetLogic(logic);
 
 	_basicPattern.emplace_back(pattern);
 }

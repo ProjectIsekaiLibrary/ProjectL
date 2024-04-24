@@ -37,7 +37,6 @@ namespace KunrealEngine
 		void RightAttackOnce();
 		void SpellAttack();
 		void CallAttack();
-		void TestPattern();
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -50,5 +49,9 @@ namespace KunrealEngine
 	private:
 		// Call 거리 체크용
 		float _callPostion;
+
+	// logic
+	private:
+		std::function<bool()> _backStepLogic;
 	};
 }

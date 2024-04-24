@@ -918,6 +918,35 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 	return false;
 }
 
+
+std::function<bool()> KunrealEngine::Boss::CreateBackStepLogic(BossPattern* pattern, float moveSpeed, float distance)
+{
+	auto backStepLogic = [pattern, this]()
+	{
+		auto moveFinish = BackStep(50.0f, 30.0f);
+
+		if (moveFinish == true)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	return backStepLogic;
+}
+
+bool KunrealEngine::Boss::BackStep(float speed, float distance)
+{
+	DirectX::XMFLOAT3 newPosition;
+	newPosition.x = _bossTransform->GetPosition().x - distance * _direction.x;
+	newPosition.y = _bossTransform->GetPosition().y - distance * _direction.y;
+	newPosition.z = _bossTransform->GetPosition().z - distance * _direction.z;
+
+
+	return Move(newPosition, speed, false, true);
+}
+
 const DirectX::XMVECTOR KunrealEngine::Boss::GetDirection()
 {
 	auto direction = DirectX::XMLoadFloat3(&_direction);

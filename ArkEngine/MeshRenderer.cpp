@@ -199,6 +199,12 @@ void ArkEngine::MeshRenderer::ShadowRender()
 	UINT stride = sizeof(ArkEngine::ArkDX11::Vertex);
 	UINT offset = 0;
 
+	// 컬링 적용된 메쉬는 그리지 않음
+	if (_meshList.empty())
+	{
+		return;
+	}
+
 	for (int i = 0; i < _vertexBuffer.size(); i++)
 	{
 		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer[i], &stride, &offset);
