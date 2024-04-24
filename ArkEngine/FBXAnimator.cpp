@@ -179,7 +179,7 @@ float ArkEngine::ArkDX11::FBXAnimator::GetCurrentFrame()
 
 float ArkEngine::ArkDX11::FBXAnimator::GetMaxFrame()
 {
-	return _anim->duration;
+	return _anim->duration - 1.0f;
 }
 
 const std::string& ArkEngine::ArkDX11::FBXAnimator::GetAnimationName()
