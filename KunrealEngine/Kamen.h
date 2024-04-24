@@ -48,7 +48,7 @@ namespace KunrealEngine
 
 	private:
 		// Call 거리 체크용
-		float _callPostion;
+		float _callMoveDistance;
 
 	// logic
 	private:

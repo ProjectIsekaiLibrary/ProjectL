@@ -22,8 +22,8 @@ KunrealEngine::Boss::Boss()
 	_maxColliderOnCount(1),
 	_isStart(false), _isHit(false), _isRotateFinish(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
-	_stopover(), _nodeCount(0), _direction(), _prevPos(),
-	_isMoving(false), _isRotate(false)
+	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
+	_isMoving(false), _isRotate(false), _backStepReady(false)
 {
 
 }
@@ -272,9 +272,6 @@ void KunrealEngine::Boss::Idle()
 
 			_nowPattern = _corePattern.back();
 
-			// 패턴 초기화해줘야할 것들 초기화
-			_nowPattern->Initialize();
-
 			// 패턴 준비 상태로 변경
 			_status = BossStatus::PATTERN_READY;
 
@@ -310,9 +307,6 @@ void KunrealEngine::Boss::Idle()
 
 	// Attack 처리를 위해 패턴 중 최대 충돌이 몇번 일어나는지를 지니고 있음  
 	_maxColliderOnCount = _nowPattern->_maxColliderOnCount;
-
-	// 패턴 초기화해줘야할 것들 초기화
-	_nowPattern->Initialize();
 
 	// Chase로 상태 변환
 	_status = BossStatus::CHASE;
@@ -474,9 +468,9 @@ void KunrealEngine::Boss::Hit()
 void KunrealEngine::Boss::Attack()
 {
 	// 보스의 하위 콜라이더를 돌면서
-	if (_patternIndex != -1)
+	if (_nowPattern != nullptr)
 	{
-		for (const auto& object : _basicPattern[_patternIndex]->_subObject)
+		for (const auto& object : _nowPattern->_subObject)
 		{
 			auto collider = object->GetComponent<BoxCollider>();
 			// 콜라이더와 충돌하였고 그 대상이 플레이어라면
@@ -493,6 +487,16 @@ void KunrealEngine::Boss::Attack()
 
 				// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 				_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+
+				// 현재 로직이 데미지를 준 후에 메쉬를 꺼야하는가 판단
+				auto index = _nowPattern->_logicIndex;
+
+				// 데미지가 들어간 후 메쉬를 꺼야한다면
+				if (object->GetComponent<MeshRenderer>()!= nullptr && !_nowPattern->_isRemainMesh[index])
+				{
+					// 메쉬를 꺼버림
+					object->GetComponent<MeshRenderer>()->SetActive(false);
+				}
 			}
 		}
 	}
@@ -538,15 +542,18 @@ void KunrealEngine::Boss::PatternReady()
 	// 현재 실행 중인 Idle 애니메이션을 종료
 	_boss->GetComponent<Animator>()->Stop();
 
-
 	// 플레이어를 바라보는 백터를 계산
 	CalculateDirection();
 
 	// 패턴이 지닌 하위 오브젝트들을 모두 켬
 	for (const auto& object : _nowPattern->_subObject)
 	{
+		// 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
 		object->SetActive(true);
 	}
+
+	// 패턴 초기화해줘야할 것들 초기화
+	_nowPattern->Initialize();
 
 	// 코어 패턴일 경우
 	if (_isCorePattern)
@@ -910,6 +917,11 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 				_isRotate = false;
 				_isRotateFinish = false;
 
+				_prevPos = _backStepPos;
+				_backStepPos = { 0.0f, 0.0f, 0.0f };
+
+				_backStepReady = false;
+
 				return true;
 			}
 		}
@@ -938,11 +950,18 @@ std::function<bool()> KunrealEngine::Boss::CreateBackStepLogic(BossPattern* patt
 
 bool KunrealEngine::Boss::BackStep(float speed, float distance)
 {
-	DirectX::XMFLOAT3 newPosition;
-	newPosition.x = _bossTransform->GetPosition().x - distance * _direction.x;
-	newPosition.y = _bossTransform->GetPosition().y - distance * _direction.y;
-	newPosition.z = _bossTransform->GetPosition().z - distance * _direction.z;
+	if (_backStepReady == false)
+	{
+		_backStepPos = _bossTransform->GetPosition();
 
+		_backStepReady = true;
+	}
+
+	DirectX::XMFLOAT3 newPosition;
+
+	newPosition.x = _backStepPos.x - distance * _direction.x;
+	newPosition.y =  0.0f;
+	newPosition.z = _backStepPos.z - distance * _direction.z;
 
 	return Move(newPosition, speed, false, true);
 }
@@ -967,6 +986,18 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 	{
 		for (const auto& object : pattern->_subObject)
 		{
+			// MeshRenderer 컴포넌트 처음에는 비활성화시키기
+			if (object->GetComponent<MeshRenderer>() != nullptr)
+			{
+				object->GetComponent<MeshRenderer>()->SetActive(false);
+			}
+			// BoxCollider 컴포넌트 처음에는 비활성화시키기
+			if (object->GetComponent<BoxCollider>() != nullptr)
+			{
+				object->GetComponent<BoxCollider>()->SetActive(false);
+			}
+
+			// 오브젝트에 대한 비활성화 시키기
 			object->SetActive(tf);
 		}
 	}
