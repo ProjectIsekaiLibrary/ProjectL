@@ -99,12 +99,10 @@ void KunrealEngine::Kamen::SetBossCollider()
 
 void KunrealEngine::Kamen::CreatePattern()
 {
-	//LeftAttackOnce();
-	//RightAttackOnce();
-	//SpellAttack();
+	LeftAttackOnce();
+	RightAttackOnce();
+	SpellAttack();
 	CallAttack();
-
-	//TestPattern();
 }
 
 void KunrealEngine::Kamen::LeftAttackOnce()
@@ -197,7 +195,7 @@ void KunrealEngine::Kamen::SpellAttack()
 
 	pattern->SetPatternName("Spell");
 
-	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(2.0f);
+	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 20.0f).SetAfterDelay(2.0f);
 	pattern->SetIsWarning(true).SetWarningName("Spell");
 
 	std::function<bool()> logic = [pattern, this]()
@@ -302,7 +300,7 @@ void KunrealEngine::Kamen::CallAttack()
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(CreateBackStepLogic(pattern, 50.0f, 30.0f));
 
-	pattern->SetLogic(logic, false);
+	//pattern->SetLogic(logic, false);
 	
 	std::function<void()> init = [pattern, this]()
 	{

@@ -121,7 +121,7 @@ struct BossPattern
 		}
 	}
 
-	void Initialize() { if (_initializeLogic != nullptr) _logicIndex = 0; _initializeLogic(); }	// 초기화 실행 함수
+	void Initialize() { if (_initializeLogic != nullptr) _initializeLogic();  _logicIndex = 0; }	// 초기화 실행 함수
 	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };

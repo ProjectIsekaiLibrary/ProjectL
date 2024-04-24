@@ -120,9 +120,7 @@ namespace KunrealEngine
 
 		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 
-		bool MoveToPlayer(DirectX::XMFLOAT3& targetPos, float speed, float patternRange);
-
-		bool MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed, float patternRange);
+		bool MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 
 		void UpdateMoveNode();
 
