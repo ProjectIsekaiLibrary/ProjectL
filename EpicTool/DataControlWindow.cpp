@@ -26,7 +26,7 @@
 /// </summary>
 
 EpicTool::DataControlWindow::DataControlWindow()
-    :_show_save_editor(true), _save_Scene(true), _new_Scene(true), _opt_padding(false), _fileSave(nullptr)
+    :_show_save_editor(true), _save_Scene(true), _new_Scene(true), _opt_padding(false), _fileSave(nullptr), _scene2First(false)
 {
 
 }
@@ -41,15 +41,16 @@ void EpicTool::DataControlWindow::ShowWindow()
 
 }
 
-void EpicTool::DataControlWindow::ShowWindow(bool& close) //세이브 버튼 다른 곳으로 이동 해야할듯
+void EpicTool::DataControlWindow::ShowWindow(bool& close, int& selectedObjectIndex) //세이브 버튼 다른 곳으로 이동 해야할듯
 {
 	std::string samplefilePath = _saveFilePath;
 
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-
-
-	
+	if (_scene2First == false)
+	{
+		ChangeScene(selectedObjectIndex);
+	}
 
 	if (_show_save_editor)
 	{
@@ -137,6 +138,13 @@ void EpicTool::DataControlWindow::ShowWindow(bool* _open, std::vector<Object>& o
 void EpicTool::DataControlWindow::Initialize()
 {
 	_exportObj = new ExportObj();
+
+	TCHAR szPath[MAX_PATH];
+	GetModuleFileName(NULL, szPath, MAX_PATH);
+	_executablePath = szPath;
+
+	// 실행 파일이 위치한 디렉토리로 이동해서 ProjectL\Bin\x64\Debug 경로로 변경
+	_executablePath = _executablePath.parent_path().parent_path().parent_path().parent_path() / "EpicTool" / "mapData";
 }
  
 void EpicTool::DataControlWindow::SaveToFile(const std::string& filePath)
@@ -187,6 +195,26 @@ void EpicTool::DataControlWindow::LoadToFile(const std::string& filePath)
 			Deserialize* _deserialize = new Deserialize();
 			_deserialize->Initialize(_loadFilePath);			
 		}
+	}
+}
+
+void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
+{
+	if (KunrealEngine::GetCurrentScene()->GetSceneName() == "NewWorld")
+	{
+		// 파일명 설정
+		std::string filename = "mapTest2.json"; // 예시 파일명
+
+		// 파일의 절대 경로 생성
+		std::filesystem::path filePath = _executablePath / filename;
+
+		filename = filePath.string();
+
+		Deserialize* _deserialize = new Deserialize();
+		_deserialize->Initialize(filename);
+
+		_scene2First = true;
+		selectedObjectIndex = -1;
 	}
 }
 

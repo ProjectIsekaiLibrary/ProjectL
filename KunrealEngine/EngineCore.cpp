@@ -94,8 +94,9 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(-23.0f, 0.0f, -10.0f), navipos3, DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
 
 
+	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
 	/// 니들 맘대로 해
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -122,8 +123,8 @@ void KunrealEngine::EngineCore::Update()
 	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
-	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
-	navigationInstance.MoveTempObstacle(pos.first, pos.second);
+	//std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
+	//navigationInstance.MoveTempObstacle(pos.first, pos.second);
 	
 	// 장애물 설치 테스트
 	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
@@ -145,9 +146,25 @@ void KunrealEngine::EngineCore::Update()
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
-	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
-	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
+	//cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
+	//cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
 
+	auto gameObjectList = GetCurrentScene()->GetObjectList();
+
+
+	if (GetCurrentScene()->GetGameObject("RuneStone") != nullptr)
+	{
+		if (GetCurrentScene()->GetGameObject("RuneStone")->GetComponent<BoxCollider>()->IsCollided() == true)
+		{
+			if (GetCurrentScene()->GetGameObject("RuneStone")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
+			{
+				ChangeScene("NewWorld");
+			}
+		}
+	}
+
+
+	
 	Updatecoroutine();
 }
 
