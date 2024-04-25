@@ -71,6 +71,8 @@ namespace KunrealEngine
 		PlayerInfo _playerInfo;					// 플레이어 기본 정보 스탯 등
 		DirectX::XMVECTOR _directionVector;		// 플레이어가 바라보는 방향 벡터
 
+		int _abilityAnimationIndex;				// 어떤 스킬 애니메이션
+
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
 		void AnimateByStatus();

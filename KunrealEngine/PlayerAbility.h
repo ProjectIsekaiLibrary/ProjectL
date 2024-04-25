@@ -36,6 +36,7 @@ namespace KunrealEngine
 		GameObject* _meteor;		// R 스킬 운석 객체
 
 	private:
+		void ResetShotPos();
 		void CreateAbility1();
 
 		void ResetMeteorPos();
