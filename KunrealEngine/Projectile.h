@@ -45,7 +45,7 @@ namespace KunrealEngine
 	public:
 		// 투사체 정보 생성	// 매개변수로 플레이어 넣어줘야함
 		// 생성하는 부분에선 this 넣으면 되도록 설계
-		void CreateInfo(GameObject* playerObj);
+		void SetDirection(GameObject* playerObj);
 
 		// 어떤 물체를 그릴 지	// 이펙트는 쉐이더를 통해
 		void SetMeshObject(const char* meshName, const char* textureName = "", const char* normalName = "");
