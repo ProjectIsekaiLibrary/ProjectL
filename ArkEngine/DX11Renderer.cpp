@@ -108,7 +108,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
-
 	SetPickingTexture();
 }
 

@@ -67,6 +67,7 @@ namespace ArkEngine
 		virtual void SetParticleTime(float particleFadeTime, float particleLifeTime) override;
 		virtual void SetParticleColor(const DirectX::XMFLOAT3& particleColor) override;
 		virtual void SetParticleDirection(const DirectX::XMFLOAT3& particleRotaion) override;
+		void SetParticleRotation(const DirectX::XMFLOAT3& rotation);
 
 		float GetRandomFloat(float minNum, float maxNum);
 		void SetEyePos(const DirectX::XMFLOAT3& eyePosW);

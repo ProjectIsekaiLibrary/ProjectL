@@ -153,6 +153,11 @@ void ArkEngine::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& pa
 	}
 }
 
+void ArkEngine::ParticleSystem::SetParticleRotation(const DirectX::XMFLOAT3& rotation)
+{
+
+}
+
 void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
 {
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
