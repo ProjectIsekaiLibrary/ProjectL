@@ -47,6 +47,9 @@ struct Field
 	// boxCollider
 	std::map<std::string, float> collider;
 
+	// particle
+	std::map<std::string, float> particle;
+
 	// SoundPlayer
 	std::vector<std::string> sound_Name;
 	std::vector<bool> sound_Is3D;
