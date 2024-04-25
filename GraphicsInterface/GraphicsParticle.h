@@ -1,10 +1,12 @@
 #pragma once
+#include <string>
 
 namespace GInterface
 {
 	class GraphicsParticle
 	{
 	public:
+		GraphicsParticle() {};
 		virtual ~GraphicsParticle() {};
 
 	public:

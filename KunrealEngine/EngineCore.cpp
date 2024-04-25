@@ -32,8 +32,15 @@ KunrealEngine::GameObject* Button_Image1;
 KunrealEngine::GameObject* Button_Image2;
 KunrealEngine::GameObject* Button_Image3;
 KunrealEngine::GameObject* Button_Image4;
+KunrealEngine::GameObject* tree1;
+KunrealEngine::GameObject* tree2;
+KunrealEngine::GameObject* tree3;
+KunrealEngine::GameObject* tree4;
+
 
 KunrealEngine::GameObject* testCamera;
+
+
 
 DirectX::XMFLOAT3 targetPos;
 
@@ -227,6 +234,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	player->AddComponent<BoxCollider>();
 	player->GetComponent<BoxCollider>()->SetBoxSize(3.0f, 8.0f, 5.0f);
 
+
 	player->AddComponent<Player>();
 
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
@@ -357,44 +365,119 @@ void KunrealEngine::EngineCore::PlayGround()
 	cursorimage->SetPosition(500.0f);
 	cursorimage->SetRenderingState(false);
 
+	// ÆÄÆ¼Å¬ testCode
+	//auto asdf2 = GRAPHICS->CreateParticle("fire", "Resources/Textures/Particles/flare.dds", 1000);
+	//asdf2->SetParticleColor(DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f});
+	//asdf2->SetEmitVelocity(4.0f, true);
+	//asdf2->SetParticleTime(1.0f, 3.0f);
+	//asdf2->SetParticleSize(DirectX::XMFLOAT2{10.f, 10.f});
+	//asdf2->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
+	//asdf2->SetParticleDirection(DirectX::XMFLOAT3{0.0f, 7.0f, 0.0f});
+	//asdf2->Start();
+	//
+	//auto asdf3 = GRAPHICS->CreateParticle("fire2", "Resources/Textures/Particles/flare.dds", 1000);
+	//asdf3->SetParticleColor(DirectX::XMFLOAT3{ 1.0f, 1.0f, 0.0f });
+	//asdf3->SetEmitVelocity(4.0f, true);
+	//asdf3->SetParticleTime(1.0f, 3.0f);
+	//asdf3->SetParticleSize(DirectX::XMFLOAT2{ 5.f, 5.f });
+	//asdf3->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 28.0f, 0.0f });
+	//asdf3->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 7.0f, 0.0f });
+	//asdf3->Start();
+
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT3(100.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
 	//GRAPHICS->DeleteAllLine();
 	// Test
-	for (int i = 0; i < 50; i++)
-	{
-		std::string name = "rightCube" + std::to_string(i);
-		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
-		cube1->AddComponent<MeshRenderer>();
-		cube1->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich", true);
-		cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
-		cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
-		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
-		cube1->GetComponent<Transform>()->SetPosition(40.0f, 2.0f, 50.0f - 10.0f * i);
-		
-		if (i % 2 == 0)
-		{
-			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
-		}
-	}
 
-	for (int i = 0; i < 50; i++)
-	{
-		std::string name = "leftCube" + std::to_string(i);
-		auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
-		cube1->AddComponent<MeshRenderer>();
-		cube1->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
-		cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
-		//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
-		cube1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
-		cube1->GetComponent<Transform>()->SetPosition(-40.0f, 2.0f, 50.0f - 10.0f * i);
+	tree1 = sceneInstance.GetCurrentScene()->CreateObject("tree1");
+	tree2 = sceneInstance.GetCurrentScene()->CreateObject("tree2");
+	tree3 = sceneInstance.GetCurrentScene()->CreateObject("tree3");
+	tree4 = sceneInstance.GetCurrentScene()->CreateObject("tree4");
+	tree1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	tree2->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	std::string name = "rightCube" + std::to_string(i);
+	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
+	//	cube1->AddComponent<MeshRenderer>();
+	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_01/SM_tree_large_ancient_01", true);
+	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
+	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
+	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	//	cube1->GetComponent<Transform>()->SetPosition(40.0f, 2.0f, 50.0f - 10.0f * i);
+	//	//cube1->SetParent(tree1);
+	//	if (i % 2 == 0)
+	//	{
+	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
+	//	}
+	//}
+	//
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	std::string name = "leftCube" + std::to_string(i);
+	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
+	//	cube1->AddComponent<MeshRenderer>();
+	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_01/SM_tree_large_ancient_01", true);
+	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
+	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
+	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	//	cube1->GetComponent<Transform>()->SetPosition(-40.0f, 2.0f, 50.0f - 10.0f * i);
+	//	//cube1->SetParent(tree2);
+	//	if (i % 2 == 1)
+	//	{
+	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
+	//	}
+	//}
+	//
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	std::string name = "leftCubee" + std::to_string(i);
+	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
+	//	cube1->AddComponent<MeshRenderer>();
+	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_02/SM_tree_large_ancient_02", true);
+	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
+	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
+	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	//	cube1->GetComponent<Transform>()->SetPosition(80.0f, 2.0f, 50.0f - 10.0f * i);
+	//	//cube1->SetParent(tree3);
+	//	if (i % 2 == 1)
+	//	{
+	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
+	//	}
+	//}
+	//
+	//for (int i = 0; i < 50; i++)
+	//{
+	//	std::string name = "rightCubee" + std::to_string(i);
+	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
+	//	cube1->AddComponent<MeshRenderer>();
+	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_02/SM_tree_large_ancient_02", true);
+	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
+	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
+	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	//	cube1->GetComponent<Transform>()->SetPosition(-80.0f, 2.0f, 50.0f - 10.0f * i);
+	//	//cube1->SetParent(tree4);
+	//	if (i % 2 == 1)
+	//	{
+	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
+	//	}
+	//}
+
 	
-		if (i % 2 == 1)
-		{
-			cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
-		}
-	}
+	//GameObject* particleTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleTest");
+	player->AddComponent<Particle>();
 
-	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
+	Particle* partpart = player->GetComponent<Particle>();
+
+	partpart->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+	partpart->SetParticleSize(40.0f, 40.0f);
+	partpart->SetParticleVelocity(30.0f, true);
+	partpart->SetParticleDuration(1.0f, 3.0f);
+	partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
+	partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
+	partpart->SetActive(true);
+	
+	
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()

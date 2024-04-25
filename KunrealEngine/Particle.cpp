@@ -1,9 +1,13 @@
 #include "Particle.h"
+#include "Transform.h"
 #include "GraphicsSystem.h"
 
 KunrealEngine::Particle::Particle()
+	:_particle(nullptr), _transform(nullptr),
+	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f), 
+	_color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f })
 {
-
+	
 }
 
 KunrealEngine::Particle::~Particle()
@@ -13,7 +17,7 @@ KunrealEngine::Particle::~Particle()
 
 void KunrealEngine::Particle::Initialize()
 {
-	
+	_transform = this->GetOwner()->GetComponent<Transform>();
 }
 
 void KunrealEngine::Particle::Release()
@@ -28,7 +32,8 @@ void KunrealEngine::Particle::FixedUpdate()
 
 void KunrealEngine::Particle::Update()
 {
-	
+	SetParticlePos(this->_transform->GetPosition());
+	SetParticleSize(this->_transform->GetScale().x, this->_transform->GetScale().y);
 }
 
 void KunrealEngine::Particle::LateUpdate()
@@ -53,12 +58,19 @@ void KunrealEngine::Particle::OnTriggerExit()
 
 void KunrealEngine::Particle::SetActive(bool active)
 {
-	
+	if (active)
+	{
+		Start();
+	}
+	else
+	{
+		Stop();
+	}
 }
 
-void KunrealEngine::Particle::SetParticleEffect(std::string name, std::string fileName)
+void KunrealEngine::Particle::SetParticleEffect(std::string name, std::string fileName, unsigned int maxParticle)
 {
-
+	_particle = GRAPHICS->CreateParticle(name, fileName, maxParticle);
 }
 
 void KunrealEngine::Particle::Start()
@@ -83,6 +95,12 @@ void KunrealEngine::Particle::SetParticlePos(float x, float y, float z)
 	_particle->SetEmitPos(pos);
 }
 
+
+void KunrealEngine::Particle::SetParticlePos(DirectX::XMFLOAT3 pos)
+{
+	this->_particle->SetEmitPos(pos);
+}
+
 void KunrealEngine::Particle::SetParticleSize(float x, float y)
 {
 	DirectX::XMFLOAT2 size = { x, y };
@@ -93,24 +111,62 @@ void KunrealEngine::Particle::SetParticleSize(float x, float y)
 void KunrealEngine::Particle::SetParticleVelocity(float velocity, bool isRandom)
 {
 	_particle->SetEmitVelocity(velocity, isRandom);
+
+	this->_velocity = velocity;
+	this->_random = isRandom;
 }
 
 void KunrealEngine::Particle::SetParticleDuration(float fade, float life)
 {
-	_particle->SetParticleTime(fade, life);
+	this->_particle->SetParticleTime(fade, life);
+
+	this->_fadeoutTime = fade;
+	this->_lifeTime = life;
 }
 
 void KunrealEngine::Particle::AddParticleColor(float x, float y, float z)
 {
 	DirectX::XMFLOAT3 color = { x, y, z };
-
 	_particle->SetParticleColor(color);
+
+	this->_color = color;
 }
 
 void KunrealEngine::Particle::SetParticleDirection(float x, float y, float z)
 {
 	DirectX::XMFLOAT3 direction = { x, y, z };
-	
 	_particle->SetParticleDirection(direction);
+
+	this->_direction = direction;
+}
+
+float KunrealEngine::Particle::GetVelocity()
+{
+	return this->_velocity;
+}
+
+bool KunrealEngine::Particle::GetRandomState()
+{
+	return this->_random;
+}
+
+float KunrealEngine::Particle::GetFadeOutTime()
+{
+	return this->_fadeoutTime;
+}
+
+float KunrealEngine::Particle::GetLifeTime()
+{
+	return this->_lifeTime;
+}
+
+DirectX::XMFLOAT3 KunrealEngine::Particle::GetColor()
+{
+	return this->_color;
+}
+
+DirectX::XMFLOAT3 KunrealEngine::Particle::GetDirection()
+{
+	return this->_direction;
 }
 

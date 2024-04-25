@@ -5,12 +5,13 @@
 
 namespace KunrealEngine
 {
-	class _DECLSPEC Kamen : public Component, public Boss
+	class _DECLSPEC Aracne : public Component, public Boss
 	{
 	public:
-		Kamen();
-		~Kamen();
+		Aracne();
+		~Aracne();
 
+	public:
 		void Initialize() override;
 		void Release() override;
 
@@ -33,25 +34,5 @@ namespace KunrealEngine
 		virtual void CreatePattern() override;
 
 	private:
-		void LeftAttackOnce();
-		void RightAttackOnce();
-		void SpellAttack();
-		void CallAttack();
-
-	private:
-		// 패턴에 필요한 subObject들
-		GameObject* _leftHand;
-		GameObject* _rightHand;
-		GameObject* _call;
-
-		DirectX::XMFLOAT3 _test = { 0.0f, 0.0f, -10.0f };
-
-	private:
-		// Call 거리 체크용
-		float _callMoveDistance;
-
-	// logic
-	private:
-		std::function<bool()> _backStepLogic;
 	};
 }

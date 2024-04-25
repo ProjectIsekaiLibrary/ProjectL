@@ -102,9 +102,6 @@ namespace KunrealEngine
 
 		std::function<bool()> CreateBackStepLogic(BossPattern* pattern, float moveSpeed, float distance);
 		
-		// 백스탭 이동
-		bool BackStep(float speed, float distance);
-
 		// 플레이어를 바라보도록 텔레포트
 		void TeleportToPlayer();
 
@@ -123,9 +120,7 @@ namespace KunrealEngine
 
 		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 
-		bool MoveToPlayer(DirectX::XMFLOAT3& targetPos, float speed, float patternRange);
-
-		bool MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed, float patternRange);
+		bool MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 
 		void UpdateMoveNode();
 
@@ -134,6 +129,9 @@ namespace KunrealEngine
 		void CalculateDirection();
 
 		bool MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
+
+		// 백스탭 이동
+		bool BackStep(float speed, float distance);
 
 	protected:
 		BossStatus _status;
@@ -173,10 +171,12 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _direction;
 
 		DirectX::XMFLOAT3 _prevPos;
+		DirectX::XMFLOAT3 _backStepPos;
 
 	private:
 		bool _isMoving;
 		bool _isRotate;
+		bool _backStepReady;
 
 	private:
 		Coroutine_Func(patternEnd)

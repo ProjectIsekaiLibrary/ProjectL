@@ -7,7 +7,7 @@
 
 KunrealEngine::Ability::Ability()
 	:_damage(0), _stamina(0), _staggerDamage(0), _cooldown(0), _range(0), _isActivated(false), _isUsable(true), _isHit(false)
-	, _effect(nullptr), _icon(nullptr), _projectile(nullptr)
+	, _icon(nullptr), _projectile(nullptr)
 {
 
 }
@@ -17,19 +17,16 @@ KunrealEngine::Ability::~Ability()
 
 }
 
-void KunrealEngine::Ability::Initialize()
+void KunrealEngine::Ability::Initialize(std::string objName)
 {
+	_projectile = SceneManager::GetInstance().GetCurrentScene()->CreateObject(objName);
 
+	// 스킬을 사용해야 활성화 되어야하니
+	_projectile->SetActive(false);
 }
 
 void KunrealEngine::Ability::Release()
 {
-	// 이펙트와 아이콘을 담고 있는 게임오브젝트 삭제
-	if (_effect != nullptr)
-	{
-		SceneManager::GetInstance().GetCurrentScene()->DeleteGameObject(_effect->GetOwner());
-	}
-
 	if (_icon != nullptr)
 	{
 		SceneManager::GetInstance().GetCurrentScene()->DeleteGameObject(_icon->GetOwner());
@@ -89,9 +86,4 @@ void KunrealEngine::Ability::SetRange(float range)
 void KunrealEngine::Ability::SetLogic(std::function<void()> logic)
 {
 	this->_abilityLogic = logic;
-}
-
-void KunrealEngine::Ability::SetProjectile(Projectile* projectile)
-{
-	this->_projectile = projectile;
 }

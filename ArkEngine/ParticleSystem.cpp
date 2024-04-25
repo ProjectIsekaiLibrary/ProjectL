@@ -19,8 +19,8 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_texArraySRV(nullptr),
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
-	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
-	_particleColorEffect(nullptr), _isStart(false)
+	_particleFadeTime(5.0f), _particleLifeTime(5.0f),
+	_particleColorEffect(nullptr), _isStart(true)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -41,7 +41,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
-	_particleColorEffect(nullptr), _isStart(false)
+	_particleColorEffect(nullptr), _isStart(true)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -239,6 +239,7 @@ void ArkEngine::ParticleSystem::Reset()
 	_age = 0.0f;
 }
 
+
 void ArkEngine::ParticleSystem::Update(float deltaTime, float gameTime)
 {
 	_gameTime += gameTime;
@@ -351,6 +352,7 @@ void ArkEngine::ParticleSystem::Stop()
 {
 	SetParticleState(false);
 }
+
 
 ID3D11ShaderResourceView* ArkEngine::ParticleSystem::CreateRandomTextureSRV()
 {
