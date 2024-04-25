@@ -273,7 +273,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	if (lightIndexList.empty() == false)
 	{
 		// Perspective Shadow를 구현하기 위해 카메라를 기존 시점에서 광원에서의 시점으로 바꿈
-		_mainCamera = ResourceManager::GetInstance()->GetShadowCamera()[lightIndexList[0]];
+		_mainCamera = ResourceManager::GetInstance()->GetShadowCamera()[0];
 
 		// 쉐도우 버퍼에 광원시점에서의 물체들의 깊이값을 기록할 준비 
 		BeginShadowRender();
