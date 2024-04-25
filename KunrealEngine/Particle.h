@@ -11,8 +11,9 @@ namespace GInterface
 
 namespace KunrealEngine
 {
-	class Particle : public Component
+	class _DECLSPEC Particle : public Component
 	{
+		friend class GameObject;
 	public:
 		Particle();
 		~Particle();
@@ -36,7 +37,7 @@ namespace KunrealEngine
 
 	public:
 		// 어떤 파티클을 출력할 것인가
-		void SetParticleEffect(std::string name, std::string fileName);
+		void SetParticleEffect(std::string name, std::string fileName, unsigned int maxParticle);
 
 		// 파티클 방출 혹은 분사 
 		void Start();

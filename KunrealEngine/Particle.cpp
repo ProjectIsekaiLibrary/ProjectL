@@ -56,9 +56,9 @@ void KunrealEngine::Particle::SetActive(bool active)
 	
 }
 
-void KunrealEngine::Particle::SetParticleEffect(std::string name, std::string fileName)
+void KunrealEngine::Particle::SetParticleEffect(std::string name, std::string fileName, unsigned int maxParticle)
 {
-
+	GRAPHICS->CreateParticle(name, fileName, maxParticle);
 }
 
 void KunrealEngine::Particle::Start()

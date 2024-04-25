@@ -40,6 +40,8 @@ KunrealEngine::GameObject* tree4;
 
 KunrealEngine::GameObject* testCamera;
 
+
+
 DirectX::XMFLOAT3 targetPos;
 
 KunrealEngine::EngineCore::EngineCore()
@@ -214,6 +216,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<MeshRenderer>()->SetReflect(reflect.x, reflect.y, reflect.z, reflect.w);
 	player->AddComponent<BoxCollider>();
 	player->GetComponent<BoxCollider>()->SetBoxSize(3.0f, 8.0f, 5.0f);
+
 
 	player->AddComponent<Player>();
 
@@ -442,6 +445,8 @@ void KunrealEngine::EngineCore::PlayGround()
 	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
 	//	}
 	//}
+
+	
 
 	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
 }
