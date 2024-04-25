@@ -4,7 +4,7 @@
 #include "Player.h"
 
 KunrealEngine::Projectile::Projectile()
-	:_collider(nullptr), _direction(), _mesh(nullptr)
+	:_collider(nullptr), _direction(), _mesh(nullptr), _movedRange(0.0f)
 {
 	_direction = DirectX::XMVectorZero();
 }
@@ -69,11 +69,9 @@ void KunrealEngine::Projectile::SetActive(bool active)
 	
 }
 
-void KunrealEngine::Projectile::SetDirection(GameObject* playerObj)
+void KunrealEngine::Projectile::SetDirection(DirectX::XMVECTOR direction)
 {
-	// 생성되는 시점에 발사될 방향이 중요
-	// 방향벡터는 투사체 생성 시점 플레이어가 바라보는 방향벡터를 가져옴
-	_direction = playerObj->GetComponent<Player>()->GetDirectionVector();
+	_direction = direction;
 }
 
 void KunrealEngine::Projectile::SetMeshObject(const char* meshName, const char* textureName /*= ""*/, const char* normalName /*= ""*/)

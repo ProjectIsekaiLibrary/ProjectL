@@ -19,7 +19,7 @@ KunrealEngine::Player::Player()
 		1.0f,			// spellpower
 		1.0f,			// damageReduce
 		1.0f			// speedScale
-	), _directionVector()
+	), _directionVector(), _abilityAnimationIndex(0)
 {
 
 }
@@ -116,6 +116,10 @@ void KunrealEngine::Player::AnimateByStatus()
 				GetOwner()->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::ABILITY:
+				if (_abilityAnimationIndex == 3)
+				{
+					GetOwner()->GetComponent<Animator>()->Play("Meteor", 40.0f * _playerInfo._speedScale, false);
+				}
 				break;
 			case KunrealEngine::Player::Status::STAGGERED:
 				GetOwner()->GetComponent<Animator>()->Play("Staggered", 20.0f * _playerInfo._speedScale, true);
