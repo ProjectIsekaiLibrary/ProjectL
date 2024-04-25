@@ -189,6 +189,33 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 					pod.collider["BoxSize_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().z;
 				}
 
+				// 파티클
+				if ((gameObject->GetComponent<KunrealEngine::Particle>()) != NULL)
+				{
+					pod.particle["Velocity"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetVelocity();
+
+					if (gameObject->GetComponent<KunrealEngine::Particle>()->GetRandomState() == true)
+					{
+						pod.particle["Random"] = 1.0f;
+					}
+					else
+					{
+						pod.particle["Random"] = 0.0f;
+					}
+
+					pod.particle["FadeoutTime"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetFadeOutTime();
+					pod.particle["LifeTime"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetLifeTime();
+
+					pod.particle["Color_X"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetColor().x;
+					pod.particle["Color_Y"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetColor().y;
+					pod.particle["Color_Z"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetColor().z;
+
+					pod.particle["Direction_X"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetDirection().x;
+					pod.particle["Direction_Y"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetDirection().y;
+					pod.particle["Direction_Z"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetDirection().z;
+						
+				}
+
 
 				if ((gameObject->GetComponent<KunrealEngine::SoundPlayer>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
 				{

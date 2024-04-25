@@ -284,6 +284,42 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 
 					}
 
+					try
+					{
+						auto particle = jsonItem["POD"].find("particle");
+
+						if (particle != jsonItem["POD"].end() && !jsonItem["POD"]["particle"].empty())
+						{
+							if (object->GetComponent<KunrealEngine::Particle>() == nullptr)
+							{
+								object->AddComponent<KunrealEngine::Particle>();
+								object->GetComponent<KunrealEngine::Particle>()->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+							}
+
+							float velocityParticle = jsonItem["POD"]["particle"]["Velocity"];
+							bool randomParticle = false;
+							if (jsonItem["POD"]["particle"]["Random"] == 1)
+							{
+								randomParticle = true;
+							}
+							else
+							{
+								randomParticle = false;
+							}
+
+							object->GetComponent<KunrealEngine::Particle>()->SetParticleVelocity(velocityParticle, randomParticle);
+
+							object->GetComponent<KunrealEngine::Particle>()->SetParticleDuration(jsonItem["POD"]["particle"]["FadeoutTime"], jsonItem["POD"]["particle"]["LifeTime"]);
+
+							object->GetComponent<KunrealEngine::Particle>()->AddParticleColor(jsonItem["POD"]["particle"]["Color_X"], jsonItem["POD"]["particle"]["Color_Y"], jsonItem["POD"]["particle"]["Color_Z"]);
+							object->GetComponent<KunrealEngine::Particle>()->SetParticleDirection(jsonItem["POD"]["particle"]["Direction_X"], jsonItem["POD"]["particle"]["Direction_Y"], jsonItem["POD"]["particle"]["Direction_Z"]);
+						}
+					}
+					catch(const std::exception& e) // 성공적으로 저장이 되면 삭제할 try문
+					{
+						int test = 0;
+					}
+
 				}
 	
 			}
