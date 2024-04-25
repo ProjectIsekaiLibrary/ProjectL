@@ -215,7 +215,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 		{
-			index->Reset();
+			index->Stop();
+		}
+	}
+	if (GetAsyncKeyState('J') & 0x8000)
+	{
+		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+		{
+			index->Start();
 		}
 	}
 

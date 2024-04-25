@@ -455,7 +455,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	partpart->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
 	partpart->SetParticleSize(40.0f, 40.0f);
 	partpart->SetParticleVelocity(30.0f, true);
-	partpart->SetParticleDuration(1.0f, 3.0f);
+	partpart->SetParticleDuration(3.0f, 3.0f);
 	partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
 	partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	partpart->SetActive(true);

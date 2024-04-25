@@ -33,7 +33,7 @@ void KunrealEngine::Particle::FixedUpdate()
 void KunrealEngine::Particle::Update()
 {
 	SetParticlePos(this->_transform->GetPosition());
-	SetParticleSize(this->_transform->GetScale().x, this->_transform->GetScale().y);
+	//SetParticleSize(this->_transform->GetScale().x, this->_transform->GetScale().y);
 }
 
 void KunrealEngine::Particle::LateUpdate()
