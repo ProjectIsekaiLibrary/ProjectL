@@ -3,7 +3,8 @@
 #include "InputSystem.h"
 #include "PlayerAbility.h"
 #include "PlayerMove.h"
-
+#include "MeshRenderer.h"
+#include "BoxCollider.h"
 #include "Transform.h"
 
 KunrealEngine::Player::Player()
@@ -32,6 +33,20 @@ void KunrealEngine::Player::Initialize()
 {
 	// Player 컴포넌트 하나만으로 관련된 컴포넌트 모두 추가되도록
 	_transform = GetOwner()->GetComponent<Transform>();
+	_transform->SetScale(0.1f, 0.1f, 0.1f);
+	_transform->SetRotation(0.0f, 45.f, 0.0f);
+
+	GetOwner()->AddComponent<MeshRenderer>();
+	GetOwner()->GetComponent<MeshRenderer>()->SetMeshObject("PlayerWithCloak/PlayerWithCloak");
+	GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
+	GetOwner()->GetComponent<MeshRenderer>()->SetPickableState(true);
+	GetOwner()->GetComponent<MeshRenderer>()->SetNormalTexture(0, "PlayerWithCloak/M_Clothes_normal.png");
+	GetOwner()->GetComponent<MeshRenderer>()->SetNormalTexture(1, "PlayerWithCloak/M_Body_normal.png");
+	GetOwner()->GetComponent<MeshRenderer>()->SetNormalTexture(2, "PlayerWithCloak/M_Hair_normal.png");
+
+	GetOwner()->AddComponent<BoxCollider>();
+	GetOwner()->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 12.0f, 5.0f);
+	GetOwner()->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 	GetOwner()->AddComponent<PlayerAbility>();
 	GetOwner()->AddComponent<PlayerMove>();
 }

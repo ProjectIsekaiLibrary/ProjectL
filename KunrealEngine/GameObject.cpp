@@ -288,6 +288,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 			this->GetComponent<ImageRenderer>()->SetImageStatus(false);
 		}
 
+		if (this->GetComponent<Particle>() != nullptr)
+		{
+			this->GetComponent<Particle>()->SetActive(false);
+		}
+
 		// physx 관련 부분
 		if (this->GetComponent<BoxCollider>() != nullptr)
 		{
@@ -310,6 +315,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		if (this->GetComponent<ImageRenderer>() != nullptr)
 		{
 			this->GetComponent<ImageRenderer>()->SetImageStatus(this->GetComponent<ImageRenderer>()->GetActivated());
+		}
+
+		if (this->GetComponent<Particle>() != nullptr)
+		{
+			this->GetComponent<Particle>()->SetActive(this->GetComponent<Particle>()->GetActivated());
 		}
 
 		if (this->GetComponent<BoxCollider>() != nullptr)

@@ -40,6 +40,7 @@ namespace KunrealEngine
 		// 파티클을 담을 오브젝트의 transform
 		Transform* _transform;
 
+		DirectX::XMFLOAT2 _size;		// 파티클 크기
 		float _velocity;				// 방출 강도
 		bool _random;					// 랜덤으로 흩뿌리는지
 		float _fadeoutTime;				// 서서히 흐려지게하는 시간

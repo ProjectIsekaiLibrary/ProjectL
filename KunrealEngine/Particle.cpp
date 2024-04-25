@@ -5,7 +5,7 @@
 KunrealEngine::Particle::Particle()
 	:_particle(nullptr), _transform(nullptr),
 	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f), 
-	_color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f })
+	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f })
 {
 	
 }
@@ -33,7 +33,7 @@ void KunrealEngine::Particle::FixedUpdate()
 void KunrealEngine::Particle::Update()
 {
 	SetParticlePos(this->_transform->GetPosition());
-	SetParticleSize(this->_transform->GetScale().x, this->_transform->GetScale().y);
+	//SetParticleSize(this->_transform->GetScale().x, this->_transform->GetScale().y);
 }
 
 void KunrealEngine::Particle::LateUpdate()
@@ -106,6 +106,7 @@ void KunrealEngine::Particle::SetParticleSize(float x, float y)
 	DirectX::XMFLOAT2 size = { x, y };
 
 	_particle->SetParticleSize(size);
+	_size = size;
 }
 
 void KunrealEngine::Particle::SetParticleVelocity(float velocity, bool isRandom)
@@ -138,6 +139,12 @@ void KunrealEngine::Particle::SetParticleDirection(float x, float y, float z)
 	_particle->SetParticleDirection(direction);
 
 	this->_direction = direction;
+}
+
+
+DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()
+{
+	return this->_size;
 }
 
 float KunrealEngine::Particle::GetVelocity()

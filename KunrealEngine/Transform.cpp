@@ -78,6 +78,12 @@ void KunrealEngine::Transform::SetPosition(float x, float y, float z)
 	this->_position.z = z;
 }
 
+
+void KunrealEngine::Transform::SetPosition(DirectX::XMFLOAT3 pos)
+{
+	this->_position = pos;
+}
+
 void KunrealEngine::Transform::SetScale(float x, float y, float z)
 {
 	this->_scale.x = x;
