@@ -355,6 +355,7 @@ void ArkEngine::ParticleSystem::Start()
 
 void ArkEngine::ParticleSystem::Stop()
 {
+	Reset();
 	SetParticleState(false);
 }
 
