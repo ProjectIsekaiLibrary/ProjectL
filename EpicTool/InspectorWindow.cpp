@@ -16,7 +16,7 @@ EpicTool::InspectorWindow::InspectorWindow()
 	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
 	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
 	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
-	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}
+	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{0}, _directionParticle{0}
 { 
 																			
 }																			
@@ -931,6 +931,83 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 }
 
 /// <summary>
+/// Particle를 관리하는 UI
+/// </summary>
+/// <param name="instance"></param>
+template<>
+void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Particle>(KunrealEngine::Particle* instance)
+{
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Particle");
+
+	bool isNewSetting = false;
+
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>() == NULL) // 깡통 추가
+	{
+		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Particle>();
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+		isNewSetting = true;
+	}
+
+	if (isNewSetting != true)
+	{
+		_velocityParticle = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetVelocity();
+		_randomParticle = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetRandomState();
+		_fadeoutTimeParticle = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetFadeOutTime();
+		_lifeTimeParticle = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetLifeTime();
+
+		_colorParticle[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetColor().x;
+		_colorParticle[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetColor().y;
+		_colorParticle[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetColor().z;
+
+		_directionParticle[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().x;
+		_directionParticle[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().y;
+		_directionParticle[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().z;
+	}
+
+	
+	// 파티클 리스트?
+
+	if (ImGui::DragFloat("Velocity", &_velocityParticle, 0.1f, 0.0f, FLT_MAX))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleVelocity(_velocityParticle, _randomParticle);
+	}
+
+	if (ImGui::Checkbox("Random", &_randomParticle))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleVelocity(_velocityParticle, _randomParticle);
+
+	}
+
+	if (ImGui::DragFloat("FadeoutTime", &_fadeoutTimeParticle, 0.1f, 0.0f, FLT_MAX))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleDuration(_fadeoutTimeParticle, _lifeTimeParticle);
+	}
+
+	if (ImGui::DragFloat("LifeTimeParticle", &_lifeTimeParticle, 0.1f, 0.0f, FLT_MAX))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleDuration(_fadeoutTimeParticle, _lifeTimeParticle);
+
+	}
+
+	if (ImGui::DragFloat3("Color", _colorParticle, 0.1f, 0.0f, FLT_MAX))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->AddParticleColor(_colorParticle[0], _colorParticle[1], _colorParticle[2]);
+	}
+
+	if (ImGui::DragFloat3("Direction", _directionParticle, 0.1f))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleDirection(_directionParticle[0], _directionParticle[1], _directionParticle[2]);
+	}
+
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+}
+
+/// <summary>
 /// Player를 관리하는 UI
 /// </summary>
 /// <param name="instance"></param>
@@ -1014,6 +1091,7 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 	bool soundPlayerOpen = false;
 	bool playerOpen = false;
 	bool KamenOpen = false;
+	bool particleOpen = false;
 	bool collider = false;
 	_DebugType = DebugType::None;
 
@@ -1069,10 +1147,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		if (selectedComponentIndex)
 		{
-			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer", "Player", "Kamen"};
+			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer","Particle", "Player", "Kamen"};
 			int selectedItem = -1;
 
-			if (ImGui::Combo("Component", &selectedItem, items, 8)) {
+			if (ImGui::Combo("Component", &selectedItem, items, 9)) {
 				// 사용자가 새로운 아이템을 선택했을 때 실행할 코드
 				// 임시 테스트 용이며 삭제할것임
 				switch (selectedItem)
@@ -1105,13 +1183,18 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 					selectedComponentIndex = !selectedComponentIndex;
 					break;
 				case 6:
-					IsCheckItem(playerOpen);
+					IsCheckItem(particleOpen);
 					selectedComponentIndex = !selectedComponentIndex;
 					break;
 				case 7:
+					IsCheckItem(playerOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 8:
 					IsCheckItem(KamenOpen);
 					selectedComponentIndex = !selectedComponentIndex;
 					break;
+
 				default:
 					break;
 				}
@@ -1159,6 +1242,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			{
 				KamenOpen = true;
 			}
+			if (checkComponentName == "Particle")
+			{
+				particleOpen = true;
+			}
 		}
 
 		if (meshStateOpen == true)
@@ -1200,6 +1287,11 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		if (KamenOpen == true)
 		{
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Kamen>());
+		}
+
+		if (particleOpen == true)
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>());
 		}
 
 		if (ImGui::Button("Add Component"))

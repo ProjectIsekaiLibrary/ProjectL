@@ -1,7 +1,7 @@
 #pragma once
 #include "IWindow.h"
 #include <vector>
-
+#include <filesystem>
 #include <nfd.h>
 
 /// <summary>
@@ -30,13 +30,15 @@ namespace EpicTool
 
         virtual void ShowWindow(bool* _open, std::vector<Object>& object) override;   // 저장자체는 다른 함수에서 하자
 
-        void ShowWindow(bool& close);
+        void ShowWindow(bool& close, int& selectedObjectIndex);
         void Initialize(); // 초기화, 아직 미구현
 
         // 저장을 담당
         void SaveToFile(const std::string& filePath);
         void LoadToFile(const std::string& filePath);
         void ExportToObj(const std::string& filename); // obj 파일 출력을 위해 버텍스와 인덱스 버퍼를 
+
+        void ChangeScene(int& selectedObjectIndex);
 
     private:
         FileSave* _fileSave; // 파일 저장용 객체
@@ -52,5 +54,8 @@ namespace EpicTool
         bool _new_Scene;
         bool _opt_padding;
 
+        bool _scene2First;
+
+        std::filesystem::path _executablePath;
     };
 }
