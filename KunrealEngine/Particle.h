@@ -83,6 +83,7 @@ namespace KunrealEngine
 
 	public:
 		// 파티클 정보 전달용
+		DirectX::XMFLOAT2 GetSize();
 		float GetVelocity();
 		bool GetRandomState();
 		float GetFadeOutTime();

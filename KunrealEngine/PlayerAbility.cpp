@@ -23,7 +23,7 @@ void KunrealEngine::PlayerAbility::Initialize()
 {
 	_playerComp = GetOwner()->GetComponent<Player>();
 
-	CreateAbility1();
+	//CreateAbility1();
 	CreateAbility4();
 }
 
