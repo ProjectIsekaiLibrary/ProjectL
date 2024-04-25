@@ -2945,9 +2945,7 @@
                 "Offset_y": 0.0,
                 "Offset_z": 0.0
             },
-            "customComponent": {
-                "Player": true
-            },
+            "customComponent": {},
             "image": {},
             "light": {},
             "lightType": {},
