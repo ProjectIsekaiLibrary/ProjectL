@@ -18,9 +18,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -0.3232085108757019,
-                "position_y": 78.34700012207031,
-                "position_z": -177.73182678222656,
+                "position_x": 0.5325862169265747,
+                "position_y": 47.89419174194336,
+                "position_z": -127.67550659179688,
                 "rotation_x": -18.0,
                 "rotation_y": 3.0,
                 "rotation_z": 0.0,
@@ -203,7 +203,7 @@
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
                 "scale_x": 0.49000000953674316,
-                "scale_y": 0.49000000953674316,
+                "scale_y": 0.25,
                 "scale_z": 0.49000000953674316
             }
         }
