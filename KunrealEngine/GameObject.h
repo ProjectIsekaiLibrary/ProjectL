@@ -117,7 +117,7 @@ namespace KunrealEngine
 	public:
 		// 오브젝트에 컴포넌트를 추가하는 함수
 		template<typename T>
-		void AddComponent()
+		T* AddComponent()
 		{
 			T* newComponent = new T();
 
@@ -128,6 +128,7 @@ namespace KunrealEngine
 				newComponent->_componentName = GetOriginalTypeName(typeid(T).name());	// 컴포넌트의 이름을 넣어줌
 			}
 			newComponent->Initialize();
+			return newComponent;
 		}
 
 		// 오브젝트에 매개변수를 가진 컴포넌트를 추가하는 함수

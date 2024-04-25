@@ -55,6 +55,7 @@ namespace KunrealEngine
 
 		// Position값 조정
 		void SetPosition(float x, float y, float z);
+		void SetPosition(DirectX::XMFLOAT3 pos);
 
 		// Scale값 조정
 		void SetScale(float x, float y, float z);
