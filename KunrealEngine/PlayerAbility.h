@@ -33,7 +33,7 @@ namespace KunrealEngine
 		Player* _playerComp;
 
 	private:
-		void CreateAbility1();
+		void CreateAbility4();
 
 	public:
 		void AddToContanier(Ability* abil);

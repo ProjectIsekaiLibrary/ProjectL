@@ -4,6 +4,7 @@
 #include "Ability.h"
 #include "Projectile.h"
 #include "InputSystem.h"
+#include "GraphicsSystem.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr)
@@ -20,7 +21,7 @@ void KunrealEngine::PlayerAbility::Initialize()
 {
 	_playerComp = GetOwner()->GetComponent<Player>();
 
-	CreateAbility1();
+	CreateAbility4();
 }
 
 void KunrealEngine::PlayerAbility::Release()
@@ -70,13 +71,13 @@ void KunrealEngine::PlayerAbility::SetActive(bool active)
 	
 }
 
-void KunrealEngine::PlayerAbility::CreateAbility1()
+void KunrealEngine::PlayerAbility::CreateAbility4()
 {
-	Ability* shot = new Ability();
-	shot->Initialize("Shot");
+	Ability* meteor = new Ability();
+	meteor->Initialize("Meteor");
 
-	shot->SetTotalData(
-		"Shot",			// 이름
+	meteor->SetTotalData(
+		"Meteor",			// 이름
 		20.0f,			// 데미지
 		10.0f,			// 마나
 		5.0f,			// 무력화 피해량
@@ -84,14 +85,14 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		15.0f			// 사거리
 	);
 
-	shot->_projectile->AddComponent<Projectile>();
-	Projectile* shotProj = shot->_projectile->GetComponent<Projectile>();
+	meteor->_projectile->AddComponent<Projectile>();
+	Projectile* meteorProj = meteor->_projectile->GetComponent<Projectile>();
 
-	shotProj->SetMeshObject("Meteor/Meteor");
-	shotProj->GetCollider()->SetBoxSize(2.0f, 2.0f, 2.0f);
-	shotProj->SetDestoryCondition([shotProj, this]()->bool 
+	meteorProj->SetMeshObject("Meteor/Meteor");
+	meteorProj->GetCollider()->SetBoxSize(2.0f, 2.0f, 2.0f);
+	meteorProj->SetDestoryCondition([meteorProj, this]()->bool
 		{
-			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())
+			if (meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject() != this->GetOwner())
 			{
 				return true;
 			}
@@ -101,21 +102,21 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 			}
 		});
 
-	shot->_projectile->SetActive(false);
+	meteor->_projectile->SetActive(false);
 
-	shot->SetLogic([shot, shotProj, this]() 
+	meteor->SetLogic([meteor, meteorProj, this]()
 		{
-			shot->_projectile->SetActive(true);
-			shot->_projectile->GetComponent<Transform>()->SetPosition(
+			meteor->_projectile->SetActive(true);
+			meteor->_projectile->GetComponent<Transform>()->SetPosition(
 				this->GetOwner()->GetComponent<Transform>()->GetPosition().x,
 				this->GetOwner()->GetComponent<Transform>()->GetPosition().y,
 				this->GetOwner()->GetComponent<Transform>()->GetPosition().z
 				);
 
-			shotProj->SetDirection(GetOwner());
+			meteorProj->SetDirection(GetOwner());
 		});
 
-	AddToContanier(shot);
+	AddToContanier(meteor);
 }
 
 void KunrealEngine::PlayerAbility::AddToContanier(Ability* abil)
