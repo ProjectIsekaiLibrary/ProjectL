@@ -349,23 +349,23 @@ void KunrealEngine::EngineCore::PlayGround()
 	cursorimage->SetRenderingState(false);
 
 	// ÆÄÆ¼Å¬ testCode
-	auto asdf2 = GRAPHICS->CreateParticle("fire", "Resources/Textures/Particles/flare.dds", 1000);
-	asdf2->SetParticleColor(DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f});
-	asdf2->SetEmitVelocity(4.0f, true);
-	asdf2->SetParticleTime(1.0f, 3.0f);
-	asdf2->SetParticleSize(DirectX::XMFLOAT2{10.f, 10.f});
-	asdf2->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
-	asdf2->SetParticleDirection(DirectX::XMFLOAT3{0.0f, 7.0f, 0.0f});
-	asdf2->Start();
-
-	auto asdf3 = GRAPHICS->CreateParticle("fire2", "Resources/Textures/Particles/flare.dds", 1000);
-	asdf3->SetParticleColor(DirectX::XMFLOAT3{ 1.0f, 1.0f, 0.0f });
-	asdf3->SetEmitVelocity(4.0f, true);
-	asdf3->SetParticleTime(1.0f, 3.0f);
-	asdf3->SetParticleSize(DirectX::XMFLOAT2{ 5.f, 5.f });
-	asdf3->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 28.0f, 0.0f });
-	asdf3->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 7.0f, 0.0f });
-	asdf3->Start();
+	//auto asdf2 = GRAPHICS->CreateParticle("fire", "Resources/Textures/Particles/flare.dds", 1000);
+	//asdf2->SetParticleColor(DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f});
+	//asdf2->SetEmitVelocity(4.0f, true);
+	//asdf2->SetParticleTime(1.0f, 3.0f);
+	//asdf2->SetParticleSize(DirectX::XMFLOAT2{10.f, 10.f});
+	//asdf2->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
+	//asdf2->SetParticleDirection(DirectX::XMFLOAT3{0.0f, 7.0f, 0.0f});
+	//asdf2->Start();
+	//
+	//auto asdf3 = GRAPHICS->CreateParticle("fire2", "Resources/Textures/Particles/flare.dds", 1000);
+	//asdf3->SetParticleColor(DirectX::XMFLOAT3{ 1.0f, 1.0f, 0.0f });
+	//asdf3->SetEmitVelocity(4.0f, true);
+	//asdf3->SetParticleTime(1.0f, 3.0f);
+	//asdf3->SetParticleSize(DirectX::XMFLOAT2{ 5.f, 5.f });
+	//asdf3->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 28.0f, 0.0f });
+	//asdf3->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 7.0f, 0.0f });
+	//asdf3->Start();
 
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT3(100.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
 	//GRAPHICS->DeleteAllLine();
@@ -447,8 +447,20 @@ void KunrealEngine::EngineCore::PlayGround()
 	//}
 
 	
+	//GameObject* particleTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleTest");
+	player->AddComponent<Particle>();
 
-	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
+	Particle* partpart = player->GetComponent<Particle>();
+
+	partpart->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+	partpart->SetParticleSize(40.0f, 40.0f);
+	partpart->SetParticleVelocity(30.0f, true);
+	partpart->SetParticleDuration(1.0f, 3.0f);
+	partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
+	partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
+	partpart->SetActive(true);
+	
+	
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()

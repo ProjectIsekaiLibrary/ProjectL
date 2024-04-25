@@ -4,6 +4,7 @@
 
 namespace KunrealEngine
 {
+	class GameObject;
 	class MeshRenderer;
 	class ImageRenderer;
 	class Projectile;
@@ -11,11 +12,12 @@ namespace KunrealEngine
 	class Ability
 	{
 		friend class EventManager;
+		friend class PlayerAbility;
 	public:
 		Ability();
 		~Ability();
 
-		void Initialize();
+		void Initialize(std::string objName);
 		void Release();
 		void Update();
 
@@ -34,9 +36,8 @@ namespace KunrealEngine
 		bool _isUsable;				// 쿨이 돌았는가
 		bool _isHit;				// 보스가 피격당했는지
 
-		MeshRenderer* _effect;		/// 이펙트 클래스가 따로 없어서 임시로 여기가 바뀌어야함
 		ImageRenderer* _icon;		// 스킬 아이콘
-		Projectile* _projectile;	// 투사체
+		GameObject* _projectile;	// 투사체를 담을 오브젝트
 
 		std::function<void()> _abilityLogic;	// 스킬 로직
 
@@ -55,8 +56,6 @@ namespace KunrealEngine
 		// 스킬이 어떻게 작동할 것인가 설정
 		void SetLogic(std::function<void()> logic);
 
-		// 투사체 정보 설정
-		void SetProjectile(Projectile* projectile);
 	};
 }
 

@@ -20,6 +20,8 @@ void KunrealEngine::Projectile::Initialize()
 	this->GetOwner()->AddComponent<BoxCollider>();
 	this->GetOwner()->AddComponent<MeshRenderer>();
 
+	_collider = this->GetOwner()->GetComponent<BoxCollider>();
+	_mesh = this->GetOwner()->GetComponent<MeshRenderer>();
 }
 
 void KunrealEngine::Projectile::Release()
@@ -67,13 +69,10 @@ void KunrealEngine::Projectile::SetActive(bool active)
 	
 }
 
-void KunrealEngine::Projectile::CreateInfo(GameObject* playerObj)
+void KunrealEngine::Projectile::SetDirection(GameObject* playerObj)
 {
 	// 생성되는 시점에 발사될 방향이 중요
 	// 방향벡터는 투사체 생성 시점 플레이어가 바라보는 방향벡터를 가져옴
-
-	_collider = this->GetOwner()->GetComponent<BoxCollider>();
-	_mesh = this->GetOwner()->GetComponent<MeshRenderer>();
 	_direction = playerObj->GetComponent<Player>()->GetDirectionVector();
 }
 
