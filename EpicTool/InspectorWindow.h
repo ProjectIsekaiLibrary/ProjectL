@@ -259,6 +259,7 @@ namespace EpicTool
 		 float _lifeTimeParticle;				// 얼마 뒤에 사라지게 할건가
          float _colorParticle[3];		        // RGB		// 이 색을 추가하겠다
 		 float _directionParticle[3];	        // 방출 방향
+         float _sizeParticle[2];                // 사이즈
 
     };
 }

@@ -16,7 +16,7 @@ EpicTool::InspectorWindow::InspectorWindow()
 	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
 	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
 	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
-	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{0}, _directionParticle{0}
+	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{0}, _directionParticle{0}, _sizeParticle{0}
 { 
 																			
 }																			
@@ -962,6 +962,9 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Particle>(Kunre
 		_directionParticle[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().x;
 		_directionParticle[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().y;
 		_directionParticle[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().z;
+
+		_sizeParticle[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetSize().x;
+		_sizeParticle[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetSize().y;
 	}
 
 	
@@ -999,6 +1002,11 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Particle>(Kunre
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleDirection(_directionParticle[0], _directionParticle[1], _directionParticle[2]);
 	}
 
+	if (ImGui::DragFloat2("Size", _sizeParticle, 0.1f, 0.0f, FLT_MAX))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleSize(_sizeParticle[0], _sizeParticle[1]);
+
+	}
 
 	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>());
 
