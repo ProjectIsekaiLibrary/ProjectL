@@ -80,7 +80,7 @@ struct BossPattern
 		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _rangeOffset(5.0f),
 		_isActive(true), _maxColliderOnCount(1), _subObject(),
-		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _logicIndex(0)
+		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _logicIndex(0), _playNextLogic(false)
 	{
 
 	}
@@ -107,6 +107,16 @@ struct BossPattern
 				auto object = KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS");
 				object->GetComponent<KunrealEngine::Animator>()->Stop();
 
+				/// 여기서 하고싶은데 상호참조라서 못하고있음
+				//object->GetComponent<KunrealEngine::Boss>()->SetMaxColliderOnCount(_maxColliderOnCount);
+				
+				// 다음 패턴을 실행하는 조건이 안되면
+				if (_playNextLogic == false)
+				{
+					// 패턴 실행 끝내기
+					_logicIndex = _logic.size()-1;
+				}
+
 				// 다음 로직으로 이동
 				_logicIndex++;
 			}
@@ -121,7 +131,7 @@ struct BossPattern
 		}
 	}
 
-	void Initialize() { if (_initializeLogic != nullptr) _initializeLogic();  _logicIndex = 0; }	// 초기화 실행 함수
+	void Initialize() { if (_initializeLogic != nullptr) _initializeLogic(); _playNextLogic = false,  _logicIndex = 0; }	// 초기화 실행 함수
 	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };
@@ -138,6 +148,7 @@ struct BossPattern
 	BossPattern& SetLogic(std::function<bool()> logic, bool isRemainMesh = true) { _logic.emplace_back(logic); _isRemainMesh.emplace_back(isRemainMesh); return *this; };
 	BossPattern& SetInitializeLogic(std::function<void()> initialize) { _initializeLogic = initialize; return *this; };
 	BossPattern& SetAttackState(eAttackState attackState) { _attackState = attackState; return *this; };
+	BossPattern& SetNextLogic(bool tf) { _playNextLogic = tf; return *this; };
 
 	std::string _patternName;		// 패턴 이름
 
@@ -177,5 +188,7 @@ struct BossPattern
 
 	unsigned int _logicIndex;
 
-	std::vector<bool> _isRemainMesh;	// 피격이 끝나도 메쉬가 남아있는가,
+	std::vector<bool> _isRemainMesh;	// 피격이 끝나도 메쉬가 남아있는가
+
+	bool _playNextLogic;
 };
