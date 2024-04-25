@@ -102,11 +102,19 @@ namespace KunrealEngine
 
 		std::function<bool()> CreateBackStepLogic(BossPattern* pattern, float moveSpeed, float distance);
 		
+		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, float activeColliderFrame);
+
+		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, const std::string& animName, GameObject* subObject, float activeColliderFrame);
+
+
 		// 플레이어를 바라보도록 텔레포트
 		void TeleportToPlayer();
 
 		// 지정한 곳으로 텔레포트
 		void Teleport(const DirectX::XMFLOAT3 &targetPos, bool lookAtPlayer);
+
+	public:
+		void SetMaxColliderOnCount(unsigned int index);
 
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);

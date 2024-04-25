@@ -33,10 +33,15 @@ namespace KunrealEngine
 		virtual void CreatePattern() override;
 
 	private:
-		void LeftAttackOnce();
-		void RightAttackOnce();
+		void CreateSubObject();
+
+	private:
+		void LeftAttack();
+		void RightAttack();
 		void SpellAttack();
 		void CallAttack();
+
+		void BackStepCallAttack();
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -52,6 +57,6 @@ namespace KunrealEngine
 
 	// logic
 	private:
-		std::function<bool()> _backStepLogic;
+		std::function<void()> _callInitLogic;
 	};
 }
