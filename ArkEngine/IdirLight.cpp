@@ -92,7 +92,6 @@ void ArkEngine::IdirLight::SetDirection(DirectX::XMFLOAT3 direction)
 		ArkEngine::LightManager::GetInstance()->GetActiveDirLightList()[_activeIndex].SetDir(direction);
 	}
 
-	auto iCamera = ResourceManager::GetInstance()->GetShadowCamera()[_index];
 	auto iCamera = ResourceManager::GetInstance()->GetShadowCamera().back();
 
 	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
