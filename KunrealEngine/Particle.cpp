@@ -66,6 +66,8 @@ void KunrealEngine::Particle::SetActive(bool active)
 	{
 		Stop();
 	}
+
+	this->_isActivated = active;
 }
 
 void KunrealEngine::Particle::SetParticleEffect(std::string name, std::string fileName, unsigned int maxParticle)

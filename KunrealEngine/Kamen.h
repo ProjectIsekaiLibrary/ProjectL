@@ -48,6 +48,7 @@ namespace KunrealEngine
 		GameObject* _leftHand;
 		GameObject* _rightHand;
 		GameObject* _call;
+		GameObject* _lazer;
 
 		DirectX::XMFLOAT3 _test = { 0.0f, 0.0f, -10.0f };
 

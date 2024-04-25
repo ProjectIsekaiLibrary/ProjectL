@@ -489,6 +489,10 @@ void KunrealEngine::Boss::Attack()
 		for (const auto& object : _nowPattern->_subObject)
 		{
 			auto collider = object->GetComponent<BoxCollider>();
+			if (collider == nullptr)
+			{
+				return;
+			}
 			// 콜라이더와 충돌하였고 그 대상이 플레이어라면
 			if (collider->IsCollided() && collider->GetTargetObject() == _player)
 			{
@@ -570,7 +574,10 @@ void KunrealEngine::Boss::PatternReady()
 	{
 		// 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
 		object->SetActive(true);
-		object->GetComponent<BoxCollider>()->SetActive(false);
+		if (object->GetComponent<BoxCollider>() != nullptr)
+		{
+			object->GetComponent<BoxCollider>()->SetActive(false);
+		}
 	}
 
 	// 패턴 초기화해줘야할 것들 초기화

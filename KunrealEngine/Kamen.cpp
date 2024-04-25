@@ -101,9 +101,9 @@ void KunrealEngine::Kamen::CreatePattern()
 {
 	CreateSubObject();
 
-	LeftAttack();
-	RightAttack();
-	//SpellAttack();
+	//LeftAttack();
+	//RightAttack();
+	SpellAttack();
 	//CallAttack();
 
 	// 백스탭 이후 패턴
@@ -118,19 +118,32 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_leftHand->AddComponent<BoxCollider>();
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
 
 	// 오른손
 	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
 	_rightHand->AddComponent<BoxCollider>();
 	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
 
 	// call 투사체
 	_call = _boss->GetObjectScene()->CreateObject("call");
 	_call->AddComponent<BoxCollider>();
 	_call->AddComponent<MeshRenderer>();
 	_call->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_call->GetComponent<MeshRenderer>()->SetActive(false);
 	_call->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
+	_call->GetComponent<BoxCollider>()->SetActive(false);
+
+	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
+	_lazer->AddComponent<Particle>();
+	_lazer->GetComponent<Transform>()->SetPosition(0.0f, 16.0f, -4.0f);
+	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
+	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+	_lazer->GetComponent<Particle>()->SetParticleDirection(-8.5f, 0.0f, 82.6f);
+	_lazer->GetComponent<Particle>()->SetActive(false);
 }
 
 void KunrealEngine::Kamen::LeftAttack()
@@ -195,7 +208,42 @@ void KunrealEngine::Kamen::SpellAttack()
 	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 20.0f).SetAfterDelay(2.0f);
 	pattern->SetIsWarning(true).SetWarningName("Spell");
 
-	auto spellLogic = CreateBasicAttackLogic(pattern, nullptr, 10);
+	pattern->_subObject.emplace_back(_lazer);
+
+	auto spellLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (_maxColliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 30.0f)
+			{
+				if (animator->GetCurrentFrame() >= 55.0f)
+				{
+					_lazer->GetComponent<Particle>()->SetActive(false);
+				}
+				else
+				{
+					pattern->SetSpeed(10.0f);
+					_lazer->GetComponent<Particle>()->SetActive(true);
+					_lazer->GetComponent<Particle>()->SetParticlePos(0.0f, 0.0f, 0.0f);
+					_lazer->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 20.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+				}
+			}
+		}
+		if (isAnimationPlaying == false)
+		{
+			pattern->SetSpeed(20.0f);
+			_lazer->SetActive(false);
+			_maxColliderOnCount = pattern->_maxColliderOnCount;
+			return false;
+		}
+
+		return true;
+	};
+
 
 	pattern->SetLogic(spellLogic);
 
@@ -245,7 +293,7 @@ void KunrealEngine::Kamen::CallAttack()
 
 			if (distance < pattern->_range)
 			{
-				_callMoveDistance += 30.0f * TimeManager::GetInstance().GetDeltaTime();
+				_callMoveDistance += (pattern->_speed*1.5) * TimeManager::GetInstance().GetDeltaTime();
 			}
 			else
 			{
@@ -290,7 +338,7 @@ void KunrealEngine::Kamen::BackStepCallAttack()
 
 	pattern->SetPatternName("BackStepCall");
 
-	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(10.0f).SetRange(_info._attackRange + 70.0f).SetAfterDelay(2.0f);
+	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(15.0f).SetRange(_info._attackRange + 70.0f).SetAfterDelay(2.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call").SetRangeOffset(-20.0f);
 	pattern->SetMaxColliderCount(1);
 	pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
@@ -328,7 +376,7 @@ void KunrealEngine::Kamen::BackStepCallAttack()
 
 			if (distance < pattern->_range)
 			{
-				_callMoveDistance += 30.0f * TimeManager::GetInstance().GetDeltaTime();
+				_callMoveDistance += (pattern->_speed * 1.5) * TimeManager::GetInstance().GetDeltaTime();
 			}
 			else
 			{
