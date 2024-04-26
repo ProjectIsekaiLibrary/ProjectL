@@ -21,7 +21,14 @@ EpicTool::Deserialize::~Deserialize()
 void EpicTool::Deserialize::Initialize(std::string& deserialize)
 {
 	std::ifstream inputData(deserialize);
-	
+	std::string playerName;
+	std::string playerCameraName;
+
+	float cameraPos[3] = { 0.0f, 30.0f, -55.0f };
+	float targetPos[3] = { 0.0f, -15.0f, 0.0f };
+	bool isPlayerCamera = false;
+
+
 	if (inputData.is_open())
 	{
 		nlohmann::json jsonData;
@@ -56,14 +63,16 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 	
 				if (custom != jsonItem["POD"].end() && !jsonItem["POD"]["customComponent"].empty())
 				{
+
 					auto player = jsonItem["POD"]["customComponent"].find("Player");
-					auto camera = jsonItem["POD"]["customComponent"].find("Camera");
+					
 					auto kamen = jsonItem["POD"]["customComponent"].find("Kamen");
 	
 					if (player != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Player"].empty())
 					{
 						object->AddComponent<KunrealEngine::Player>();
 						isPlayer = true;
+						isPlayerCamera = true;
 					}
 	
 					if (kamen != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Kamen"].empty())
@@ -72,28 +81,18 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 						isBoss = true;
 					}
 	
-					//카메라
-	
-					if (camera != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Camera"].empty())
-					{
-						float cameraPos[3] = { 0.0f, 30.0f, -55.0f };
-						if (object->GetComponent<KunrealEngine::Camera>() == nullptr)
-						{
-							object->AddComponent<KunrealEngine::Camera>();
-						}
-						object->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0], cameraPos[1], cameraPos[2]);
-						float targetPos[3] = { 0.0f, -15.0f, 0.0f };
-						object->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);
-						
-						if (object->GetObjectName() == "testCamera") // 카메라가 여러개인 경우를 대비한 임시코드, 처음에 메인으로 쓸 오브젝트를 미리 정해두는것도 좋겠다
-						{
-							object->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
-						}
-					}
+					
 	
 	
 				}
-				if (isPlayer != true || isBoss != true)
+
+
+				if (object->GetComponent<KunrealEngine::Player>() != NULL)
+				{
+					playerName = object->GetObjectName();
+				}
+
+				if (isPlayer != true && isBoss != true)
 				{
 					// 메쉬 관련
 					auto meshRenderer = jsonItem["POD"].find("meshRenderer");
@@ -321,10 +320,50 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 					}
 
 				}
+
+				//카메라
+
+				if (custom != jsonItem["POD"].end() && !jsonItem["POD"]["customComponent"].empty())
+				{
+					auto camera = jsonItem["POD"]["customComponent"].find("Camera");
+
+					if (camera != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Camera"].empty())
+					{
+
+						if (object->GetComponent<KunrealEngine::Camera>() == nullptr)
+						{
+							object->AddComponent<KunrealEngine::Camera>();
+						}
+
+						//object->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0], cameraPos[1], cameraPos[2]);
+						//object->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);
+
+						if (object->GetObjectName() == "testCamera") // 카메라가 여러개인 경우를 대비한 임시코드, 처음에 메인으로 쓸 오브젝트를 미리 정해두는것도 좋겠다
+						{
+							object->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
+						}
+					}
+				}
 	
 			}
 		}
 	
+		if (isPlayerCamera == true)
+		{
+			auto playerobjectTransform = KunrealEngine::GetCurrentScene()->GetGameObject(playerName)->GetComponent<KunrealEngine::Transform>();
+			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0] + playerobjectTransform->GetPosition().x,
+				cameraPos[1] + playerobjectTransform->GetPosition().y, cameraPos[2] + playerobjectTransform->GetPosition().z);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0] + playerobjectTransform->GetPosition().x
+				, targetPos[1] + playerobjectTransform->GetPosition().y, targetPos[2] + playerobjectTransform->GetPosition().z);
+		}
+		else
+		{
+			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0], cameraPos[1], cameraPos[2]);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);		
+		}
+
 		for (const auto& jsonItem : jsonData)
 		{
 	

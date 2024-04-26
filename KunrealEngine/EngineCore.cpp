@@ -93,6 +93,10 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	}
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(-23.0f, 0.0f, -10.0f), navipos3, DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
 
+	//// cube map test
+	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
+	auto list = GRAPHICS->GetCubeMapList();
+	GRAPHICS->SetMainCubeMap(list.back());
 
 	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
 	/// 니들 맘대로 해
