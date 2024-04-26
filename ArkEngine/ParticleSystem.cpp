@@ -20,7 +20,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(5.0f), _particleLifeTime(5.0f),
-	_particleColorEffect(nullptr), _isStart(true)
+	_particleColorEffect(nullptr), _isStart(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -41,7 +41,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
-	_particleColorEffect(nullptr), _isStart(true)
+	_particleColorEffect(nullptr), _isStart(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -151,6 +151,11 @@ void ArkEngine::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& pa
 	{
 		SetEmitDir(DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f });
 	}
+}
+
+void ArkEngine::ParticleSystem::SetParticleRotation(const DirectX::XMFLOAT3& rotation)
+{
+
 }
 
 void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
@@ -350,6 +355,7 @@ void ArkEngine::ParticleSystem::Start()
 
 void ArkEngine::ParticleSystem::Stop()
 {
+	Reset();
 	SetParticleState(false);
 }
 

@@ -119,8 +119,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	if (lightIndexList.empty() == false)
 	{
-		auto lightView = ResourceManager::GetInstance()->GetShadowCamera()[lightIndexList[0]]->GetViewMatrix();
-		auto lightProj = ResourceManager::GetInstance()->GetShadowCamera()[lightIndexList[0]]->GetProjMatrix();
+		auto lightView = ResourceManager::GetInstance()->GetShadowCamera()[0]->GetViewMatrix();
+		auto lightProj = ResourceManager::GetInstance()->GetShadowCamera()[0]->GetProjMatrix();
 		
 		_fxLightView->SetMatrix(reinterpret_cast<float*>(&lightView));
 		_fxLightProj->SetMatrix(reinterpret_cast<float*>(&lightProj));

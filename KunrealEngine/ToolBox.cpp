@@ -23,7 +23,7 @@ float KunrealEngine::ToolBox::GetRandomFloat(float minNum, float maxNum)
 {
 	std::random_device rd;
 	std::mt19937 generator(rd());
-	std::uniform_int_distribution<> dist(minNum, maxNum);
+	std::uniform_real_distribution<> dist(minNum, maxNum);
 
 	return dist(generator);
 }

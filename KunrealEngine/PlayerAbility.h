@@ -32,8 +32,15 @@ namespace KunrealEngine
 		std::vector<Ability*> _abilityContainer;
 		Player* _playerComp;
 
+		GameObject* _shot;			// Q 스킬 투사체 객체
+		GameObject* _meteor;		// R 스킬 운석 객체
+
 	private:
+		void ResetShotPos();
 		void CreateAbility1();
+
+		void ResetMeteorPos();
+		void CreateAbility4();
 
 	public:
 		void AddToContanier(Ability* abil);

@@ -33,16 +33,22 @@ namespace KunrealEngine
 		virtual void CreatePattern() override;
 
 	private:
-		void LeftAttackOnce();
-		void RightAttackOnce();
+		void CreateSubObject();
+
+	private:
+		void LeftAttack();
+		void RightAttack();
 		void SpellAttack();
 		void CallAttack();
+
+		void BackStepCallAttack();
 
 	private:
 		// 패턴에 필요한 subObject들
 		GameObject* _leftHand;
 		GameObject* _rightHand;
 		GameObject* _call;
+		GameObject* _lazer;
 
 		DirectX::XMFLOAT3 _test = { 0.0f, 0.0f, -10.0f };
 
@@ -52,6 +58,6 @@ namespace KunrealEngine
 
 	// logic
 	private:
-		std::function<bool()> _backStepLogic;
+		std::function<void()> _callInitLogic;
 	};
 }

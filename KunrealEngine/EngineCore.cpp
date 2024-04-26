@@ -94,6 +94,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(-23.0f, 0.0f, -10.0f), navipos3, DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
 
 
+	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
 	/// 니들 맘대로 해
 	PlayGround();
 }
@@ -148,6 +149,22 @@ void KunrealEngine::EngineCore::Update()
 	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
 	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
 
+	auto gameObjectList = GetCurrentScene()->GetObjectList();
+
+
+	if (GetCurrentScene()->GetGameObject("RuneStone") != nullptr)
+	{
+		if (GetCurrentScene()->GetGameObject("RuneStone")->GetComponent<BoxCollider>()->IsCollided() == true)
+		{
+			if (GetCurrentScene()->GetGameObject("RuneStone")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
+			{
+				ChangeScene("NewWorld");
+			}
+		}
+	}
+
+
+	
 	Updatecoroutine();
 }
 
@@ -205,17 +222,14 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
-	player->AddComponent<MeshRenderer>();
-	player->GetComponent<MeshRenderer>()->SetMeshObject("PlayerWithCloak/PlayerWithCloak");
-	player->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	player->GetComponent<Transform>()->SetRotation(0.0f, 45.f, 0.0f);
-	player->GetComponent<MeshRenderer>()->SetActive(true);
-	player->GetComponent<MeshRenderer>()->SetPickableState(true);
-	KunrealEngine::KunrealMath::Float4 reflect = { 0.9f, 0.9f, 0.9f, 0.9f };
-	//sceneInstance.GetCurrentScene()->GetGameObject("modelTest")->GetComponent<MeshRenderer>()->SetDiffuseTexture("Resources/Textures/Kachujin/Kachujin_diffuse.png");
-	sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<MeshRenderer>()->SetReflect(reflect.x, reflect.y, reflect.z, reflect.w);
-	player->AddComponent<BoxCollider>();
-	player->GetComponent<BoxCollider>()->SetBoxSize(3.0f, 8.0f, 5.0f);
+	//player->AddComponent<MeshRenderer>();
+	//player->GetComponent<MeshRenderer>()->SetMeshObject("PlayerWithCloak/PlayerWithCloak");
+	//player->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	//player->GetComponent<Transform>()->SetRotation(0.0f, 45.f, 0.0f);
+	//player->GetComponent<MeshRenderer>()->SetActive(true);
+	//player->GetComponent<MeshRenderer>()->SetPickableState(true);
+	//player->AddComponent<BoxCollider>();
+	//player->GetComponent<BoxCollider>()->SetBoxSize(3.0f, 8.0f, 5.0f);
 
 
 	player->AddComponent<Player>();
@@ -448,18 +462,17 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	
 	//GameObject* particleTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleTest");
-	player->AddComponent<Particle>();
-
-	Particle* partpart = player->GetComponent<Particle>();
-
-	partpart->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
-	partpart->SetParticleSize(40.0f, 40.0f);
-	partpart->SetParticleVelocity(30.0f, true);
-	partpart->SetParticleDuration(1.0f, 3.0f);
-	partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
-	partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
-	partpart->SetActive(true);
-	
+	//player->AddComponent<Particle>();
+	//
+	//Particle* partpart = player->GetComponent<Particle>();
+	//
+	//partpart->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+	//partpart->SetParticleSize(40.0f, 40.0f);
+	//partpart->SetParticleVelocity(30.0f, true);
+	//partpart->SetParticleDuration(1.0f, 3.0f);
+	//partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
+	//partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
+	//partpart->SetActive(true);	
 	
 }
 

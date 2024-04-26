@@ -344,6 +344,8 @@ void EpicTool::MainTool::ShowWindowFunction()
 
     _core->SetEditorMousePos(_graphicWindow->GetMousePosition());
 
+    _saveloadWindow->ShowWindow(_toolClose, _selectedObjectIndex);
+
 	_windowManager->ShowWindow(_selectedObjectIndex);
 
     _windowManager->GetGameObjetcList(_gameObjectlist);
@@ -354,8 +356,6 @@ void EpicTool::MainTool::ShowWindowFunction()
 	_resourceWindow->ShowWindow();
 
 	_gameWindow->ShowWindow();
-
-	_saveloadWindow->ShowWindow(_toolClose);
 
     _navimeshEditor->ShowWindow();
 
