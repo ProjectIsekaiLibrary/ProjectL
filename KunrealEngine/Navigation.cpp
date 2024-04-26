@@ -203,7 +203,7 @@ namespace KunrealEngine
 		header.magic = TILECACHESET_MAGIC;
 		header.version = TILECACHESET_VERSION;
 		header.numTiles = 0;
-		for (int i = 0; i < _package[index]._tileCache->getTileCount(); ++i)
+		for (int i = 0 ; i < _package[index]._tileCache->getTileCount() ; ++i)
 		{
 			const dtCompressedTile* tile = _package[index]._tileCache->getTile(i);
 			if (!tile || !tile->header || !tile->dataSize) continue;
