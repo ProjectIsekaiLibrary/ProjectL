@@ -127,7 +127,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::InputText("FileName", fileName, sizeof(fileName)))
 	{
-		_fileNameStr = fileName;
+		_fileNameStr = fileName + std::string(".bin");
 	}
 	
 
