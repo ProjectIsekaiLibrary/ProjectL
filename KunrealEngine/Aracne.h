@@ -1,3 +1,7 @@
+/// 2024.04.25 - 정진수(update 24.04.25)
+/// 보스명 : 아라크네
+/// 거미타입 보스
+///
 #pragma once
 #include "KunrealAPI.h"
 #include "Boss.h"

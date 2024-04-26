@@ -407,31 +407,6 @@ namespace KunrealEngine
 
 	void Navigation::GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices)
 	{
-		// 		const dtNavMesh* navmesh = _package[index]._navMesh;
-		// 		// NavMesh에서 모든 타일을 반복하여 처리
-		// 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
-		// 		{
-		// 			const dtMeshTile* tile = navmesh->getTile(i);
-		// 			if (!tile || !tile->header) continue;
-		// 		
-		// 			// 타일의 폴리곤을 반복하여 처리
-		// 			for (int j = 0; j < tile->header->polyCount; ++j)
-		// 			{
-		// 				const dtPoly* poly = &tile->polys[j];
-		// 				if (poly->getType() == DT_POLYTYPE_GROUND)
-		// 				{
-		// 					// 폴리곤의 vertex 인덱스를 추출하여 indices에 추가
-		// 					for (int k = 0; k < poly->vertCount; ++k)
-		// 					{
-		// 						const int vertIndex = poly->verts[k];
-		// 						indices.push_back(vertices.size()); // 인덱스 추가
-		// 						// 타일 내 vertex 좌표를 추출하여 vertices에 추가
-		// 						const float* pos = &tile->verts[vertIndex * 3]; 
-		// 						vertices.push_back(DirectX::XMFLOAT3(pos[0], pos[1], pos[2]));
-		// 					}
-		// 				}
-		// 			}
-		// 		}
 		const dtNavMesh* navmesh = _package[index]._navMesh;
 		for (int i = 0; i < navmesh->getMaxTiles(); ++i)
 		{
@@ -726,22 +701,23 @@ namespace KunrealEngine
 		}
 	}
 
-	void Navigation::AddBoxTempObstacle(DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax)
+	void Navigation::AddBoxTempObstacle(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax)
 	{
+			float p[3];
+			p[0] = bmin.x - pos.x;
+			p[1] = bmin.y - pos.y;
+			p[2] = bmin.z - pos.z;
+
+			float p1[3];
+			p1[0] = bmax.x + pos.x;
+			p1[1] = bmax.y + pos.y;
+			p1[2] = bmax.z + pos.z;
+
 		for (int i = 0; i < PACKAGESIZE; i++)
 		{
 			if (!_package[i]._tileCache)
 				return;
 
-			float p[3];
-			p[0] = bmin.x;
-			p[1] = bmin.y - 0.5f;
-			p[2] = bmin.z;
-
-			float p1[3];
-			p1[0] = bmax.x;
-			p1[1] = bmax.y - 0.5f;
-			p1[2] = bmax.z;
 
 			_package[i]._tileCache->addBoxObstacle(p, p1, 0);
 		}
