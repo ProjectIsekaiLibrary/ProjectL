@@ -501,9 +501,9 @@ void KunrealEngine::EngineCore::CheckMousePosition()
 void KunrealEngine::EngineCore::MakeObstacle()
 {
 	DirectX::XMFLOAT3 targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
-	DirectX::XMFLOAT3 bmin = { targetPos.x - 4, targetPos.y - 4, targetPos.z - 4 };
-	DirectX::XMFLOAT3 bmax = { targetPos.x + 4, targetPos.y + 4, targetPos.z + 4 };
-	navigationInstance.AddBoxTempObstacle(bmin, bmax);
+	DirectX::XMFLOAT3 bmin = {4, 4, 4 };
+	DirectX::XMFLOAT3 bmax = {4, 4, 4 };
+	navigationInstance.AddBoxTempObstacle(targetPos, bmin, bmax);
 
 	KunrealEngine::GameObject* obstacle;
 	obstacle = sceneInstance.GetCurrentScene()->CreateObject("obstacle");
