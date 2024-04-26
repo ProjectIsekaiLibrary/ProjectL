@@ -103,8 +103,8 @@ void KunrealEngine::Kamen::CreatePattern()
 
 	//LeftAttack();
 	//RightAttack();
-	SpellAttack();
-	//CallAttack();
+	//SpellAttack();
+	CallAttack();
 
 	// 백스탭 이후 패턴
 	//BackStepCallAttack();
@@ -130,11 +130,17 @@ void KunrealEngine::Kamen::CreateSubObject()
 	// call 투사체
 	_call = _boss->GetObjectScene()->CreateObject("call");
 	_call->AddComponent<BoxCollider>();
-	_call->AddComponent<MeshRenderer>();
-	_call->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-	_call->GetComponent<MeshRenderer>()->SetActive(false);
 	_call->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
 	_call->GetComponent<BoxCollider>()->SetActive(false);
+	_call->AddComponent<Particle>();
+	_call->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_call->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
+	_call->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
+	_call->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
+	_call->GetComponent<Particle>()->SetParticleDirection(0.0f, 7.0f, 0.0f);
+	_call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+
+	_call->GetComponent<Particle>()->SetActive(false);
 
 	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
 	_lazer->AddComponent<Particle>();
@@ -274,10 +280,10 @@ void KunrealEngine::Kamen::CallAttack()
 		{
 			if (_maxColliderOnCount > 0)
 			{
-				// 메쉬 키기
-				_call->GetComponent<MeshRenderer>()->SetActive(true);
 				// 콜라이더 키기
 				_call->GetComponent<BoxCollider>()->SetActive(true);
+				// 파티클 키기
+				_call->GetComponent<Particle>()->SetActive(true);
 			}
 
 			// 보스가 바라보는 방향 가져옴
@@ -310,8 +316,8 @@ void KunrealEngine::Kamen::CallAttack()
 
 		if (isAnimationPlaying == false)
 		{
-			_call->GetComponent<MeshRenderer>()->SetActive(false);
 			_call->GetComponent<BoxCollider>()->SetActive(false);
+			_call->GetComponent<Particle>()->SetActive(false);
 			return false;
 		}
 
@@ -357,10 +363,10 @@ void KunrealEngine::Kamen::BackStepCallAttack()
 		{
 			if (_maxColliderOnCount > 0)
 			{
-				// 메쉬 키기
-				_call->GetComponent<MeshRenderer>()->SetActive(true);
-				// 콜라이더 키기
+				// 파티클 키기
 				_call->GetComponent<BoxCollider>()->SetActive(true);
+				// 콜라이더 키기
+				_call->GetComponent<Particle>()->SetActive(true);
 			}
 
 			// 보스가 바라보는 방향 가져옴
@@ -393,8 +399,8 @@ void KunrealEngine::Kamen::BackStepCallAttack()
 
 		if (isAnimationPlaying == false)
 		{
-			_call->GetComponent<MeshRenderer>()->SetActive(false);
 			_call->GetComponent<BoxCollider>()->SetActive(false);
+			_call->GetComponent<Particle>()->SetActive(false);
 			return false;
 		}
 
