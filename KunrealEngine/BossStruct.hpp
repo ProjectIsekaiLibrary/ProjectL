@@ -106,9 +106,6 @@ struct BossPattern
 				// 현재 실행중이던 애니메이션을 멈춤
 				auto object = KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS");
 				object->GetComponent<KunrealEngine::Animator>()->Stop();
-
-				/// 여기서 하고싶은데 상호참조라서 못하고있음
-				//object->GetComponent<KunrealEngine::Boss>()->SetMaxColliderOnCount(_maxColliderOnCount);
 				
 				// 다음 패턴을 실행하는 조건이 안되면
 				if (_playNextLogic == false)

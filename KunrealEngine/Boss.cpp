@@ -23,7 +23,7 @@ KunrealEngine::Boss::Boss()
 	_isStart(false), _isHit(false), _isRotateFinish(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
-	_isMoving(false), _isRotate(false), _backStepReady(false)
+	_isMoving(false), _isRotate(false), _backStepReady(false), _goalAngle(2140.0f), _isHideFinish(false)
 {
 
 }
@@ -35,17 +35,17 @@ KunrealEngine::Boss::~Boss()
 		delete index;
 	}
 
-	auto collider = _boss->GetComponent<BoxCollider>();
-	if (collider != nullptr)
-	{
-		_boss->DeleteComponent(collider);
-	}
-	
-	auto meshRenderer = _boss->GetComponent<MeshRenderer>();
-	if (meshRenderer != nullptr)
-	{
-		_boss->DeleteComponent(meshRenderer);
-	}
+	//auto collider = _boss->GetComponent<BoxCollider>();
+	//if (collider != nullptr)
+	//{
+	//	_boss->DeleteComponent(collider);
+	//}
+	//
+	//auto meshRenderer = _boss->GetComponent<MeshRenderer>();
+	//if (meshRenderer != nullptr)
+	//{
+	//	_boss->DeleteComponent(meshRenderer);
+	//}
 }
 
 
@@ -625,6 +625,7 @@ void KunrealEngine::Boss::CoreAttack()
 void KunrealEngine::Boss::PatternEnd()
 {
 	// 다음 패턴을 위해 초기화
+	_isHideFinish = false;
 	_isMoving = false;
 	_isRotateFinish = false;
 
@@ -635,9 +636,20 @@ void KunrealEngine::Boss::PatternEnd()
 	_boss->GetComponent<Animator>()->Play("Idle", _info._baseAnimSpeed, true);
 
 	// 모든 하위 오브젝트를 끔
-	for (const auto& object : _basicPattern[_patternIndex]->_subObject)
+	if (_patternIndex == -1)
 	{
-		object->SetActive(false);
+		for (const auto& object : _corePattern.back()->_subObject)
+		{
+			object->SetActive(false);
+		}
+	}
+
+	else
+	{
+		for (const auto& object : _basicPattern[_patternIndex]->_subObject)
+		{
+			object->SetActive(false);
+		}
 	}
 
 	// 1초동안 대기한 뒤 Idle 상태로 전환
@@ -779,38 +791,58 @@ void KunrealEngine::Boss::TeleportToPlayer()
 	_bossTransform->SetPosition(target.x, 0.0f, target.z);
 
 	// 플레이어를 바라보도록 
-	_bossTransform->SetRotation(bossRotation.x, 180 + playerRotation.y, bossRotation.z);
+	auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
+	_bossTransform->SetRotation(bossRotation.x, angle, bossRotation.z);
 }
 
 
-void KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool lookAtPlayer)
+bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool lookAtPlayer, float hideTime)
 {
-	// 타겟 포지션으로의 경로 계산
-	DirectX::XMVECTOR targetVec = DirectX::XMLoadFloat3(&targetPos);
-
-	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-		targetVec.m128_f32[0], 0.0f, targetVec.m128_f32[2]);
-
-	_stopover = Navigation::GetInstance().FindStraightPath(1);
-
-	if (_stopover.empty())
+	if (_isHideFinish == false)
 	{
-		return;
+		Startcoroutine(TeleportWithHide);
 	}
 
-	auto bossRotation = _bossTransform->GetRotation();
-	auto playerRotation = _playerTransform->GetRotation();
-
-	auto target = _stopover.back().second;
-	_bossTransform->SetPosition(target.x, 0.0f, target.z);
-
-	// 플레이어를 바라보도록 
-	if (lookAtPlayer)
+	if (_isHideFinish == true)
 	{
-		_bossTransform->SetRotation(bossRotation.x, 180 + playerRotation.y, bossRotation.z);
+		// 타겟 포지션으로의 경로 계산
+		DirectX::XMVECTOR targetVec = DirectX::XMLoadFloat3(&targetPos);
+
+		Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+			targetVec.m128_f32[0], 0.0f, targetVec.m128_f32[2]);
+
+		_stopover = Navigation::GetInstance().FindStraightPath(1);
+
+		if (_stopover.empty())
+		{
+			return true;
+		}
+
+		auto bossRotation = _bossTransform->GetRotation();
+		auto playerRotation = _playerTransform->GetRotation();
+
+		auto target = _stopover.back().second;
+		_bossTransform->SetPosition(target.x, 0.0f, target.z);
+
+		// 플레이어를 바라보도록 
+		if (lookAtPlayer)
+		{
+			auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
+			_bossTransform->SetRotation(bossRotation.x, angle, bossRotation.z);
+		}
+
+		return true;
 	}
+
+	return false;
 }
 
+
+void KunrealEngine::Boss::ForceMove(const DirectX::XMFLOAT3& targetPos)
+{
+	_prevPos = _bossTransform->GetPosition();
+	_bossTransform->SetPosition(targetPos);
+}
 
 void KunrealEngine::Boss::SetMaxColliderOnCount(unsigned int index)
 {
@@ -848,6 +880,7 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 			_boss->GetComponent<Animator>()->Stop();
 		}
 		// 회전이 완료되었다고 반환
+		_goalAngle = 2140.0f;
 		return true;
 	}
 	else
@@ -998,7 +1031,9 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 
 		if (isAnimationPlaying == false)
 		{
+
 			_maxColliderOnCount = pattern->_maxColliderOnCount;
+
 			return false;
 		}
 
@@ -1032,7 +1067,6 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 		if (_maxColliderOnCount == 0)
 		{
 			pattern->SetNextLogic(true);
-			int a = 5;
 		}
 
 		if (isAnimationPlaying == false)
@@ -1101,6 +1135,26 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 			object->SetActive(tf);
 		}
 	}
+
+	for (const auto& pattern : _corePattern)
+	{
+		for (const auto& object : pattern->_subObject)
+		{
+			// MeshRenderer 컴포넌트 처음에는 비활성화시키기
+			if (object->GetComponent<MeshRenderer>() != nullptr)
+			{
+				object->GetComponent<MeshRenderer>()->SetActive(false);
+			}
+			// BoxCollider 컴포넌트 처음에는 비활성화시키기
+			if (object->GetComponent<BoxCollider>() != nullptr)
+			{
+				object->GetComponent<BoxCollider>()->SetActive(false);
+			}
+
+			// 오브젝트에 대한 비활성화 시키기
+			object->SetActive(tf);
+		}
+	}
 }
 
 bool KunrealEngine::Boss::RotateToTarget(const DirectX::XMFLOAT3& targetPos)
@@ -1122,6 +1176,23 @@ bool KunrealEngine::Boss::RotateToTarget(const DirectX::XMFLOAT3& targetPos)
 	}
 
 	return false;
+}
+
+
+bool KunrealEngine::Boss::Rotate(float angle, float speed)
+{
+	if (_goalAngle == 2140.0f)
+	{
+		if (_bossTransform->GetRotation().y > 180)
+		{
+			_goalAngle = _bossTransform->GetRotation().y - angle;
+		}
+		else
+		{
+			_goalAngle = _bossTransform->GetRotation().y + angle;
+		}		
+	}
+	return LookAtPlayer(_goalAngle, speed);
 }
 
 void KunrealEngine::Boss::SetTexture()

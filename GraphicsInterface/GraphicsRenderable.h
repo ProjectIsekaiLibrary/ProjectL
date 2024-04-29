@@ -36,7 +36,7 @@ namespace GInterface
 
 	public:
 		// 렌더러블 객체의 트랜스폼 설정								// WorldTM
-		virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) abstract;
+		virtual void SetTransform(const DirectX::XMFLOAT4X4& matrix) abstract;
 		// 렌더러블 객체의 위치값 설정
 		virtual void SetPosition(float x =0.0f, float y=0.0f, float z=0.0f) abstract;
 		// 렌더러블 객체의 회전값 설정
@@ -57,7 +57,7 @@ namespace GInterface
 		// 렌더러블 객체의 메테리얼 설정
 		virtual void SetMaterial(GInterface::Material material) abstract;
 		// 렌더러블 객체의 반사값 설정
-		virtual void SetReflect(DirectX::XMFLOAT4 reflect) abstract;
+		virtual void SetReflect(const DirectX::XMFLOAT4& reflect) abstract;
 
 	public:
 		virtual const std::vector<std::string> GetDiffuseTextureList() abstract;
@@ -71,7 +71,7 @@ namespace GInterface
 		// FBX용 애니메이션 실행 함수 (인덱스로), 실행중인지 여부를 반환
 		virtual bool PlayAnimation(float speed, float deltaTime, int animIndex, bool continuousPlay = false) abstract;
 		// FBX용 애니메이션 실행 함수 (이름으로), 실행중인지 여부를 반환
-		virtual bool PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay = false) abstract;
+		virtual bool PlayAnimation(float speed, float deltaTime, const std::string& animName, bool continuousPlay = false) abstract;
 		// Mesh가 가지고 있는 애니메이션 클립 이름들 반환
 		virtual const std::vector<std::string>& GetClipNames() abstract;
 		// 애니메이션을 현재 프레임에서 멈춘다
@@ -93,7 +93,7 @@ namespace GInterface
 		// 부모 본이 존재할 경우 그래픽스 엔진에서 계산한 트랜스폼 값을 사용, 부모가 없는경우 단위행렬 반환 // worldTM
 		virtual DirectX::XMFLOAT4X4 GetTransformEffectedByBone() abstract;
 		// 부모 본의 입장에서 transform 행렬 넘겨줌
-		virtual DirectX::XMFLOAT4X4 GetBoneTransform(std::string boneName) abstract;
+		virtual DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName) abstract;
 
 	public:
 		// 그림자를 가질 것인지 여부 설정 (기본 설정은 true)

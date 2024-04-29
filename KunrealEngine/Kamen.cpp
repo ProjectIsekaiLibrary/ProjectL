@@ -5,11 +5,12 @@
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _callMoveDistance(0.0f)
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _lazer(nullptr),
+	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false)
 {
 	BossBasicInfo info;
 
-	info.SetHp(10000).SetPhase(3).SetArmor(10).SetDamage(100).SetHp(10000).SetMoveSpeed(20.0f).SetsStaggeredGauge(100.0f);
+	info.SetHp(100).SetPhase(3).SetArmor(10).SetDamage(100).SetMoveSpeed(20.0f).SetsStaggeredGauge(100.0f);
 	info.SetAttackRange(5.0f);
 
 	SetInfo(info);
@@ -101,13 +102,15 @@ void KunrealEngine::Kamen::CreatePattern()
 {
 	CreateSubObject();
 
-	//LeftAttack();
-	//RightAttack();
-	//SpellAttack();
+	LeftAttack();
+	RightAttack();
+	SpellAttack();
 	CallAttack();
 
 	// 백스탭 이후 패턴
-	//BackStepCallAttack();
+	BackStepCallAttack();
+
+	EmergenceAttack();
 }
 
 
@@ -191,16 +194,93 @@ void KunrealEngine::Kamen::RightAttack()
 
 	pattern->_subObject.emplace_back(_rightHand);
 
-	auto rightHandLogic = CreateBasicAttackLogic(pattern, _rightHand, 10);
-
-	pattern->SetLogic(rightHandLogic);
-
 	// 첫 오른쪽 공격이 맞았다면 왼쪽 공격도 시행
+	auto rightAttackLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play("Right_Attack", pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (_maxColliderOnCount > 0)
+			{
+				if (animator->GetCurrentFrame() >= 10.0f)
+				{
+					if (_rightHand != nullptr)
+					{
+						_rightHand->GetComponent<BoxCollider>()->SetActive(true);
+					}
+				}
+			}
+			
+			// 2타 실행
+			if (isAnimationPlaying == false)
+			{
+				pattern->SetNextLogic(true);
+				_maxColliderOnCount = pattern->_maxColliderOnCount;
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(rightAttackLogic);
+
 	pattern->_subObject.emplace_back(_leftHand);
 
-	auto leftHandLogic = CreateBasicAttackLogic(pattern, "Left_Attack", _leftHand, 10);
+	// 첫 오른쪽 공격이 맞았다면 왼쪽 공격도 시행
+	auto attackLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
 
-	pattern->SetLogic(leftHandLogic);
+			// 회전 진행 안됐다면
+			if (_isRotateFinish == false)
+			{
+				animator->Play("Idle", pattern->_speed, false);
+
+				// 회전 시킴
+				auto rotateFinish = Rotate(180, 200.0f);
+
+				// 회전 끝나지 않았다면
+				if (rotateFinish == false)
+				{
+					// 계속 회전시키기 위함
+					return true;
+				}
+				else
+				{
+					_isRotateFinish = true;
+				}
+			}
+
+			if (animator->GetNowAnimationName() == "Idle")
+			{
+				animator->Stop();
+			}
+
+			auto isAnimationPlaying = animator->Play("Left_Attack", pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (_maxColliderOnCount > 0)
+			{
+				if (animator->GetCurrentFrame() >= 10.0f)
+				{
+					if (_leftHand != nullptr)
+					{
+						_leftHand->GetComponent<BoxCollider>()->SetActive(true);
+					}
+				}
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				_isRotateFinish = false;
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(attackLogic);
 
 	_basicPattern.emplace_back(pattern);
 }
@@ -336,6 +416,166 @@ void KunrealEngine::Kamen::CallAttack()
 	pattern->SetInitializeLogic(_callInitLogic);
 
 	_basicPattern.emplace_back(pattern);
+}
+
+
+void KunrealEngine::Kamen::EmergenceAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("core1");
+
+	pattern->SetAnimName("Emergence").SetDamage(100.0f).SetSpeed(15.0f).SetRange(_info._attackRange).SetAfterDelay(3.0f);
+	pattern->SetIsWarning(true).SetWarningName("Call").SetRangeOffset(-20.0f);
+	pattern->SetMaxColliderCount(1);
+	pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
+	pattern->SetTriggerHp(100.0f);
+
+	for (int i = 0; i < 9; i++)
+	{
+		std::string index = "fake" + std::to_string(i+1);
+		auto boss = _boss->GetObjectScene()->CreateObject(index);
+		_fakeBoss.emplace_back(boss);
+
+		boss->AddComponent<MeshRenderer>();
+		boss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
+
+		auto texSize = _boss->GetComponent<MeshRenderer>()->GetTextures().size();
+		for (int i = 0; i < texSize; i++)
+		{
+			boss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+			boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+			boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+		}
+
+		boss->AddComponent<BoxCollider>();
+		boss->GetComponent<BoxCollider>()->SetTransform(boss, "Spine1_M");
+		boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
+		boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
+
+		boss->SetActive(false);
+
+		pattern->_subObject.emplace_back(boss);
+	}
+
+	int index = 0;
+	for (int j = 0; j < 3; j++)
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			_fakeBoss[index]->GetComponent<Transform>()->SetPosition(40.0f - (40.0 * i), 0.0f, 40.0f - (40.0 * j));
+			index++;
+		}
+	}
+
+	auto core1Logic = [pattern, this]()
+		{
+			// 9명의 분신 중 무엇이 사라질 지 인덱스 랜덤 설정
+			if (!_isRandomStart)
+			{
+				int targetIndex = ToolBox::GetRandomNum(_fakeBoss.size() - 1);
+				_fakeBoss[targetIndex]->SetActive(false);
+
+				_isRandomStart = true;
+			}
+
+			// 패턴 시작 위해 중앙으로 텔레포트
+			if (!_isRotateFinish)
+			{
+				auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true, 3.0f);
+
+				// 텔포 끝나면 패턴 시작
+				if (!isTeleportFinish)
+				{
+					return true;
+				}
+				else
+				{
+
+					// 텔포 끝나면 다시 돌아오지 않도록
+					_isRotateFinish = true;
+				}
+			}
+
+			/// emergence 역애니메이션 한번 재생시켜줌 아직 미구현
+
+			// 패턴 시작 전 초기화해줄것들
+			if (! _isCoreStart)
+			{
+				for (const auto& index : _fakeBoss)
+				{
+					if (index->GetActivated() == false)
+					{
+						ForceMove(index->GetComponent<Transform>()->GetPosition());
+						_bossTransform->SetRotation(_bossTransform->GetRotation().x, index->GetComponent<Transform>()->GetRotation().y, _bossTransform->GetRotation().z);
+					}
+					else
+					{
+						index->GetComponent<MeshRenderer>()->SetActive(true);
+						index->GetComponent<BoxCollider>()->SetActive(true);
+					}
+				}
+
+				_isCoreStart = true;
+			}
+
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			if (isAnimationPlaying == false)
+			{
+				_isCoreStart = false;
+				_isRotateFinish = false;
+
+				// 다음 패턴을 실행시킴
+				pattern->_playNextLogic = true;
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(core1Logic, false);
+
+
+	auto attackLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+
+			auto isAnimationPlaying = animator->Play("Left_Attack", pattern->_speed, false);
+
+			if (animator->GetCurrentFrame() >= 0)
+			{
+				if (_maxColliderOnCount > 0)
+				{
+					// 콜라이더 키기
+					_leftHand->SetActive(true);
+					_leftHand->GetComponent<BoxCollider>()->SetActive(true);
+				}
+			}
+
+			if (_maxColliderOnCount == 0)
+			{
+				_isRotateFinish = false;
+				return false;
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				if (_maxColliderOnCount > 0)
+				{
+					int a = 5;
+				}
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(attackLogic, false);
+
+	pattern->_subObject.emplace_back(_leftHand);
+
+	_corePattern.emplace_back(pattern);
 }
 
 void KunrealEngine::Kamen::BackStepCallAttack()

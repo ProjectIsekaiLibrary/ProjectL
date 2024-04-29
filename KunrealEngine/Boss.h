@@ -11,6 +11,10 @@
 #include "Coroutine.h"
 #include "CommonHeader.h"
 
+enum class BossStatus;
+struct BossPattern;
+struct BossBasicInfo;
+
 namespace DirectX
 {
 	struct XMFLOAT3;
@@ -55,7 +59,7 @@ namespace KunrealEngine
 	public:
 		const std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> GetBossPosition();
 
-	// 상태에 따른 함수들
+		// 상태에 따른 함수들
 	public:
 		virtual void Enter();
 		virtual void Idle();
@@ -76,7 +80,7 @@ namespace KunrealEngine
 
 		// 기본 패턴 만든 목록을 넣기
 		void SetBasicPatternList(std::vector<BossPattern*>* basicPatternList);
-		
+
 		// 코어 패턴 만든 목록을 넣기
 		void SetCorePatternList(std::vector<BossPattern*>* corePatternList);
 
@@ -96,22 +100,26 @@ namespace KunrealEngine
 	public:
 		// 플레이어 바라보도록 회전시키기
 		bool RotateToTarget(const DirectX::XMFLOAT3& targetPos);
-		
+
+		bool Rotate(float angle, float speed);
+
 		// 특정 포지션으로 이동시키기 (raycast true시 무언가에 막히면 거기까지만 찾아감)
 		bool Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast);
 
 		std::function<bool()> CreateBackStepLogic(BossPattern* pattern, float moveSpeed, float distance);
-		
+
 		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, float activeColliderFrame);
 
 		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, const std::string& animName, GameObject* subObject, float activeColliderFrame);
-
 
 		// 플레이어를 바라보도록 텔레포트
 		void TeleportToPlayer();
 
 		// 지정한 곳으로 텔레포트
-		void Teleport(const DirectX::XMFLOAT3 &targetPos, bool lookAtPlayer);
+		bool Teleport(const DirectX::XMFLOAT3& targetPos, bool lookAtPlayer, float hideTime = 0.0f);
+
+		// 지정한 곳으로 강제 이동
+		void ForceMove(const DirectX::XMFLOAT3& targetPos);
 
 	public:
 		void SetMaxColliderOnCount(unsigned int index);
@@ -161,6 +169,9 @@ namespace KunrealEngine
 		// 한 패턴 내에 콜라이더가 켜지는 수 
 		unsigned int _maxColliderOnCount;
 
+		Transform* _bossTransform;
+		Transform* _playerTransform;
+
 	private:
 		bool _isCorePattern;
 
@@ -169,10 +180,7 @@ namespace KunrealEngine
 		bool _isHit;
 		bool _isRotateFinish;
 
-		private:
-		Transform* _bossTransform;
-		Transform* _playerTransform;
-
+	private:
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 		int _nodeCount;
 
@@ -182,9 +190,14 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _backStepPos;
 
 	private:
+		float _goalAngle;
+
+	private:
 		bool _isMoving;
 		bool _isRotate;
 		bool _backStepReady;
+
+		bool _isHideFinish;
 
 	private:
 		Coroutine_Func(patternEnd)
@@ -199,7 +212,7 @@ namespace KunrealEngine
 			{
 				// 실행한 코어 패턴을 백터에서 제거
 				(boss->_corePattern).pop_back();
-				
+
 				boss->_isCorePattern = false;
 			}
 
@@ -213,5 +226,21 @@ namespace KunrealEngine
 
 			boss->_nowPattern = nullptr;
 		};
+
+		Coroutine_Func(TeleportWithHide)
+		{
+			Boss* boss = this;
+
+			boss->_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			boss->_boss->GetComponent<BoxCollider>()->SetActive(false);
+
+			Waitforsecond(3.0f);
+
+			boss->_boss->GetComponent<MeshRenderer>()->SetActive(true);
+			boss->_boss->GetComponent<BoxCollider>()->SetActive(true);
+
+			boss->_isHideFinish = true;
+		};
+
 	};
 }
