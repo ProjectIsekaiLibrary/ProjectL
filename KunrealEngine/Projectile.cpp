@@ -104,5 +104,10 @@ DirectX::XMVECTOR KunrealEngine::Projectile::GetDirection()
 
 void KunrealEngine::Projectile::SetDestoryCondition(std::function<bool()> cond)
 {
-	_condition = cond;
+	this->_condition = cond;
+}
+
+void KunrealEngine::Projectile::ResetCondition()
+{
+
 }
