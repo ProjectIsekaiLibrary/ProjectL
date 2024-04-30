@@ -67,7 +67,7 @@ void KunrealEngine::Aracne::SetActive(bool active)
 void KunrealEngine::Aracne::SetMesh()
 {
 	_boss->AddComponent<MeshRenderer>();
-	_boss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
+	_boss->GetComponent<MeshRenderer>()->SetMeshObject("SpiderQueen/SpiderQueen");
 }
 
 void KunrealEngine::Aracne::SetTexture()
@@ -84,14 +84,45 @@ void KunrealEngine::Aracne::SetTexture()
 void KunrealEngine::Aracne::SetBossTransform()
 {
 	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
+	_boss->GetComponent<Transform>()->SetScale(5.0f , 5.0f , 5.0f);
 }
 
 void KunrealEngine::Aracne::SetBossCollider()
 {
-
+	_boss->AddComponent<BoxCollider>();
+	//_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
+	_boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
+	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
 }
 
 void KunrealEngine::Aracne::CreatePattern()
+{
+	JumpAttack();
+	leftAttack();
+	RightAttack();
+	ShootingWeb();
+}
+
+void KunrealEngine::Aracne::JumpAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Left_Attack_Once");
+
+	_basicPattern.emplace_back(pattern);
+}
+
+void KunrealEngine::Aracne::leftAttack()
+{
+
+}
+
+void KunrealEngine::Aracne::RightAttack()
+{
+
+}
+
+void KunrealEngine::Aracne::ShootingWeb()
 {
 
 }

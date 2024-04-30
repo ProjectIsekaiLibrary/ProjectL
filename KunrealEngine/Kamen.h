@@ -36,12 +36,30 @@ namespace KunrealEngine
 		void CreateSubObject();
 
 	private:
-		void LeftAttack();
-		void RightAttack();
+		void LeftRightPattern();
+		void RightLeftPattern();
+
+		// 기본 패턴 조각들
+	private:
+		void CreateLeftAttack();
+		void CreateRightAttack();
+		void CreateTurn180();
 		void SpellAttack();
 		void CallAttack();
-
 		void BackStepCallAttack();
+
+		// 핵심 기믹 패턴
+	private:
+		void EmergenceAttack();
+
+	private:
+		BossPattern* _leftAttack;
+		BossPattern* _rightAttack;
+		BossPattern* _turn180;
+
+		BossPattern* _spellAttack;
+		BossPattern* _callAttack;
+		BossPattern* _backStep;
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -50,11 +68,16 @@ namespace KunrealEngine
 		GameObject* _call;
 		GameObject* _lazer;
 
-		DirectX::XMFLOAT3 _test = { 0.0f, 0.0f, -10.0f };
+		std::vector<GameObject*> _fakeBoss;
 
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
+		bool _isRotateFinish;
+
+	private:
+		bool _isCoreStart;
+		bool _isRandomStart;
 
 	// logic
 	private:
