@@ -20,5 +20,6 @@
 #include "PlayerMove.h"
 
 #include "Kamen.h"
+#include "Aracne.h"
 
 #include "Particle.h"

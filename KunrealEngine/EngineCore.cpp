@@ -10,8 +10,6 @@
 #include "Navigation.h"
 #include "ButtonSystem.h"
 
-#include "Coroutine.h"
-
 #include "ComponentHeaders.h"
 
 /// 꼭 지워야해 내 수학라이브러리와 동일한 결과가 나오는지 체크용
@@ -26,6 +24,7 @@ KunrealEngine::Navigation& navigationInstance = KunrealEngine::Navigation::GetIn
 
 KunrealEngine::GameObject* player;
 KunrealEngine::GameObject* kamen;
+KunrealEngine::GameObject* spider;
 KunrealEngine::GameObject* zeolight;
 KunrealEngine::GameObject* zeolight_Image;
 KunrealEngine::GameObject* Button_Image1;
@@ -149,6 +148,8 @@ void KunrealEngine::EngineCore::Update()
 	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
 	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
 
+	spider->GetComponent<Animator>()->Play(0, 20.f, true);
+
 	auto gameObjectList = GetCurrentScene()->GetObjectList();
 
 
@@ -219,6 +220,10 @@ void KunrealEngine::EngineCore::PlayGround()
 	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
 	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
 	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
+
+	spider = sceneInstance.GetCurrentScene()->CreateObject("spider");
+	spider->AddComponent<MeshRenderer>();
+	spider->GetComponent<MeshRenderer>()->SetMeshObject("SpiderQueen/SpiderQueen", true);
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
