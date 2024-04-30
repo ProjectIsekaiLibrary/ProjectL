@@ -148,7 +148,7 @@ void KunrealEngine::EngineCore::Update()
 	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
 	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
 
-	spider->GetComponent<Animator>()->Play(0, 20.f, true);
+	//spider->GetComponent<Animator>()->Play("Idle", 70.f, true);
 
 	auto gameObjectList = GetCurrentScene()->GetObjectList();
 
@@ -163,7 +163,6 @@ void KunrealEngine::EngineCore::Update()
 			}
 		}
 	}
-
 
 	
 	Updatecoroutine();
@@ -221,9 +220,6 @@ void KunrealEngine::EngineCore::PlayGround()
 	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
 	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
 
-	spider = sceneInstance.GetCurrentScene()->CreateObject("spider");
-	spider->AddComponent<MeshRenderer>();
-	spider->GetComponent<MeshRenderer>()->SetMeshObject("SpiderQueen/SpiderQueen", true);
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
@@ -243,6 +239,12 @@ void KunrealEngine::EngineCore::PlayGround()
 	kamen->AddComponent<Kamen>();
 	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
+	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
+	//spider -> AddComponent<MeshRenderer>();
+	//spider -> GetComponent<MeshRenderer>() -> SetMeshObject("SpiderQueen/SpiderQueen", true);
+	//spider->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
+	spider->AddComponent<Aracne>();
+
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
 	zeolight_Image->AddComponent<ImageRenderer>();
