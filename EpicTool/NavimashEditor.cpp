@@ -156,6 +156,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Load"))
 	{
+		_selectedfileName = _filePath + _selectedfileName;
 		_navimashEditor->LoadAll(_selectedfileName.c_str(), _naviIndex);
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
@@ -196,6 +197,11 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Hide"))
 	{
+		if (_navmeshpolys[_naviIndex] != nullptr)
+		{
+			GRAPHICS->DeleteDebugObject(_navmeshpolys[_naviIndex]);
+			_navmeshpolys[_naviIndex] = nullptr;
+		}
 		UnDrawAll();
 	}
 

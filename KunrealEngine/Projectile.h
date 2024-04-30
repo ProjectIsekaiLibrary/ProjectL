@@ -58,6 +58,9 @@ namespace KunrealEngine
 
 		// 소멸 조건 설정
 		void SetDestoryCondition(std::function<bool()> cond);
+
+		// 로직 처리 후 조건 false로 초기화
+		void ResetCondition();
 	};
 }
 

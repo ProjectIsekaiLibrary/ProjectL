@@ -13,7 +13,7 @@ namespace KunrealEngine
 	{
 	public:
 		Aracne();
-		~Aracne();
+		virtual ~Aracne();
 
 	public:
 		void Initialize() override;

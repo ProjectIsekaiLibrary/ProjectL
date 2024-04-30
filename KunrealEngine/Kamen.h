@@ -9,7 +9,7 @@ namespace KunrealEngine
 	{
 	public:
 		Kamen();
-		~Kamen();
+		virtual ~Kamen();
 
 		void Initialize() override;
 		void Release() override;
