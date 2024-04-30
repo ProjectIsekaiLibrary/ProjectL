@@ -348,20 +348,22 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 			}
 		}
 	
-		if (isPlayerCamera == true)
+		if (isPlayerCamera == true) // 현재 테스트 카메라에서만 기능중, 메인 카메라의 경우에만 반응하도록 해야할까?, 여기서 안하기로 했다 하지만 기능문제로 일단 쓰자
 		{
-			auto playerobjectTransform = KunrealEngine::GetCurrentScene()->GetGameObject(playerName)->GetComponent<KunrealEngine::Transform>();
+			auto playerobjectTransform = KunrealEngine::GetCurrentScene()->GetGameObject(playerName)->GetComponent<KunrealEngine::Transform>();			auto testObject = KunrealEngine::GetCurrentScene()->GetGameObject("testCamera");
 			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0] + playerobjectTransform->GetPosition().x,
 				cameraPos[1] + playerobjectTransform->GetPosition().y, cameraPos[2] + playerobjectTransform->GetPosition().z);
 
 			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0] + playerobjectTransform->GetPosition().x
 				, targetPos[1] + playerobjectTransform->GetPosition().y, targetPos[2] + playerobjectTransform->GetPosition().z);
+
+			auto position = testObject->GetComponent<KunrealEngine::Camera>()->GetTargetPosition();
 		}
 		else
 		{
 			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0], cameraPos[1], cameraPos[2]);
 
-			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);		
+			KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);
 		}
 
 		for (const auto& jsonItem : jsonData)

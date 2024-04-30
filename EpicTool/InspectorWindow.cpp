@@ -467,7 +467,7 @@ void EpicTool::InspectorWindow::DeleteComponent(KunrealEngine::Component* instan
 /// <param name="instance"></param>
 template<> // 이후 리스트가 생긴하면 해당 부분을 통해서 사용하게 될것이다  // 컴포넌트 리스트
 void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Transform>(KunrealEngine::Transform* instance)
-{
+{  
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Transform");
 
 	float _positionArray[3];
@@ -1079,9 +1079,6 @@ void EpicTool::InspectorWindow::Initialize()
     ListToRemove(_meshList, _meshListEditor, _meshStringToRemove);
 
     ListToRemove(_textureList, _TextureListEditor, _textureStringToRemove);
-
-	_graphicWindow = new GraphicWindow;
-
 }
 
 /// <summary>
@@ -1139,10 +1136,8 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		}
 		else if (KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject() == nullptr && _isPickedObject == true)
 		{
-
 			_isPickedObject = false;
 			selectedObjectIndex = -1;
-
 		}
 	}
 

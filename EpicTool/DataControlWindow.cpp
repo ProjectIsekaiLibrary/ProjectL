@@ -26,7 +26,7 @@
 /// </summary>
 
 EpicTool::DataControlWindow::DataControlWindow()
-    :_show_save_editor(true), _save_Scene(true), _new_Scene(true), _opt_padding(false), _fileSave(nullptr), _scene2First(false)
+    :_show_save_editor(true), _save_Scene(true), _new_Scene(true), _opt_padding(false), _fileSave(nullptr), _scene1First(false), _scene2First(false), _scene3First(false), _scene4First(false), _scene5First(false)
 {
 
 }
@@ -47,10 +47,9 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close, int& selectedObjectInd
 
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
-	if (_scene2First == false)
-	{
-		ChangeScene(selectedObjectIndex);
-	}
+	
+	ChangeScene(selectedObjectIndex);
+	
 
 	if (_show_save_editor)
 	{
@@ -200,10 +199,11 @@ void EpicTool::DataControlWindow::LoadToFile(const std::string& filePath)
 
 void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 {
-	if (KunrealEngine::GetCurrentScene()->GetSceneName() == "NewWorld")
+	std::string scene = KunrealEngine::GetCurrentScene()->GetSceneName();
+	 if (scene == "mapTest2.json" && _scene2First == false)
 	{
 		// 파일명 설정
-		std::string filename = "mapTest2.json"; // 예시 파일명
+		std::string filename = scene; // 예시 파일명
 
 		// 파일의 절대 경로 생성
 		std::filesystem::path filePath = _executablePath / filename;
@@ -216,5 +216,85 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		_scene2First = true;
 		selectedObjectIndex = -1;
 	}
+	else if (scene == "mapTest3.json" && _scene3First == false)
+	{
+		// 파일명 설정
+		std::string filename = scene; // 예시 파일명
+
+		// 파일의 절대 경로 생성
+		std::filesystem::path filePath = _executablePath / filename;
+
+		filename = filePath.string();
+
+		Deserialize* _deserialize = new Deserialize();
+		_deserialize->Initialize(filename);
+
+		_scene3First = true;
+		selectedObjectIndex = -1;
+	}
+	else if (scene == "mapTest4.json" && _scene4First == false)
+	{
+		// 파일명 설정
+		std::string filename = scene; // 예시 파일명
+
+		// 파일의 절대 경로 생성
+		std::filesystem::path filePath = _executablePath / filename;
+
+		filename = filePath.string();
+
+		Deserialize* _deserialize = new Deserialize();
+		_deserialize->Initialize(filename);
+
+		_scene4First = true;
+		selectedObjectIndex = -1;
+	}
+	else if (scene == "mapTest5.json" && _scene5First == false)
+	{
+		// 파일명 설정
+		std::string filename = scene; // 예시 파일명
+
+		// 파일의 절대 경로 생성
+		std::filesystem::path filePath = _executablePath / filename;
+
+		filename = filePath.string();
+
+		Deserialize* _deserialize = new Deserialize();
+		_deserialize->Initialize(filename);
+
+		_scene5First = true;
+		selectedObjectIndex = -1;
+	}
+	else if (scene == "Main" && _scene1First == false)
+	{
+		 // 파일명 설정
+		 std::string filename = "mapTest1.json"; // 예시 파일명
+
+		 // 파일의 절대 경로 생성
+		 std::filesystem::path filePath = _executablePath / filename;
+
+		 filename = filePath.string();
+
+		 Deserialize* _deserialize = new Deserialize();
+		 _deserialize->Initialize(filename);
+
+
+		 auto gameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();
+
+		 for (auto mainCamera : gameObjectList)
+		 {
+			 if (mainCamera->GetComponent<KunrealEngine::Camera>() != NULL)  // 카메라를 여러개 쓸경우 특정 카메라를 알수있는 수단이 필요 (태그 등)
+			 {
+				 mainCamera->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
+			}
+		 }
+
+		 _scene1First = true;
+		 _scene2First = false;
+		 _scene3First = false;
+		 _scene4First = false;
+		 _scene5First = false;
+		 selectedObjectIndex = -1;
+	 }
+
 }
 
