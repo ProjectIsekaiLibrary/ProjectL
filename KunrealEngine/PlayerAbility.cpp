@@ -94,7 +94,7 @@ void KunrealEngine::PlayerAbility::OnTriggerExit()
 
 void KunrealEngine::PlayerAbility::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 

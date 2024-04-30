@@ -44,10 +44,13 @@ void KunrealEngine::Projectile::LateUpdate()
 	if (_condition())
 	{
 		this->GetOwner()->SetActive(false);
+		this->GetOwner()->SetTotalComponentState(false);
 	}
 	else
 	{
+		// 투사체에 소속 된 컴포넌트들은 일괄적으로 관리해도 상관없다
 		this->GetOwner()->SetActive(true);
+		this->GetOwner()->SetTotalComponentState(true);
 	}
 }
 
@@ -66,7 +69,7 @@ void KunrealEngine::Projectile::OnTriggerExit()
 
 void KunrealEngine::Projectile::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 void KunrealEngine::Projectile::SetDirection(DirectX::XMVECTOR direction)
@@ -109,5 +112,5 @@ void KunrealEngine::Projectile::SetDestoryCondition(std::function<bool()> cond)
 
 void KunrealEngine::Projectile::ResetCondition()
 {
-
+	
 }
