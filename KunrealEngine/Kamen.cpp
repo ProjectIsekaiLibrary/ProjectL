@@ -102,15 +102,15 @@ void KunrealEngine::Kamen::CreatePattern()
 {
 	CreateSubObject();
 
-	LeftAttack();
-	RightAttack();
+	//LeftAttack();
+	//RightAttack();
 	SpellAttack();
-	CallAttack();
+	//CallAttack();
 
 	// 백스탭 이후 패턴
-	BackStepCallAttack();
-
-	EmergenceAttack();
+	//BackStepCallAttack();
+	//
+	//EmergenceAttack();
 }
 
 
@@ -333,6 +333,8 @@ void KunrealEngine::Kamen::SpellAttack()
 
 	pattern->SetLogic(spellLogic);
 
+	pattern->SetPattern(pattern);
+
 	_basicPattern.emplace_back(pattern);
 }
 
@@ -528,7 +530,7 @@ void KunrealEngine::Kamen::EmergenceAttack()
 				_isRotateFinish = false;
 
 				// 다음 패턴을 실행시킴
-				pattern->_playNextLogic = true;
+				pattern->_playNextPattern = true;
 				return false;
 			}
 

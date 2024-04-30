@@ -216,9 +216,6 @@ namespace KunrealEngine
 				boss->_isCorePattern = false;
 			}
 
-			// 패턴 초기화할 것들 초기화
-			boss->_nowPattern->Initialize();
-
 			boss->_status = BossStatus::IDLE;
 
 			// 기본 패턴을 실행할 수 있도록 초기화
