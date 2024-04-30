@@ -338,7 +338,7 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 
 	// 충돌에서 벗어났을 때
 	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		&& col1->GetActivated() && col2->GetActivated())
+		&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
 	{
 		// 충돌 여부를 false로
 		col1->_isCollided = false;

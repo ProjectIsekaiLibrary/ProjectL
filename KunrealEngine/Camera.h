@@ -60,6 +60,7 @@ namespace KunrealEngine
 		GInterface::GraphicsCamera* GetCamera();
 		
 		// 카메라의 위치 설정
+		// 카메라의 LookAt 함수를 매프레임 부르는건 퍼포먼스에 영향을 주기 때문에 이 함수를 처음에 부르고 시작해야함
 		void SetCameraPosition(float posX, float posY, float posZ);
 
 		// 카메라의 타겟 위치 설정
