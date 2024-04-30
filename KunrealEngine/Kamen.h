@@ -35,10 +35,15 @@ namespace KunrealEngine
 	private:
 		void CreateSubObject();
 
-		// 기본 패턴
 	private:
-		void LeftAttack();
-		void RightAttack();
+		void LeftRightPattern();
+		void RightLeftPattern();
+
+		// 기본 패턴 조각들
+	private:
+		void CreateLeftAttack();
+		void CreateRightAttack();
+		void CreateTurn180();
 		void SpellAttack();
 		void CallAttack();
 		void BackStepCallAttack();
@@ -46,6 +51,15 @@ namespace KunrealEngine
 		// 핵심 기믹 패턴
 	private:
 		void EmergenceAttack();
+
+	private:
+		BossPattern* _leftAttack;
+		BossPattern* _rightAttack;
+		BossPattern* _turn180;
+
+		BossPattern* _spellAttack;
+		BossPattern* _callAttack;
+		BossPattern* _backStep;
 
 	private:
 		// 패턴에 필요한 subObject들

@@ -121,9 +121,6 @@ namespace KunrealEngine
 		// 지정한 곳으로 강제 이동
 		void ForceMove(const DirectX::XMFLOAT3& targetPos);
 
-	public:
-		void SetMaxColliderOnCount(unsigned int index);
-
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
@@ -159,15 +156,14 @@ namespace KunrealEngine
 
 		std::vector<BossPattern*> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
-		BossPattern* _nowPattern;
+		BossPattern* _nowTitlePattern;
+
+		BossPattern* _nowPlayingPattern;
 
 		int _patternIndex;
 		int _exPatternIndex;
 
 		float _distance;
-
-		// 한 패턴 내에 콜라이더가 켜지는 수 
-		unsigned int _maxColliderOnCount;
 
 		Transform* _bossTransform;
 		Transform* _playerTransform;
@@ -204,7 +200,7 @@ namespace KunrealEngine
 		{
 			Boss* boss = this;
 
-			auto delay = _nowPattern->_afterDelay;
+			auto delay = _nowTitlePattern->_afterDelay;
 			Waitforsecond(delay);
 
 			// 코어 패턴이었다면
@@ -221,7 +217,7 @@ namespace KunrealEngine
 			// 기본 패턴을 실행할 수 있도록 초기화
 			boss->_patternIndex = -1;
 
-			boss->_nowPattern = nullptr;
+			boss->_nowTitlePattern = nullptr;
 		};
 
 		Coroutine_Func(TeleportWithHide)

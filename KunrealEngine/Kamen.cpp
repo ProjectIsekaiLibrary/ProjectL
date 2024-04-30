@@ -6,7 +6,8 @@
 
 KunrealEngine::Kamen::Kamen()
 	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _lazer(nullptr),
-	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false)
+	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
+	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr), _backStep(nullptr)
 {
 	BossBasicInfo info;
 
@@ -64,7 +65,7 @@ void KunrealEngine::Kamen::OnTriggerExit()
 
 void KunrealEngine::Kamen::SetActive(bool active)
 {
-
+	this->_isActivated = active;
 }
 
 void KunrealEngine::Kamen::SetMesh()
@@ -102,15 +103,19 @@ void KunrealEngine::Kamen::CreatePattern()
 {
 	CreateSubObject();
 
-	//LeftAttack();
-	//RightAttack();
-	SpellAttack();
+	CreateLeftAttack();
+	CreateRightAttack();
+	CreateTurn180();
+	//SpellAttack();
 	//CallAttack();
 
 	// 백스탭 이후 패턴
 	//BackStepCallAttack();
 	//
 	//EmergenceAttack();
+
+	//LeftRightPattern();
+	RightLeftPattern();
 }
 
 
@@ -155,7 +160,45 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_lazer->GetComponent<Particle>()->SetActive(false);
 }
 
-void KunrealEngine::Kamen::LeftAttack()
+
+void KunrealEngine::Kamen::LeftRightPattern()
+{
+	BossPattern* leftRightPattern = new BossPattern();
+
+	leftRightPattern->SetNextPatternForcePlay(false);
+
+	leftRightPattern->SetMaxColliderCount(0);
+
+	leftRightPattern->SetRange(_info._attackRange);
+
+	leftRightPattern->SetPattern(_leftAttack);
+
+	leftRightPattern->SetPattern(_rightAttack);
+
+	_basicPattern.emplace_back(leftRightPattern);
+}
+
+
+void KunrealEngine::Kamen::RightLeftPattern()
+{
+	BossPattern* rightLeftPattern = new BossPattern();
+
+	rightLeftPattern->SetNextPatternForcePlay(true);
+
+	rightLeftPattern->SetMaxColliderCount(0);
+
+	rightLeftPattern->SetRange(_info._attackRange);
+
+	rightLeftPattern->SetPattern(_rightAttack);
+
+	rightLeftPattern->SetPattern(_turn180);
+
+	rightLeftPattern->SetPattern(_leftAttack);
+
+	_basicPattern.emplace_back(rightLeftPattern);
+}
+
+void KunrealEngine::Kamen::CreateLeftAttack()
 {
 	BossPattern* pattern = new BossPattern();
 
@@ -163,26 +206,27 @@ void KunrealEngine::Kamen::LeftAttack()
 
 	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
-	pattern->SetAttackState(BossPattern::eAttackState::ePush);
-
-	pattern->_subObject.emplace_back(_leftHand);
+	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	auto leftHandLogic = CreateBasicAttackLogic(pattern, _leftHand, 10);
 
 	pattern->SetLogic(leftHandLogic);
 
+	_leftAttack = pattern;
 
-	// 첫 왼쪽 공격이 맞았다면 오른쪽 공격도 시행
-	pattern->_subObject.emplace_back(_rightHand);
+	//_basicPattern.emplace_back(_leftAttack);
 
-	auto rightHandLogic = CreateBasicAttackLogic(pattern, "Right_Attack", _rightHand, 10);
-
-	pattern->SetLogic(rightHandLogic);
-
-	_basicPattern.emplace_back(pattern);
+	//// 첫 왼쪽 공격이 맞았다면 오른쪽 공격도 시행
+	//pattern->_subObject.emplace_back(_rightHand);
+	//
+	//auto rightHandLogic = CreateBasicAttackLogic(pattern, "Right_Attack", _rightHand, 10);
+	//
+	//pattern->SetLogic(rightHandLogic);
+	//
+	//_basicPattern.emplace_back(pattern);
 }
 
-void KunrealEngine::Kamen::RightAttack()
+void KunrealEngine::Kamen::CreateRightAttack()
 {
 	BossPattern* pattern = new BossPattern();
 
@@ -190,45 +234,117 @@ void KunrealEngine::Kamen::RightAttack()
 
 	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5f);
 	pattern->SetIsWarning(false).SetWarningName("");
-	pattern->SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	pattern->_subObject.emplace_back(_rightHand);
 
-	// 첫 오른쪽 공격이 맞았다면 왼쪽 공격도 시행
-	auto rightAttackLogic = [pattern, this]()
-		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play("Right_Attack", pattern->_speed, false);
+	auto rightHandLogic = CreateBasicAttackLogic(pattern, _rightHand, 10);
 
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (_maxColliderOnCount > 0)
-			{
-				if (animator->GetCurrentFrame() >= 10.0f)
-				{
-					if (_rightHand != nullptr)
-					{
-						_rightHand->GetComponent<BoxCollider>()->SetActive(true);
-					}
-				}
-			}
-			
-			// 2타 실행
-			if (isAnimationPlaying == false)
-			{
-				pattern->SetNextLogic(true);
-				_maxColliderOnCount = pattern->_maxColliderOnCount;
-				return false;
-			}
+	pattern->SetLogic(rightHandLogic);
 
-			return true;
-		};
+	_rightAttack = pattern;
 
-	pattern->SetLogic(rightAttackLogic);
+	//// 첫 오른쪽 공격이 맞았다면 왼쪽 공격도 시행
+	//auto rightAttackLogic = [pattern, this]()
+	//	{
+	//		auto animator = _boss->GetComponent<Animator>();
+	//		auto isAnimationPlaying = animator->Play("Right_Attack", pattern->_speed, false);
+	//
+	//		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+	//		if (_maxColliderOnCount > 0)
+	//		{
+	//			if (animator->GetCurrentFrame() >= 10.0f)
+	//			{
+	//				if (_rightHand != nullptr)
+	//				{
+	//					_rightHand->GetComponent<BoxCollider>()->SetActive(true);
+	//				}
+	//			}
+	//		}
+	//		
+	//		// 2타 실행
+	//		if (isAnimationPlaying == false)
+	//		{
+	//			pattern->SetNextLogic(true);
+	//			_maxColliderOnCount = pattern->_maxColliderOnCount;
+	//			return false;
+	//		}
+	//
+	//		return true;
+	//	};
+	//
+	//pattern->SetLogic(rightAttackLogic);
+	//
+	//pattern->_subObject.emplace_back(_leftHand);
+	//
+	//// 첫 오른쪽 공격이 맞았다면 왼쪽 공격도 시행
+	//auto attackLogic = [pattern, this]()
+	//	{
+	//		auto animator = _boss->GetComponent<Animator>();
+	//
+	//		// 회전 진행 안됐다면
+	//		if (_isRotateFinish == false)
+	//		{
+	//			animator->Play("Idle", pattern->_speed, false);
+	//
+	//			// 회전 시킴
+	//			auto rotateFinish = Rotate(180, 200.0f);
+	//
+	//			// 회전 끝나지 않았다면
+	//			if (rotateFinish == false)
+	//			{
+	//				// 계속 회전시키기 위함
+	//				return true;
+	//			}
+	//			else
+	//			{
+	//				_isRotateFinish = true;
+	//			}
+	//		}
+	//
+	//		if (animator->GetNowAnimationName() == "Idle")
+	//		{
+	//			animator->Stop();
+	//		}
+	//
+	//		auto isAnimationPlaying = animator->Play("Left_Attack", pattern->_speed, false);
+	//
+	//		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+	//		if (_maxColliderOnCount > 0)
+	//		{
+	//			if (animator->GetCurrentFrame() >= 10.0f)
+	//			{
+	//				if (_leftHand != nullptr)
+	//				{
+	//					_leftHand->GetComponent<BoxCollider>()->SetActive(true);
+	//				}
+	//			}
+	//		}
+	//
+	//		if (isAnimationPlaying == false)
+	//		{
+	//			_isRotateFinish = false;
+	//			return false;
+	//		}
+	//
+	//		return true;
+	//	};
+	//
+	//pattern->SetLogic(attackLogic);
+	//
+	//_basicPattern.emplace_back(pattern);
+}
 
-	pattern->_subObject.emplace_back(_leftHand);
 
-	// 첫 오른쪽 공격이 맞았다면 왼쪽 공격도 시행
-	auto attackLogic = [pattern, this]()
+void KunrealEngine::Kamen::CreateTurn180()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Turn180");
+
+	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(200.0f);
+
+	auto turn180 = [pattern, this]()
 		{
 			auto animator = _boss->GetComponent<Animator>();
 
@@ -238,7 +354,7 @@ void KunrealEngine::Kamen::RightAttack()
 				animator->Play("Idle", pattern->_speed, false);
 
 				// 회전 시킴
-				auto rotateFinish = Rotate(180, 200.0f);
+				auto rotateFinish = Rotate(180, pattern->_speed);
 
 				// 회전 끝나지 않았다면
 				if (rotateFinish == false)
@@ -248,41 +364,15 @@ void KunrealEngine::Kamen::RightAttack()
 				}
 				else
 				{
-					_isRotateFinish = true;
+					_isRotateFinish = false;
+					return false;
 				}
 			}
-
-			if (animator->GetNowAnimationName() == "Idle")
-			{
-				animator->Stop();
-			}
-
-			auto isAnimationPlaying = animator->Play("Left_Attack", pattern->_speed, false);
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (_maxColliderOnCount > 0)
-			{
-				if (animator->GetCurrentFrame() >= 10.0f)
-				{
-					if (_leftHand != nullptr)
-					{
-						_leftHand->GetComponent<BoxCollider>()->SetActive(true);
-					}
-				}
-			}
-
-			if (isAnimationPlaying == false)
-			{
-				_isRotateFinish = false;
-				return false;
-			}
-
-			return true;
 		};
 
-	pattern->SetLogic(attackLogic);
+	pattern->SetLogic(turn180);
 
-	_basicPattern.emplace_back(pattern);
+	_turn180 = pattern;
 }
 
 void KunrealEngine::Kamen::SpellAttack()
@@ -302,7 +392,7 @@ void KunrealEngine::Kamen::SpellAttack()
 		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
 		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-		if (_maxColliderOnCount > 0)
+		if (pattern->_colliderOnCount > 0)
 		{
 			if (animator->GetCurrentFrame() >= 30.0f)
 			{
@@ -323,7 +413,6 @@ void KunrealEngine::Kamen::SpellAttack()
 		{
 			pattern->SetSpeed(20.0f);
 			_lazer->SetActive(false);
-			_maxColliderOnCount = pattern->_maxColliderOnCount;
 			return false;
 		}
 
@@ -332,8 +421,6 @@ void KunrealEngine::Kamen::SpellAttack()
 
 
 	pattern->SetLogic(spellLogic);
-
-	pattern->SetPattern(pattern);
 
 	_basicPattern.emplace_back(pattern);
 }
@@ -360,7 +447,7 @@ void KunrealEngine::Kamen::CallAttack()
 		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 		if (animator->GetCurrentFrame() >= 20)
 		{
-			if (_maxColliderOnCount > 0)
+			if (pattern->_colliderOnCount > 0)
 			{
 				// 콜라이더 키기
 				_call->GetComponent<BoxCollider>()->SetActive(true);
@@ -548,7 +635,7 @@ void KunrealEngine::Kamen::EmergenceAttack()
 
 			if (animator->GetCurrentFrame() >= 0)
 			{
-				if (_maxColliderOnCount > 0)
+				if (pattern->_colliderOnCount > 0)
 				{
 					// 콜라이더 키기
 					_leftHand->SetActive(true);
@@ -556,7 +643,7 @@ void KunrealEngine::Kamen::EmergenceAttack()
 				}
 			}
 
-			if (_maxColliderOnCount == 0)
+			if (pattern->_colliderOnCount == 0)
 			{
 				_isRotateFinish = false;
 				return false;
@@ -564,7 +651,7 @@ void KunrealEngine::Kamen::EmergenceAttack()
 
 			if (isAnimationPlaying == false)
 			{
-				if (_maxColliderOnCount > 0)
+				if (pattern->_colliderOnCount > 0)
 				{
 					int a = 5;
 				}
@@ -603,7 +690,7 @@ void KunrealEngine::Kamen::BackStepCallAttack()
 		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 		if (animator->GetCurrentFrame() >= 20)
 		{
-			if (_maxColliderOnCount > 0)
+			if (pattern->_colliderOnCount > 0)
 			{
 				// 파티클 키기
 				_call->GetComponent<BoxCollider>()->SetActive(true);
