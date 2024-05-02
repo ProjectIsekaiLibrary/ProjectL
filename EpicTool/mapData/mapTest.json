@@ -19,55 +19,15 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -1.1571465730667114,
-                "position_y": 71.93045806884766,
-                "position_z": -42.136817932128906,
+                "position_x": 42.26112747192383,
+                "position_y": 94.68582153320313,
+                "position_z": -65.8884048461914,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
                 "scale_x": 1.0,
                 "scale_y": 1.0,
                 "scale_z": 1.0
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/floor.dds"
-                ],
-                "Mesh": [
-                    "cube/cube"
-                ],
-                "Normal": [
-                    "Resources/Textures/cube/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "plane",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 0.0,
-                "position_y": -1.0,
-                "position_z": 0.0,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 100.0,
-                "scale_y": 1.0,
-                "scale_z": 100.0
             }
         }
     },
@@ -1662,14 +1622,14 @@
             "sound_Volume": [],
             "transform": {
                 "position_x": 6.093443870544434,
-                "position_y": 2.9811136722564697,
-                "position_z": -15.521322250366211,
+                "position_y": 16.84058952331543,
+                "position_z": -16.401960372924805,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.15000000596046448,
-                "scale_y": 0.15000000596046448,
-                "scale_z": 0.15000000596046448
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
             }
         }
     },
@@ -2753,67 +2713,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 0.0,
-                "position_y": -0.6607999801635742,
-                "position_z": 0.0,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 1.0,
-                "scale_y": 1.0,
-                "scale_z": 1.0
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {
-                "BoxSize_x": 2.0,
-                "BoxSize_y": 2.0,
-                "BoxSize_z": 2.0,
-                "Offset_x": 0.0,
-                "Offset_y": 0.0,
-                "Offset_z": 0.0
-            },
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/Meteor/emission.jpg"
-                ],
-                "Mesh": [
-                    "Meteor/Meteor"
-                ],
-                "Normal": [
-                    "Resources/Textures/Meteor/New_Graph_normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Meteor (1)",
-            "parent": {},
-            "particle": {
-                "Color_X": 0.0,
-                "Color_Y": 0.0,
-                "Color_Z": 0.0,
-                "Direction_X": 0.0,
-                "Direction_Y": 20.0,
-                "Direction_Z": 0.0,
-                "FadeoutTime": 2.0,
-                "LifeTime": 2.0,
-                "Random": 1.0,
-                "Velocity": 20.0
-            },
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -69.57168579101563,
-                "position_y": 1.97140371799469,
-                "position_z": 10.141639709472656,
+                "position_x": -102.6713638305664,
+                "position_y": 1.9664374589920044,
+                "position_z": 40.40278625488281,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": -90.0,

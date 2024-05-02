@@ -335,8 +335,8 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 							object->AddComponent<KunrealEngine::Camera>();
 						}
 
-						//object->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0], cameraPos[1], cameraPos[2]);
-						//object->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);
+						object->GetComponent<KunrealEngine::Camera>()->SetCameraPosition(cameraPos[0], cameraPos[1], cameraPos[2]);
+						object->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0], targetPos[1], targetPos[2]);
 
 						if (object->GetObjectName() == "testCamera") // 카메라가 여러개인 경우를 대비한 임시코드, 처음에 메인으로 쓸 오브젝트를 미리 정해두는것도 좋겠다
 						{
@@ -358,6 +358,8 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 				, targetPos[1] + playerobjectTransform->GetPosition().y, targetPos[2] + playerobjectTransform->GetPosition().z);
 
 			auto position = testObject->GetComponent<KunrealEngine::Camera>()->GetTargetPosition();
+
+			int asdfsdg = 0;
 		}
 		else
 		{
