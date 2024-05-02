@@ -1,3 +1,7 @@
+/// 2024.04.25 - 정진수(update 24.04.25)
+/// 보스명 : 아라크네
+/// 거미타입 보스
+///
 #pragma once
 #include "KunrealAPI.h"
 #include "Boss.h"
@@ -9,7 +13,7 @@ namespace KunrealEngine
 	{
 	public:
 		Aracne();
-		~Aracne();
+		virtual ~Aracne();
 
 	public:
 		void Initialize() override;
@@ -22,7 +26,7 @@ namespace KunrealEngine
 		void OnTriggerEnter() override;
 		void OnTriggerStay() override;
 		void OnTriggerExit() override;
-
+		
 		void SetActive(bool active) override;
 
 		virtual void SetMesh() override;
@@ -34,5 +38,10 @@ namespace KunrealEngine
 		virtual void CreatePattern() override;
 
 	private:
+		void JumpAttack();
+		void leftAttack();
+		void RightAttack();
+		void ShootingWeb();
+
 	};
 }

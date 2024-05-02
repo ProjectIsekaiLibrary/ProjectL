@@ -43,9 +43,9 @@ namespace KunrealEngine
 		std::function<bool()> _condition;	// 투사체 소멸 조건
 
 	public:
-		// 투사체 정보 생성	// 매개변수로 플레이어 넣어줘야함
-		// 생성하는 부분에선 this 넣으면 되도록 설계
-		void SetDirection(GameObject* playerObj);
+		float _movedRange;					// 투사체가 이동한 거리 계산
+		// 투사체가 발사될 방향
+		void SetDirection(DirectX::XMVECTOR direction);
 
 		// 어떤 물체를 그릴 지	// 이펙트는 쉐이더를 통해
 		void SetMeshObject(const char* meshName, const char* textureName = "", const char* normalName = "");
@@ -58,6 +58,9 @@ namespace KunrealEngine
 
 		// 소멸 조건 설정
 		void SetDestoryCondition(std::function<bool()> cond);
+
+		// 로직 처리 후 조건 false로 초기화
+		void ResetCondition();
 	};
 }
 

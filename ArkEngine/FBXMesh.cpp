@@ -188,7 +188,7 @@ bool ArkEngine::ArkDX11::FBXMesh::GetShadowState()
 	return _haveShadow;
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetTransform(DirectX::XMFLOAT4X4 matrix)
+void ArkEngine::ArkDX11::FBXMesh::SetTransform(const DirectX::XMFLOAT4X4& matrix)
 {
 	_meshTransform->SetTransformMatrix(matrix);
 
@@ -351,7 +351,7 @@ void ArkEngine::ArkDX11::FBXMesh::SetMaterial(GInterface::Material material)
 	_material.emplace_back(newMat);
 }
 
-void ArkEngine::ArkDX11::FBXMesh::SetReflect(DirectX::XMFLOAT4 reflect)
+void ArkEngine::ArkDX11::FBXMesh::SetReflect(const DirectX::XMFLOAT4& reflect)
 {
 	_material.back().reflect = reflect;
 }
@@ -444,7 +444,7 @@ DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXMesh::GetTransformEffectedByBone()
 	return _transformEffectedByParent;
 }
 
-DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXMesh::GetBoneTransform(std::string boneName)
+DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXMesh::GetBoneTransform(const std::string& boneName)
 {
 	auto boneIndex = _animator->GetIndexOfBone(boneName);
 
@@ -489,7 +489,7 @@ bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, in
 	}
 }
 
-bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay)
+bool ArkEngine::ArkDX11::FBXMesh::PlayAnimation(float speed, float deltaTime, const std::string& animName, bool continuousPlay)
 {
 	_havePlayedAnimation = true;
 

@@ -4,7 +4,7 @@
 #include "Player.h"
 
 KunrealEngine::Projectile::Projectile()
-	:_collider(nullptr), _direction(), _mesh(nullptr)
+	:_collider(nullptr), _direction(), _mesh(nullptr), _movedRange(0.0f)
 {
 	_direction = DirectX::XMVectorZero();
 }
@@ -44,10 +44,13 @@ void KunrealEngine::Projectile::LateUpdate()
 	if (_condition())
 	{
 		this->GetOwner()->SetActive(false);
+		this->GetOwner()->SetTotalComponentState(false);
 	}
 	else
 	{
+		// 투사체에 소속 된 컴포넌트들은 일괄적으로 관리해도 상관없다
 		this->GetOwner()->SetActive(true);
+		this->GetOwner()->SetTotalComponentState(true);
 	}
 }
 
@@ -66,14 +69,12 @@ void KunrealEngine::Projectile::OnTriggerExit()
 
 void KunrealEngine::Projectile::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
-void KunrealEngine::Projectile::SetDirection(GameObject* playerObj)
+void KunrealEngine::Projectile::SetDirection(DirectX::XMVECTOR direction)
 {
-	// 생성되는 시점에 발사될 방향이 중요
-	// 방향벡터는 투사체 생성 시점 플레이어가 바라보는 방향벡터를 가져옴
-	_direction = playerObj->GetComponent<Player>()->GetDirectionVector();
+	_direction = direction;
 }
 
 void KunrealEngine::Projectile::SetMeshObject(const char* meshName, const char* textureName /*= ""*/, const char* normalName /*= ""*/)
@@ -106,5 +107,10 @@ DirectX::XMVECTOR KunrealEngine::Projectile::GetDirection()
 
 void KunrealEngine::Projectile::SetDestoryCondition(std::function<bool()> cond)
 {
-	_condition = cond;
+	this->_condition = cond;
+}
+
+void KunrealEngine::Projectile::ResetCondition()
+{
+	
 }

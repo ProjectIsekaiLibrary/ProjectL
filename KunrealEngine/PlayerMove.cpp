@@ -48,15 +48,18 @@ void KunrealEngine::PlayerMove::Update()
 	// 마우스 우클릭시	// 홀드도 적용
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
-		GRAPHICS->DeleteAllLine();
+		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK)
+		{
+			GRAPHICS->DeleteAllLine();
 
-		// 목표지점을 업데이트
-		UpdateTargetPosition();
-		UpdateMoveNode();
-	
-		// 이동상태로 만들어줌
-		_playerComp->_playerStatus = Player::Status::WALK;
-		_isMoving = true;
+			// 목표지점을 업데이트
+			UpdateTargetPosition();
+			UpdateMoveNode();
+
+			// 이동상태로 만들어줌
+			_playerComp->_playerStatus = Player::Status::WALK;
+			_isMoving = true;
+		}
 	}
 
 	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함
@@ -111,7 +114,7 @@ void KunrealEngine::PlayerMove::OnTriggerExit()
 
 void KunrealEngine::PlayerMove::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 void KunrealEngine::PlayerMove::UpdateTargetPosition()
@@ -149,7 +152,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 
 	// 플레이어의 방향벡터 변경
 	// 대시하면서 다시 연산할바에 이미 연산된 김에 여기서 추가해줌
-	_playerComp->_directionVector = direction;
+ 	_playerComp->_directionVector = direction;
 
 
 	// 목표 좌표가 대시 가능 거리보다 멀리 있을 경우
@@ -464,11 +467,11 @@ void KunrealEngine::PlayerMove::PlayerDash(DirectX::XMFLOAT3 targetPos, float sp
 
 void KunrealEngine::PlayerMove::ShowPlayerInfo()
 {
-	GRAPHICS->DrawDebugText(300, 300, 20, "%.3f", _targetPos.x);
-	GRAPHICS->DrawDebugText(360, 300, 20, "%.3f", _targetPos.y);
-	GRAPHICS->DrawDebugText(420, 300, 20, "%.3f", _targetPos.z);
-	GRAPHICS->DrawDebugText(300, 200, 20, "%.3f", _movedRange);
-	GRAPHICS->DrawDebugText(300, 100, 20, "%.3f", _playerComp->GetPlayerData()._dashRange);
+	//GRAPHICS->DrawDebugText(300, 300, 20, "%.3f", _targetPos.x);
+	//GRAPHICS->DrawDebugText(360, 300, 20, "%.3f", _targetPos.y);
+	//GRAPHICS->DrawDebugText(420, 300, 20, "%.3f", _targetPos.z);
+	GRAPHICS->DrawDebugText(300, 200, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetMaxFrame());
+	GRAPHICS->DrawDebugText(300, 100, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetCurrentFrame());
 	
 	switch (_playerComp->_playerStatus)
 	{
@@ -481,7 +484,14 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 		case Player::Status::DASH:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : DASH");
 			break;
+		case Player::Status::PARALYSIS:
+			GRAPHICS->DrawDebugText(360, 400, 20, "Player : PARALYSIS");
+			break;
+		case Player::Status::ABILITY:
+			GRAPHICS->DrawDebugText(360, 400, 20, "Player : ABILITY");
+			break;
 		default:
+			GRAPHICS->DrawDebugText(360, 400, 20, "Player : IDK");
 			break;
 	}
 }

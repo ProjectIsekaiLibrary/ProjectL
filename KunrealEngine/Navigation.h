@@ -90,7 +90,8 @@ namespace KunrealEngine
 		// 장애물을 추가한다.
 		// pos = 장애물 위치 / radius = 장애물 크기 / height = 장애물 사이즈
 		void AddTempObstacle(DirectX::XMFLOAT3 pos, float radius, float height);
-		void AddBoxTempObstacle(DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax);
+		// pos = 장애물 위치 / bmin = 장애물 최소좌표 / bmax = 장애물 최대좌표
+		void AddBoxTempObstacle(DirectX::XMFLOAT3 pos, DirectX::XMFLOAT3 bmin, DirectX::XMFLOAT3 bmax);
 		// 특정 장애물을 제거한다.
 		void RemoveTempObstacle(DirectX::XMFLOAT3 pos);
 		// bpos에 있는 장애물의 위치를 npos의 위치로 옮긴다.

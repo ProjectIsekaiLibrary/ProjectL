@@ -155,10 +155,10 @@ void ArkEngine::ArkDX11::DebugObject::Render()
 
 	deviceContext->RSSetState(_arkDevice->GetWireRS());
 
-	if (_objectName.find("navmesh") != std::string::npos)
-	{
-		deviceContext->RSSetState(_arkDevice->GetSolidRS());
-	}
+// 	if (_objectName.find("navmesh") != std::string::npos)
+// 	{
+// 		deviceContext->RSSetState(_arkDevice->GetSolidRS());
+// 	}
 
 	UINT stride = sizeof(ArkEngine::ArkDX11::PosColor);
 	UINT offset = 0;
@@ -356,7 +356,7 @@ void ArkEngine::ArkDX11::DebugObject::BuildMapBuffers(std::vector<DirectX::XMFLO
 		for (const auto& index : vertexVec)
 		{
 			PosColor newPosColor;
-			newPosColor.color = { 0.2f, 0.7f, 0.7f, .0f };
+			newPosColor.color = { 0.0f, 0.4f, 0.5f, 0.9f };
 			newPosColor.pos = index;
 
 			vertexList.emplace_back(newPosColor);

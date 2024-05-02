@@ -71,7 +71,7 @@ namespace ArkEngine
 			virtual bool GetShadowState() override;
 
 		public:
-			virtual void SetTransform(DirectX::XMFLOAT4X4 matrix) override;
+			virtual void SetTransform(const DirectX::XMFLOAT4X4& matrix) override;
 			virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) override;
 			virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) override;
@@ -82,7 +82,7 @@ namespace ArkEngine
 			virtual void SetAnimator() override;
 			virtual const GInterface::Material GetMaterial() override;
 			virtual void SetMaterial(GInterface::Material material) override;
-			virtual void SetReflect(DirectX::XMFLOAT4 reflect) override;
+			virtual void SetReflect(const DirectX::XMFLOAT4& reflect) override;
 
 		public:
 			virtual const std::vector<std::string> GetDiffuseTextureList() override;
@@ -92,7 +92,7 @@ namespace ArkEngine
 			virtual void PlayAnimation(float deltaTime, bool continiousPlay) override;
 			virtual void StopAnimation() override;
 			virtual bool PlayAnimation(float speed, float deltaTime, int animIndex, bool continuousPlay) override;
-			virtual bool PlayAnimation(float speed, float deltaTime, std::string animName, bool continuousPlay) override;
+			virtual bool PlayAnimation(float speed, float deltaTime, const std::string& animName, bool continuousPlay) override;
 			virtual const std::vector<std::string>& GetClipNames() override;
 			virtual void PauseAnimation() override;
 			virtual void ReplayAnimation() override;
@@ -103,7 +103,7 @@ namespace ArkEngine
 			virtual void SetParentBone(GInterface::GraphicsRenderable* model, const std::string& boneName) override;
 			virtual void DeleteParentBone() override;
 			virtual DirectX::XMFLOAT4X4 GetTransformEffectedByBone() override;
-			virtual DirectX::XMFLOAT4X4 GetBoneTransform(std::string boneName) override;
+			virtual DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName) override;
 
 		public:
 			virtual bool GetPickable() override;

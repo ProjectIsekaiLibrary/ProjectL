@@ -173,6 +173,8 @@ namespace KunrealEngine
 		// 컴포넌트 리스트를 반환
 		std::vector<Component*> GetComponentList();
 
+		// 모든 컴포넌트를 끄고 킬 수 있도록
+		void SetTotalComponentState(bool flag);
 	};
 }
 

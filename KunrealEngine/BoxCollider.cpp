@@ -112,13 +112,12 @@ void KunrealEngine::BoxCollider::OnTriggerExit()
 
 void KunrealEngine::BoxCollider::SetActive(bool active)
 {
-	this->_isActivated = active;
-	
 	if (!this->_isActivated)
 	{
 		this->_isCollided = false;
 	}
 
+	this->_isActivated = active;
 	_debugObject->SetActive(active);
 }
 

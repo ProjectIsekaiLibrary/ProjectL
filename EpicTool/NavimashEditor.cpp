@@ -127,7 +127,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::InputText("FileName", fileName, sizeof(fileName)))
 	{
-		_fileNameStr = fileName;
+		_fileNameStr = fileName + std::string(".bin");
 	}
 	
 
@@ -156,7 +156,23 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Load"))
 	{
+		_selectedfileName = _filePath + _selectedfileName;
 		_navimashEditor->LoadAll(_selectedfileName.c_str(), _naviIndex);
+
+		if (_navmeshpolys[_naviIndex] != nullptr)
+		{
+			GRAPHICS->DeleteDebugObject(_navmeshpolys[_naviIndex]);
+			_navmeshpolys[_naviIndex] = nullptr;
+		}
+
+		std::string name = "navmesh";
+		name += std::to_string(_naviIndex);
+		UnDrawAll();
+
+		std::vector<DirectX::XMFLOAT3> vertices;
+		std::vector<unsigned int> indices;
+		_navimashEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
+		_navmeshpolys[_naviIndex] = GRAPHICS->CreateMapDebug(name.c_str(), vertices, indices);
 	}
 
 	if (ImGui::Button("ResetList"))
@@ -181,6 +197,11 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Hide"))
 	{
+		if (_navmeshpolys[_naviIndex] != nullptr)
+		{
+			GRAPHICS->DeleteDebugObject(_navmeshpolys[_naviIndex]);
+			_navmeshpolys[_naviIndex] = nullptr;
+		}
 		UnDrawAll();
 	}
 
