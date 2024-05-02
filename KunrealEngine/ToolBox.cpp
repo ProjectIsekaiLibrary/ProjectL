@@ -76,6 +76,38 @@ float KunrealEngine::ToolBox::GetAngle(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 
 	return angle;
 }
 
+
+float KunrealEngine::ToolBox::GetAngleWithDirection(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float prevAngle)
+{
+	auto direction = DirectX::XMFLOAT3(0.0f, 0.0f, -1.0f);
+	direction = RotateVector(direction, prevAngle);
+
+	DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&src);
+	DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&dst);
+
+	DirectX::XMVECTOR currentForward = DirectX::XMLoadFloat3(&direction);
+	DirectX::XMVECTOR targetDirection = DirectX::XMVectorSubtract(targetPosVec, currentPosVec);
+	targetDirection.m128_f32[1] = 0.0f;
+	targetDirection = DirectX::XMVector3Normalize(targetDirection);
+
+	// 외적
+	DirectX::XMVECTOR crossResult = DirectX::XMVector3Cross(currentForward, targetDirection);
+	// 두 백터의 각이 180도보다 클때 y값이 음수로 나옴 
+	float crossProduct = DirectX::XMVectorGetY(crossResult);
+
+	// 내적을 통해 각도를 도출
+	float angle = acos(DirectX::XMVectorGetX(DirectX::XMVector3Dot(currentForward, targetDirection)));
+	angle = DirectX::XMConvertToDegrees(angle);
+
+	// 두 백터의 각이 180도보다 클 경우 반대로 돌아야함
+	if (crossProduct < 0)
+	{
+		angle *= -1;
+	}
+
+	return angle;
+}
+
 DirectX::XMFLOAT3 KunrealEngine::ToolBox::QuaternionToEulerAngles(const DirectX::XMVECTOR& quaternion)
 {
 	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationQuaternion(quaternion);
@@ -101,4 +133,19 @@ DirectX::XMFLOAT3 KunrealEngine::ToolBox::QuaternionToEulerAngles(const DirectX:
 	}
 
 	return DirectX::XMFLOAT3(roll, pitch, yaw);
+}
+
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::RotateVector(const DirectX::XMFLOAT3& direction, float angle)
+{
+	DirectX::XMVECTOR currentForward = DirectX::XMLoadFloat3(&direction);
+
+	float radians = DirectX::XMConvertToRadians(angle);
+
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(radians);
+
+	DirectX::XMVECTOR rotatedVector = DirectX::XMVector3Transform(currentForward, rotationMatrix);
+
+	DirectX::XMFLOAT3 rotatedDirection;
+	DirectX::XMStoreFloat3(&rotatedDirection, rotatedVector);
+	return rotatedDirection;
 }

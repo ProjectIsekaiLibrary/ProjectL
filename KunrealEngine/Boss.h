@@ -103,6 +103,8 @@ namespace KunrealEngine
 
 		bool Rotate(float angle, float speed);
 
+		bool RotateClockWise(float rotateSpeed, bool isClockWise);
+
 		// 특정 포지션으로 이동시키기 (raycast true시 무언가에 막히면 거기까지만 찾아감)
 		bool Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast);
 
@@ -176,10 +178,17 @@ namespace KunrealEngine
 		bool _isHit;
 		bool _isRotateFinish;
 
+		bool _isAngleCheck;
+		float _rotAngle = 0.0f;
+		float _sum = 0.0f;
+
+		DirectX::XMFLOAT3 _prevRot;
+
 	private:
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 		int _nodeCount;
 
+	private:
 		DirectX::XMFLOAT3 _direction;
 
 		DirectX::XMFLOAT3 _prevPos;
@@ -228,9 +237,6 @@ namespace KunrealEngine
 			boss->_boss->GetComponent<BoxCollider>()->SetActive(false);
 
 			Waitforsecond(3.0f);
-
-			boss->_boss->GetComponent<MeshRenderer>()->SetActive(true);
-			boss->_boss->GetComponent<BoxCollider>()->SetActive(true);
 
 			boss->_isHideFinish = true;
 		};
