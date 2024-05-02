@@ -69,6 +69,16 @@ void KunrealEngine::Transform::SetRotation(float x, float y, float z)
 	// local의 회전값을 world로 변환해주기 위한 쿼터니언
 	DirectX::XMVECTOR rotationPitchYaw = DirectX::XMQuaternionRotationRollPitchYaw(DirectX::XMConvertToRadians(_rotation.x), DirectX::XMConvertToRadians(_rotation.y), DirectX::XMConvertToRadians(_rotation.z));
 	DirectX::XMStoreFloat4(&_quaternion, rotationPitchYaw);
+
+	CreateWorldTransformMatrix();
+}
+
+
+void KunrealEngine::Transform::SetRotation(DirectX::XMFLOAT3 rot)
+{
+	this->_rotation = rot;
+
+	CreateWorldTransformMatrix();
 }
 
 void KunrealEngine::Transform::SetPosition(float x, float y, float z)
@@ -76,12 +86,16 @@ void KunrealEngine::Transform::SetPosition(float x, float y, float z)
 	this->_position.x = x;
 	this->_position.y = y;
 	this->_position.z = z;
+
+	CreateWorldTransformMatrix();
 }
 
 
 void KunrealEngine::Transform::SetPosition(DirectX::XMFLOAT3 pos)
 {
 	this->_position = pos;
+
+	CreateWorldTransformMatrix();
 }
 
 void KunrealEngine::Transform::SetScale(float x, float y, float z)
@@ -89,6 +103,16 @@ void KunrealEngine::Transform::SetScale(float x, float y, float z)
 	this->_scale.x = x;
 	this->_scale.y = y;
 	this->_scale.z = z;
+
+	CreateWorldTransformMatrix();
+}
+
+
+void KunrealEngine::Transform::SetScale(DirectX::XMFLOAT3 scale)
+{
+	this->_scale = scale;
+
+	CreateWorldTransformMatrix();
 }
 
 DirectX::XMFLOAT3 KunrealEngine::Transform::GetPosition()
