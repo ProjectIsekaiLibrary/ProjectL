@@ -79,7 +79,7 @@ struct BossPattern
 	BossPattern()
 		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _rangeOffset(5.0f),
-		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(_maxColliderOnCount), _subObject(),
+		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(1), _subObject(),
 		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true),
 		_index(0)
 	{
@@ -172,7 +172,7 @@ struct BossPattern
 	BossPattern& SetCoolDown(float coolDown) { _triggerHp = coolDown; return *this; };
 	BossPattern& SetRangeOffset(float rangeOffset) { _rangeOffset = rangeOffset; return *this; };
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
-	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; return *this; };
+	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; _colliderOnCount = count; return *this; };
 	BossPattern& SetLogic(std::function<bool()> logic, bool isRemainMesh = true) { _logic = logic; _isRemainMesh = isRemainMesh; return *this; };
 	BossPattern& SetInitializeLogic(std::function<void()> initialize) { _initializeLogic = initialize; return *this; };
 	BossPattern& SetAttackState(eAttackState attackState) { _attackState = attackState; return *this; };

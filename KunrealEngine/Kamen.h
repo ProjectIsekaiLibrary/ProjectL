@@ -32,21 +32,32 @@ namespace KunrealEngine
 	public:
 		virtual void CreatePattern() override;
 
+	public:
+		void GamePattern();
+
 	private:
 		void CreateSubObject();
+		
+	private:
+		void BasicPattern();
 
 	private:
 		void LeftRightPattern();
 		void RightLeftPattern();
+		void BackStepCallPattern();
+		void TeleportSpellPattern();
 
 		// 기본 패턴 조각들
 	private:
 		void CreateLeftAttack();
 		void CreateRightAttack();
+		void CreateSpellAttack();
+		void CreateCallAttack();
 		void CreateTurn180();
-		void SpellAttack();
-		void CallAttack();
-		void BackStepCallAttack();
+		void CreateBackStep();
+		void CreateTeleport();
+		void CreateTurnClockWise();
+		void CreateTurnAntiClockWise();
 
 		// 핵심 기믹 패턴
 	private:
@@ -55,11 +66,15 @@ namespace KunrealEngine
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
-		BossPattern* _turn180;
-
 		BossPattern* _spellAttack;
 		BossPattern* _callAttack;
+
 		BossPattern* _backStep;
+		BossPattern* _turn180;
+		BossPattern* _teleport;
+		BossPattern* _turnClockWise;
+		BossPattern* _turnAntiClockWise;
+
 
 	private:
 		// 패턴에 필요한 subObject들
