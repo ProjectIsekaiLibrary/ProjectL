@@ -178,11 +178,17 @@ namespace KunrealEngine
 		bool _isHit;
 		bool _isRotateFinish;
 
+		bool _isAngleCheck;
+		float _rotAngle = 0.0f;
+		float _sum = 0.0f;
+
+		DirectX::XMFLOAT3 _prevRot;
+
 	private:
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 		int _nodeCount;
 
-		public:
+	private:
 		DirectX::XMFLOAT3 _direction;
 
 		DirectX::XMFLOAT3 _prevPos;

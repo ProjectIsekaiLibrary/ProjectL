@@ -111,7 +111,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateCallAttack();
 	CreateBackStep();
 	CreateTeleport();
-	CreateTurnClockWise();
+	//CreateTurnClockWise();
 	//CreateTurnAntiClockWise();
 
 	// 실제 사용중인 패턴들 모아놓음
@@ -121,10 +121,10 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//`BasicPattern();
+	//BasicPattern();
 	
 	//LeftRightPattern();
-	//RightLeftPattern();
+	RightLeftPattern();
 	//BackStepCallPattern();
 	//TeleportSpellPattern();
 }
@@ -266,7 +266,7 @@ void KunrealEngine::Kamen::CreateTurn180()
 			auto animator = _boss->GetComponent<Animator>();
 
 			// 회전 진행 안됐다면
-			if (_isRotateFinish == false)
+			//if (_isRotateFinish == false)
 			{
 				animator->Play("Idle", pattern->_speed, false);
 
