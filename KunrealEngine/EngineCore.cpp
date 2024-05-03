@@ -94,8 +94,13 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 
 	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
+	//// cube map test
+	GRAPHICS->CreateCubeMap("test", "grasscube1024.dds", true);
+	auto list = GRAPHICS->GetCubeMapList();
+	GRAPHICS->SetMainCubeMap(list.back());
+
 	/// 니들 맘대로 해
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -122,8 +127,8 @@ void KunrealEngine::EngineCore::Update()
 	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
-	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
-	navigationInstance.MoveTempObstacle(pos.first, pos.second);
+	//std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
+	//navigationInstance.MoveTempObstacle(pos.first, pos.second);
 	
 	// 장애물 설치 테스트
 	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
@@ -145,8 +150,8 @@ void KunrealEngine::EngineCore::Update()
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
-	cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
-	cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
+	//cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
+	//cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
 
 	//spider->GetComponent<Animator>()->Play("Idle", 70.f, true);
 

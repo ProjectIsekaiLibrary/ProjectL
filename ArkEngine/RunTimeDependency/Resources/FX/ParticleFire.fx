@@ -25,6 +25,11 @@ cbuffer cbPerFrame
     float3 gParticleColor; // 파티클의 색상
     float3 gParticleRoatation;
     float3 gAccelW;
+    
+    float3 gRotationAxis;
+    float3 gRotationAngle;
+    float gRotationAngleY;
+    float gRotationAngleZ;
 };
 
 cbuffer cbFixed
@@ -83,6 +88,23 @@ BlendState AdditiveBlending
     RenderTargetWriteMask[0] = 0x0F;
 };
 
+// 회전 행렬 계산 함수
+float3x3 RotateAxisAngle(float3 axis, float angle)
+{
+    float3 normalizedAxis = normalize(axis);
+    float s = sin(angle);
+    float c = cos(angle);
+    float3 temp = (1.0f - c) * normalizedAxis;
+
+    float3x3 rotationMatrix = float3x3(
+        c + temp.x * normalizedAxis.x, temp.x * normalizedAxis.y + s * normalizedAxis.z, temp.x * normalizedAxis.z - s * normalizedAxis.y,
+        temp.y * normalizedAxis.x - s * normalizedAxis.z, c + temp.y * normalizedAxis.y, temp.y * normalizedAxis.z + s * normalizedAxis.x,
+        temp.z * normalizedAxis.x + s * normalizedAxis.y, temp.z * normalizedAxis.y - s * normalizedAxis.x, c + temp.z * normalizedAxis.z
+    );
+
+    return rotationMatrix;
+}
+
 // 보조 함수
 float3 RandUnitVec3(float offset)
 {
@@ -114,19 +136,6 @@ float3 RandNum(float offset)
     //return v;
 }
 
-// 회전 행렬을 만드는 함수
-float3x3 RotationMatrixY(float angle)
-{
-    float cosA = cos(angle);
-    float sinA = sin(angle);
-    
-    return float3x3(
-        cosA, 0, sinA,
-        0, 1, 0,
-        -sinA, 0, cosA
-    );
-}
-
 // 스트림 출력 전용 기법
 #define PT_EMITTER 0
 #define PT_FLARE 1
@@ -136,6 +145,7 @@ struct Particle
 {
     float3 InitialPosW : POSITION;
     float3 InitialVelW : VELOCITY;
+    
     float2 SizeW : SIZE;
     float Age : AGE;
     uint Type : TYPE;
@@ -146,6 +156,13 @@ Particle StreamOutVS(Particle vin)
     return vin;
 }
 
+
+float GetRadian(float angle)
+{
+    float radian = 2.0f * 3.141592f * (angle / 360);
+    
+    return radian;
+}
 
 // 스트림 출력 전용 기하 쉐이더는 개 입자의 방출과 기존 입자의
 // 파괴만 담당한다. 입자 시스템마다 입자의 생성, 파괴 규칙이 다를 것이므로,
@@ -162,13 +179,14 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
         {
             float3 vRandom = RandUnitVec3(0.0f);
             vRandom.x *= 0.5f;
-           //vRandom.y *= 0.5f;
+            vRandom.y *= 0.5f;
             vRandom.z *= 0.5f;
-            
             
             Particle p;
             p.InitialPosW = gEmitPosW.xyz;
-            //p.InitialPosW = mul(gEmitPosW.xyz, float3x3(rotationMatrix));
+
+            // 회전 행렬을 계산하고 파티클을 회전시키는 예시
+            
             if (gIsRandom == true)
             {
                 p.InitialVelW = gEmitVelocity * vRandom * gEmitDirW;
@@ -178,7 +196,7 @@ void StreamOutGS(point Particle gin[1], inout PointStream<Particle> ptStream)
                 p.InitialVelW = gEmitVelocity * gEmitDirW;
             }
            
-           //p.SizeW = float2(5.0f, 5.0f);   // 파티클 사각형의 크기를 정한다
+
             p.SizeW = gParticleSize; // 파티클 사각형의 크기를 정한다
             p.Age = 0.0f;
             p.Type = PT_FLARE;
@@ -228,15 +246,38 @@ struct VertexOut
     uint Type : TYPE;
 };
 
+
 VertexOut DrawVS(Particle vin)
 {
     VertexOut vout;
     
     float t = vin.Age;
+
+        // 로컬 회전을 위한 회전 행렬 계산
+    
+    float radiX = GetRadian(gRotationAngle.x);
+    //float radiX = GetRadian(90.0f);
+    float radiY = GetRadian(gRotationAngle.y);
+    //float radiY = GetRadian(90.0f);
+    float radiZ = GetRadian(gRotationAngle.z);
+    //float radiZ = GetRadian(45.0f);
+    
+    
+    float3x3 rotationMatrixX = RotateAxisAngle(float3(1.0f, 0.0f, 0.0f), radiX);
+    float3x3 rotationMatrixY = RotateAxisAngle(float3(0.0f, 1.0f, 0.0f), radiY);
+    float3x3 rotationMatrixZ = RotateAxisAngle(float3(0.0f, 0.0f, 1.0f), radiZ);
+
+    float3 initialPos = vin.InitialPosW - gEmitPosW;
+    float3 initialPosRotated = mul(mul(mul(initialPos, rotationMatrixX), rotationMatrixY), rotationMatrixZ) + gEmitPosW;
+    
+    // 초기 속도 계산
+    float3 initialVelRotated = mul(mul(mul(vin.InitialVelW, rotationMatrixX), rotationMatrixY), rotationMatrixZ);
+
+
+
     
     // 상수 가속 공식
-    vout.PosW = 0.5f * t * t * gAccelW + t * vin.InitialVelW + vin.InitialPosW;
-     
+    vout.PosW = 0.5f * t * t * gAccelW + t * initialVelRotated + initialPosRotated;
     
     // 시간에 따른 색상 감소
     float opacity = 1.0f - smoothstep(0.0f, 1.0f, t / gParticleFadeTime);
@@ -244,9 +285,7 @@ VertexOut DrawVS(Particle vin)
     
     vout.SizeW = vin.SizeW;
     vout.Type = vin.Type;
-    
 
-    
     return vout;
 
 }
@@ -268,13 +307,12 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
     // 방출기 입자는 그리지 않는다
     if (gin[0].Type != PT_EMITTER)
     {
+        
       // 빌보드가 카메라를 향하게 하는 세계 행렬을 계산한다
         float3 look = normalize(gEyePosW.xyz - gin[0].PosW);
         float3 right = normalize(cross(float3(0, 1, 0), look));
         float3 up = cross(look, right);
-        //float3 up = cross(right, look);
-        
-        
+       
       // 사각형을 구성하는 삼각형 띠 정점들을 계산한다
         float halfWidth = 0.5f * gin[0].SizeW.x;
         float halfHeight = 0.5f * gin[0].SizeW.y;
@@ -284,7 +322,7 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
         v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
         v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
         v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
-      
+              
       // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력한다
         GeoOut gout;
       [unroll]
@@ -293,6 +331,7 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
             gout.PosH = mul(v[i], gViewProj);
             gout.Tex = gQuadTex[i];
             gout.Color = gin[0].Color;
+
             triStream.Append(gout);
         }
     }
@@ -302,7 +341,6 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
 float4 DrawPS(GeoOut pin) : SV_TARGET
 {
     return gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
-    //return float4(1.0f, 0.0f, 0.0f, 1.0f);
 }
 
 technique11 DrawTech

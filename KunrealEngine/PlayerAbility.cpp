@@ -11,7 +11,7 @@
 #include "Animator.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
-	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr)
+	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr)
 {
 
 }
@@ -55,10 +55,10 @@ void KunrealEngine::PlayerAbility::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::Q))
 	{
+		ResetShotPos();
 		_shot->SetActive(true);
 		_shot->GetComponent<Projectile>()->SetActive(true);
 		_shot->GetComponent<Projectile>()->ResetCondition();
-		ResetShotPos();
 	}
 
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
@@ -108,6 +108,9 @@ void KunrealEngine::PlayerAbility::ResetShotPos()
 		this->GetOwner()->GetComponent<Transform>()->GetRotation().z
 	);
 
+	_shot->GetComponent<BoxCollider>()->Update();
+	_shot->GetComponent<MeshRenderer>()->Update();
+
 	// 방향벡터
 	DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
 	DirectX::XMFLOAT3 targetPoint = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
@@ -146,7 +149,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	shotProj->GetCollider()->SetBoxSize(3.0f, 3.0f, 3.0f);
 	shotProj->SetDestoryCondition([shotProj, this]()->bool
 		{
-			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())
+			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())		
 			{
 				return true;
 			}
@@ -177,6 +180,65 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	AddToContanier(shot);
 }
 
+
+void KunrealEngine::PlayerAbility::CreateAbility2()
+{
+	//Ability* ice = new Ability();
+	//ice->Initialize("Ice");
+	//
+	//ice->SetTotalData(
+	//	"Ice",			// 이름
+	//	20.0f,			// 데미지
+	//	15.0f,			// 마나
+	//	10.0f,			// 무력화 피해량
+	//	8.0f,			// 쿨타임
+	//	12.0f			// 사거리
+	//);
+	//
+	//_ice = ice->_projectile;
+	//
+	//// 크기 조정
+	//_ice->GetComponent<Transform>()->SetScale(0.3f, 0.3, 0.3f);
+	//
+	//// 투사체 컴포넌트 추가
+	//_ice->AddComponent<Projectile>();
+	//Projectile* iceProj = _ice->GetComponent<Projectile>();
+	//
+	//iceProj->SetMeshObject("Meteor/Meteor");
+	//iceProj->GetCollider()->SetBoxSize(5.0f, 10.0f, 10.0f);
+	//iceProj->SetDestoryCondition([iceProj, this]()->bool
+	//	{
+	//		if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())
+	//		{
+	//			return true;
+	//		}
+	//		else
+	//		{
+	//			return false;
+	//		}
+	//	});
+	//
+	//_ice->SetActive(false);
+	//
+	//shot->SetLogic([shot, shotProj, this]()
+	//	{
+	//		if (_shot->GetActivated())
+	//		{
+	//			DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
+	//
+	//			DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);
+	//			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(shotProj->GetDirection(), 40.0f * TimeManager::GetInstance().GetDeltaTime()));
+	//
+	//			_shot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
+	//			_shot->GetComponent<Transform>()->SetRotation(0.0f, _shot->GetComponent<Transform>()->GetRotation().y + 50.0f, 0.0f);
+	//			shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec)));
+	//
+	//		}
+	//	});
+	//
+	//AddToContanier(shot);
+}
+
 void KunrealEngine::PlayerAbility::ResetMeteorPos()
 {
 	// 마우스 3D좌표로부터 20.0f 위에 위치시키도록
@@ -187,9 +249,6 @@ void KunrealEngine::PlayerAbility::ResetMeteorPos()
 		_meteor->GetComponent<Transform>()->GetPosition().y + 40.0f,
 		_meteor->GetComponent<Transform>()->GetPosition().z
 	);
-
-	// 우리 에셋으론 세워야 이쁘다
-	_meteor->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, -90.0f);
 }
 
 void KunrealEngine::PlayerAbility::CreateAbility4()
@@ -208,6 +267,9 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 	// 객체 저장
 	_meteor = meteor->_projectile;
+
+	// 우리 에셋으론 세워야 이쁘다
+	_meteor->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, -90.0f);
 
 	// 투사체 컴포넌트 추가
 	_meteor->AddComponent<Projectile>();

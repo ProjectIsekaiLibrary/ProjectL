@@ -144,6 +144,14 @@ void KunrealEngine::Particle::SetParticleDirection(float x, float y, float z)
 }
 
 
+void KunrealEngine::Particle::SetParticleRotation(float x, float y, float z)
+{
+	DirectX::XMFLOAT3 rotation = { x, y, z };
+	_particle->SetParticleRotation(rotation);
+
+	this->_rotation = rotation;
+}
+
 DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()
 {
 	return this->_size;

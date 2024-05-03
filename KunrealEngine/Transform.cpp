@@ -74,7 +74,7 @@ void KunrealEngine::Transform::SetRotation(float x, float y, float z)
 }
 
 
-void KunrealEngine::Transform::SetRotation(DirectX::XMFLOAT3 rot)
+void KunrealEngine::Transform::SetRotation(const DirectX::XMFLOAT3& rot)
 {
 	this->_rotation = rot;
 
@@ -91,7 +91,7 @@ void KunrealEngine::Transform::SetPosition(float x, float y, float z)
 }
 
 
-void KunrealEngine::Transform::SetPosition(DirectX::XMFLOAT3 pos)
+void KunrealEngine::Transform::SetPosition(const DirectX::XMFLOAT3& pos)
 {
 	this->_position = pos;
 
@@ -108,7 +108,7 @@ void KunrealEngine::Transform::SetScale(float x, float y, float z)
 }
 
 
-void KunrealEngine::Transform::SetScale(DirectX::XMFLOAT3 scale)
+void KunrealEngine::Transform::SetScale(const DirectX::XMFLOAT3& scale)
 {
 	this->_scale = scale;
 
