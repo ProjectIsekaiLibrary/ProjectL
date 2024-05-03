@@ -101,7 +101,11 @@ namespace KunrealEngine
 		// 플레이어 바라보도록 회전시키기
 		bool RotateToTarget(const DirectX::XMFLOAT3& targetPos);
 
+		// 특정 각도만큼 점점 회전시키기
 		bool Rotate(float angle, float speed);
+
+		// 특정 각도로 바로 회전시키기
+		void RotateByAngle(float angle);
 
 		bool RotateClockWise(float rotateSpeed, bool isClockWise);
 
@@ -129,7 +133,7 @@ namespace KunrealEngine
 		void SortCorePattern();
 
 		void SetSubObjectScene();
-
+		
 	private:
 		bool LookAtPlayer(float angle, float rotateSpeed);
 
@@ -179,8 +183,8 @@ namespace KunrealEngine
 		bool _isRotateFinish;
 
 		bool _isAngleCheck;
-		float _rotAngle = 0.0f;
-		float _sumRot = 0.0f;
+		float _rotAngle;
+		float _sumRot;
 
 		DirectX::XMFLOAT3 _prevRot;
 

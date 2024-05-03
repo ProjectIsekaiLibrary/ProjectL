@@ -46,6 +46,12 @@ namespace KunrealEngine
 		void RightLeftPattern();
 		void BackStepCallPattern();
 		void TeleportSpellPattern();
+		void TeleportTurnClockPattern();
+		void TeleportTurnAntiClockPattern();
+
+		// 코어 패턴
+	private:
+		void CoreEmmergencePattern();
 
 		// 기본 패턴 조각들
 	private:
@@ -53,6 +59,8 @@ namespace KunrealEngine
 		void CreateRightAttack();
 		void CreateSpellAttack();
 		void CreateCallAttack();
+
+	private:
 		void CreateTurn180();
 		void CreateBackStep();
 		void CreateTeleport();
@@ -61,7 +69,7 @@ namespace KunrealEngine
 
 		// 핵심 기믹 패턴
 	private:
-		void EmergenceAttack();
+		void CreateEmergenceAttack();
 
 	private:
 		BossPattern* _leftAttack;
@@ -75,6 +83,8 @@ namespace KunrealEngine
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
 
+	private:
+		BossPattern* _emergence9Lich;
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -93,6 +103,9 @@ namespace KunrealEngine
 	private:
 		bool _isCoreStart;
 		bool _isRandomStart;
+
+	private:
+		unsigned int _targetIndex;
 
 	// logic
 	private:

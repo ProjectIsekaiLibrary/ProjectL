@@ -918,6 +918,7 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 		_isAngleCheck = false;
 		_sumRot = 0.0f;
 		_prevRot = _bossTransform->GetRotation();
+
 		return true;
 	}
 	else
@@ -1234,9 +1235,23 @@ bool KunrealEngine::Boss::Rotate(float angle, float speed)
 }
 
 
+void KunrealEngine::Boss::RotateByAngle(float angle)
+{
+	_bossTransform->SetRotation(_bossTransform->GetRotation().x, angle, _bossTransform->GetRotation().z);
+
+	_prevRot = _bossTransform->GetRotation();
+}
+
 bool KunrealEngine::Boss::RotateClockWise(float rotateSpeed, bool isClockWise)
 {
-	return false;
+	if (isClockWise)
+	{
+		return LookAtPlayer(360.0f, rotateSpeed);
+	}
+	else
+	{
+		return LookAtPlayer(-360.0f, rotateSpeed);
+	}
 }
 
 void KunrealEngine::Boss::SetTexture()
