@@ -47,6 +47,7 @@ namespace KunrealEngine
 		float _lifeTime;				// 얼마 뒤에 사라지게 할건가
 		DirectX::XMFLOAT3 _color;		// RGB		// 이 색을 추가하겠다
 		DirectX::XMFLOAT3 _direction;	// 방출 방향
+		DirectX::XMFLOAT3 _rotation;	// 회전 각도
 
 	public:
 		// 어떤 파티클을 출력할 것인가		// 처음에 반드시 해줘야함
@@ -80,6 +81,10 @@ namespace KunrealEngine
 
 		// 파티클 방출 방향 설정		// 수치가 높을 수록 해당 방향으로 가속도가 붙음
 		void SetParticleDirection(float x, float y, float z);
+
+		// 파티클 rotation 설정
+		void SetParticleRotation(float x, float y, float z);
+
 
 	public:
 		// 파티클 정보 전달용
