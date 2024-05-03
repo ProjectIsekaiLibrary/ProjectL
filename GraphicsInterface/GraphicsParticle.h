@@ -28,6 +28,8 @@ namespace GInterface
 		virtual void SetParticleColor(const DirectX::XMFLOAT3& particleColor) abstract;
 		// 파티클의 방출 방향 설정
 		virtual void SetParticleDirection(const DirectX::XMFLOAT3& particleDirection) abstract;
+		// 파티클의 회전 설정
+		virtual void SetParticleRotation(const DirectX::XMFLOAT3& particleRotation) abstract;
 
 		// 파티클을 다시 0부터 시작하게 만든다
 		virtual void Reset() abstract;
