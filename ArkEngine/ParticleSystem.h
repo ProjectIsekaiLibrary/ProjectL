@@ -166,6 +166,14 @@ namespace ArkEngine
 	private:
 		void SetParticleState(bool isStart);
 		bool _isStart;
+
+		//Particle particle;
+		void RotateParticleX(float degree);
+		void RotateParticleY(float degree);
+		void RotateParticleZ(float degree);
+
+	public:
+		void SetParticleRotation(float x, float y, float z);
 	};
 }
 

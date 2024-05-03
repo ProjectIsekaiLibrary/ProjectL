@@ -143,23 +143,21 @@ void ArkEngine::ParticleSystem::SetParticleColor(const DirectX::XMFLOAT3& partic
 void ArkEngine::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& particleDirection)
 {
 	_particleDirection = particleDirection;
-	if (_particleName == "Laser")
-	{
-		SetEmitDir(DirectX::XMFLOAT3{ 1.0f, 0.0f, 1.0f });
-	}
-	else
+	//if (_particleName == "Laser")
+	//{
+	//	SetEmitDir(DirectX::XMFLOAT3{ 1.0f, 0.0f, 1.0f });
+	//}
+	//else
 	{
 		SetEmitDir(DirectX::XMFLOAT3{ 1.0f, 1.0f, 1.0f });
 	}
 }
 
-void ArkEngine::ParticleSystem::SetParticleRotation(const DirectX::XMFLOAT3& rotation)
-{
-
-}
 
 void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
 {
+	SetParticleRotation(0.0f, 90.0f, 0.0f);
+
 	auto arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
 	if (arkDevice->GetRandomTex() == nullptr)
@@ -194,12 +192,15 @@ void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& file
 		_initVB = particleResource->GetInitVB();
 	}
 
+
+
 	SetEffect();
 }
 
 
 void ArkEngine::ParticleSystem::Initialize(const std::wstring& fileName, unsigned int maxParticle)
 {
+
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 
 	if (_arkDevice->GetRandomTex() == nullptr)
@@ -247,6 +248,7 @@ void ArkEngine::ParticleSystem::Reset()
 
 void ArkEngine::ParticleSystem::Update(float deltaTime, float gameTime)
 {
+
 	_gameTime += gameTime;
 	_timeStep = deltaTime;
 }
@@ -599,6 +601,7 @@ void ArkEngine::ParticleSystem::BuildVB()
 	ZeroMemory(&p, sizeof(Particle));
 	p.Age = 0.0f;
 	p.Type = 0;
+	//p.Rotation = { 0.0f, 0.0f, 0.0f };
 
 	D3D11_SUBRESOURCE_DATA vinitData;
 	vinitData.pSysMem = &p;
@@ -636,6 +639,7 @@ void ArkEngine::ParticleSystem::BuildDrawStreamVB()
 	ZeroMemory(&p, sizeof(Particle));
 	p.Age = 0.0f;
 	p.Type = 0;
+	//p.Rotation = { 0.0f, 0.0f, 0.0f };
 
 	// Create the ping-pong buffers for stream-out and drawing.
 	//
@@ -759,4 +763,49 @@ void ArkEngine::ParticleSystem::SetParticleDirectionW(const DirectX::XMFLOAT3& v
 void ArkEngine::ParticleSystem::SetParticleState(bool isStart)
 {
 	_isStart = isStart;
+}
+
+void ArkEngine::ParticleSystem::RotateParticleX(float degree)
+{
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationX(DirectX::XMConvertToRadians(degree));
+
+
+	DirectX::XMVECTOR velocity = DirectX::XMLoadFloat3(&_emitVelocity);
+	velocity = DirectX::XMVector3TransformCoord(velocity, rotationMatrix);
+	DirectX::XMStoreFloat3(&_emitVelocity, velocity);
+}
+
+void ArkEngine::ParticleSystem::RotateParticleY(float degree)
+{
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationY(DirectX::XMConvertToRadians(degree));
+
+	DirectX::XMVECTOR velocity = DirectX::XMLoadFloat3(&_emitVelocity);
+	velocity = DirectX::XMVector3TransformCoord(velocity, rotationMatrix);
+	DirectX::XMStoreFloat3(&_emitVelocity, velocity);
+}
+
+
+void ArkEngine::ParticleSystem::RotateParticleZ(float degree)
+{
+	DirectX::XMMATRIX rotationMatrix = DirectX::XMMatrixRotationZ(DirectX::XMConvertToRadians(degree));
+
+	DirectX::XMVECTOR velocity = DirectX::XMLoadFloat3(&_emitVelocity);
+	velocity = DirectX::XMVector3TransformCoord(velocity, rotationMatrix);
+	DirectX::XMStoreFloat3(&_emitVelocity, velocity);
+}
+
+void ArkEngine::ParticleSystem::SetParticleRotation(float x, float y, float z)
+{
+	if (x != 0)
+	{
+		RotateParticleX(x);
+	}
+	if (y != 0)
+	{
+		RotateParticleY(y);
+	}
+	if (z != 0)
+	{
+		RotateParticleZ(z);
+	}
 }
