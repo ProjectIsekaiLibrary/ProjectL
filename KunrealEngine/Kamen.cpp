@@ -124,9 +124,9 @@ void KunrealEngine::Kamen::GamePattern()
 	//BasicPattern();
 	
 	//LeftRightPattern();
-	RightLeftPattern();
+	//RightLeftPattern();
 	//BackStepCallPattern();
-	//TeleportSpellPattern();
+	TeleportSpellPattern();
 }
 
 void KunrealEngine::Kamen::CreateSubObject()

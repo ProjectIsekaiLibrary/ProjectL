@@ -180,7 +180,7 @@ namespace KunrealEngine
 
 		bool _isAngleCheck;
 		float _rotAngle = 0.0f;
-		float _sum = 0.0f;
+		float _sumRot = 0.0f;
 
 		DirectX::XMFLOAT3 _prevRot;
 
@@ -193,9 +193,6 @@ namespace KunrealEngine
 
 		DirectX::XMFLOAT3 _prevPos;
 		DirectX::XMFLOAT3 _backStepPos;
-
-	private:
-		float _goalAngle;
 
 	private:
 		bool _isMoving;
