@@ -8,8 +8,9 @@ KunrealEngine::Kamen::Kamen()
 	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _lazer(nullptr),
 	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
 	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr), 
-	_turn180(nullptr), _backStep(nullptr), _turnClockWise(nullptr), _turnAntiClockWise(nullptr),
-	_emergence9Lich(nullptr)
+	_turn180(nullptr), _backStep(nullptr), _teleport(nullptr),
+	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
+	_emergence9Lich(nullptr), _targetIndex(0)
 {
 	BossBasicInfo info;
 
@@ -615,7 +616,7 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 			if (!_isRotateFinish)
 			{
 				auto newPos = _fakeBoss[_targetIndex]->GetComponent<Transform>()->GetPosition();
-				auto isTeleportFinish = Teleport(newPos, true, 3.0f);
+				auto isTeleportFinish = Teleport(newPos, false, 3.0f);
 
 				// 텔포 끝나면 패턴 시작
 				if (!isTeleportFinish)
@@ -625,6 +626,8 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 				else
 				{
 					// 텔포 끝나면 다시 돌아오지 않도록
+					RotateByAngle(0.0f);
+
 					_isRotateFinish = true;
 				}
 			}
@@ -660,6 +663,7 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 				_isCoreStart = false;
 				_isRotateFinish = false;
 
+				_targetIndex = 0;
 				return false;
 			}
 
