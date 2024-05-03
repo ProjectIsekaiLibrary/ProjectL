@@ -9,7 +9,7 @@ namespace KunrealEngine
 	{
 	public:
 		Kamen();
-		~Kamen();
+		virtual ~Kamen();
 
 		void Initialize() override;
 		void Release() override;
@@ -32,16 +32,49 @@ namespace KunrealEngine
 	public:
 		virtual void CreatePattern() override;
 
+	public:
+		void GamePattern();
+
 	private:
 		void CreateSubObject();
+		
+	private:
+		void BasicPattern();
 
 	private:
-		void LeftAttack();
-		void RightAttack();
-		void SpellAttack();
-		void CallAttack();
+		void LeftRightPattern();
+		void RightLeftPattern();
+		void BackStepCallPattern();
+		void TeleportSpellPattern();
 
-		void BackStepCallAttack();
+		// 기본 패턴 조각들
+	private:
+		void CreateLeftAttack();
+		void CreateRightAttack();
+		void CreateSpellAttack();
+		void CreateCallAttack();
+		void CreateTurn180();
+		void CreateBackStep();
+		void CreateTeleport();
+		void CreateTurnClockWise();
+		void CreateTurnAntiClockWise();
+
+		// 핵심 기믹 패턴
+	private:
+		void EmergenceAttack();
+
+	private:
+		BossPattern* _leftAttack;
+		BossPattern* _rightAttack;
+		BossPattern* _spellAttack;
+		BossPattern* _callAttack;
+
+		BossPattern* _backStep;
+		BossPattern* _turn180;
+		BossPattern* _teleport;
+		BossPattern* _turnClockWise;
+		BossPattern* _turnAntiClockWise;
+
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -50,11 +83,16 @@ namespace KunrealEngine
 		GameObject* _call;
 		GameObject* _lazer;
 
-		DirectX::XMFLOAT3 _test = { 0.0f, 0.0f, -10.0f };
+		std::vector<GameObject*> _fakeBoss;
 
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
+		bool _isRotateFinish;
+
+	private:
+		bool _isCoreStart;
+		bool _isRandomStart;
 
 	// logic
 	private:

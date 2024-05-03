@@ -53,7 +53,7 @@ void KunrealEngine::Camera::Update()
 	}
 
 	///
-	MoveToDebug();
+	//MoveToDebug();
 	///
 }
 

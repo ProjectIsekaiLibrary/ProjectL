@@ -33,8 +33,13 @@ namespace KunrealEngine
 		// 두 XMFLOAT3 좌표 사잇각
 		static float GetAngle(DirectX::XMFLOAT3 src, DirectX::XMFLOAT3 dst);
 
+		static float GetAngleWithDirection(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float prevAngle);
+
 		// 쿼터니언을 오일러로
 		static DirectX::XMFLOAT3 QuaternionToEulerAngles(const DirectX::XMVECTOR& quaternion);
+
+		// 백터 일정 각도만큼 회전시키기
+		static DirectX::XMFLOAT3 RotateVector(const DirectX::XMFLOAT3& direction, float angle);
 	};
 
 }

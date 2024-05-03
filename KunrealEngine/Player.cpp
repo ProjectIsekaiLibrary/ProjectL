@@ -89,7 +89,7 @@ void KunrealEngine::Player::OnTriggerExit()
 
 void KunrealEngine::Player::SetActive(bool active)
 {
-
+	this->_isActivated = active;
 }
 
 void KunrealEngine::Player::AnimateByStatus()

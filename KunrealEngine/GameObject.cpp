@@ -418,3 +418,11 @@ std::vector<KunrealEngine::Component*> KunrealEngine::GameObject::GetComponentLi
 {
 	return this->_componentContainer;
 }
+
+void KunrealEngine::GameObject::SetTotalComponentState(bool flag)
+{
+	for (auto components : this->_componentContainer)
+	{
+		components->SetActive(flag);
+	}
+}

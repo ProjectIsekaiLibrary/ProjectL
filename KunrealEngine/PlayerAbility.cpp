@@ -55,9 +55,10 @@ void KunrealEngine::PlayerAbility::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::Q))
 	{
-		ResetShotPos();
 		_shot->SetActive(true);
 		_shot->GetComponent<Projectile>()->SetActive(true);
+		_shot->GetComponent<Projectile>()->ResetCondition();
+		ResetShotPos();
 	}
 
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
@@ -93,7 +94,7 @@ void KunrealEngine::PlayerAbility::OnTriggerExit()
 
 void KunrealEngine::PlayerAbility::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 
@@ -213,7 +214,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	Projectile* meteorProj = _meteor->GetComponent<Projectile>();
 
 	meteorProj->SetMeshObject("Meteor/Meteor");
-	meteorProj->GetCollider()->SetBoxSize(2.0f, 2.0f, 2.0f);
+	meteorProj->GetCollider()->SetBoxSize(5.0f, 20.0f, 20.0f);
 
 	// 파티클 추가	// 불타오르게
 	Particle* meteorParticle = _meteor->AddComponent<Particle>();

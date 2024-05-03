@@ -40,7 +40,7 @@ void KunrealEngine::Ability::Update()
 
 void KunrealEngine::Ability::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 void KunrealEngine::Ability::SetTotalData(std::string name, float damage, float stamina, float sDamage, float cooldown, float range)

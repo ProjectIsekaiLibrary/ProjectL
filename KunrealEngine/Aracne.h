@@ -13,7 +13,7 @@ namespace KunrealEngine
 	{
 	public:
 		Aracne();
-		~Aracne();
+		virtual ~Aracne();
 
 	public:
 		void Initialize() override;
@@ -26,7 +26,7 @@ namespace KunrealEngine
 		void OnTriggerEnter() override;
 		void OnTriggerStay() override;
 		void OnTriggerExit() override;
-
+		
 		void SetActive(bool active) override;
 
 		virtual void SetMesh() override;
@@ -38,5 +38,10 @@ namespace KunrealEngine
 		virtual void CreatePattern() override;
 
 	private:
+		void JumpAttack();
+		void leftAttack();
+		void RightAttack();
+		void ShootingWeb();
+
 	};
 }

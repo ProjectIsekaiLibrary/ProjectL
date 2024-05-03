@@ -114,7 +114,7 @@ void KunrealEngine::PlayerMove::OnTriggerExit()
 
 void KunrealEngine::PlayerMove::SetActive(bool active)
 {
-	
+	this->_isActivated = active;
 }
 
 void KunrealEngine::PlayerMove::UpdateTargetPosition()
@@ -152,7 +152,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 
 	// 플레이어의 방향벡터 변경
 	// 대시하면서 다시 연산할바에 이미 연산된 김에 여기서 추가해줌
-	_playerComp->_directionVector = direction;
+ 	_playerComp->_directionVector = direction;
 
 
 	// 목표 좌표가 대시 가능 거리보다 멀리 있을 경우
