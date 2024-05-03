@@ -52,6 +52,7 @@ namespace KunrealEngine
 
 		// Rotation값 조정
 		void SetRotation(float x, float y, float z);
+		void SetRotation(DirectX::XMFLOAT3 rot);
 
 		// Position값 조정
 		void SetPosition(float x, float y, float z);
@@ -59,6 +60,7 @@ namespace KunrealEngine
 
 		// Scale값 조정
 		void SetScale(float x, float y, float z);
+		void SetScale(DirectX::XMFLOAT3 scale);
 
 		DirectX::XMFLOAT3 GetPosition();
 		DirectX::XMFLOAT3 GetRotation();
