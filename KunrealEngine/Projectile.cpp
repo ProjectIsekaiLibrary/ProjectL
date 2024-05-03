@@ -69,7 +69,7 @@ void KunrealEngine::Projectile::OnTriggerExit()
 
 void KunrealEngine::Projectile::SetActive(bool active)
 {
-	this->_isActivated = active;
+	//this->_isActivated = active;
 }
 
 void KunrealEngine::Projectile::SetDirection(DirectX::XMVECTOR direction)

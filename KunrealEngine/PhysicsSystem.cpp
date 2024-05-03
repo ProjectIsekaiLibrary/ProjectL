@@ -160,6 +160,12 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 		// pair.first->GetColliderPos().y, 
 		// pair.first->GetColliderPos().z)));
 		pair.second->setGlobalPose(pxTrans, true);
+
+		if (!pair.first->GetActivated())
+		{
+			pair.first->_isCollided = false;
+			pair.first->_targetObj = nullptr;
+		}
 	}
 }
 

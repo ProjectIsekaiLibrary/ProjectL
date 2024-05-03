@@ -33,11 +33,14 @@ namespace KunrealEngine
 		Player* _playerComp;
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
+		GameObject* _ice;			// W 스킬 객체
 		GameObject* _meteor;		// R 스킬 운석 객체
 
 	private:
 		void ResetShotPos();
 		void CreateAbility1();
+
+		void CreateAbility2();
 
 		void ResetMeteorPos();
 		void CreateAbility4();

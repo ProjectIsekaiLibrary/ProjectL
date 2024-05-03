@@ -71,7 +71,7 @@ namespace KunrealEngine
 		// Static actor들 업데이트
 		void UpdateStatics();
 
-		void TestFunc();			// 실험용 꼭 지워
+		void TestFunc();			/// 실험용 꼭 지워
 
 	private:
 		std::vector<physx::PxRigidDynamic*>	_rigidDynamics;
