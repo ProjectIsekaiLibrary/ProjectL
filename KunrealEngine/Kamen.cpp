@@ -124,7 +124,7 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//BasicPattern();
+	BasicPattern();
 	
 	//LeftRightPattern();
 	//RightLeftPattern();
@@ -133,7 +133,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//TeleportTurnClockPattern();
 	//TeleportTurnAntiClockPattern();
 
-	CoreEmmergencePattern();
+	//CoreEmmergencePattern();
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
@@ -169,13 +169,33 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
 	_lazer->AddComponent<Particle>();
-	
 	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
 	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
 	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
 	_lazer->GetComponent<Particle>()->SetParticleDirection(-8.5f, 0.0f, 82.6f);
 	_lazer->GetComponent<Transform>()->SetPosition(0.0f, 16.0f, -4.0f);
 	_lazer->GetComponent<Particle>()->SetActive(false);
+
+	//for (int i = 0; i < 3; i++)
+	//{
+	//	std::string index = "multiCall" + std::to_string(i + 1);
+	//
+	//	auto call = _boss->GetObjectScene()->CreateObject("index");
+	//
+	//	call->AddComponent<BoxCollider>();
+	//	call->GetComponent<BoxCollider>()->SetBoxSize(100.0f, 10.0f, 10.0f);
+	//	call->GetComponent<BoxCollider>()->SetActive(false);
+	//	call->AddComponent<Particle>();
+	//	call->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	//	call->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
+	//	call->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
+	//	call->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
+	//	call->GetComponent<Particle>()->SetParticleDirection(0.0f, 7.0f, 0.0f);
+	//	call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	//	call->GetComponent<Particle>()->SetActive(false);
+	//
+	//	_callVec.emplace_back(call);
+	//}
 }
 
 
@@ -752,6 +772,8 @@ void KunrealEngine::Kamen::CoreEmmergencePattern()
 	coreEmmergence->SetTriggerHp(100.0f);
 
 	coreEmmergence->SetMaxColliderCount(0);
+
+	coreEmmergence->SetPattern(_teleport);
 
 	coreEmmergence->SetPattern(_emergence9Lich);
 

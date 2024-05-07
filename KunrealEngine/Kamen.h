@@ -67,6 +67,8 @@ namespace KunrealEngine
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
 
+		//void CreateMultiCall();
+
 		// 핵심 기믹 패턴
 	private:
 		void CreateEmergenceAttack();
@@ -94,6 +96,8 @@ namespace KunrealEngine
 		GameObject* _lazer;
 
 		std::vector<GameObject*> _fakeBoss;
+
+		std::vector<GameObject*> _callVec;
 
 	private:
 		// Call 거리 체크용
