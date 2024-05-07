@@ -1116,6 +1116,22 @@ const std::vector<std::vector<std::vector<unsigned int>>> ArkEngine::ArkDX11::DX
 	return totalIndexList;
 }
 
+
+std::vector<DirectX::XMFLOAT3> ArkEngine::ArkDX11::DX11Renderer::GetMeshVertexData(const std::string& fileName)
+{
+	auto buffer = ResourceManager::GetInstance()->GetArkBuffer(fileName);
+
+	return buffer[0]->GetVertexPosList();
+}
+
+
+std::vector<unsigned int> ArkEngine::ArkDX11::DX11Renderer::GetMeshIndexData(const std::string& fileName)
+{
+	auto buffer = ResourceManager::GetInstance()->GetArkBuffer(fileName);
+
+	return buffer[0]->GetIndexList();
+}
+
 void ArkEngine::ArkDX11::DX11Renderer::CreateDevice()
 {
 	// 디버그 모드 빌드에서 디버그 계층을 활성화하기 위해 플래그 설정

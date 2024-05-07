@@ -163,6 +163,10 @@ namespace ArkEngine
 			// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
 			virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() override;
 
+			virtual std::vector<DirectX::XMFLOAT3> GetMeshVertexData(const std::string& fileName) override;
+
+			virtual std::vector<unsigned int> GetMeshIndexData(const std::string& fileName) override;
+
 		public:
 			void CreateShadowViewPort(int shadowWidth, int shadowHeight);
 
