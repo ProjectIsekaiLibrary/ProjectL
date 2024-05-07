@@ -181,18 +181,15 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     }
     
     float4 texColor = float4(diffuseAlbedo * shadowFactor, 1.0f);
-
-    // Start with a sum of zero. 
-    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    
     
     Material nowMat;
-    nowMat.Ambient = float4(material.x, material.x, material.x, 1.0f);
-    nowMat.Diffuse = float4(material.y, material.y, material.y, 1.0f);
-    nowMat.Specular = float4(material.z, material.z, material.z, material.w);
-    nowMat.Reflect = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    nowMat.Ambient = float4(0.2f, 0.2f, 0.2f, 1.0f);
+    nowMat.Diffuse = float4(0.8f ,0.8f, 0.8f, 1.0f);
+    nowMat.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
+    
+    //nowMat.Ambient = float4(material.x, material.x, material.x, 1.0f);
+    //nowMat.Diffuse = float4(material.y, material.y, material.y, 1.0f);
+    //nowMat.Specular = float4(material.z, material.z, material.z, material.w);
     
     float3 toLightDir = -gDirLights[0].Direction;
 
@@ -215,22 +212,52 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float lightIntensity;
     float4 toonColor;
     
+    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
     if (cartoon == 1.0f)
     {
        	// 빛의 강도
         lightIntensity = smoothstep(0, 1.f, NdotL);
+        
+            //float lightIntensity = NdotL > 0 ? 1 : 0;
+	// 빛의 강도에 따라 색상 출력의 레이어를 정해준다 
+        toonColor = ToonShade(lightIntensity);
+    
+        litColor = texColor * toonColor;
     }
     else
     {
-        // 빛의 강도
-        lightIntensity = smoothstep(1.f, 1.f, NdotL);
+        for (int i = 0; i < gDirLightCount; ++i)
+        {
+            float4 A, D, S;
+        
+            ComputeDirectionalLight(nowMat, gDirLights[i], normal, toEye,
+				A, D, S);
+        
+            ambient += A;
+            diffuse += D;
+            spec += S;
+        }
+    
+
+        for (int j = 0; j < gPointLightCount; ++j)
+        {
+            float4 A, D, S;
+        
+            ComputePointLight(nowMat, gPointLights[j], position, normal, toEye,
+				A, D, S);
+        
+            ambient += A;
+            diffuse += D;
+            spec += S;
+        }
+
+        litColor = texColor * (ambient + diffuse) + spec;
     }
     
-    //float lightIntensity = NdotL > 0 ? 1 : 0;
-	// 빛의 강도에 따라 색상 출력의 레이어를 정해준다 
-    toonColor = ToonShade(lightIntensity);
-    
-    litColor = texColor * toonColor;
+
     
 	// Specular Reflection
     _Glossiness = 32.f;

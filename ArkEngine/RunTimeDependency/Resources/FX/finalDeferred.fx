@@ -15,16 +15,23 @@ cbuffer cbPerFrame
     PointLight gPointLights[10];
     
     float3 gEyePosW;
+    
+    float4x4 gLightView;
+    float4x4 gLightProj;
 };
 
 Texture2D PositionTexture : register(t0);
 Texture2D DiffuseAlbedoTexture : register(t1);
 Texture2D BumpedNormalTexture : register(t2);
 Texture2D EmissiveTexture : register(t3);
-texture2D ShadowMap : register(t4);
-Texture2D MaterialTexture : register(t5);
+Texture2D MaterialTexture : register(t4);
+Texture2D AdditionalTexture : register(t5);
+
+// 깊이 값 전달용(G-Buffer에 저장된 depth 정보를 가져와서 그림자)
+Texture2D gShadowDepthMapTexture;
 
 TextureCube gCubeMap;
+
 
 SamplerState samAnisotropic
 {
@@ -66,17 +73,39 @@ struct VertexOut
 
 };
 
-void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material)
+void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon)
 {
     position = PositionTexture.Sample(samAnisotropic, texCoord).xyz;
 
     diffuseAlbedo = DiffuseAlbedoTexture.Sample(samAnisotropic, texCoord).xyz;
 
     normal = BumpedNormalTexture.Sample(samAnisotropic, texCoord).xyz;
-
+    
     emissive = EmissiveTexture.Sample(samAnisotropic, texCoord).xyz;
-
+    
     material = MaterialTexture.Sample(samAnisotropic, texCoord);
+    
+    cartoon = AdditionalTexture.Sample(samAnisotropic, texCoord).x;
+}
+
+float4 WorldToLight(float3 position)
+{
+    float4 worldPos = float4(position, 1.0f);
+    
+    float4 worldPosByLight = mul(worldPos, gLightView);
+    
+    worldPosByLight = mul(worldPosByLight, gLightProj);
+    
+    return worldPosByLight;
+}
+
+float2 ToTexcoord(float4 position)
+{
+    float4 ndcPos = position / position.w;
+    
+    float2 texCoord = float2((ndcPos.x + 1.0f) * 0.5f, (1.0f - ndcPos.y) * 0.5f);
+    
+    return texCoord;
 }
 
 VertexOut VS(VertexIn vin)
@@ -96,8 +125,9 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float3 diffuseAlbedo;
     float3 emissive;
     float4 material;
+    float cartoon;
     
-    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material);
+    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon);
     
     float3 toEye = gEyePosW - position;
     
@@ -113,18 +143,19 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
-    
-    float3 shadow = float3(1.0f, 1.0f, 1.0f);
+   
     //shadow[0] = CalcShadowFactor(samShadow, ShadowMap,spec);
     
     Material nowMat;
     nowMat.Ambient = float4(material.x, material.x, material.x, 1.0f);
     nowMat.Diffuse = float4(material.y, material.y, material.y, 1.0f);
-    nowMat.Specular = float4(material.z, material.z, material.z, material.w);
+    nowMat.Specular = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    
+    //nowMat.Specular = float4(material.z, material.z, material.z, material.w);
     nowMat.Reflect = float4(0.0f, 0.0f, 0.0f, 1.0f);
     
     
-    if (gDirLightCount > 0)
+    //if (gDirLightCount > 0)
     {
 		// Sum the light contribution from each light source.  
 		[unroll]
@@ -141,7 +172,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         }
     }
     
-    if (gPointLightCount > 0)
+    //if (gPointLightCount > 0)
     {
         for (int j = 0; j < gPointLightCount; ++j)
         {
@@ -159,6 +190,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 	// Modulate with late add.
     litColor = texColor * (ambient + diffuse) + spec;
 
+    
     float4 emissiveColor = float4(emissive, 1.0f);
     litColor += emissiveColor;
 
