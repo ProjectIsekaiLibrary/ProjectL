@@ -62,6 +62,9 @@ namespace KunrealEngine
 		// 움직이지 않는 객체에 부여할 box collider
 		void CreateStaticBoxCollider(BoxCollider* collider);
 
+		// sphere collider
+		void CreateDynamicSphereCollider();
+
 		// physx 객체의 크기를 BoxCollider의 크기에 맞게
 		void SetBoxSize(BoxCollider* collider);
 

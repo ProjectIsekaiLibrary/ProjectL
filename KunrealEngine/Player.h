@@ -37,7 +37,7 @@ namespace KunrealEngine
 			float _dashRange;		// 대시 거리
 			float _dashCooldown;	// 대시 쿨타임
 
-			float _spellPower;		// 스킬 사용 시 추가공격력
+			float _spellPower;		// 스킬 사용 시 데미지 배율
 			float _damageReduce;	// 피해 감소
 
 			float _speedScale;		// 전체적인 속도에 영향

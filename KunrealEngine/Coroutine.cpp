@@ -27,14 +27,21 @@ namespace KunrealEngine
 		return instance;
 	}
 
-	float Coroutine::DurationManager::getDuration() const
+	float* Coroutine::DurationManager::getDuration() const
 	{
 		return duration;
 	}
 
 	void Coroutine::DurationManager::setDuration(float newDuration)
 	{
-		duration = newDuration;
+		float* ptr = new float(newDuration);
+		duration = ptr;
+	}
+
+	void Coroutine::DurationManager::durationtonull()
+	{
+		delete duration;
+		duration = nullptr;
 	}
 
 	/////////////////////////////////
@@ -87,21 +94,24 @@ namespace KunrealEngine
 
 	bool Coroutine::Coroutine_type::promise_type::await_ready() noexcept
 	{
-		bool isReady;
-		timer += TimeManager::GetInstance().GetDeltaTime();
-
-		if (timer > DurationManager::getInstance().getDuration())
+		if (DurationManager::getInstance().getDuration() != nullptr)
 		{
-			timer = 0;
-			isReady = true;
+			timer += TimeManager::GetInstance().GetDeltaTime();
+
+			if (timer > *(DurationManager::getInstance().getDuration()))
+			{
+				timer = 0;
+				return true;
+				DurationManager::getInstance().durationtonull();
+			}
+
+			else
+			{
+				return false;
+			}
 		}
 
-		else
-		{
-			isReady = false;
-		}
-
-		return isReady;
+		return true;
 	}
 
 	//////////////////////////////////////
@@ -126,6 +136,55 @@ namespace KunrealEngine
 
 	void Coroutine::Coroutine_type::WaitForSeconds::await_resume() const noexcept {}
 
+	////////////////////////////////////////
+	/////////////////CheckBool//////////////
+	////////////////////////////////////////
+
+	Coroutine::Coroutine_type::CheckBool::CheckBool(bool& param)
+		:flag(param)
+	{
+
+	}
+	bool Coroutine::Coroutine_type::CheckBool::await_ready()
+	{
+		return false;
+	}
+	void Coroutine::Coroutine_type::CheckBool::await_suspend(std::coroutine_handle<> handle)
+	{
+		if (flag)
+		{
+			handle.resume();
+		}
+	}
+
+	void Coroutine::Coroutine_type::CheckBool::await_resume() const noexcept
+	{
+
+	}
+
+	////////////////////////////////////////
+	/////////////////ReturnNull//////////////	
+	////////////////////////////////////////
+
+	Coroutine::Coroutine_type::ReturnNull::ReturnNull()
+	{
+
+	}
+
+	bool Coroutine::Coroutine_type::ReturnNull::await_ready()
+	{
+		return false;
+	}
+
+	void Coroutine::Coroutine_type::ReturnNull::await_suspend(std::coroutine_handle<> handle)
+	{
+		
+	}
+
+	void Coroutine::Coroutine_type::ReturnNull::await_resume() const noexcept
+	{
+	}
+
 	//////////////////////////////////////
 	/////////////StartCoroutine///////////
 	//////////////////////////////////////
@@ -140,7 +199,7 @@ namespace KunrealEngine
 				return;
 			}
 		}
-		
+
 		Coroutine_type* coroutineInstance = new Coroutine_type(coro());
 		_coroutines.emplace_back(coroutineInstance);
 		idexKey++;

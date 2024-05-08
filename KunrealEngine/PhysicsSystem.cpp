@@ -5,6 +5,8 @@
 #include "BoxCollider.h"
 #include "Transform.h"
 
+#include "GraphicsSystem.h"
+
 KunrealEngine::PhysicsSystem::PhysicsSystem()
 	:_foundation(nullptr), _physics(nullptr), _dispatcher(nullptr), _pxScene(nullptr),
 	_material(nullptr), _pvd(nullptr)
@@ -31,7 +33,6 @@ void KunrealEngine::PhysicsSystem::Initialize()
 
 	// 머티리얼 생성(임의)	/// 이게 0.5라서?
 	_material = _physics->createMaterial(0.5f, 0.5f, 0.5f);
-
 }
 
 void KunrealEngine::PhysicsSystem::Release()
@@ -84,8 +85,6 @@ void KunrealEngine::PhysicsSystem::CreatePhysXScene()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-
-	// scene에 필터 정보 전달
 	
 }
 
@@ -320,40 +319,40 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	physx::PxRigidDynamic* casted1 = static_cast<physx::PxRigidDynamic*>(pairHeader.actors[0]);
 	physx::PxRigidDynamic* casted2 = static_cast<physx::PxRigidDynamic*>(pairHeader.actors[1]);
 
-	BoxCollider* col1 = GetColliderFromDynamic(casted1);
-	BoxCollider* col2 = GetColliderFromDynamic(casted2);
-
-	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
-	if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
-	{
-		return;
-	}
-
-	// 충돌이 발생했을 때
-	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
-		&& col1->GetActivated() && col2->GetActivated())
-	{
-		// 충돌 여부를 true로
-		col1->_isCollided = true;
-		col2->_isCollided = true;
-
-		// 상대 오브젝트에 대한 정보를 넘겨줌
-		col1->_targetObj = col2->GetOwner();
-		col2->_targetObj = col1->GetOwner();	
-	}
-
-	// 충돌에서 벗어났을 때
-	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
-	{
-		// 충돌 여부를 false로
-		col1->_isCollided = false;
-		col2->_isCollided = false;
-
-		// 충돌에서 벗어났으니 nullptr로
-		col1->_targetObj = nullptr;
-		col2->_targetObj = nullptr;
-	}
+	//BoxCollider* col1 = GetColliderFromDynamic(casted1);
+	//BoxCollider* col2 = GetColliderFromDynamic(casted2);
+	//
+	//// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
+	//if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
+	//{
+	//	return;
+	//}
+	//
+	//// 충돌이 발생했을 때
+	//if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
+	//	&& col1->GetActivated() && col2->GetActivated())
+	//{
+	//	// 충돌 여부를 true로
+	//	col1->_isCollided = true;
+	//	col2->_isCollided = true;
+	//
+	//	// 상대 오브젝트에 대한 정보를 넘겨줌
+	//	col1->_targetObj = col2->GetOwner();
+	//	col2->_targetObj = col1->GetOwner();	
+	//}
+	//
+	//// 충돌에서 벗어났을 때
+	//if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+	//	&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
+	//{
+	//	// 충돌 여부를 false로
+	//	col1->_isCollided = false;
+	//	col2->_isCollided = false;
+	//
+	//	// 충돌에서 벗어났으니 nullptr로
+	//	col1->_targetObj = nullptr;
+	//	col2->_targetObj = nullptr;
+	//}
 }
 
 void KunrealEngine::PhysicsSystem::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
