@@ -85,6 +85,10 @@ namespace KunrealEngine
 		// 파티클 rotation 설정
 		void SetParticleRotation(float x, float y, float z);
 
+		// 특정 본으로 트랜스폼 설정
+		void SetTransform(GameObject* renderable, std::string boneName);
+
+
 
 	public:
 		// 파티클 정보 전달용
@@ -96,6 +100,9 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 GetColor();
 		DirectX::XMFLOAT3 GetDirection();
 
+	private:
+		GameObject* _parentObject;
+		std::string _parentBoneName;
 	};
 }
 

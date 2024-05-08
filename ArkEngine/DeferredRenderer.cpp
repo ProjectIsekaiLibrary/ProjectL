@@ -260,7 +260,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetPointLight()
 		{
 			uint32_t dataSize32 = static_cast<uint32_t>(dataSize);
 
-			_fxPointLights->SetRawValue(pointLightList.data(), 0, dataSize32);
+ 			_fxPointLights->SetRawValue(pointLightList.data(), 0, dataSize32);
 		}
 
 		size_t size = pointLightList.size();

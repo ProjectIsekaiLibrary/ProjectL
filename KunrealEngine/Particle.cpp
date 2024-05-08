@@ -4,8 +4,9 @@
 
 KunrealEngine::Particle::Particle()
 	:_particle(nullptr), _transform(nullptr),
-	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f), 
-	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f })
+	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f),
+	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f }),
+	_parentObject(nullptr), _parentBoneName()
 {
 	
 }
@@ -146,10 +147,24 @@ void KunrealEngine::Particle::SetParticleDirection(float x, float y, float z)
 
 void KunrealEngine::Particle::SetParticleRotation(float x, float y, float z)
 {
-	DirectX::XMFLOAT3 rotation = { x, y, z };
+	DirectX::XMFLOAT3 rotation = { x, y + 180.0f, z };
 	_particle->SetParticleRotation(rotation);
 
 	this->_rotation = rotation;
+}
+
+
+void KunrealEngine::Particle::SetTransform(GameObject* renderable, std::string boneName)
+{
+	_parentObject = renderable;
+	_parentBoneName = boneName;
+
+	_transform->_haveParentBone = true;
+
+	if (renderable != this->GetOwner())
+	{
+		this->GetOwner()->SetParent(renderable);
+	}
 }
 
 DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()
