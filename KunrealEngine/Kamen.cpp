@@ -128,9 +128,9 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	BasicPattern();
+	//BasicPattern();
 	
-	//LeftRightPattern();
+	LeftRightPattern();
 	//RightLeftPattern();
 	//BackStepCallPattern();
 	//TeleportSpellPattern();
@@ -148,14 +148,14 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
-	//_leftHand->AddComponent<Particle>();
-	//_leftHand->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	//_leftHand->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
-	//_leftHand->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
-	//_leftHand->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
-	//_leftHand->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	//_leftHand->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_L");
-	//_leftHand->GetComponent<Particle>()->SetActive(false);
+	_leftHand->AddComponent<Particle>();
+	_leftHand->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_leftHand->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
+	_leftHand->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
+	_leftHand->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
+	_leftHand->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_leftHand->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->GetComponent<Particle>()->SetActive(false);
 
 	// ¿À¸¥¼Õ
 	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
@@ -251,7 +251,7 @@ void KunrealEngine::Kamen::RightLeftPattern()
 void KunrealEngine::Kamen::BasicPattern()
 {
 	_basicPattern.emplace_back(_spellAttack);
-	//_basicPattern.emplace_back(_callAttack);
+	_basicPattern.emplace_back(_callAttack);
 }
 
 void KunrealEngine::Kamen::CreateLeftAttack()
