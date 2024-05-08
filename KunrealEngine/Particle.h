@@ -80,6 +80,7 @@ namespace KunrealEngine
 		void AddParticleColor(float x, float y, float z);
 
 		// 파티클 방출 방향 설정		// 수치가 높을 수록 해당 방향으로 가속도가 붙음
+		/// 지금 안쓰인데 쓰지마 나중에 수정
 		void SetParticleDirection(float x, float y, float z);
 
 		// 파티클 rotation 설정

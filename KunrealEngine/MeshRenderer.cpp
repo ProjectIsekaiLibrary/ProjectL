@@ -292,7 +292,7 @@ bool KunrealEngine::MeshRenderer::GetShadowState()
 
 void KunrealEngine::MeshRenderer::SetCartoonState(bool flag)
 {
-	this->_mesh->SetShadowState(flag);
+	this->_mesh->SetCartoonRendering(flag);
 }
 
 bool KunrealEngine::MeshRenderer::GetCartoonState()
