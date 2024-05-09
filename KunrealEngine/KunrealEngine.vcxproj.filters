@@ -145,6 +145,9 @@
     <Filter Include="Source Files\Component\Script\Boss\Aracne">
       <UniqueIdentifier>{03bca5f5-ae74-410e-9dab-eed5a1d99212}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Component\Script\Boss\Ent">
+      <UniqueIdentifier>{a3060ac6-263d-451d-a93a-b7f920808937}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -285,6 +288,9 @@
     <ClInclude Include="Aracne.h">
       <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
     </ClInclude>
+    <ClInclude Include="Ent.h">
+      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -415,6 +421,9 @@
     </ClCompile>
     <ClCompile Include="Aracne.cpp">
       <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
+    </ClCompile>
+    <ClCompile Include="Ent.cpp">
+      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

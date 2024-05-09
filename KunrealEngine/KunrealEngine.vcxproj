@@ -190,6 +190,7 @@
     <ClInclude Include="ComponentHeaders.h" />
     <ClInclude Include="Coroutine.h" />
     <ClInclude Include="EngineCore.h" />
+    <ClInclude Include="Ent.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameObject.h" />
@@ -242,6 +243,7 @@
     <ClCompile Include="Coroutine.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EngineCore.cpp" />
+    <ClCompile Include="Ent.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />
