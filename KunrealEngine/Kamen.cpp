@@ -114,6 +114,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateTurn180();
 	CreateSpellAttack();
 	CreateCallAttack();
+	CreateCall2Attack();
 	CreateBackStep();
 	CreateTeleportToCenter();
 	CreateTeleportToCenterWithLook();
@@ -130,9 +131,9 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();
 	
-	LeftRightPattern();
+	//LeftRightPattern();
 	//RightLeftPattern();
-	//BackStepCallPattern();
+	BackStepCallPattern();
 	//TeleportSpellPattern();
 	//TeleportTurnClockPattern();
 	//TeleportTurnAntiClockPattern();
@@ -176,8 +177,20 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_call->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
 	_call->GetComponent<Particle>()->SetParticleDirection(0.0f, 7.0f, 0.0f);
 	_call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-
 	_call->GetComponent<Particle>()->SetActive(false);
+
+	_call2 = _boss->GetObjectScene()->CreateObject("call2");
+	_call2->AddComponent<BoxCollider>();
+	_call2->GetComponent<BoxCollider>()->SetBoxSize(15.0f, 30.0f, 15.0f);
+	_call2->GetComponent<BoxCollider>()->SetActive(false);
+	_call2->AddComponent<Particle>();
+	_call2->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_call2->GetComponent<Particle>()->SetParticleDuration(2.7f, 3.1f);
+	_call2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
+	_call2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	_call2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.5f, 0.0f);
+	_call2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_call2->GetComponent<Particle>()->SetActive(false);
 
 	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
 	_lazer->AddComponent<Particle>();
@@ -553,7 +566,6 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetRangeOffset(-20.0f);
-	pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
 
 	pattern->_subObject.emplace_back(_call);
 
@@ -625,6 +637,74 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	_callAttack = pattern;
 }
 
+
+void KunrealEngine::Kamen::CreateCall2Attack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Call2");
+
+	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
+	pattern->SetIsWarning(true).SetWarningName("Call").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetRangeOffset(-20.0f);
+
+	pattern->_subObject.emplace_back(_call2);
+
+	auto callLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (animator->GetCurrentFrame() >= 20)
+			{
+				if (pattern->_colliderOnCount > 0)
+				{
+					// 콜라이더 키기
+					_call2->GetComponent<BoxCollider>()->SetActive(true);
+					// 파티클 키기
+					_call2->GetComponent<Particle>()->SetActive(true);
+				}
+
+				// 보스가 바라보는 방향 가져옴
+				auto direction = GetDirection();
+
+				// 현재 보스의 포지션
+				auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+				int step = (animator->GetCurrentFrame() - 20.0f) / 10.0f + 1;
+
+				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f*step));
+
+				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1] + 5.0f, newPosition.m128_f32[2]);
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				_call2->GetComponent<BoxCollider>()->SetActive(false);
+				_call2->GetComponent<Particle>()->SetActive(false);
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(callLogic, false);
+
+	_callInitLogic = [pattern, this]()
+		{
+			_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
+			_callMoveDistance = 0.0f;
+		};
+
+	// 이니셜라이즈 로직 함수 넣어주기
+	pattern->SetInitializeLogic(_callInitLogic);
+
+	_call2Attack = pattern;
+}
 
 void KunrealEngine::Kamen::CreateEmergenceAttack()
 {
@@ -756,7 +836,7 @@ void KunrealEngine::Kamen::BackStepCallPattern()
 
 	backStepCallPattern->SetPattern(_backStep);
 
-	backStepCallPattern->SetPattern(_callAttack);
+	backStepCallPattern->SetPattern(_call2Attack);
 
 	backStepCallPattern->SetRange(backStepCallPattern->_patternList[2]->_range - backStepCallPattern->_patternList[1]->_range);
 
