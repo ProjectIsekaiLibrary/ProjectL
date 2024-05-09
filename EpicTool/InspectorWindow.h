@@ -214,8 +214,6 @@ namespace EpicTool
 
 		std::string _deleteComponentName;
 
-        GraphicWindow* _graphicWindow;
-
         // 애니메이터를 관리할 변수
     private:
         float _animationSpeed;

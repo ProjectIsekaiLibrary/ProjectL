@@ -16,7 +16,7 @@ EpicTool::InspectorWindow::InspectorWindow()
 	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
 	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
 	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
-	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{0}, _directionParticle{0}, _sizeParticle{0}
+	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{1.0f, 1.0f, 1.0f}, _directionParticle{0}, _sizeParticle{0}
 { 
 																			
 }																			
@@ -467,7 +467,7 @@ void EpicTool::InspectorWindow::DeleteComponent(KunrealEngine::Component* instan
 /// <param name="instance"></param>
 template<> // 이후 리스트가 생긴하면 해당 부분을 통해서 사용하게 될것이다  // 컴포넌트 리스트
 void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Transform>(KunrealEngine::Transform* instance)
-{
+{  
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Transform");
 
 	float _positionArray[3];
@@ -944,7 +944,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Particle>(Kunre
 	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>() == NULL) // 깡통 추가
 	{
 		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Particle>();
-		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000); 
 		isNewSetting = true;
 	}
 
@@ -1079,9 +1079,6 @@ void EpicTool::InspectorWindow::Initialize()
     ListToRemove(_meshList, _meshListEditor, _meshStringToRemove);
 
     ListToRemove(_textureList, _TextureListEditor, _textureStringToRemove);
-
-	_graphicWindow = new GraphicWindow;
-
 }
 
 /// <summary>
@@ -1126,10 +1123,11 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		{
 			if (_selectedObjectIndex != -1)
 			{
-				if (_gameObjectlist[_selectedObjectIndex]->GetObjectName() != _isPickedObjectName)
+				if (KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject()->GetObjectName() != _isPickedObjectName)
 				{
-					//selectedObjectIndex = -1;
-					//_isPickedObject = false;
+					selectedObjectIndex = -1;
+					_isPickedObject = false;
+					//_selectedObjectIndex = selectedObjectIndex;
 				}
 				else
 				{
@@ -1139,10 +1137,8 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		}
 		else if (KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject() == nullptr && _isPickedObject == true)
 		{
-
 			_isPickedObject = false;
 			selectedObjectIndex = -1;
-
 		}
 	}
 

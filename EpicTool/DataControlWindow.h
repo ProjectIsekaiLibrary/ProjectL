@@ -54,7 +54,12 @@ namespace EpicTool
         bool _new_Scene;
         bool _opt_padding;
 
+        // scene을 관리할 변수들
+        bool _scene1First;
         bool _scene2First;
+        bool _scene3First;
+        bool _scene4First;
+        bool _scene5First;
 
         std::filesystem::path _executablePath;
     };

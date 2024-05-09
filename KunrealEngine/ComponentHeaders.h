@@ -21,5 +21,6 @@
 
 #include "Kamen.h"
 #include "Aracne.h"
+#include "Ent.h"
 
 #include "Particle.h"
