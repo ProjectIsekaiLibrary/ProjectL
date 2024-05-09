@@ -11,6 +11,8 @@ namespace physx
 
 namespace KunrealEngine
 {
+	class Transform;
+
 	class _DECLSPEC SphereCollider : public Component
 	{
 		friend class PhysicsSystem;
