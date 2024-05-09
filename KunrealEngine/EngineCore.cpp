@@ -35,6 +35,8 @@ KunrealEngine::GameObject* tree1;
 KunrealEngine::GameObject* tree2;
 KunrealEngine::GameObject* tree3;
 KunrealEngine::GameObject* tree4;
+KunrealEngine::GameObject* ent;
+KunrealEngine::GameObject* ent2;
 
 
 KunrealEngine::GameObject* testCamera;
@@ -289,6 +291,19 @@ void KunrealEngine::EngineCore::PlayGround()
 	//spider -> GetComponent<MeshRenderer>() -> SetMeshObject("SpiderQueen/SpiderQueen", true);
 	//spider->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 	spider->AddComponent<Aracne>();
+
+	ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
+
+	ent -> AddComponent<MeshRenderer>();
+	ent -> GetComponent<MeshRenderer>() -> SetMeshObject("Ent_Generic/Ent_Generic", true);
+
+
+	ent2 = sceneInstance.GetCurrentScene()->CreateObject("ent2");
+
+	ent2->AddComponent<MeshRenderer>();
+	ent2->GetComponent<MeshRenderer>()->SetMeshObject("Ent_Humanoid/Ent_Humanoid", true);
+	//ent->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
+	//ent->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 
 	// 워프용 비석_이미지
 	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
