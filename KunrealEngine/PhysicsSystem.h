@@ -16,6 +16,7 @@ namespace KunrealEngine
 {
 	class GameObject;
 	class BoxCollider;
+	class SphereCollider;
 
 	class _DECLSPEC PhysicsSystem : public physx::PxSimulationEventCallback
 	{
@@ -63,7 +64,7 @@ namespace KunrealEngine
 		void CreateStaticBoxCollider(BoxCollider* collider);
 
 		// sphere collider
-		void CreateDynamicSphereCollider();
+		void CreateDynamicSphereCollider(SphereCollider* collider);
 
 		// physx 객체의 크기를 BoxCollider의 크기에 맞게
 		void SetBoxSize(BoxCollider* collider);

@@ -9,6 +9,7 @@
 #include "TimeManager.h"
 #include "ToolBox.h"
 #include "Animator.h"
+#include "Transform.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr)

@@ -3,7 +3,6 @@
 #include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
-#include "Transform.h"
 #include "GraphicsSystem.h"
 
 namespace physx

@@ -139,6 +139,12 @@ void KunrealEngine::PhysicsSystem::CreateStaticBoxCollider(BoxCollider* collider
 	_rigidStatics.push_back(boxActor);
 }
 
+
+void KunrealEngine::PhysicsSystem::CreateDynamicSphereCollider(SphereCollider* collider)
+{
+
+}
+
 void KunrealEngine::PhysicsSystem::UpdateDynamics()
 {
 	// 포지션 관련
@@ -181,7 +187,6 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(BoxCollider* collider)
 {
 	/// attach된 shape의 크기를 직접 변경해주는 함수가 없어서 사이즈 변경 함수가 호출될 때마다 삭제/추가를 반복하도록 만들었음
 	// 붙여줬던 shape를 떼주고
-	//_dynamicMap.at(collider)->detachShape(*static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape);
 	_dynamicMap.at(collider)->detachShape(*collider->_shape);
 
 	// 메모리 해제
@@ -319,40 +324,40 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	physx::PxRigidDynamic* casted1 = static_cast<physx::PxRigidDynamic*>(pairHeader.actors[0]);
 	physx::PxRigidDynamic* casted2 = static_cast<physx::PxRigidDynamic*>(pairHeader.actors[1]);
 
-	//BoxCollider* col1 = GetColliderFromDynamic(casted1);
-	//BoxCollider* col2 = GetColliderFromDynamic(casted2);
-	//
-	//// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
-	//if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
-	//{
-	//	return;
-	//}
-	//
-	//// 충돌이 발생했을 때
-	//if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
-	//	&& col1->GetActivated() && col2->GetActivated())
-	//{
-	//	// 충돌 여부를 true로
-	//	col1->_isCollided = true;
-	//	col2->_isCollided = true;
-	//
-	//	// 상대 오브젝트에 대한 정보를 넘겨줌
-	//	col1->_targetObj = col2->GetOwner();
-	//	col2->_targetObj = col1->GetOwner();	
-	//}
-	//
-	//// 충돌에서 벗어났을 때
-	//if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-	//	&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
-	//{
-	//	// 충돌 여부를 false로
-	//	col1->_isCollided = false;
-	//	col2->_isCollided = false;
-	//
-	//	// 충돌에서 벗어났으니 nullptr로
-	//	col1->_targetObj = nullptr;
-	//	col2->_targetObj = nullptr;
-	//}
+	BoxCollider* col1 = GetColliderFromDynamic(casted1);
+	BoxCollider* col2 = GetColliderFromDynamic(casted2);
+
+	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
+	if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
+	{
+		return;
+	}
+
+	// 충돌이 발생했을 때
+	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
+		&& col1->GetActivated() && col2->GetActivated())
+	{
+		// 충돌 여부를 true로
+		col1->_isCollided = true;
+		col2->_isCollided = true;
+
+		// 상대 오브젝트에 대한 정보를 넘겨줌
+		col1->_targetObj = col2->GetOwner();
+		col2->_targetObj = col1->GetOwner();
+	}
+
+	// 충돌에서 벗어났을 때
+	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+		&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
+	{
+		// 충돌 여부를 false로
+		col1->_isCollided = false;
+		col2->_isCollided = false;
+
+		// 충돌에서 벗어났으니 nullptr로
+		col1->_targetObj = nullptr;
+		col2->_targetObj = nullptr;
+	}
 }
 
 void KunrealEngine::PhysicsSystem::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)

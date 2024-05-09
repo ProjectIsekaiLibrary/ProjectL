@@ -152,7 +152,7 @@ void KunrealEngine::BoxCollider::SetBoxSize(float x, float y, float z)
 	//_debugObject->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 	_debugObject->SetScale(x, y, z);
 
-	PhysicsSystem::GetInstance().SetBoxSize(this);
+	//PhysicsSystem::GetInstance().SetBoxSize(this);
 }
 
 DirectX::XMFLOAT3 KunrealEngine::BoxCollider::GetBoxSize()
