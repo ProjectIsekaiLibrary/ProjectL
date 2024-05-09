@@ -5,7 +5,7 @@
 #include "Ent.h"
 
 KunrealEngine::Ent::Ent()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _lazer(nullptr),
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _leftRoot(nullptr), _rightRoot(nullptr), _smallRoot(nullptr),
 	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
 	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr), _backStep(nullptr)
 {
@@ -44,6 +44,7 @@ void KunrealEngine::Ent::Update()
 {
 	// 반드시 해야한다고 함
 	Boss::Update();
+//	_boss->GetComponent<Animator>()->Play("Idle", 70.f, true);
 }
 
 void KunrealEngine::Ent::LateUpdate()
@@ -68,12 +69,13 @@ void KunrealEngine::Ent::OnTriggerExit()
 
 void KunrealEngine::Ent::SetActive(bool active)
 {
-	this->_isActivated = active;
+	//this->_isActivated = active;
 }
 
 void KunrealEngine::Ent::SetMesh()
 {
 	_boss->AddComponent<MeshRenderer>();
+	_boss->GetComponent<MeshRenderer>()->SetMeshObject("Ent_Generic/Ent_Generic");
 }
 
 void KunrealEngine::Ent::SetTexture()
@@ -90,12 +92,13 @@ void KunrealEngine::Ent::SetTexture()
 void KunrealEngine::Ent::SetBossTransform()
 {
 	_boss->GetComponent<KunrealEngine::Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
+	_boss->GetComponent<Transform>()->SetScale(5.0f, 5.0f, 5.0f);
 }
 
 void KunrealEngine::Ent::SetBossCollider()
 {
 	_boss->AddComponent<BoxCollider>();
-	_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
+	//_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
 	_boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
 	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
 }
@@ -105,6 +108,34 @@ void KunrealEngine::Ent::CreatePattern()
 
 }
     
+void KunrealEngine::Ent::CreateSubObject()
+{
+	// 왼손
+	_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
+	_leftHand->AddComponent<BoxCollider>();
+	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
+	
+	// 오른손
+	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
+	_rightHand->AddComponent<BoxCollider>();
+	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
+	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
+
+	_leftRoot = _boss->GetObjectScene()->CreateObject("rightRoot");
+	_leftRoot->AddComponent<MeshRenderer>();
+	_leftRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02"); // w줄기 이름
+	_leftRoot->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 270.0f);
+	_leftRoot->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_leftRoot->AddComponent<BoxCollider>();
+	//_leftRoot->GetComponent<BoxCollider>()
+	_leftRoot->SetActive(false);
+
+
+}
+
 void KunrealEngine::Ent::CreateLeftAttack()
 {
 	BossPattern* pattern = new BossPattern();

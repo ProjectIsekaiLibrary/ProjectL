@@ -1123,10 +1123,11 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		{
 			if (_selectedObjectIndex != -1)
 			{
-				if (_gameObjectlist[_selectedObjectIndex]->GetObjectName() != _isPickedObjectName)
+				if (KunrealEngine::GraphicsSystem::GetInstance().GetPickedObject()->GetObjectName() != _isPickedObjectName)
 				{
-					//selectedObjectIndex = -1;
-					//_isPickedObject = false;
+					selectedObjectIndex = -1;
+					_isPickedObject = false;
+					//_selectedObjectIndex = selectedObjectIndex;
 				}
 				else
 				{

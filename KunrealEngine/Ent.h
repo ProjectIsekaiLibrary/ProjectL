@@ -34,6 +34,9 @@ namespace KunrealEngine
 
 
 	private:
+		void CreateSubObject();
+
+	private:
 		// 일반 범위공격
 		void CreateLeftAttack();
 		void CreateRightAttack();
@@ -67,8 +70,10 @@ namespace KunrealEngine
 		// 패턴에 필요한 subObject들
 		GameObject* _leftHand;
 		GameObject* _rightHand;
-		GameObject* _call;
-		GameObject* _lazer;
+		GameObject* _leftRoot;
+		GameObject* _rightRoot;
+
+		GameObject* _smallRoot;
 
 		std::vector<GameObject*> _fakeBoss;
 

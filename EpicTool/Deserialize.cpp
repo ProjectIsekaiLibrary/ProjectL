@@ -111,6 +111,7 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 						if (mesh != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Mesh"].empty()))
 						{
 							object->GetComponent<KunrealEngine::MeshRenderer>()->SetMeshObject(jsonItem["POD"]["meshRenderer"]["Mesh"][0].get<std::string>().c_str());
+							object->GetComponent<KunrealEngine::MeshRenderer>()->SetPickableState(true);
 						}
 						if (diffuse != jsonItem["POD"]["meshRenderer"].end() && (!jsonItem["POD"]["meshRenderer"]["Diffuse"].empty()))
 						{

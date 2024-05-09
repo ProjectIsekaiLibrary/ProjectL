@@ -294,14 +294,14 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
 
-	ent -> AddComponent<MeshRenderer>();
-	ent -> GetComponent<MeshRenderer>() -> SetMeshObject("Ent_Generic/Ent_Generic", true);
+	//ent -> AddComponent<Ent>();
+	//ent -> GetComponent<MeshRenderer>() -> SetMeshObject("Ent_Generic/Ent_Generic", true);
 
 
-	ent2 = sceneInstance.GetCurrentScene()->CreateObject("ent2");
-
-	ent2->AddComponent<MeshRenderer>();
-	ent2->GetComponent<MeshRenderer>()->SetMeshObject("Ent_Humanoid/Ent_Humanoid", true);
+	//ent2 = sceneInstance.GetCurrentScene()->CreateObject("ent2");
+	//
+	//ent2->AddComponent<MeshRenderer>();
+	//ent2->GetComponent<MeshRenderer>()->SetMeshObject("Ent_Humanoid/Ent_Humanoid", true);
 	//ent->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 	//ent->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 
