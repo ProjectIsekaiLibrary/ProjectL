@@ -76,6 +76,9 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 			if ((gameObject->GetComponent<KunrealEngine::Camera>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
 			{
 				pod.customComponent["Camera"] = true;
+				pod.transform["rotation_x"] = 0.0;
+				pod.transform["rotation_y"] = 0.0;
+				pod.transform["rotation_z"] = 0.0;
 			}
 
 
@@ -118,7 +121,7 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 					if (gameObject->GetComponent<KunrealEngine::Light>()->GetLightType() == KunrealEngine::LightType::DirectionalLight)
 					{
 						pod.lightType["LightType"] = "DirectionalLight";
-
+						    
 						pod.light["Ambient_x"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().x;
 						pod.light["Ambient_y"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().y;
 						pod.light["Ambient_z"] = gameObject->GetComponent<KunrealEngine::Light>()->GetAmbient().z;

@@ -48,47 +48,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 		}
 	}
 
-	// 복사 기능 <메쉬와 트렌스폼 정도만>
-	if (KunrealEngine::InputSystem::GetInstance()->KeyUp(KEY::D) && KunrealEngine::InputSystem::GetInstance()->KeyUp(KEY::LCTRL) && !_gameObjectlist.empty() && selectedObjectIndex != -1)
-	{
-		_copyObjectName = _gameObjectlist[selectedObjectIndex]->GetObjectOriginalName();
-
-		KunrealEngine::GetCurrentScene()->CreateObject(_copyObjectName);
-		_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
-
-		_copyObjectName = _gameObjectlist[_gameObjectlist.size() - 1]->GetObjectName();
-
-
-		// 트랜스폼 복사
-
-		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->AddComponent<KunrealEngine::Transform>();
-
-		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Transform>()
-			->SetPosition(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetPosition().x,
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetPosition().y,
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetPosition().z);
-
-
-		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Transform>()
-			->SetRotation(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetRotation().x,
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetRotation().y,
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetRotation().z);
-
-
-		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Transform>()
-			->SetScale(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetScale().x,
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetScale().y,
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetScale().z);
-
-
-		if (_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>() != nullptr)
-		{
-			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->AddComponent<KunrealEngine::MeshRenderer>();
-
-			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::MeshRenderer>()->SetMeshObject(
-				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshName().c_str());
-		}
-	}
+	CopyObject(selectedObjectIndex); // 복사기능
 	
 	if (_show_Context_Menu)
 	{
@@ -498,5 +458,85 @@ void EpicTool::HierarchyWindow::IndentAll(int indentLevel)
 	for (int i = 0; i < indentLevel; ++i)
 	{
 		ImGui::Indent();
+	}
+}
+
+void EpicTool::HierarchyWindow::CopyObject(int& selectedObjectIndex)
+{
+	// 복사 기능 <메쉬와 트렌스폼 정도만>
+	if (KunrealEngine::InputSystem::GetInstance()->KeyDown(KEY::D) && KunrealEngine::InputSystem::GetInstance()->KeyDown(KEY::LCTRL) && !_gameObjectlist.empty() && selectedObjectIndex != -1)
+	{
+		_copyObjectName = _gameObjectlist[selectedObjectIndex]->GetObjectOriginalName();
+
+		KunrealEngine::GetCurrentScene()->CreateObject(_copyObjectName);
+		_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
+
+		_copyObjectName = _gameObjectlist[_gameObjectlist.size() - 1]->GetObjectName();
+
+
+		// 트랜스폼 복사
+
+		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->AddComponent<KunrealEngine::Transform>();
+
+		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Transform>()
+			->SetPosition(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetPosition().x,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetPosition().y,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetPosition().z);
+
+
+		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Transform>()
+			->SetRotation(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetRotation().x,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetRotation().y,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetRotation().z);
+
+
+		KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Transform>()
+			->SetScale(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetScale().x,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetScale().y,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Transform>()->GetScale().z);
+
+
+		if (_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>() != nullptr)
+		{
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->AddComponent<KunrealEngine::MeshRenderer>();
+
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::MeshRenderer>()->SetMeshObject(
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshName().c_str());
+		}
+
+		if (_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>() != nullptr)  // 왜 메쉬가 추가로 생겨?
+		{
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->AddComponent<KunrealEngine::Particle>();
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Particle>()->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Particle>()->SetParticleVelocity
+			(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetVelocity(),
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetRandomState()
+			);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Particle>()->SetParticleDuration
+			(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetFadeOutTime(),
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetLifeTime()
+			);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Particle>()->AddParticleColor
+			(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetColor().x,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetColor().y,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetColor().z
+			);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Particle>()->SetParticleDirection
+			(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().x,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().y,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetDirection().z
+			);
+
+			KunrealEngine::GetCurrentScene()->GetGameObject(_copyObjectName)->GetComponent<KunrealEngine::Particle>()->SetParticleSize
+			(_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetSize().x,
+				_gameObjectlist[selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetSize().y
+			);
+
+		}
+
 	}
 }

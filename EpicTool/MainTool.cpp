@@ -117,19 +117,16 @@ HRESULT EpicTool::MainTool::Initialize()
 
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
-
-	/// 로드 구현중 
-
+    /// 로드 구현중 
     LoadData(); // 로드 부분 구현되었으나 임시 주석
 
     _windowManager = new ShowWindowManager;
     _windowManager->Initialize();
 
     _resourceWindow = new ResourceWindow();
+	_graphicWindow = new GraphicWindow(screenWidth, screenHeight);
 
-    _graphicWindow = new GraphicWindow(screenWidth, screenHeight);
-
-    _saveloadWindow = new DataControlWindow();
+	_saveloadWindow = new DataControlWindow();
 	_saveloadWindow->Initialize();
 
     _gameWindow = new GameWindow();   
@@ -137,14 +134,19 @@ HRESULT EpicTool::MainTool::Initialize()
     _navimeshEditor = new NavimashEditor();
     _navimeshEditor->Initialize();
 
+
+    
     return 1;
 }
-
+bool asdftur = true;
 void EpicTool::MainTool::Loop()
 {
+   
+
     ImGuiIO& io = ImGui::GetIO(); (void)io;  // 해당 부분이 도킹과 리사이즈에 반드시 필요함
     while (!_toolClose)
     {       
+
         // Poll and handle messages (inputs, window resize, etc.)
         // See the WndProc() function below for our to dispatch events to the Win32 backend.
         MSG msg;
@@ -167,7 +169,27 @@ void EpicTool::MainTool::Loop()
         ImGui::NewFrame();
         IMGUIZMO_NAMESPACE::BeginFrame();
 
+		//if (asdftur)
+		//{
+		//	float targetPos[3] = { 0.0f, -15.0f, 0.0f };
+		//	auto playerobjectTransform = KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<KunrealEngine::Transform>();
+		//	auto testObject = KunrealEngine::GetCurrentScene()->GetGameObject("testCamera");
+		//	KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(targetPos[0] + playerobjectTransform->GetPosition().x
+		//		, targetPos[1] + playerobjectTransform->GetPosition().y, targetPos[2] + playerobjectTransform->GetPosition().z);
+		//	auto position = testObject->GetComponent<KunrealEngine::Camera>()->GetTargetPosition();
+		//	int adfs = 0;
+		//
+		//	asdftur = false;
+		//}
+
         UpdateAll();
+
+       // KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->SetTargetPosition(
+       //     KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->GetTargetPosition().x,
+       //     KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->GetTargetPosition().y + 0.001f,
+       //     KunrealEngine::GetCurrentScene()->GetGameObject("testCamera")->GetComponent<KunrealEngine::Camera>()->GetTargetPosition().z
+       // );
+
         RenderAll(io);
     }
     // Cleanup
@@ -383,7 +405,9 @@ void EpicTool::MainTool::LoopImGuiRender(ImGuiIO& io)
 
 void EpicTool::MainTool::UpdateAll()
 {
+	
      _core->UpdateAll();
+
 	 ShowWindowFunction();
 
 }

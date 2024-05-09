@@ -92,12 +92,15 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	}
 	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(-23.0f, 0.0f, -10.0f), navipos3, DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
 
-
-	Scene* newWorld = sceneInstance.CreateScene("NewWorld");
 	//// cube map test
-	GRAPHICS->CreateCubeMap("test", "grasscube1024.dds", true);
+	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
 	auto list = GRAPHICS->GetCubeMapList();
 	GRAPHICS->SetMainCubeMap(list.back());
+
+	sceneInstance.CreateScene("mapTest2.json");
+	sceneInstance.CreateScene("mapTest3.json");
+	sceneInstance.CreateScene("mapTest4.json");
+	sceneInstance.CreateScene("mapTest5.json");
 
 	/// 니들 맘대로 해
 	//PlayGround();
@@ -158,18 +161,55 @@ void KunrealEngine::EngineCore::Update()
 	auto gameObjectList = GetCurrentScene()->GetObjectList();
 
 
-	if (GetCurrentScene()->GetGameObject("RuneStone") != nullptr)
+	if (GetCurrentScene()->GetGameObject("RuneStoneGolem") != nullptr)
 	{
-		if (GetCurrentScene()->GetGameObject("RuneStone")->GetComponent<BoxCollider>()->IsCollided() == true)
+		if (GetCurrentScene()->GetGameObject("RuneStoneGolem")->GetComponent<BoxCollider>()->IsCollided() == true)
 		{
-			if (GetCurrentScene()->GetGameObject("RuneStone")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
+			if (GetCurrentScene()->GetGameObject("RuneStoneGolem")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
 			{
-				ChangeScene("NewWorld");
+				ChangeScene("mapTest2.json");
 			}
 		}
 	}
 
-	
+
+	if (GetCurrentScene()->GetGameObject("RuneStoneEnte") != nullptr)
+	{
+		if (GetCurrentScene()->GetGameObject("RuneStoneEnte")->GetComponent<BoxCollider>()->IsCollided() == true)
+		{
+			if (GetCurrentScene()->GetGameObject("RuneStoneEnte")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
+			{
+				ChangeScene("mapTest3.json");
+			}
+		}
+	}
+
+		if (GetCurrentScene()->GetGameObject("RuneStoneKamen") != nullptr)
+	{
+		if (GetCurrentScene()->GetGameObject("RuneStoneKamen")->GetComponent<BoxCollider>()->IsCollided() == true)
+		{
+			if (GetCurrentScene()->GetGameObject("RuneStoneKamen")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
+			{
+				ChangeScene("mapTest4.json");
+			}
+		}
+	}
+
+	if (GetCurrentScene()->GetGameObject("RuneStoneArachne") != nullptr)
+	{
+		if (GetCurrentScene()->GetGameObject("RuneStoneArachne")->GetComponent<BoxCollider>()->IsCollided() == true)
+		{
+			if (GetCurrentScene()->GetGameObject("RuneStoneArachne")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
+			{
+				ChangeScene("mapTest5.json");
+			}
+		}
+	}
+
+	if (InputSystem::GetInstance()->KeyUp(KEY::CAPSLOCK))
+	{
+		ChangeScene("Main");
+	}
 	Updatecoroutine();
 }
 

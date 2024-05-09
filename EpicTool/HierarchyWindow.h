@@ -52,7 +52,7 @@ namespace EpicTool
 
         void CheckInDent(KunrealEngine::GameObject* gameObject);
 
-        void CheckUninDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject);
+		void CheckUninDentParent(KunrealEngine::GameObject* gameObject, KunrealEngine::GameObject* previousGameObject);
         
         void CheckUninDent(KunrealEngine::GameObject* gameObject);
 
@@ -61,6 +61,8 @@ namespace EpicTool
         void UpdateObjectList(int& selectedObjectIndex);
 
         void IndentAll(int indentLevel);
+
+        void CopyObject(int& selectedObjectIndex);
     private:
         // 각 오브젝트의 갯수
         int _createEmptyCount;   
