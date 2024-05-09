@@ -5,13 +5,13 @@
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _lazer(nullptr),
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _call2(nullptr), _lazer(nullptr),
 	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
-	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr),
+	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr), _call2Attack(nullptr),
 	_turn180(nullptr), _backStep(nullptr), _teleport(nullptr), _teleportWithLook(nullptr),
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
 	_emergence9Lich(nullptr), _targetIndex(0),
-	_spellStart(false)
+	_spellStart(false), _call2PrevStep(1)
 {
 	BossBasicInfo info;
 
@@ -131,9 +131,9 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();
 	
-	//LeftRightPattern();
+	LeftRightPattern();
 	//RightLeftPattern();
-	BackStepCallPattern();
+	//BackStepCallPattern();
 	//TeleportSpellPattern();
 	//TeleportTurnClockPattern();
 	//TeleportTurnAntiClockPattern();
@@ -150,12 +150,13 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
 	_leftHand->AddComponent<Particle>();
-	_leftHand->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	_leftHand->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
-	_leftHand->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
-	_leftHand->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
+	_leftHand->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	_leftHand->GetComponent<Particle>()->SetParticleDuration(0.0f, 0.0f);
+	_leftHand->GetComponent<Particle>()->SetParticleVelocity(3.f, false);
+	_leftHand->GetComponent<Particle>()->SetParticleSize(30.f, 5.0f);
 	_leftHand->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 	_leftHand->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_L");
+	//_leftHand->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 	_leftHand->GetComponent<Particle>()->SetActive(false);
 
 	// 오른손
@@ -645,7 +646,7 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	pattern->SetPatternName("Call2");
 
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
-	pattern->SetIsWarning(true).SetWarningName("Call").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetIsWarning(true).SetWarningName("Call2").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis);
 	pattern->SetRangeOffset(-20.0f);
 
 	pattern->_subObject.emplace_back(_call2);
@@ -675,6 +676,14 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
 
 				int step = (animator->GetCurrentFrame() - 20.0f) / 10.0f + 1;
+
+				if (step != _call2PrevStep)
+				{
+					pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+				}
+
+				_call2PrevStep = step;
+
 
 				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f*step));
@@ -829,6 +838,8 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 void KunrealEngine::Kamen::BackStepCallPattern()
 {
 	BossPattern* backStepCallPattern = new BossPattern();
+
+	backStepCallPattern->SetSkipMove(true);
 
 	backStepCallPattern->SetNextPatternForcePlay(true);
 

@@ -107,6 +107,7 @@ namespace KunrealEngine
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
+		unsigned int _call2PrevStep;
 		bool _isRotateFinish;
 
 	private:
