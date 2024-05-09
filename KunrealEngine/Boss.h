@@ -101,7 +101,13 @@ namespace KunrealEngine
 		// 플레이어 바라보도록 회전시키기
 		bool RotateToTarget(const DirectX::XMFLOAT3& targetPos);
 
+		// 특정 각도만큼 점점 회전시키기
 		bool Rotate(float angle, float speed);
+
+		// 특정 각도로 바로 회전시키기
+		void RotateByAngle(float angle);
+
+		bool RotateClockWise(float rotateSpeed, bool isClockWise);
 
 		// 특정 포지션으로 이동시키기 (raycast true시 무언가에 막히면 거기까지만 찾아감)
 		bool Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast);
@@ -127,7 +133,7 @@ namespace KunrealEngine
 		void SortCorePattern();
 
 		void SetSubObjectScene();
-
+		
 	private:
 		bool LookAtPlayer(float angle, float rotateSpeed);
 
@@ -176,17 +182,21 @@ namespace KunrealEngine
 		bool _isHit;
 		bool _isRotateFinish;
 
+		bool _isAngleCheck;
+		float _rotAngle;
+		float _sumRot;
+
+		DirectX::XMFLOAT3 _prevRot;
+
 	private:
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 		int _nodeCount;
 
+	private:
 		DirectX::XMFLOAT3 _direction;
 
 		DirectX::XMFLOAT3 _prevPos;
 		DirectX::XMFLOAT3 _backStepPos;
-
-	private:
-		float _goalAngle;
 
 	private:
 		bool _isMoving;
@@ -228,9 +238,6 @@ namespace KunrealEngine
 			boss->_boss->GetComponent<BoxCollider>()->SetActive(false);
 
 			Waitforsecond(3.0f);
-
-			boss->_boss->GetComponent<MeshRenderer>()->SetActive(true);
-			boss->_boss->GetComponent<BoxCollider>()->SetActive(true);
 
 			boss->_isHideFinish = true;
 		};

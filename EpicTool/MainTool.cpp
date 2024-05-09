@@ -118,7 +118,7 @@ HRESULT EpicTool::MainTool::Initialize()
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
 
     /// 로드 구현중 
-    //LoadData(); // 로드 부분 구현되었으나 임시 주석
+    LoadData(); // 로드 부분 구현되었으나 임시 주석
 
     _windowManager = new ShowWindowManager;
     _windowManager->Initialize();

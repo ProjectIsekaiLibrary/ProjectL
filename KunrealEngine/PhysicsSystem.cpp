@@ -5,6 +5,8 @@
 #include "BoxCollider.h"
 #include "Transform.h"
 
+#include "GraphicsSystem.h"
+
 KunrealEngine::PhysicsSystem::PhysicsSystem()
 	:_foundation(nullptr), _physics(nullptr), _dispatcher(nullptr), _pxScene(nullptr),
 	_material(nullptr), _pvd(nullptr)
@@ -31,7 +33,6 @@ void KunrealEngine::PhysicsSystem::Initialize()
 
 	// 머티리얼 생성(임의)	/// 이게 0.5라서?
 	_material = _physics->createMaterial(0.5f, 0.5f, 0.5f);
-
 }
 
 void KunrealEngine::PhysicsSystem::Release()
@@ -84,8 +85,6 @@ void KunrealEngine::PhysicsSystem::CreatePhysXScene()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-
-	// scene에 필터 정보 전달
 	
 }
 
@@ -140,6 +139,12 @@ void KunrealEngine::PhysicsSystem::CreateStaticBoxCollider(BoxCollider* collider
 	_rigidStatics.push_back(boxActor);
 }
 
+
+void KunrealEngine::PhysicsSystem::CreateDynamicSphereCollider(SphereCollider* collider)
+{
+
+}
+
 void KunrealEngine::PhysicsSystem::UpdateDynamics()
 {
 	// 포지션 관련
@@ -160,6 +165,12 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 		// pair.first->GetColliderPos().y, 
 		// pair.first->GetColliderPos().z)));
 		pair.second->setGlobalPose(pxTrans, true);
+
+		if (!pair.first->GetActivated())
+		{
+			pair.first->_isCollided = false;
+			pair.first->_targetObj = nullptr;
+		}
 	}
 }
 
@@ -176,7 +187,6 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(BoxCollider* collider)
 {
 	/// attach된 shape의 크기를 직접 변경해주는 함수가 없어서 사이즈 변경 함수가 호출될 때마다 삭제/추가를 반복하도록 만들었음
 	// 붙여줬던 shape를 떼주고
-	//_dynamicMap.at(collider)->detachShape(*static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape);
 	_dynamicMap.at(collider)->detachShape(*collider->_shape);
 
 	// 메모리 해제
@@ -324,7 +334,7 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	}
 
 	// 충돌이 발생했을 때
-	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
+	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
 		&& col1->GetActivated() && col2->GetActivated())
 	{
 		// 충돌 여부를 true로
@@ -333,11 +343,11 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 
 		// 상대 오브젝트에 대한 정보를 넘겨줌
 		col1->_targetObj = col2->GetOwner();
-		col2->_targetObj = col1->GetOwner();	
+		col2->_targetObj = col1->GetOwner();
 	}
 
 	// 충돌에서 벗어났을 때
-	if (current.events &(physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
+	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 		&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
 	{
 		// 충돌 여부를 false로

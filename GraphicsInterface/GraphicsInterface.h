@@ -164,6 +164,11 @@ namespace GInterface
 		virtual const std::vector<std::vector<std::vector<DirectX::XMFLOAT3>>> GetAllMeshVertex() abstract;
 		// 네비 메쉬를 위한 모든 인덱스들의 버텍스의 월드좌표 반환
 		virtual const std::vector<std::vector<std::vector<unsigned int>>> GetAllMeshIndex() abstract;
+
+		virtual std::vector<DirectX::XMFLOAT3> GetMeshVertexData(const std::string& fileName) abstract;
+		
+		virtual std::vector<unsigned int> GetMeshIndexData(const std::string& fileName) abstract;
+
 	};
 };
 

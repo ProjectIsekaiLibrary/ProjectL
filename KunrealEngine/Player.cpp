@@ -43,6 +43,7 @@ void KunrealEngine::Player::Initialize()
 	GetOwner()->GetComponent<MeshRenderer>()->SetNormalTexture(0, "PlayerWithCloak/M_Clothes_normal.png");
 	GetOwner()->GetComponent<MeshRenderer>()->SetNormalTexture(1, "PlayerWithCloak/M_Body_normal.png");
 	GetOwner()->GetComponent<MeshRenderer>()->SetNormalTexture(2, "PlayerWithCloak/M_Hair_normal.png");
+	GetOwner()->GetComponent<MeshRenderer>()->SetCartoonState(true);
 
 	GetOwner()->AddComponent<BoxCollider>();
 	GetOwner()->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 12.0f, 5.0f);

@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "Player.h"
 #include "ToolBox.h"
+#include "Particle.h"
 #include "BoxCollider.h"
 #include "InputSystem.h"
 #include "Navigation.h"
@@ -19,10 +20,11 @@ KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
 	_distance(0.0f), _isCorePattern(false),
 	_basicPattern(), _corePattern(), _nowTitlePattern(nullptr), _nowPlayingPattern(nullptr),
-	_isStart(false), _isHit(false), _isRotateFinish(false),
+	_isStart(false), _isHit(false), _isRotateFinish(false), _isAngleCheck(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
-	_isMoving(false), _isRotate(false), _backStepReady(false), _goalAngle(2140.0f), _isHideFinish(false)
+	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
+	_rotAngle(0.0f), _sumRot(0.0f),_prevRot()
 {
 
 }
@@ -151,6 +153,8 @@ void KunrealEngine::Boss::Update()
 		_isRotateFinish = false;
 		_isMoving = false;
 		_nodeCount = 0;
+
+		_isAngleCheck = false;
 	}
 
 	Hit();
@@ -306,6 +310,11 @@ void KunrealEngine::Boss::Idle()
 
 	// Chase로 상태 변환
 	_status = BossStatus::CHASE;
+
+	if (_nowTitlePattern->_skipChase)
+	{
+		_status = BossStatus::PATTERN_READY;
+	}
 }
 
 void KunrealEngine::Boss::Chase()
@@ -329,11 +338,24 @@ void KunrealEngine::Boss::Chase()
 	// 패턴의 사거리를 받아옴
 	if (!_isRotateFinish)
 	{
-		// 보스와 플레이어 사이의 각도를 측정
-		auto angle = CalculateAngle(bossPosition, playerPosition);
+		// 최초 진입시 각도 체크가 되어있지 않다면
+		if (!_isAngleCheck)
+		{
+			// 각도를 측정
+			_rotAngle = ToolBox::GetAngleWithDirection(bossPosition, playerPosition, _bossTransform->GetRotation().y);
+
+			// 현재 각도를 기록
+			_prevRot = _bossTransform->GetRotation();
+
+			// 각도 누적용
+			_sumRot = 0.0f;
+
+			// 두번째 진입시부턴 안들어오게 하도록
+			_isAngleCheck = true;
+		}
 
 		// 보스가 플레이어를 바라보게 함
-		_isRotateFinish = LookAtPlayer(angle, _info._rotationSpeed);
+		_isRotateFinish = LookAtPlayer(_rotAngle, _info._rotationSpeed);
 	}
 
 	// 보스가 플레이어를 바라보게 되었을 때
@@ -389,7 +411,9 @@ void KunrealEngine::Boss::Chase()
 
 						// 회전이 끝났다면 다음 노드로 이동
 						if (_isRotate)
+						{
 							_nodeCount++;
+						}
 					}
 				}
 
@@ -492,26 +516,34 @@ void KunrealEngine::Boss::Attack()
 					return;
 				}
 				// 콜라이더와 충돌하였고 그 대상이 플레이어라면
-				if (collider->IsCollided() && collider->GetTargetObject() == _player)
+				if (collider->GetActivated())
 				{
-					// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
-					collider->SetActive(false);
-
-					// 패턴의 최대 타격 횟수에서 하나를 감소시킴
-					_nowPlayingPattern->_colliderOnCount--;
-
-					// 패턴의 데미지를 가져옴
-					auto damage = _nowTitlePattern->_damage;
-
-					// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
-					_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
-					_player->GetComponent<Player>()->SetHitState(0);
-
-					// 데미지가 들어간 후 메쉬를 꺼야한다면
-					if (object->GetComponent<MeshRenderer>() != nullptr && !_nowPlayingPattern->_isRemainMesh)
+					if (collider->IsCollided())
 					{
-						// 메쉬를 꺼버림
-						object->GetComponent<MeshRenderer>()->SetActive(false);
+						auto a = collider->GetTargetObject();
+					}
+
+					if (collider->IsCollided() && collider->GetTargetObject() == _player)
+					{
+						// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
+						collider->SetActive(false);
+
+						// 패턴의 최대 타격 횟수에서 하나를 감소시킴
+						_nowPlayingPattern->_colliderOnCount--;
+
+						// 패턴의 데미지를 가져옴
+						auto damage = _nowTitlePattern->_damage;
+
+						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+						_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+						_player->GetComponent<Player>()->SetHitState(0);
+
+						// 데미지가 들어간 후 메쉬를 꺼야한다면
+						if (object->GetComponent<MeshRenderer>() != nullptr && !_nowPlayingPattern->_isRemainMesh)
+						{
+							// 메쉬를 꺼버림
+							object->GetComponent<MeshRenderer>()->SetActive(false);
+						}
 					}
 				}
 			}
@@ -589,6 +621,8 @@ void KunrealEngine::Boss::PatternReady()
 		// Basic Attack으로 상태 변경
 		_status = BossStatus::BASIC_ATTACK;
 	}
+
+	_isAngleCheck = false;
 }
 
 void KunrealEngine::Boss::BasicAttack()
@@ -623,6 +657,8 @@ void KunrealEngine::Boss::CoreAttack()
 void KunrealEngine::Boss::PatternEnd()
 {
 	// 다음 패턴을 위해 초기화
+	_isAngleCheck = false;
+
 	_isHideFinish = false;
 	_isMoving = false;
 	_isRotateFinish = false;
@@ -790,7 +826,10 @@ void KunrealEngine::Boss::TeleportToPlayer()
 
 	// 플레이어를 바라보도록 
 	auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
+
 	_bossTransform->SetRotation(bossRotation.x, angle, bossRotation.z);
+
+	_prevRot = _bossTransform->GetRotation();
 }
 
 
@@ -798,6 +837,7 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 {
 	if (_isHideFinish == false)
 	{
+		_boss->GetComponent<Animator>()->Stop();
 		Startcoroutine(TeleportWithHide);
 	}
 
@@ -821,6 +861,7 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 
 		auto target = _stopover.back().second;
 		_bossTransform->SetPosition(target.x, 0.0f, target.z);
+		_prevPos = _bossTransform->GetPosition();
 
 		// 플레이어를 바라보도록 
 		if (lookAtPlayer)
@@ -828,6 +869,11 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 			auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
 			_bossTransform->SetRotation(bossRotation.x, angle, bossRotation.z);
 		}
+
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
+
+		_prevRot = _bossTransform->GetRotation();
 
 		return true;
 	}
@@ -850,21 +896,27 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 	// 에러 범위
 	float errorRange = speed * 2.0f;
 
+	_sumRot += speed;
+
 	// 현재 각도가 목표로 하는 각도보다 작을 경우
-	if (_bossTransform->GetRotation().y < angle)
+	if (angle > 0)
 	{
-		// 회전 속도만큼 회전
-		_bossTransform->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + speed, _bossTransform->GetRotation().z);
+		if (_sumRot < angle)
+		{
+			// 회전 속도만큼 회전
+			_bossTransform->SetRotation(_prevRot.x, _prevRot.y + _sumRot, _prevRot.z);
+		}
 	}
-	// 현재 각도가 목표로 하는 각도보다 클 경우
 	else
 	{
-		// 회전 속도만큼 회전
-		_bossTransform->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y - speed, _bossTransform->GetRotation().z);
+		if (_sumRot < std::abs(angle))
+		{
+			// 회전 속도만큼 회전
+			_bossTransform->SetRotation(_prevRot.x, _prevRot.y - _sumRot, _prevRot.z);
+		}
 	}
 
-	// 현재의 각도가 목표로 하는 각도의 오차범위 내에 있을 경우
-	if (angle - errorRange <= _bossTransform->GetRotation().y && _bossTransform->GetRotation().y <= angle + errorRange)
+	if (_sumRot > std::abs(angle))
 	{
 		// 현재 실행 중인 애니메이션이 Idle 이라면
 		if (_boss->GetComponent<Animator>()->GetNowAnimationName() == "Idle")
@@ -872,8 +924,12 @@ bool KunrealEngine::Boss::LookAtPlayer(float angle, float rotateSpeed)
 			// Idle 애니메이션을 멈추고
 			_boss->GetComponent<Animator>()->Stop();
 		}
+
 		// 회전이 완료되었다고 반환
-		_goalAngle = 2140.0f;
+		_isAngleCheck = false;
+		_sumRot = 0.0f;
+		_prevRot = _bossTransform->GetRotation();
+
 		return true;
 	}
 	else
@@ -1004,6 +1060,11 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			if (subObject->GetComponent<Particle>() != nullptr)
+			{
+				subObject->GetComponent<Particle>()->SetActive(true);
+			}
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 			if (pattern->_colliderOnCount > 0)
@@ -1155,18 +1216,28 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 bool KunrealEngine::Boss::RotateToTarget(const DirectX::XMFLOAT3& targetPos)
 {
 	auto bossPosition = _bossTransform->GetPosition();
+
+	if (!_isAngleCheck)
+	{
+		_rotAngle = ToolBox::GetAngleWithDirection(bossPosition, targetPos, _bossTransform->GetRotation().y);
+
+		_prevRot = _bossTransform->GetRotation();
+
+		_sumRot = 0.0f;
+
+		_isAngleCheck = true;
+	}
+
 	// 패턴의 사거리를 받아옴
 	if (!_isRotate)
 	{
-		// 보스와 플레이어 사이의 각도를 측정
-		auto angle = CalculateAngle(bossPosition, targetPos);
-
 		// 보스가 플레이어를 바라보게 함
-		_isRotate = LookAtPlayer(angle, _info._rotationSpeed);
+		_isRotate = LookAtPlayer(_rotAngle, _info._rotationSpeed);
 	}
 
 	if (_isRotate)
 	{
+		_isAngleCheck = false;
 		return true;
 	}
 
@@ -1176,18 +1247,27 @@ bool KunrealEngine::Boss::RotateToTarget(const DirectX::XMFLOAT3& targetPos)
 
 bool KunrealEngine::Boss::Rotate(float angle, float speed)
 {
-	if (_goalAngle == 2140.0f)
+	return LookAtPlayer(angle, speed);
+}
+
+
+void KunrealEngine::Boss::RotateByAngle(float angle)
+{
+	_bossTransform->SetRotation(_bossTransform->GetRotation().x, angle, _bossTransform->GetRotation().z);
+
+	_prevRot = _bossTransform->GetRotation();
+}
+
+bool KunrealEngine::Boss::RotateClockWise(float rotateSpeed, bool isClockWise)
+{
+	if (isClockWise)
 	{
-		if (_bossTransform->GetRotation().y > 180)
-		{
-			_goalAngle = _bossTransform->GetRotation().y - angle;
-		}
-		else
-		{
-			_goalAngle = _bossTransform->GetRotation().y + angle;
-		}
+		return LookAtPlayer(360.0f, rotateSpeed);
 	}
-	return LookAtPlayer(_goalAngle, speed);
+	else
+	{
+		return LookAtPlayer(-360.0f, rotateSpeed);
+	}
 }
 
 void KunrealEngine::Boss::SetTexture()

@@ -224,6 +224,7 @@
     <ClInclude Include="SceneManager.h" />
     <ClInclude Include="SoundPlayer.h" />
     <ClInclude Include="SoundSystem.h" />
+    <ClInclude Include="SphereCollider.h" />
     <ClInclude Include="TimeManager.h" />
     <ClInclude Include="ToolBox.h" />
     <ClInclude Include="Transform.h" />
@@ -279,6 +280,7 @@
     <ClCompile Include="SceneManager.cpp" />
     <ClCompile Include="SoundPlayer.cpp" />
     <ClCompile Include="SoundSystem.cpp" />
+    <ClCompile Include="SphereCollider.cpp" />
     <ClCompile Include="TimeManager.cpp" />
     <ClCompile Include="ToolBox.cpp" />
     <ClCompile Include="Transform.cpp" />

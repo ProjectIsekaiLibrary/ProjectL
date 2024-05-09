@@ -16,6 +16,7 @@ namespace KunrealEngine
 {
 	class GameObject;
 	class BoxCollider;
+	class SphereCollider;
 
 	class _DECLSPEC PhysicsSystem : public physx::PxSimulationEventCallback
 	{
@@ -62,6 +63,9 @@ namespace KunrealEngine
 		// 움직이지 않는 객체에 부여할 box collider
 		void CreateStaticBoxCollider(BoxCollider* collider);
 
+		// sphere collider
+		void CreateDynamicSphereCollider(SphereCollider* collider);
+
 		// physx 객체의 크기를 BoxCollider의 크기에 맞게
 		void SetBoxSize(BoxCollider* collider);
 
@@ -71,7 +75,7 @@ namespace KunrealEngine
 		// Static actor들 업데이트
 		void UpdateStatics();
 
-		void TestFunc();			// 실험용 꼭 지워
+		void TestFunc();			/// 실험용 꼭 지워
 
 	private:
 		std::vector<physx::PxRigidDynamic*>	_rigidDynamics;

@@ -68,6 +68,8 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 
 	// The light vector aims opposite the direction the light rays travel.
 	float3 lightVec = -L.Direction;
+	
+    lightVec = normalize(lightVec);
 
 	// Add ambient term.
 	ambient = mat.Ambient * L.Ambient;	
@@ -87,7 +89,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 		diffuse = diffuseFactor * mat.Diffuse * L.Diffuse;
 		spec    = specFactor * mat.Specular * L.Specular;
 	}
-		
+	
 	//// Initialize outputs.
 	//ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
 	//diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -132,7 +134,7 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
 	// The distance from surface to light.
 	float d = length(lightVec);
 	
-	// Range test.
+	//// Range test.
 	if( d > L.Range )
 		return;
 		
@@ -159,8 +161,10 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
 	}
 
 	// Attenuate
-	float att = 1.0f / dot(L.Att, float3(1.0f, d, d*d));
+    float att = 1.0f / dot(L.Att, float3(1.0f, d, d * d));
 
+    att = mul(att, 16);
+	
 	diffuse *= att;
 	spec    *= att;
 }

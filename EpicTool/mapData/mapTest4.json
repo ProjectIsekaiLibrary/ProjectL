@@ -19,9 +19,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 0.0,
-                "position_y": 30.0,
-                "position_z": -55.0,
+                "position_x": 7.318175315856934,
+                "position_y": 151.45199584960938,
+                "position_z": -266.3841857910156,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -1552,6 +1552,170 @@
                 "scale_x": 0.3199999928474426,
                 "scale_y": 0.3199999928474426,
                 "scale_z": 0.3199999928474426
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {},
+            "meshRenderingState": true,
+            "name": "Create Empty (3)",
+            "parent": {},
+            "particle": {
+                "Color_X": 1.0,
+                "Color_Y": 1.0,
+                "Color_Z": 1.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 7.400000095367432,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0999999046325684,
+                "LifeTime": 3.700000047683716,
+                "Random": 1.0,
+                "Velocity": 5.300000190734863
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -66.67790222167969,
+                "position_y": 42.02961349487305,
+                "position_z": 51.435630798339844,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 3.869999885559082,
+                "scale_y": 3.869999885559082,
+                "scale_z": 3.869999885559082
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {},
+            "meshRenderingState": true,
+            "name": "Create Empty (3) (1)",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 7.400000095367432,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0999999046325684,
+                "LifeTime": 3.700000047683716,
+                "Random": 1.0,
+                "Velocity": 5.300000190734863
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 72.63432312011719,
+                "position_y": 42.02961349487305,
+                "position_z": 51.435630798339844,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 3.869999885559082,
+                "scale_y": 3.869999885559082,
+                "scale_z": 3.869999885559082
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {},
+            "meshRenderingState": true,
+            "name": "Create Empty (3) (2)",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 7.400000095367432,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0999999046325684,
+                "LifeTime": 3.700000047683716,
+                "Random": 1.0,
+                "Velocity": 5.300000190734863
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 72.63432312011719,
+                "position_y": 42.02961349487305,
+                "position_z": -119.87895965576172,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 3.869999885559082,
+                "scale_y": 3.869999885559082,
+                "scale_z": 3.869999885559082
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {},
+            "meshRenderingState": true,
+            "name": "Create Empty (3) (3)",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 7.400000095367432,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0999999046325684,
+                "LifeTime": 3.700000047683716,
+                "Random": 1.0,
+                "Velocity": 5.300000190734863
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -66.12960052490234,
+                "position_y": 42.02961349487305,
+                "position_z": -121.46312713623047,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 3.869999885559082,
+                "scale_y": 3.869999885559082,
+                "scale_z": 3.869999885559082
             }
         }
     }

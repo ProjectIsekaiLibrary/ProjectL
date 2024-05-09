@@ -79,8 +79,8 @@ struct BossPattern
 	BossPattern()
 		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _rangeOffset(5.0f),
-		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(_maxColliderOnCount), _subObject(),
-		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true),
+		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(1), _subObject(),
+		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true), _skipChase(false),
 		_index(0)
 	{
 		_patternList.emplace_back(this);
@@ -172,12 +172,13 @@ struct BossPattern
 	BossPattern& SetCoolDown(float coolDown) { _triggerHp = coolDown; return *this; };
 	BossPattern& SetRangeOffset(float rangeOffset) { _rangeOffset = rangeOffset; return *this; };
 	BossPattern& SetActive(bool isActive) { _triggerHp = isActive; return *this; };
-	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; return *this; };
+	BossPattern& SetMaxColliderCount(unsigned int count) { _maxColliderOnCount = count; _colliderOnCount = count; return *this; };
 	BossPattern& SetLogic(std::function<bool()> logic, bool isRemainMesh = true) { _logic = logic; _isRemainMesh = isRemainMesh; return *this; };
 	BossPattern& SetInitializeLogic(std::function<void()> initialize) { _initializeLogic = initialize; return *this; };
 	BossPattern& SetAttackState(eAttackState attackState) { _attackState = attackState; return *this; };
 	BossPattern& SetNextPatternForcePlay(bool tf) { _playNextPattern = tf; return *this; };
 	BossPattern& SetPattern(BossPattern* pattern) { _patternList.emplace_back(pattern); return *this; };
+	BossPattern& SetSkipChase(bool tf) { _skipChase = tf; return *this; };
 
 	std::string _patternName;		// 패턴 이름
 
@@ -224,4 +225,6 @@ struct BossPattern
 	std::vector<BossPattern*> _patternList;
 
 	unsigned int _index;
+
+	bool _skipChase;
 };

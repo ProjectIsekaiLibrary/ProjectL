@@ -1,13 +1,15 @@
 #include "Particle.h"
 #include "Transform.h"
+#include "MeshRenderer.h"
 #include "GraphicsSystem.h"
 
 KunrealEngine::Particle::Particle()
 	:_particle(nullptr), _transform(nullptr),
-	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f), 
-	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f })
+	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f),
+	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f }),
+	_parentObject(nullptr), _parentBoneName()
 {
-	
+
 }
 
 KunrealEngine::Particle::~Particle()
@@ -22,38 +24,61 @@ void KunrealEngine::Particle::Initialize()
 
 void KunrealEngine::Particle::Release()
 {
-	
+
 }
 
 void KunrealEngine::Particle::FixedUpdate()
 {
-	
+
 }
 
 void KunrealEngine::Particle::Update()
 {
-	SetParticlePos(this->_transform->GetPosition());
-	//SetParticleSize(this->_transform->GetScale().x, this->_transform->GetScale().y);
+	if (_transform->_haveParentBone)
+	{
+		if (_parentObject != nullptr)
+		{
+			auto mat = GRAPHICS->GetTransform(_parentObject->GetComponent<MeshRenderer>()->GetMeshObject(), _parentBoneName);
+
+			DirectX::XMMATRIX worldTM = DirectX::XMLoadFloat4x4(&mat);
+
+			DirectX::XMVECTOR scale;
+			DirectX::XMVECTOR quat;
+			DirectX::XMVECTOR translation;
+
+			DirectX::XMMatrixDecompose(&scale, &quat, &translation, worldTM);
+
+			DirectX::XMStoreFloat3(&this->_transform->_posForBone, translation);
+			DirectX::XMStoreFloat4(&this->_transform->_quatForBone, quat);
+		}
+		 
+		auto pos = this->GetOwner()->GetComponent<Transform>()->_posForBone;
+		SetParticlePos(pos.x, pos.y, pos.z);
+	}
+	else
+	{
+		SetParticlePos(this->_transform->GetPosition());
+	}
 }
 
 void KunrealEngine::Particle::LateUpdate()
 {
-	
+
 }
 
 void KunrealEngine::Particle::OnTriggerEnter()
 {
-	
+
 }
 
 void KunrealEngine::Particle::OnTriggerStay()
 {
-	
+
 }
 
 void KunrealEngine::Particle::OnTriggerExit()
 {
-	
+
 }
 
 void KunrealEngine::Particle::SetActive(bool active)
@@ -143,6 +168,31 @@ void KunrealEngine::Particle::SetParticleDirection(float x, float y, float z)
 	this->_direction = direction;
 }
 
+
+void KunrealEngine::Particle::SetParticleRotation(float x, float y, float z)
+{
+	DirectX::XMFLOAT3 rotation = { x, y + 180.0f, z };
+	_particle->SetParticleRotation(rotation);
+
+	this->_rotation = rotation;
+}
+
+
+void KunrealEngine::Particle::SetTransform(GameObject* renderable, std::string boneName)
+{
+	if (_transform->_haveParentBone == false)
+	{
+		_parentObject = renderable;
+		_parentBoneName = boneName;
+
+		_transform->_haveParentBone = true;
+
+		if (renderable != this->GetOwner())
+		{
+			this->GetOwner()->SetParent(renderable);
+		}
+	}
+}
 
 DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()
 {

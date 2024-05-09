@@ -103,6 +103,11 @@ void KunrealEngine::Light::CreateDirectionalLight(DirectX::XMFLOAT4 ambient /*= 
 		_light->Delete();
 	}
 
+	ambient.x = diffuse.x * 0.2f;
+	ambient.y = diffuse.y * 0.2f;
+	ambient.z = diffuse.z * 0.2f;
+	ambient.w = diffuse.w * 0.2f;
+
 	_light = GRAPHICS->CreateDirectionalLight(ambient, diffuse, specular, direction);
 
 	_ambient = ambient;

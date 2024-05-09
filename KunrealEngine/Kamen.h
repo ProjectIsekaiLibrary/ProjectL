@@ -32,34 +32,63 @@ namespace KunrealEngine
 	public:
 		virtual void CreatePattern() override;
 
+	public:
+		void GamePattern();
+
 	private:
 		void CreateSubObject();
+		
+	private:
+		void BasicPattern();
 
 	private:
 		void LeftRightPattern();
 		void RightLeftPattern();
+		void BackStepCallPattern();
+		void TeleportSpellPattern();
+		void TeleportTurnClockPattern();
+		void TeleportTurnAntiClockPattern();
+
+		// 코어 패턴
+	private:
+		void CoreEmmergencePattern();
 
 		// 기본 패턴 조각들
 	private:
 		void CreateLeftAttack();
 		void CreateRightAttack();
+		void CreateSpellAttack();
+		void CreateCallAttack();
+
+	private:
 		void CreateTurn180();
-		void SpellAttack();
-		void CallAttack();
-		void BackStepCallAttack();
+		void CreateBackStep();
+		void CreateTeleportToCenter();
+		void CreateTeleportToCenterWithLook();
+		void CreateTurnClockWise();
+		void CreateTurnAntiClockWise();
+
+		//void CreateMultiCall();
 
 		// 핵심 기믹 패턴
 	private:
-		void EmergenceAttack();
+		void CreateEmergenceAttack();
 
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
-		BossPattern* _turn180;
-
 		BossPattern* _spellAttack;
 		BossPattern* _callAttack;
+
 		BossPattern* _backStep;
+		BossPattern* _turn180;
+		BossPattern* _teleport;
+		BossPattern* _teleportWithLook;
+		BossPattern* _turnClockWise;
+		BossPattern* _turnAntiClockWise;
+
+	private:
+		BossPattern* _emergence9Lich;
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -70,14 +99,22 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _fakeBoss;
 
+		std::vector<GameObject*> _callVec;
+
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
 		bool _isRotateFinish;
 
 	private:
+		bool _spellStart;
+
+	private:
 		bool _isCoreStart;
 		bool _isRandomStart;
+
+	private:
+		unsigned int _targetIndex;
 
 	// logic
 	private:

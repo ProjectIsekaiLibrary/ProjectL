@@ -292,10 +292,15 @@ bool KunrealEngine::MeshRenderer::GetShadowState()
 
 void KunrealEngine::MeshRenderer::SetCartoonState(bool flag)
 {
-	this->_mesh->SetShadowState(flag);
+	this->_mesh->SetCartoonRendering(flag);
 }
 
 bool KunrealEngine::MeshRenderer::GetCartoonState()
 {
 	return this->_mesh->GetCartoonRenderingState();
+}
+
+DirectX::XMFLOAT4X4 KunrealEngine::MeshRenderer::GetBoneTransform(const std::string& boneName)
+{
+	return _mesh->GetBoneTransform(boneName);
 }
