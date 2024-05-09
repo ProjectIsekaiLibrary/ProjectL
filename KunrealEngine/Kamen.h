@@ -63,7 +63,8 @@ namespace KunrealEngine
 	private:
 		void CreateTurn180();
 		void CreateBackStep();
-		void CreateTeleport();
+		void CreateTeleportToCenter();
+		void CreateTeleportToCenterWithLook();
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
 
@@ -82,6 +83,7 @@ namespace KunrealEngine
 		BossPattern* _backStep;
 		BossPattern* _turn180;
 		BossPattern* _teleport;
+		BossPattern* _teleportWithLook;
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
 
@@ -103,6 +105,9 @@ namespace KunrealEngine
 		// Call 거리 체크용
 		float _callMoveDistance;
 		bool _isRotateFinish;
+
+	private:
+		bool _spellStart;
 
 	private:
 		bool _isCoreStart;

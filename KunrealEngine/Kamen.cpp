@@ -7,10 +7,11 @@
 KunrealEngine::Kamen::Kamen()
 	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _call(nullptr), _lazer(nullptr),
 	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
-	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr), 
-	_turn180(nullptr), _backStep(nullptr), _teleport(nullptr),
+	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr),
+	_turn180(nullptr), _backStep(nullptr), _teleport(nullptr), _teleportWithLook(nullptr),
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
-	_emergence9Lich(nullptr), _targetIndex(0)
+	_emergence9Lich(nullptr), _targetIndex(0),
+	_spellStart(false)
 {
 	BossBasicInfo info;
 
@@ -86,6 +87,8 @@ void KunrealEngine::Kamen::SetTexture()
 		_boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
 		_boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
 	}
+
+	_boss->GetComponent<MeshRenderer>()->SetCartoonState(true);
 }
 
 void KunrealEngine::Kamen::SetBossTransform()
@@ -112,7 +115,8 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateSpellAttack();
 	CreateCallAttack();
 	CreateBackStep();
-	CreateTeleport();
+	CreateTeleportToCenter();
+	CreateTeleportToCenterWithLook();
 	CreateTurnClockWise();
 	CreateTurnAntiClockWise();
 	CreateEmergenceAttack();
@@ -124,9 +128,9 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	BasicPattern();
+	//BasicPattern();
 	
-	//LeftRightPattern();
+	LeftRightPattern();
 	//RightLeftPattern();
 	//BackStepCallPattern();
 	//TeleportSpellPattern();
@@ -144,6 +148,14 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
+	_leftHand->AddComponent<Particle>();
+	_leftHand->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_leftHand->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
+	_leftHand->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
+	_leftHand->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
+	_leftHand->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_leftHand->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->GetComponent<Particle>()->SetActive(false);
 
 	// 오른손
 	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
@@ -172,8 +184,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
 	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
 	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
-	_lazer->GetComponent<Particle>()->SetParticleDirection(-8.5f, 0.0f, 82.6f);
-	_lazer->GetComponent<Transform>()->SetPosition(0.0f, 16.0f, -4.0f);
+	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 	_lazer->GetComponent<Particle>()->SetActive(false);
 
 	//for (int i = 0; i < 3; i++)
@@ -333,13 +344,13 @@ void KunrealEngine::Kamen::CreateBackStep()
 	_backStep = pattern;
 }
 
-void KunrealEngine::Kamen::CreateTeleport()
+void KunrealEngine::Kamen::CreateTeleportToCenter()
 {
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Teleport");
 
-	pattern->SetAnimName("Idle").SetRange(20.0f).SetMaxColliderCount(0);
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
 
 	auto teleport = [pattern, this]()
 		{
@@ -361,6 +372,32 @@ void KunrealEngine::Kamen::CreateTeleport()
 	_teleport = pattern;
 }
 
+
+void KunrealEngine::Kamen::CreateTeleportToCenterWithLook()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Teleport");
+
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
+
+	auto teleport = [pattern, this]()
+		{
+			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true, 1.0f);
+
+			if (isTeleportFinish)
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+	// 로직 함수 실행 가능하도록 넣어주기
+	pattern->SetLogic(teleport);
+
+	_teleportWithLook = pattern;
+}
 
 void KunrealEngine::Kamen::CreateTurnClockWise()
 {
@@ -454,9 +491,23 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 	auto spellLogic = [pattern, this]()
 	{
+		if (_spellStart == false)
+		{
+			auto playerPos = _playerTransform->GetPosition();
+			auto bossPos = _bossTransform->GetPosition();
+			auto direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&playerPos), DirectX::XMLoadFloat3(&bossPos));
+			direction = DirectX::XMVector3Normalize(direction);
+			auto scaleDir = DirectX::XMVectorScale(direction, 15.0f);
+			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir.m128_f32[2]);
+			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+
+			_spellStart = true;
+		}
+
 		auto animator = _boss->GetComponent<Animator>();
 		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
+	
 		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 		if (pattern->_colliderOnCount > 0)
 		{
@@ -470,8 +521,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				{
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetComponent<Particle>()->SetParticlePos(0.0f, 0.0f, 0.0f);
-					_lazer->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 20.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+					_lazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
 				}
 			}
 		}
@@ -479,6 +529,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 		{
 			pattern->SetSpeed(20.0f);
 			_lazer->SetActive(false);
+			_spellStart = false;
 
 			return false;
 		}
@@ -717,14 +768,13 @@ void KunrealEngine::Kamen::TeleportSpellPattern()
 	BossPattern* teleportSpellPattern = new BossPattern();
 
 	teleportSpellPattern->SetNextPatternForcePlay(true);
+	teleportSpellPattern->SetSkipChase(true);
+	teleportSpellPattern->SetRange(100.0f);
 
-	teleportSpellPattern->SetMaxColliderCount(0);
-
-	teleportSpellPattern->SetPattern(_teleport);
+	teleportSpellPattern->SetPattern(_teleportWithLook);
 
 	teleportSpellPattern->SetPattern(_spellAttack);
 
-	teleportSpellPattern->SetRange(teleportSpellPattern->_patternList[1]->_range);
 
 	_basicPattern.emplace_back(teleportSpellPattern);
 }
@@ -734,6 +784,8 @@ void KunrealEngine::Kamen::TeleportTurnClockPattern()
 	BossPattern* teleportTurnClockPattern = new BossPattern();
 
 	teleportTurnClockPattern->SetNextPatternForcePlay(true);
+	teleportTurnClockPattern->SetSkipChase(true);
+	teleportTurnClockPattern->SetRange(100.0f);
 
 	teleportTurnClockPattern->SetMaxColliderCount(0);
 
@@ -751,6 +803,8 @@ void KunrealEngine::Kamen::TeleportTurnAntiClockPattern()
 	BossPattern* teleportTurnAntiClockPattern = new BossPattern();
 
 	teleportTurnAntiClockPattern->SetNextPatternForcePlay(true);
+	teleportTurnAntiClockPattern->SetSkipChase(true);
+	teleportTurnAntiClockPattern->SetRange(100.0f);
 
 	teleportTurnAntiClockPattern->SetMaxColliderCount(0);
 

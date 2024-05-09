@@ -10,6 +10,8 @@
 // https://www.notion.so/60508ce780814fd2a9e449ea16831a17 사용법 정리해 두었으니 참고.
 
 #define Waitforsecond(time) co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(time)
+//#define Checkbool(bool_param) co_await KunrealEngine::Coroutine::Coroutine_type::CheckBool(bool_param)
+#define Return_null co_await KunrealEngine::Coroutine::Coroutine_type::ReturnNull()
 #define Coroutine_Func(coro_func) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func = [this]() ->KunrealEngine::Coroutine::Coroutine_type
 #define Startcoroutine(coro_func) Coroutine::StartCoroutine(coro_func)
 #define Updatecoroutine Coroutine::UpdateCoroutines
@@ -32,11 +34,12 @@ namespace KunrealEngine
 		{
 		public:
 			static DurationManager& getInstance();
-			float getDuration() const;
+			float* getDuration() const;
 			void setDuration(float newDuration);
+			void durationtonull();
 
 		private:
-			float duration = 0;
+			float* duration = nullptr;
 		};
 
 		// 코루틴의 본체
@@ -53,14 +56,33 @@ namespace KunrealEngine
 				bool await_ready() noexcept;					// 꼭 있어야 하는 함수
 
 				float timer = 0;
-				float duration = 0;
 			};
 
 
-			class WaitForSeconds
+			class WaitForSeconds // Awaitable객체
 			{
 			public:
 				WaitForSeconds(float seconds);						// 코루틴의 co_await를 쓰기 위해선 이 객체가 있어야 하더라.
+				bool await_ready();
+				void await_suspend(std::coroutine_handle<> handle);
+				void await_resume() const noexcept;
+
+			};
+
+			class CheckBool // Awaitable객체
+			{
+			public:
+				CheckBool(bool& param);						// 코루틴의 co_await를 쓰기 위해선 이 객체가 있어야 하더라.
+				bool await_ready();
+				void await_suspend(std::coroutine_handle<> handle);
+				void await_resume() const noexcept;
+				bool& flag;
+			};
+
+			class ReturnNull // Awaitable객체
+			{
+			public:
+				ReturnNull();						// 코루틴의 co_await를 쓰기 위해선 이 객체가 있어야 하더라.
 				bool await_ready();
 				void await_suspend(std::coroutine_handle<> handle);
 				void await_resume() const noexcept;

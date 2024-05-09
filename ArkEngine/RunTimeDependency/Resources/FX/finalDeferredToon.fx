@@ -183,8 +183,8 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 texColor = float4(diffuseAlbedo * shadowFactor, 1.0f);
     
     Material nowMat;
-    nowMat.Ambient = float4(0.2f, 0.2f, 0.2f, 1.0f);
-    nowMat.Diffuse = float4(0.8f ,0.8f, 0.8f, 1.0f);
+    nowMat.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
+    nowMat.Ambient = nowMat.Diffuse;
     nowMat.Specular = float4(0.0f, 0.0f, 0.0f, 1.0f);
     
     //nowMat.Ambient = float4(material.x, material.x, material.x, 1.0f);
@@ -212,7 +212,9 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float lightIntensity;
     float4 toonColor;
     
-    float4 ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    // global ambient
+    float4 ambient = float4(0.1f, 0.1f, 0.1f, 1.0f);
+    
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
@@ -228,7 +230,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         litColor = texColor * toonColor;
     }
     else
-    {
+    { 
         for (int i = 0; i < gDirLightCount; ++i)
         {
             float4 A, D, S;
@@ -282,7 +284,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
 	
 	// 원래 물체의 색상과 외곽선을 더함
-    float4 finalColor = litColor + outline + specular + rimLighting;
+    float4 finalColor = litColor; //+ outline + specular + rimLighting;
 
     return finalColor;
 }

@@ -10,6 +10,7 @@
 #include "Scene.h"
 #include "Player.h"
 #include "ToolBox.h"
+#include "Particle.h"
 #include "BoxCollider.h"
 #include "InputSystem.h"
 #include "Navigation.h"
@@ -309,6 +310,11 @@ void KunrealEngine::Boss::Idle()
 
 	// Chase로 상태 변환
 	_status = BossStatus::CHASE;
+
+	if (_nowTitlePattern->_skipChase)
+	{
+		_status = BossStatus::PATTERN_READY;
+	}
 }
 
 void KunrealEngine::Boss::Chase()
@@ -512,6 +518,11 @@ void KunrealEngine::Boss::Attack()
 				// 콜라이더와 충돌하였고 그 대상이 플레이어라면
 				if (collider->GetActivated())
 				{
+					if (collider->IsCollided())
+					{
+						auto a = collider->GetTargetObject();
+					}
+
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
 						// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
@@ -1049,6 +1060,11 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			if (subObject->GetComponent<Particle>() != nullptr)
+			{
+				subObject->GetComponent<Particle>()->SetActive(true);
+			}
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 			if (pattern->_colliderOnCount > 0)
