@@ -102,11 +102,6 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest4.json");
 	sceneInstance.CreateScene("mapTest5.json");
 
-	//// cube map test
-	GRAPHICS->CreateCubeMap("test", "grasscube1024.dds", true);
-	auto list = GRAPHICS->GetCubeMapList();
-	GRAPHICS->SetMainCubeMap(list.back());
-
 	/// 니들 맘대로 해
 	//PlayGround();
 }
