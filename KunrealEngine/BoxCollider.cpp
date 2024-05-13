@@ -21,7 +21,7 @@ void KunrealEngine::BoxCollider::Initialize()
 {
 	_transform = this->GetOwner()->GetComponent<Transform>();
 	_position = this->_transform->GetPosition();
-	PhysicsSystem::GetInstance().CreateDynamicBoxCollider(this);		// 기본은 Dynamic으로
+	PhysicsSystem::GetInstance().CreateDynamicBoxCollider(this);		// 기본은 Dynamic으로 
 
 	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), _boxSize.x, _boxSize.y, _boxSize.z);
 }
@@ -152,7 +152,7 @@ void KunrealEngine::BoxCollider::SetBoxSize(float x, float y, float z)
 	//_debugObject->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 	_debugObject->SetScale(x, y, z);
 
-	//PhysicsSystem::GetInstance().SetBoxSize(this);
+	PhysicsSystem::GetInstance().SetBoxSize(this);
 }
 
 DirectX::XMFLOAT3 KunrealEngine::BoxCollider::GetBoxSize()

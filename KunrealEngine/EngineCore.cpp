@@ -105,7 +105,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest5.json");
 
 	/// 니들 맘대로 해
-	//PlayGround();
+	PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
