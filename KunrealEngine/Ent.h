@@ -58,12 +58,14 @@ namespace KunrealEngine
 
 
 	private:
+		float GetRandomRange(float center, float range);
+
+
+	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
-		BossPattern* _turn180;
 
-		BossPattern* _spellAttack;
-		BossPattern* _callAttack;
+		BossPattern* _bigRootShot;
 		BossPattern* _backStep;
 
 	private:
@@ -73,7 +75,7 @@ namespace KunrealEngine
 		GameObject* _leftRoot;
 		GameObject* _rightRoot;
 
-		GameObject* _smallRoot;
+		std::vector<GameObject*> _smallRootVector;
 
 		std::vector<GameObject*> _fakeBoss;
 
@@ -95,5 +97,10 @@ namespace KunrealEngine
 		GameObject* _bigRootL;
 
 		GameObject* _rootShot;
+
+	private:
+		bool _bigRootShotStart;
+
+		bool _isMove; // smallRoot 패턴에서 root의 움직임을 체크
 	};
 }

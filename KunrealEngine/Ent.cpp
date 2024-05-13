@@ -5,13 +5,13 @@
 #include "Ent.h"
 
 KunrealEngine::Ent::Ent()
-	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _leftRoot(nullptr), _rightRoot(nullptr), _smallRoot(nullptr),
-	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
-	_leftAttack(nullptr), _rightAttack(nullptr), _spellAttack(nullptr), _callAttack(nullptr), _backStep(nullptr)
+	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _leftRoot(nullptr), _rightRoot(nullptr), _bigRootShotStart(false),
+	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false), _isMove(false),
+	_leftAttack(nullptr), _rightAttack(nullptr), _bigRootShot(nullptr), _backStep(nullptr)
 {
 	BossBasicInfo info;
 
-	info.SetHp(100).SetPhase(3).SetArmor(10).SetDamage(100).SetMoveSpeed(20.0f).SetsStaggeredGauge(100.0f);
+	info.SetHp(100).SetPhase(3).SetArmor(10).SetDamage(100).SetMoveSpeed(5.0f).SetsStaggeredGauge(100.0f);
 	info.SetAttackRange(5.0f);
 
 	SetInfo(info);
@@ -25,9 +25,7 @@ KunrealEngine::Ent::~Ent()
 void KunrealEngine::Ent::Initialize()
 {
 	// 반드시 해야한다고 함
-	Boss::Initialize(this->GetOwner());
-
-	
+	Boss::Initialize(this->GetOwner());	
 }
 
 void KunrealEngine::Ent::Release()
@@ -44,7 +42,6 @@ void KunrealEngine::Ent::Update()
 {
 	// 반드시 해야한다고 함
 	Boss::Update();
-//	_boss->GetComponent<Animator>()->Play("Idle", 70.f, true);
 }
 
 void KunrealEngine::Ent::LateUpdate()
@@ -91,8 +88,8 @@ void KunrealEngine::Ent::SetTexture()
 
 void KunrealEngine::Ent::SetBossTransform()
 {
-	_boss->GetComponent<KunrealEngine::Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
-	_boss->GetComponent<Transform>()->SetScale(5.0f, 5.0f, 5.0f);
+	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
+	_boss->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 }
 
 void KunrealEngine::Ent::SetBossCollider()
@@ -105,7 +102,12 @@ void KunrealEngine::Ent::SetBossCollider()
 
 void KunrealEngine::Ent::CreatePattern()
 {
-
+	CreateSubObject();
+	//CreateLeftAttack();
+	//CreateRightAttack();
+	//CreateLeftRootShot();
+	//CreateRightRootShot();
+	CreateRandomRootAttack();
 }
     
 void KunrealEngine::Ent::CreateSubObject()
@@ -113,26 +115,58 @@ void KunrealEngine::Ent::CreateSubObject()
 	// 왼손
 	_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
 	_leftHand->AddComponent<BoxCollider>();
-	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "ik_hand_l");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
 	
 	// 오른손
 	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
 	_rightHand->AddComponent<BoxCollider>();
-	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
+	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "ik_hand_r");
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
 
-	_leftRoot = _boss->GetObjectScene()->CreateObject("rightRoot");
+	_leftRoot = _boss->GetObjectScene()->CreateObject("leftRoot");
 	_leftRoot->AddComponent<MeshRenderer>();
-	_leftRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02"); // w줄기 이름
-	_leftRoot->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 270.0f);
+	_leftRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02/SM_root_large_02"); // w줄기 이름
+	_leftRoot->GetComponent<MeshRenderer>()->SetActive(true);
+	_leftRoot->GetComponent<Transform>()->SetRotation(86.0f, -200.0f, 250.0f);
 	_leftRoot->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	_leftRoot->AddComponent<BoxCollider>();
-	//_leftRoot->GetComponent<BoxCollider>()
+	_leftRoot->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 5.0f, 5.0f);
+	_leftRoot->GetComponent<BoxCollider>()->SetOffset(-5.0f, 10.0f, 0.0f);
 	_leftRoot->SetActive(false);
 
+	_rightRoot = _boss->GetObjectScene()->CreateObject("rightRoot");
+	_rightRoot->AddComponent<MeshRenderer>();
+	_rightRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02/SM_root_large_02"); // w줄기 이름
+	_rightRoot->GetComponent<MeshRenderer>()->SetActive(true);
+	_rightRoot->GetComponent<Transform>()->SetRotation(86.0f, -200.0f, 250.0f);
+	_rightRoot->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_rightRoot->AddComponent<BoxCollider>();
+	_rightRoot->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 5.0f, 5.0f);
+	_rightRoot->GetComponent<BoxCollider>()->SetOffset(-5.0f, 10.0f, 0.0f);
+	_rightRoot->SetActive(false);
+
+	
+	int smallRootCount = 10;
+
+	for (int i = 0; i < smallRootCount;  ++i)
+	{
+		GameObject* smallRoot = nullptr;
+
+		smallRoot = _boss->GetObjectScene()->CreateObject("smallRoot");
+		smallRoot->AddComponent<MeshRenderer>();
+		smallRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02/SM_root_large_02");
+		smallRoot->GetComponent<MeshRenderer>()->SetActive(true);
+		smallRoot->GetComponent<Transform>()->SetRotation(90.0f, 0.0f,0.0f);
+		smallRoot->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
+		smallRoot->AddComponent<BoxCollider>();
+		smallRoot->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 4.0f, 4.0f);
+		smallRoot->GetComponent<BoxCollider>()->SetOffset(-3.0f, 8.0f, 0.0f);
+		smallRoot->SetActive(false);
+		_smallRootVector.push_back(smallRoot);
+	}
 
 }
 
@@ -141,6 +175,7 @@ void KunrealEngine::Ent::CreateLeftAttack()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Once");
+	pattern->SetAnimName("Anim_Hand_Attack_L");
 	// 애니메이션 추가해야함
 	pattern->SetDamage(100.0f);
 	pattern->SetSpeed(20.0f);         
@@ -150,11 +185,14 @@ void KunrealEngine::Ent::CreateLeftAttack()
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
+	pattern->_subObject.emplace_back(_leftHand);
+
 	auto leftHandLogic = CreateBasicAttackLogic(pattern, _leftHand, 10);
 
 	pattern->SetLogic(leftHandLogic);
 
-	_leftAttack = pattern;
+	//_leftAttack = pattern;
+	_basicPattern.emplace_back(pattern);
 }
 
 void KunrealEngine::Ent::CreateRightAttack()
@@ -162,7 +200,7 @@ void KunrealEngine::Ent::CreateRightAttack()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Right_Attack_Once");
-	// 애니메이션 추가해야함
+	pattern->SetAnimName("Anim_Hand_Attack_R");
 	pattern->SetDamage(100.0f);
 	pattern->SetSpeed(20.0f);
 	pattern->SetRange(_info._attackRange);
@@ -177,29 +215,255 @@ void KunrealEngine::Ent::CreateRightAttack()
 
 	pattern->SetLogic(rightHandLogic);
 
-	_rightAttack = pattern;
+	//_rightAttack = pattern;
+	_basicPattern.emplace_back(pattern);
+
 }
 
 void KunrealEngine::Ent::CreateLeftRootShot()
 {
 	BossPattern* pattern = new BossPattern();
 
-
 	pattern->SetPatternName("Left_Root_Shot");
+	pattern->SetAnimName("Anim_Leg_Attack_L");
 	pattern->SetDamage(100.0f);
-	pattern->SetSpeed(20.0f);
-	//pattern->SetRange(100.0f);
+	pattern->SetSpeed(60.0f);
+	pattern->SetRange(100.0f);
 	pattern->SetAfterDelay(0.5f);
+	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
+	pattern->SetIsWarning("LRootShot");
+
+	pattern->SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetMaxColliderCount(1);
+
+	pattern->_subObject.emplace_back(_leftRoot);
+
+	auto bigRootShotLogic = [pattern, this]()
+		{
+			
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 현재 보스의 포지션
+			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+			if (animator->GetCurrentFrame() >= 55)
+			{				
+				if (pattern->_colliderOnCount > 0)
+				{
+					// 콜라이더 키기
+					_leftRoot->GetComponent<BoxCollider>()->SetActive(true);
+					// 메쉬 키기
+					
+				}
+
+				// 보스가 바라보는 방향 가져옴
+				auto direction = GetDirection();
+			
+				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+				auto callNowPos = _leftRoot->GetComponent<Transform>()->GetPosition();
+				auto distance = ToolBox::GetDistance(nowPos, callNowPos);
+
+				if (distance < pattern->_range)
+				{
+					_callMoveDistance += (pattern->_speed * 3) * TimeManager::GetInstance().GetDeltaTime();
+					_leftRoot->GetComponent<MeshRenderer>()->SetActive(true);
+				}
+				else
+				{
+					animator->Stop();
+					_leftRoot->GetComponent<Transform>()->SetPosition(nowPos);      
+					isAnimationPlaying = false;
+				}
+				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
+
+				_leftRoot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+			}
+
+			if (isAnimationPlaying == false)
+			{
+			//	pattern->SetSpeed(20.0f);
+				_leftRoot->GetComponent<Transform>()->SetPosition(nowPos);
+				_callMoveDistance = 0;
+				return false;
+			}			
+			return true;
+		};
+
+	pattern->SetLogic(bigRootShotLogic);
+
+	_basicPattern.emplace_back(pattern);
+
 }
 
 void KunrealEngine::Ent::CreateRightRootShot()
 {
+	BossPattern* pattern = new BossPattern();
 
+	pattern->SetPatternName("Right_Root_Shot");
+	pattern->SetAnimName("Anim_Leg_Attack_R");
+	pattern->SetDamage(100.0f);
+	pattern->SetSpeed(60.0f);
+	pattern->SetRange(100.0f);
+	pattern->SetAfterDelay(0.5f);
+	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
+	pattern->SetIsWarning("RRootShot");
+
+	pattern->SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetMaxColliderCount(1);
+
+	pattern->_subObject.emplace_back(_rightRoot);
+
+	auto bigRootShotLogic = [pattern, this]()
+		{
+
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 현재 보스의 포지션
+			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+			if (animator->GetCurrentFrame() >= 40)
+			{
+				if (pattern->_colliderOnCount > 0)
+				{
+					// 콜라이더 키기
+					_rightRoot->GetComponent<BoxCollider>()->SetActive(true);
+					// 메쉬 키기
+
+				}
+
+				// 보스가 바라보는 방향 가져옴
+				auto direction = GetDirection();
+
+				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+				auto callNowPos = _rightRoot->GetComponent<Transform>()->GetPosition();
+				auto distance = ToolBox::GetDistance(nowPos, callNowPos);
+
+				if (distance < pattern->_range)
+				{
+					_callMoveDistance += (pattern->_speed * 3) * TimeManager::GetInstance().GetDeltaTime();
+					_rightRoot->GetComponent<MeshRenderer>()->SetActive(true);
+				}
+				else
+				{
+					animator->Stop();
+					_rightRoot->GetComponent<Transform>()->SetPosition(nowPos);
+					isAnimationPlaying = false;
+				}
+				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
+
+				_rightRoot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0] + 5, newPosition.m128_f32[1], newPosition.m128_f32[2] + 5);
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				//pattern->SetSpeed(20.0f);
+				_rightRoot->GetComponent<Transform>()->SetPosition(nowPos);
+				_callMoveDistance = 0;
+				return false;
+			}
+			return true;
+		};
+
+	pattern->SetLogic(bigRootShotLogic);
+
+	_basicPattern.emplace_back(pattern);
 }
 
 void KunrealEngine::Ent::CreateRandomRootAttack()
 {
+	BossPattern* pattern = new BossPattern();
 
+	pattern->SetPatternName("Small_Root_Shot");
+	pattern->SetAnimName("Anim_Healing");
+	pattern->SetDamage(100.0f);
+	pattern->SetSpeed(60.0f);
+	pattern->SetRange(100.0f);
+	//pattern->SetAfterDelay(0.5f);
+	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
+	pattern->SetIsWarning("SmallRootShot");
+
+	pattern->SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetMaxColliderCount(1);
+
+	for (auto smallRoot : _smallRootVector)
+	{
+		pattern->_subObject.emplace_back(smallRoot);	
+	}
+
+	auto SmallRootShotLogic = [pattern, this]()
+	{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 현재 보스의 포지션
+			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+			auto nowPlayerPos = _player->GetComponent<Transform>()->GetPosition();
+
+			float smallRootSummonRange = 20;
+
+
+			float currentTime = TimeManager::GetInstance().GetDeltaTime();
+			static float checkTime = 0.0f;
+
+			if (animator->GetCurrentFrame() >= 80)
+			{
+				if (_isMove == false)
+				{
+					for (auto smallRoot : _smallRootVector)
+					{
+						smallRoot->GetComponent<MeshRenderer>()->SetActive(true);
+
+						if (pattern->_colliderOnCount > 0)
+						{
+							// 콜라이더 키기
+							smallRoot->GetComponent<BoxCollider>()->SetActive(true);
+						}
+
+
+						smallRoot->GetComponent<MeshRenderer>()->SetActive(true);
+						float randomX = GetRandomRange(nowPlayerPos.x, smallRootSummonRange);
+						float randomZ = GetRandomRange(nowPlayerPos.z, smallRootSummonRange);
+
+						smallRoot->GetComponent<Transform>()->SetPosition(randomX, smallRoot->GetComponent<Transform>()->GetPosition().y, randomZ);
+
+						smallRoot->SetActive(true);
+
+						if (currentTime > checkTime)
+						{
+							while (currentTime > checkTime)
+							{
+								checkTime += 0.002f;
+							}
+						}
+					}
+					_isMove = true;
+				}
+				
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				//pattern->SetSpeed(20.0f);
+				for (auto smallRoot : _smallRootVector)
+				{
+					smallRoot->GetComponent<Transform>()->SetPosition(nowPos);
+				}
+				_isMove = false;
+				return false;
+			}
+
+
+	};
+
+	pattern->SetLogic(SmallRootShotLogic);
+
+	_basicPattern.emplace_back(pattern);
 }
 
 void KunrealEngine::Ent::CreateJumpAttack()
@@ -220,4 +484,10 @@ void KunrealEngine::Ent::CreateRightFireShot()
 void KunrealEngine::Ent::CreateRandomFireAttack()
 {
 
+}
+
+float KunrealEngine::Ent::GetRandomRange(float center, float range)
+{
+	float randomNumber = ((float)rand() / RAND_MAX) * 2.0f - 1.0f; 
+	return center + randomNumber * range;
 }
