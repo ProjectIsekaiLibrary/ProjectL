@@ -361,6 +361,11 @@ void KunrealEngine::Boss::Chase()
 	// 보스가 플레이어를 바라보게 되었을 때
 	if (_isRotateFinish)
 	{
+		if (_nowTitlePattern->_skipMove)
+		{
+			_status = BossStatus::PATTERN_READY;;
+		}
+
 		// 보스와 플레이어 사이의 거리를 측정
 		if (!_isMoving)
 		{
@@ -518,11 +523,6 @@ void KunrealEngine::Boss::Attack()
 				// 콜라이더와 충돌하였고 그 대상이 플레이어라면
 				if (collider->GetActivated())
 				{
-					if (collider->IsCollided())
-					{
-						auto a = collider->GetTargetObject();
-					}
-
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
 						// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
@@ -1061,10 +1061,6 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
-			if (subObject->GetComponent<Particle>() != nullptr)
-			{
-				subObject->GetComponent<Particle>()->SetActive(true);
-			}
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 			if (pattern->_colliderOnCount > 0)
@@ -1074,6 +1070,11 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 					if (subObject != nullptr)
 					{
 						subObject->GetComponent<BoxCollider>()->SetActive(true);
+					}
+
+					if (subObject->GetComponent<Particle>() != nullptr)
+					{
+						subObject->GetComponent<Particle>()->SetActive(true);
 					}
 				}
 			}

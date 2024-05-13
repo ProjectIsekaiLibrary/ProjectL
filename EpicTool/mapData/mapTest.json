@@ -19,55 +19,15 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 2.059056520462036,
-                "position_y": 26.774497985839844,
-                "position_z": -11.948063850402832,
-                "rotation_x": 18.0,
-                "rotation_y": -16.0,
+                "position_x": 42.26112747192383,
+                "position_y": 94.68582153320313,
+                "position_z": -65.8884048461914,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
                 "rotation_z": 0.0,
                 "scale_x": 1.0,
                 "scale_y": 1.0,
                 "scale_z": 1.0
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/floor.dds"
-                ],
-                "Mesh": [
-                    "cube/cube"
-                ],
-                "Normal": [
-                    "Resources/Textures/cube/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "plane",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 0.0,
-                "position_y": -1.0,
-                "position_z": 0.0,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 100.0,
-                "scale_y": 1.0,
-                "scale_z": 100.0
             }
         }
     },
@@ -208,46 +168,6 @@
                 "scale_x": 1.0,
                 "scale_y": 1.0,
                 "scale_z": 1.0
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/Ruins/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_01/SM_stonefence_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/Ruins/M_stonefence_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Handrail (4)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -15.153705596923828,
-                "position_y": 3.114919900894165,
-                "position_z": 38.65671920776367,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
             }
         }
     },
@@ -799,166 +719,6 @@
             "lightType": {},
             "meshRenderer": {
                 "Diffuse": [
-                    "Resources/Textures/SM_stonefence_01/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_01/SM_stonefence_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_stonefence_01/M_stoneblocks_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Handrail",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -6.310274124145508,
-                "position_y": 3.193000078201294,
-                "position_z": 38.65700149536133,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_stonefence_03/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_03/SM_stonefence_03"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_stonefence_03/M_stonefence_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "HandrailBlo",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 20.65656852722168,
-                "position_y": 3.193000078201294,
-                "position_z": 38.65700149536133,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_stonefence_03/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_03/SM_stonefence_03"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_stonefence_03/M_stonefence_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "HandrailBlo (1)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 24.708581924438477,
-                "position_y": 3.4044792652130127,
-                "position_z": 27.569910049438477,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_stonefence_01/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_01/SM_stonefence_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_stonefence_01/M_stoneblocks_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Handrail (1)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -12.934249877929688,
-                "position_y": 4.23874568939209,
-                "position_z": 27.569910049438477,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
                     "Resources/Textures/SM_platform_ruins_01/M_stoneblocks_ruins_BaseMap.png",
                     "Resources/Textures/SM_platform_ruins_01/M_groundtiles_BaseMap.png"
                 ],
@@ -1066,86 +826,6 @@
                 "position_x": 42.312400817871094,
                 "position_y": 0.0,
                 "position_z": 40.7443733215332,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_stonefence_03/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_03/SM_stonefence_03"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_stonefence_03/M_stonefence_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Handrail (2)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 2.9973864555358887,
-                "position_y": 3.1930060386657715,
-                "position_z": 38.65700149536133,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/SM_stonefence_01/M_stonefence_ruins_BaseMap.png"
-                ],
-                "Mesh": [
-                    "SM_stonefence_01/SM_stonefence_01"
-                ],
-                "Normal": [
-                    "Resources/Textures/SM_stonefence_01/M_stoneblocks_ruins_Normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Handrail (3)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 11.537306785583496,
-                "position_y": 3.193000078201294,
-                "position_z": 38.65700149536133,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -1511,9 +1191,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 30.401519775390625,
+                "position_x": 36.835487365722656,
                 "position_y": 3.352226972579956,
-                "position_z": 6.4486260414123535,
+                "position_z": -11.196556091308594,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -1942,14 +1622,14 @@
             "sound_Volume": [],
             "transform": {
                 "position_x": 6.093443870544434,
-                "position_y": 2.9811136722564697,
-                "position_z": -15.521322250366211,
+                "position_y": 16.84058952331543,
+                "position_z": -16.401960372924805,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.15000000596046448,
-                "scale_y": 0.15000000596046448,
-                "scale_z": 0.15000000596046448
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
             }
         }
     },
@@ -2914,7 +2594,7 @@
                 ]
             },
             "meshRenderingState": true,
-            "name": "RuneStone",
+            "name": "RuneStoneArachne",
             "parent": {},
             "particle": {},
             "sound_Is3D": [],
@@ -2938,14 +2618,16 @@
         "POD": {
             "animationFrame": -431602080.0,
             "collider": {
-                "BoxSize_x": 3.0,
-                "BoxSize_y": 6.0,
-                "BoxSize_z": 3.0,
+                "BoxSize_x": 5.0,
+                "BoxSize_y": 12.0,
+                "BoxSize_z": 5.0,
                 "Offset_x": 0.0,
-                "Offset_y": 0.0,
+                "Offset_y": 8.0,
                 "Offset_z": 0.0
             },
-            "customComponent": {},
+            "customComponent": {
+                "Player": true
+            },
             "image": {},
             "light": {},
             "lightType": {},
@@ -2959,9 +2641,9 @@
                     "PlayerWithCloak/PlayerWithCloak"
                 ],
                 "Normal": [
-                    "Resources/Textures/PlayerWithCloak/",
-                    "Resources/Textures/PlayerWithCloak/",
-                    "Resources/Textures/PlayerWithCloak/"
+                    "Resources/Textures/PlayerWithCloak/M_Clothes_normal.png",
+                    "Resources/Textures/PlayerWithCloak/M_Body_normal.png",
+                    "Resources/Textures/PlayerWithCloak/M_Hair_normal.png"
                 ]
             },
             "meshRenderingState": true,
@@ -2977,11 +2659,69 @@
                 "position_y": 0.0,
                 "position_z": 74.64110565185547,
                 "rotation_x": 0.0,
-                "rotation_y": -4.327938079833984,
+                "rotation_y": 45.0,
                 "rotation_z": 0.0,
-                "scale_x": 0.05000000074505806,
-                "scale_y": 0.05000000074505806,
-                "scale_z": 0.05000000074505806
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {
+                "BoxSize_x": 2.0,
+                "BoxSize_y": 2.0,
+                "BoxSize_z": 2.0,
+                "Offset_x": 0.0,
+                "Offset_y": 0.0,
+                "Offset_z": 0.0
+            },
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/Meteor/emission.jpg"
+                ],
+                "Mesh": [
+                    "Meteor/Meteor"
+                ],
+                "Normal": [
+                    "Resources/Textures/Meteor/New_Graph_normal.png"
+                ]
+            },
+            "meshRenderingState": false,
+            "name": "Meteor",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 20.0,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0,
+                "LifeTime": 2.0,
+                "Random": 1.0,
+                "Velocity": 20.0
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -102.6713638305664,
+                "position_y": 1.9664374589920044,
+                "position_z": 40.40278625488281,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": -90.0,
+                "scale_x": 1.0,
+                "scale_y": 1.0,
+                "scale_z": 1.0
             }
         }
     },
@@ -3014,7 +2754,18 @@
             "meshRenderingState": true,
             "name": "Shot",
             "parent": {},
-            "particle": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 20.0,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0,
+                "LifeTime": 2.0,
+                "Random": 1.0,
+                "Velocity": 20.0
+            },
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
@@ -3056,7 +2807,18 @@
             "meshRenderingState": true,
             "name": "CircleTile (1)",
             "parent": {},
-            "particle": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 20.0,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0,
+                "LifeTime": 2.0,
+                "Random": 1.0,
+                "Velocity": 20.0
+            },
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
@@ -3077,7 +2839,14 @@
     {
         "POD": {
             "animationFrame": -431602080.0,
-            "collider": {},
+            "collider": {
+                "BoxSize_x": 10.0,
+                "BoxSize_y": 10.0,
+                "BoxSize_z": 10.0,
+                "Offset_x": 0.0,
+                "Offset_y": 8.0,
+                "Offset_z": -1.0
+            },
             "customComponent": {},
             "image": {},
             "light": {},
@@ -3094,9 +2863,20 @@
                 ]
             },
             "meshRenderingState": true,
-            "name": "RuneStone (1)",
+            "name": "RuneStoneEnte",
             "parent": {},
-            "particle": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 20.0,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0,
+                "LifeTime": 2.0,
+                "Random": 1.0,
+                "Velocity": 20.0
+            },
             "sound_Is3D": [],
             "sound_IsLoop": [],
             "sound_Name": [],
@@ -3152,6 +2932,228 @@
                 "scale_x": 1.0,
                 "scale_y": 1.0,
                 "scale_z": 1.0
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {
+                "BoxSize_x": 10.0,
+                "BoxSize_y": 10.0,
+                "BoxSize_z": 10.0,
+                "Offset_x": 0.0,
+                "Offset_y": 8.0,
+                "Offset_z": -1.0
+            },
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_BaseMap 1.png"
+                ],
+                "Mesh": [
+                    "SM_stone_rune_ruins/SM_stone_rune_ruins"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_Normal 1.png"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "RuneStoneGolem",
+            "parent": {},
+            "particle": {
+                "Color_X": 1.7999999523162842,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 2.799999952316284,
+                "Direction_Y": 1.399999976158142,
+                "Direction_Z": 2.0999999046325684,
+                "FadeoutTime": 7.199999809265137,
+                "LifeTime": 4.699999809265137,
+                "Random": 1.0,
+                "Velocity": 10.199999809265137
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 41.99656677246094,
+                "position_y": 2.3318424224853516,
+                "position_z": 16.651552200317383,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.15000000596046448,
+                "scale_y": 0.15000000596046448,
+                "scale_z": 0.15000000596046448
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_platform_circle/M_stoneblocks_ruins_BaseMap.png",
+                    "Resources/Textures/SM_platform_circle/M_stone_wall_old_diff.png"
+                ],
+                "Mesh": [
+                    "SM_platform_circle/SM_platform_circle"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_platform_circle/M_stoneblocks_ruins_Normal.png",
+                    "Resources/Textures/SM_platform_circle/M_stone_wall_old_nrm.png"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "CircleTile (1) (1)",
+            "parent": {},
+            "particle": {
+                "Color_X": 1.7999999523162842,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 2.799999952316284,
+                "Direction_Y": 1.399999976158142,
+                "Direction_Z": 2.0999999046325684,
+                "FadeoutTime": 7.199999809265137,
+                "LifeTime": 4.699999809265137,
+                "Random": 1.0,
+                "Velocity": 10.199999809265137
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 41.7647705078125,
+                "position_y": 2.990000009536743,
+                "position_z": 16.445873260498047,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_platform_circle/M_stoneblocks_ruins_BaseMap.png",
+                    "Resources/Textures/SM_platform_circle/M_stone_wall_old_diff.png"
+                ],
+                "Mesh": [
+                    "SM_platform_circle/SM_platform_circle"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_platform_circle/M_stoneblocks_ruins_Normal.png",
+                    "Resources/Textures/SM_platform_circle/M_stone_wall_old_nrm.png"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "CircleTile (2)",
+            "parent": {},
+            "particle": {
+                "Color_X": 1.7999999523162842,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 2.799999952316284,
+                "Direction_Y": 1.399999976158142,
+                "Direction_Z": 2.0999999046325684,
+                "FadeoutTime": 7.199999809265137,
+                "LifeTime": 4.699999809265137,
+                "Random": 1.0,
+                "Velocity": 10.199999809265137
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -30.58384895324707,
+                "position_y": 2.9902758598327637,
+                "position_z": 16.050168991088867,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.10000000149011612,
+                "scale_y": 0.10000000149011612,
+                "scale_z": 0.10000000149011612
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {
+                "BoxSize_x": 10.0,
+                "BoxSize_y": 10.0,
+                "BoxSize_z": 10.0,
+                "Offset_x": 0.0,
+                "Offset_y": 8.0,
+                "Offset_z": -1.0
+            },
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_BaseMap 1.png"
+                ],
+                "Mesh": [
+                    "SM_stone_rune_ruins/SM_stone_rune_ruins"
+                ],
+                "Normal": [
+                    "Resources/Textures/SM_stone_rune_ruins/M_runestone_Normal 1.png"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "RuneStoneKamen",
+            "parent": {},
+            "particle": {
+                "Color_X": 1.7999999523162842,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 2.799999952316284,
+                "Direction_Y": 1.399999976158142,
+                "Direction_Z": 2.0999999046325684,
+                "FadeoutTime": 7.199999809265137,
+                "LifeTime": 4.699999809265137,
+                "Random": 1.0,
+                "Velocity": 10.199999809265137
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -30.45915985107422,
+                "position_y": 2.3318424224853516,
+                "position_z": 16.522001266479492,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 0.15000000596046448,
+                "scale_y": 0.15000000596046448,
+                "scale_z": 0.15000000596046448
             }
         }
     }

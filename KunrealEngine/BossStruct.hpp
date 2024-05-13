@@ -80,7 +80,7 @@ struct BossPattern
 		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
 		_coolDown(0.0f), _rangeOffset(5.0f),
 		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(1), _subObject(),
-		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true), _skipChase(false),
+		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true), _skipChase(false), _skipMove(false),
 		_index(0)
 	{
 		_patternList.emplace_back(this);
@@ -179,6 +179,7 @@ struct BossPattern
 	BossPattern& SetNextPatternForcePlay(bool tf) { _playNextPattern = tf; return *this; };
 	BossPattern& SetPattern(BossPattern* pattern) { _patternList.emplace_back(pattern); return *this; };
 	BossPattern& SetSkipChase(bool tf) { _skipChase = tf; return *this; };
+	BossPattern& SetSkipMove(bool tf) { _skipMove = tf; return *this; };
 
 	std::string _patternName;		// 패턴 이름
 
@@ -227,4 +228,6 @@ struct BossPattern
 	unsigned int _index;
 
 	bool _skipChase;
+
+	bool _skipMove;
 };

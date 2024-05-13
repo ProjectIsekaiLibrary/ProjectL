@@ -145,10 +145,11 @@
     <Filter Include="Source Files\Component\Script\Boss\Aracne">
       <UniqueIdentifier>{03bca5f5-ae74-410e-9dab-eed5a1d99212}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Component\SphereCollider">
+    <Filter Include="Source Files\Component\Script\Boss\Ent">
+      <UniqueIdentifier>{a3060ac6-263d-451d-a93a-b7f920808937}</UniqueIdentifier>
+    </Filter>    <Filter Include="Source Files\Component\SphereCollider">
       <UniqueIdentifier>{ea45bd4c-e2b3-4daf-b119-7f2bc9fa99ed}</UniqueIdentifier>
-    </Filter>
-  </ItemGroup>
+    </Filter>  </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
       <Filter>Header Files</Filter>
@@ -288,10 +289,12 @@
     <ClInclude Include="Aracne.h">
       <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
     </ClInclude>
+    <ClInclude Include="Ent.h">
+      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
+    </ClInclude>
     <ClInclude Include="SphereCollider.h">
       <Filter>Source Files\Component\SphereCollider</Filter>
-    </ClInclude>
-  </ItemGroup>
+    </ClInclude>  </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
       <Filter>Source Files</Filter>
@@ -422,8 +425,9 @@
     <ClCompile Include="Aracne.cpp">
       <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
     </ClCompile>
-    <ClCompile Include="SphereCollider.cpp">
+    <ClCompile Include="Ent.cpp">
+      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
+    </ClCompile>    <ClCompile Include="SphereCollider.cpp">
       <Filter>Source Files\Component\SphereCollider</Filter>
-    </ClCompile>
-  </ItemGroup>
+    </ClCompile>  </ItemGroup>
 </Project>

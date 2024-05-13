@@ -59,6 +59,7 @@ namespace KunrealEngine
 		void CreateRightAttack();
 		void CreateSpellAttack();
 		void CreateCallAttack();
+		void CreateCall2Attack();
 
 	private:
 		void CreateTurn180();
@@ -79,6 +80,7 @@ namespace KunrealEngine
 		BossPattern* _rightAttack;
 		BossPattern* _spellAttack;
 		BossPattern* _callAttack;
+		BossPattern* _call2Attack;
 
 		BossPattern* _backStep;
 		BossPattern* _turn180;
@@ -95,6 +97,7 @@ namespace KunrealEngine
 		GameObject* _leftHand;
 		GameObject* _rightHand;
 		GameObject* _call;
+		GameObject* _call2;
 		GameObject* _lazer;
 
 		std::vector<GameObject*> _fakeBoss;
@@ -104,6 +107,7 @@ namespace KunrealEngine
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
+		unsigned int _call2PrevStep;
 		bool _isRotateFinish;
 
 	private:
