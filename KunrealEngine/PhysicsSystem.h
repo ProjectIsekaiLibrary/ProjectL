@@ -1,6 +1,7 @@
 #pragma once
 
 #include <unordered_map>
+#include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "../KunrealMath/MathHeaders.h"
 #pragma comment(lib,"../Bin/x64/Debug/KunrealMath.lib")
@@ -63,6 +64,9 @@ namespace KunrealEngine
 		// 움직이지 않는 객체에 부여할 box collider
 		void CreateStaticBoxCollider(BoxCollider* collider);
 
+		// cylinder collider
+		void CreateCylinderCollider(BoxCollider* collider);
+
 		// sphere collider
 		void CreateDynamicSphereCollider(SphereCollider* collider);
 
@@ -98,6 +102,8 @@ namespace KunrealEngine
 		physx::PxMaterial*					_material;
 		physx::PxPvd*						_pvd;
 
+	private:
+		std::vector<DirectX::XMFLOAT3> cylinderVertices;	// FBX 실린더의 데이터를 담을
 
 	// eventcallback 대응함수
 	private:

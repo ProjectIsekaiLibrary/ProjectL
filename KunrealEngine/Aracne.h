@@ -34,24 +34,30 @@ namespace KunrealEngine
 		virtual void SetBossTransform() override;
 		virtual void SetBossCollider() override;
 
+		void CreatesubObject();
 	public:
 		virtual void CreatePattern() override;
 
+
 	private:
 		void JumpAttack();
-		void leftAttack();
+		void LeftAttack();
 		void RightAttack();
 		void ShootingWeb();
 
 	private:
 		bool Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
-		float CalculateParabolaHeight(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end, DirectX::XMFLOAT2 current);
+		float CalculateParabolaHeight(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end, DirectX::XMFLOAT3 current);
 
 	private:	// 여긴 패턴만 넣어라
 		BossPattern* _jumpAttack;
+		BossPattern* _leftAttack;
+		BossPattern* _righttAttack;
 
 	private:	// 여긴 콜라이더만 넣어라
 		GameObject* _colJumpAttack;
+		GameObject* _colLeftHand;
+		GameObject* _colRightHand;
 
 	private:	// 그 외
 		const float jumpAttackRange = 10.0f;
@@ -60,11 +66,30 @@ namespace KunrealEngine
 
 	private:	// 코루틴
 		Coroutine_Func(JumpAttackCo)
-		{
+		{	// 보스의 점공패턴. 지금은 점프하고 날아서 플레이어에게 이동한 다음 떨어지는건데 
+			// 나중에 이거 3차원에서 포물선의 공식 적용 해서 포물선을 그리면서 날아가게 바꿀거임
+			// 일단 패턴 하나에 시간 너무 쓰는것 같아서 여기까지만
+
 			Aracne* some = this;
 			auto animator = _boss->GetComponent<Animator>();
 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
 			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
+
+// 			while (true)
+// 			{
+// 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+// 
+// 				if (!(some->Move(mine, target, 10.0f)))
+// 				{
+// 					//animator->Stop();
+// 					break;
+// 				}
+// 				mine = some->_bossTransform->GetPosition();
+// 				float y = some->CalculateParabolaHeight(start, target, mine);
+// 				some->_bossTransform->SetPosition(mine.x, y, mine.z);
+// 
+// 				Return_null;
+// 			}
 
 			while (true)
 			{
@@ -74,36 +99,38 @@ namespace KunrealEngine
 					break;
 				}
 
-// 				if (25 < animator->GetCurrentFrame())
-// 				{
-// 					DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-// 					some->Move(mine, target, 10.0f);
-// 				}
+				if (25 < animator->GetCurrentFrame())
+				{
+					DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+					some->Move(mine, target, 10.0f);
+				}
 				Return_null;
 			}
 
-// 			while (true)
-// 			{
-// 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-// 				if (!(some->Move(mine, target, 30.0f)))
-// 				{
-// 					animator->Stop();
-// 					break;
-// 				}
-// 				animator->Play("Anim_Fall", 10.0f, true);
-// 				Return_null;
-// 			}
-
 			while (true)
 			{
-				if (!(animator->Play("Anim_Land", 30.0f)))
+				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+				if (!(some->Move(mine, target, 30.0f)))
 				{
 					animator->Stop();
 					break;
 				}
+				animator->Play("Anim_Fall", 30.0f, true);
+				Return_null;
+			}
 
-				//DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-				//some->Move(mine, target, 30.0f);
+			some->_colJumpAttack->SetActive(true);
+			while (true)
+			{
+				if (!(animator->Play("Anim_Land", 30.0f)))
+				{
+					some->_colJumpAttack->SetActive(false);
+			 		animator->Stop();
+			 		break;
+				}
+				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+				some->_colJumpAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+				some->_colJumpAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0,rot.y,0));
 				Return_null;
 			}
 

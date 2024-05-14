@@ -17,7 +17,7 @@ namespace KunrealEngine
 		friend class PhysicsSystem;
 		friend class GameObject;
 	private:
-		BoxCollider();
+		BoxCollider(bool isCylinder = false);
 	public:
 		~BoxCollider();
 
@@ -34,7 +34,9 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
-	private:
+	private:	/// 꼭 구조 바꿔줄게..
+		bool _isCylinder;
+
 		Transform* _transform;
 
 		// public으로 뺄까..
