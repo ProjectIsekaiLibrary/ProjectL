@@ -479,6 +479,17 @@ void ArkEngine::ResourceManager::AddParticleResource(const std::string& particle
 	}
 }
 
+
+void ArkEngine::ResourceManager::AddTransParentMesh(const std::string& meshName, ArkEngine::ArkDX11::TransparentMesh* mesh)
+{
+	const auto& iter = _transParentMeshList.find(meshName);
+
+	if (iter == _transParentMeshList.end())
+	{
+		_transParentMeshList.insert(std::make_pair(meshName, mesh));
+	}
+}
+
 void ArkEngine::ResourceManager::SetTextureNameList(std::string name)
 {
 	_textureNameList.emplace_back(name);

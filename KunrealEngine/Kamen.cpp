@@ -131,14 +131,14 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();
 	
-	LeftRightPattern();
+	//LeftRightPattern();
 	//RightLeftPattern();
 	//BackStepCallPattern();
 	//TeleportSpellPattern();
 	//TeleportTurnClockPattern();
 	//TeleportTurnAntiClockPattern();
 
-	//CoreEmmergencePattern();
+	CoreEmmergencePattern();
 }
 
 void KunrealEngine::Kamen::CreateSubObject()

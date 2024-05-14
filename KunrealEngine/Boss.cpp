@@ -523,26 +523,29 @@ void KunrealEngine::Boss::Attack()
 				// 콜라이더와 충돌하였고 그 대상이 플레이어라면
 				if (collider->GetActivated())
 				{
-					if (collider->IsCollided() && collider->GetTargetObject() == _player)
+					if (_nowPlayingPattern->_colliderOnCount > 0)
 					{
-						// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
-						collider->SetActive(false);
-
-						// 패턴의 최대 타격 횟수에서 하나를 감소시킴
-						_nowPlayingPattern->_colliderOnCount--;
-
-						// 패턴의 데미지를 가져옴
-						auto damage = _nowTitlePattern->_damage;
-
-						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
-						_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
-						_player->GetComponent<Player>()->SetHitState(0);
-
-						// 데미지가 들어간 후 메쉬를 꺼야한다면
-						if (object->GetComponent<MeshRenderer>() != nullptr && !_nowPlayingPattern->_isRemainMesh)
+						if (collider->IsCollided() && collider->GetTargetObject() == _player)
 						{
-							// 메쉬를 꺼버림
-							object->GetComponent<MeshRenderer>()->SetActive(false);
+							// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
+							collider->SetActive(false);
+
+							// 패턴의 최대 타격 횟수에서 하나를 감소시킴
+							_nowPlayingPattern->_colliderOnCount--;
+
+							// 패턴의 데미지를 가져옴
+							auto damage = _nowTitlePattern->_damage;
+
+							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+							_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+							_player->GetComponent<Player>()->SetHitState(0);
+
+							// 데미지가 들어간 후 메쉬를 꺼야한다면
+							if (object->GetComponent<MeshRenderer>() != nullptr && !_nowPlayingPattern->_isRemainMesh)
+							{
+								// 메쉬를 꺼버림
+								object->GetComponent<MeshRenderer>()->SetActive(false);
+							}
 						}
 					}
 				}

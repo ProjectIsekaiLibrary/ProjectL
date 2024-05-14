@@ -179,6 +179,8 @@ namespace ArkEngine
 			void FinalRender();
 			void EndRender();
 
+			void TransparentRender();
+
 		private:
 			void CreateDevice();			// ID3D11Device 인터페이스와 DeviceContext 인터페이스를 생성
 			void CheckQualification();	// 하드웨어가 4X MSAA를 위한 품질 수준을 지원하는지 점검
@@ -192,6 +194,7 @@ namespace ArkEngine
 			void SetViewportWithDefaultCamera();				// 뷰포트 설정
 			void CreateRenderState();		// 렌더 상태 집합
 			void CreateDepthStecilState();	// 깊이 버퍼 설정
+			void CreateBlendState();
 
 		private:
 			void SetResourceManager();
@@ -250,6 +253,7 @@ namespace ArkEngine
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilState;
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilStateDisable;
 
+			Microsoft::WRL::ComPtr<ID3D11BlendState> _blendState;
 
 			float _backGroundColor[4];
 

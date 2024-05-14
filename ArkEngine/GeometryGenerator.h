@@ -15,6 +15,7 @@ namespace ArkEngine
 			void CreateQuad();
 			void CreateBox(const char* geometryName, float width, float height, float depth);
 			void CreateSphere(const char* geometryName, float radius, unsigned int sliceCount, unsigned int stackCount);
+			void CreateCircle(const char* geometryName);
 
 			void CreateDebugBox(const char* geometryName, const DirectX::XMFLOAT3& centerPos, float width, float height, float depth, const DirectX::XMFLOAT4& color);
 			void CreateDebugPhysXBox(const char* geometryName, const DirectX::XMFLOAT3& centerPos, float width, float height, float depth, const DirectX::XMFLOAT4& color);

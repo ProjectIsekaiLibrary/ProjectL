@@ -309,6 +309,184 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateSphere(const char* geometryNam
 	ArkBuffer* newbuffer = new ArkBuffer(geometryName, totalVertexCount, vertexList, totalIndexCount, indexList);
 }
 
+
+void ArkEngine::ArkDX11::GeometryGenerator::CreateCircle(const char* geometryName)
+{
+	std::vector<Postex> vertexList;
+	std::vector<unsigned int> indexList;
+
+	unsigned int totalVertexCount = 32;
+	
+	vertexList.resize(32);
+
+	vertexList[0].pos = (DirectX::XMFLOAT3(0.000000, - 0.000000, - 1.000000));
+	vertexList[1].pos = (DirectX::XMFLOAT3(-0.195090, - 0.000000, - 0.980785));
+	vertexList[2].pos = (DirectX::XMFLOAT3(-0.382683, - 0.000000, - 0.923880));
+	vertexList[3].pos = (DirectX::XMFLOAT3(-0.555570, - 0.000000, - 0.831470));
+	vertexList[4].pos = (DirectX::XMFLOAT3(-0.707107, - 0.000000, - 0.707107));
+	vertexList[5].pos = (DirectX::XMFLOAT3(-0.831470, - 0.000000, - 0.555570));
+	vertexList[6].pos = (DirectX::XMFLOAT3(-0.923880, - 0.000000, - 0.382683));
+	vertexList[7].pos = (DirectX::XMFLOAT3(-0.980785, - 0.000000, - 0.195090));
+	vertexList[8].pos = (DirectX::XMFLOAT3(- 1.000000, 0.000000, 0.000000));
+	vertexList[9].pos = (DirectX::XMFLOAT3(- 0.980785, 0.000000, 0.195090));
+	vertexList[10].pos = (DirectX::XMFLOAT3(- 0.923880, 0.000000, 0.382683));
+	vertexList[11].pos = (DirectX::XMFLOAT3(-0.831470, 0.000000, 0.555570));
+	vertexList[12].pos = (DirectX::XMFLOAT3(-0.707107, 0.000000, 0.707107));
+	vertexList[13].pos = (DirectX::XMFLOAT3(- 0.555570, 0.000000, 0.831470));
+	vertexList[14].pos = (DirectX::XMFLOAT3(- 0.382683, 0.000000, 0.923880));
+	vertexList[15].pos = (DirectX::XMFLOAT3(- 0.195090, 0.000000, 0.980785));
+	vertexList[16].pos = (DirectX::XMFLOAT3(0.000000, 0.000000, 1.000000));
+	vertexList[17].pos = (DirectX::XMFLOAT3(0.195090, 0.000000, 0.980785));
+	vertexList[18].pos = (DirectX::XMFLOAT3(0.382683, 0.000000, 0.923880));
+	vertexList[19].pos = (DirectX::XMFLOAT3(0.555570, 0.000000, 0.831470));
+	vertexList[20].pos = (DirectX::XMFLOAT3(0.707107, 0.000000, 0.707107));
+	vertexList[21].pos = (DirectX::XMFLOAT3(0.831470, 0.000000, 0.555570));
+	vertexList[22].pos = (DirectX::XMFLOAT3(0.923880, 0.000000, 0.382683));
+	vertexList[23].pos = (DirectX::XMFLOAT3(0.980785, 0.000000, 0.195090));
+	vertexList[24].pos = (DirectX::XMFLOAT3(1.000000, 0.000000, 0.000000));
+	vertexList[25].pos = (DirectX::XMFLOAT3(0.980785, -0.000000, -0.195090));
+	vertexList[26].pos = (DirectX::XMFLOAT3(0.923880, -0.000000, -0.382683));
+	vertexList[27].pos = (DirectX::XMFLOAT3(0.831470, -0.000000, -0.555570));
+	vertexList[28].pos = (DirectX::XMFLOAT3(0.707107, -0.000000, -0.707107));
+	vertexList[29].pos = (DirectX::XMFLOAT3(0.555570, -0.000000, -0.831470));
+	vertexList[30].pos = (DirectX::XMFLOAT3(0.382683, -0.000000, -0.923880));
+	vertexList[31].pos = (DirectX::XMFLOAT3(0.195090, -0.000000, -0.980785));
+
+	vertexList[0].tex = DirectX::XMFLOAT2(0.354185, 0.980689);
+	vertexList[1].tex = DirectX::XMFLOAT2(0.263209, 0.943006);
+	vertexList[2].tex = DirectX::XMFLOAT2(0.181332, 0.888298);
+	vertexList[3].tex = DirectX::XMFLOAT2(0.111702, 0.818668);
+	vertexList[4].tex = DirectX::XMFLOAT2(0.056994, 0.736791);
+	vertexList[5].tex = DirectX::XMFLOAT2(0.019311, 0.645816);
+	vertexList[6].tex = DirectX::XMFLOAT2(0.000100, 0.549236);
+	vertexList[7].tex = DirectX::XMFLOAT2(0.000100, 0.450764);
+	vertexList[8].tex = DirectX::XMFLOAT2(0.019311, 0.354184);
+	vertexList[9].tex = DirectX::XMFLOAT2(0.056994, 0.263208);
+	vertexList[10].tex = DirectX::XMFLOAT2(0.111702, 0.181332);
+	vertexList[11].tex = DirectX::XMFLOAT2(0.181332, 0.111702);
+	vertexList[12].tex = DirectX::XMFLOAT2(0.263209, 0.056994);
+	vertexList[13].tex = DirectX::XMFLOAT2(0.354184, 0.019311);
+	vertexList[14].tex = DirectX::XMFLOAT2(0.450764, 0.000100);
+	vertexList[15].tex = DirectX::XMFLOAT2(0.549236, 0.000100);
+	vertexList[16].tex = DirectX::XMFLOAT2(0.645815, 0.019311);
+	vertexList[17].tex = DirectX::XMFLOAT2(0.736792, 0.056994);
+	vertexList[18].tex = DirectX::XMFLOAT2(0.818668, 0.111702);
+	vertexList[19].tex = DirectX::XMFLOAT2(0.888298, 0.181332);
+	vertexList[20].tex = DirectX::XMFLOAT2(0.943006, 0.263209);
+	vertexList[21].tex = DirectX::XMFLOAT2(0.980689, 0.354184);
+	vertexList[22].tex = DirectX::XMFLOAT2(0.999900, 0.450764);
+	vertexList[23].tex = DirectX::XMFLOAT2(0.999900, 0.549236);
+	vertexList[24].tex = DirectX::XMFLOAT2(0.980689, 0.645816);
+	vertexList[25].tex = DirectX::XMFLOAT2(0.943006, 0.736792);
+	vertexList[26].tex = DirectX::XMFLOAT2(0.888298, 0.818668);
+	vertexList[27].tex = DirectX::XMFLOAT2(0.818668, 0.888298);
+	vertexList[28].tex = DirectX::XMFLOAT2(0.736792, 0.943006);
+	vertexList[29].tex = DirectX::XMFLOAT2(0.645816, 0.980689);
+	vertexList[30].tex = DirectX::XMFLOAT2(0.549236, 0.999900);
+	vertexList[31].tex = DirectX::XMFLOAT2(0.450764, 0.999900);
+
+
+	indexList.emplace_back(17);
+	indexList.emplace_back(25);
+	indexList.emplace_back(1);
+	indexList.emplace_back(1);
+	indexList.emplace_back(2);
+	indexList.emplace_back(3);
+	indexList.emplace_back(3);
+	indexList.emplace_back(4);
+	indexList.emplace_back(5);
+	indexList.emplace_back(5);
+	indexList.emplace_back(6);
+	indexList.emplace_back(7);
+	indexList.emplace_back(7);
+	indexList.emplace_back(8);
+	indexList.emplace_back(9);
+	indexList.emplace_back(9);
+	indexList.emplace_back(10);
+	indexList.emplace_back(11);
+	indexList.emplace_back(11);
+	indexList.emplace_back(12);
+	indexList.emplace_back(13);
+	indexList.emplace_back(13);
+	indexList.emplace_back(14);
+	indexList.emplace_back(15);
+	indexList.emplace_back(15);
+	indexList.emplace_back(16);
+	indexList.emplace_back(17);
+	indexList.emplace_back(17);
+	indexList.emplace_back(18);
+	indexList.emplace_back(19);
+	indexList.emplace_back(19);
+	indexList.emplace_back(20);
+	indexList.emplace_back(21);
+	indexList.emplace_back(21);
+	indexList.emplace_back(22);
+	indexList.emplace_back(23);
+	indexList.emplace_back(23);
+	indexList.emplace_back(24);
+	indexList.emplace_back(25);
+	indexList.emplace_back(25);
+	indexList.emplace_back(26);
+	indexList.emplace_back(27);
+	indexList.emplace_back(27);
+	indexList.emplace_back(28);
+	indexList.emplace_back(29);
+	indexList.emplace_back(29);
+	indexList.emplace_back(30);
+	indexList.emplace_back(31);
+	indexList.emplace_back(31);
+	indexList.emplace_back(32);
+	indexList.emplace_back(1);
+	indexList.emplace_back(1);
+	indexList.emplace_back(3);
+	indexList.emplace_back(5);
+	indexList.emplace_back(5);
+	indexList.emplace_back(7);
+	indexList.emplace_back(9);
+	indexList.emplace_back(9);
+	indexList.emplace_back(11);
+	indexList.emplace_back(13);
+	indexList.emplace_back(13);
+	indexList.emplace_back(15);
+	indexList.emplace_back(17);
+	indexList.emplace_back(17);
+	indexList.emplace_back(19);
+	indexList.emplace_back(21);
+	indexList.emplace_back(21);
+	indexList.emplace_back(23);
+	indexList.emplace_back(25);
+	indexList.emplace_back(25);
+	indexList.emplace_back(27);
+	indexList.emplace_back(29);
+	indexList.emplace_back(29);
+	indexList.emplace_back(31);
+	indexList.emplace_back(1);
+	indexList.emplace_back(1);
+	indexList.emplace_back(5);
+	indexList.emplace_back(9);
+	indexList.emplace_back(9);
+	indexList.emplace_back(13);
+	indexList.emplace_back(17);
+	indexList.emplace_back(17);
+	indexList.emplace_back(21);
+	indexList.emplace_back(25);
+	indexList.emplace_back(25);
+	indexList.emplace_back(29);
+	indexList.emplace_back(1);
+	indexList.emplace_back(1);
+	indexList.emplace_back(9);
+	indexList.emplace_back(17);
+
+	unsigned int totalIndexCount = indexList.size();
+
+	for (int i = 0; i < totalIndexCount; i++)
+	{
+		indexList[i]--;
+	}
+
+	ArkBuffer* newbuffer = new ArkBuffer(geometryName, totalVertexCount, vertexList, totalIndexCount, indexList);
+}
+
 void ArkEngine::ArkDX11::GeometryGenerator::CreateDebugBox(const char* geometryName, const DirectX::XMFLOAT3& centerPos, float width, float height, float depth, const DirectX::XMFLOAT4& color)
 {
 	std::vector<PosColor> vertexList;

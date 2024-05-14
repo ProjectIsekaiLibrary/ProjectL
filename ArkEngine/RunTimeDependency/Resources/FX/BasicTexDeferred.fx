@@ -20,6 +20,8 @@ cbuffer cbPerObject
 Texture2D gDiffuseMap;
 Texture2D gNormalMap;
 Texture2D gEmissiveMap;
+Texture2D gMaskMap;
+
 float gCartoon;
 
 float4 gColor[100];
@@ -97,12 +99,12 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 
     float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
 
-    float3 emissive = gEmissiveMap.Sample(samAnisotropic, pin.Tex).xyz;
+    float3 emissive = gMaskMap.Sample(samAnisotropic, pin.Tex).xyz;
 
     float4 orthonormalizedTangent;
 
     float4 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW, orthonormalizedTangent);
-
+    
     output.Position = float4(pin.PosW, 1.0f);
     output.Diffuse = float4(diffuse, 1.0f);
     output.BumpedNormal = bumpedNormal;
