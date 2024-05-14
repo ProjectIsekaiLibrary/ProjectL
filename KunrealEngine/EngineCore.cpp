@@ -62,6 +62,12 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.Initialize();
 	timeInstance.Initialize();
 	GraphicsSystem::GetInstance().Initialize(hwnd, screenWidth, screenHeight);
+
+	GameObject* meshTest = sceneInstance.GetCurrentScene()->CreateObject("meshTest");
+	meshTest->AddComponent<MeshRenderer>();
+	meshTest->GetComponent<MeshRenderer>()->SetMeshObject("cylinder/cylinder");
+	sceneInstance.GetCurrentScene()->DeleteGameObject(meshTest);
+
 	PhysicsSystem::GetInstance().Initialize();
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
 	soundInstance.Initialize(hwnd);
@@ -540,7 +546,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	//partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
 	//partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	//partpart->SetActive(true);	
-	
+
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()

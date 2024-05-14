@@ -45,15 +45,15 @@ void KunrealEngine::SphereCollider::OnTriggerEnter()
 
 void KunrealEngine::SphereCollider::OnTriggerStay()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 void KunrealEngine::SphereCollider::OnTriggerExit()
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }
 
 void KunrealEngine::SphereCollider::SetActive(bool active)
 {
-	throw std::logic_error("The method or operation is not implemented.");
+	
 }

@@ -31,8 +31,29 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	// 물리 씬을 생성
 	CreatePhysXScene();
 
+	
 	// 머티리얼 생성(임의)	/// 이게 0.5라서?
 	_material = _physics->createMaterial(0.5f, 0.5f, 0.5f);
+
+	///												// halfHeight가 0이면 sphere가 된다
+	//physx::PxCapsuleGeometry capsuleGeometry(3.0f, 0.0f); // Radius: 1.0, Half Height: 2.0 (total height = 4.0)
+	//physx::PxQuat rotation(physx::PxPi / 2, physx::PxVec3(0.0f, 0.0f, 1.0f));
+	//physx::PxTransform capsuleTransform(physx::PxVec3(0.0f, 5.0f, 0.0f), rotation); // Position of the capsule
+	//
+	//physx::PxRigidDynamic* capsuleActor = _physics->createRigidDynamic(capsuleTransform);
+	//physx::PxShape* capsuleShape = _physics->createShape(capsuleGeometry, *_material);
+	//capsuleActor->attachShape(*capsuleShape);
+	//
+	//// Add the collider to a rigid body
+	//_pxScene->addActor(*capsuleActor);
+
+	// 실린더 데이터 
+	cylinderVertices = GRAPHICS->GetMeshVertexData("cylinder/cylinder");
+
+	
+	///
+
+
 }
 
 void KunrealEngine::PhysicsSystem::Release()
@@ -139,6 +160,61 @@ void KunrealEngine::PhysicsSystem::CreateStaticBoxCollider(BoxCollider* collider
 	_rigidStatics.push_back(boxActor);
 }
 
+
+void KunrealEngine::PhysicsSystem::CreateCylinderCollider(BoxCollider* collider)
+{
+	// 정점 정보
+	physx::PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = cylinderVertices.size();
+	convexDesc.points.stride = sizeof(DirectX::XMFLOAT3);
+	convexDesc.points.data = &cylinderVertices[0];
+	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+	const physx::PxCookingParams params(_physics->getTolerancesScale());
+
+	// 정점 메모리 버퍼
+	physx::PxDefaultMemoryOutputStream buf;
+	physx::PxConvexMeshCookingResult::Enum result;
+	const bool status = PxCookConvexMesh(params, convexDesc, buf, &result);
+
+	// mesh 생성
+	physx::PxDefaultMemoryInputData inputi(buf.getData(), buf.getSize());
+	physx::PxConvexMesh* convexMesh = _physics->createConvexMesh(inputi);
+
+	physx::PxMeshScale scale(physx::PxVec3(
+		collider->GetBoxSize().x, collider->GetBoxSize().y, collider->GetBoxSize().z), 
+		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
+	physx::PxConvexMeshGeometry geom(convexMesh, scale);
+	physx::PxShape* shape = _physics->createShape(geom, *_material);
+
+	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
+	physx::PxRigidDynamic* customActor = _physics->createRigidDynamic(trans);
+
+	// 충돌 관련 flag들
+	physx::PxRigidDynamicLockFlags flag =
+		physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X |
+		physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
+		physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z |
+		physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_X |
+		physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Y |
+		physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Z;
+
+	customActor->setRigidDynamicLockFlags(flag);
+
+	// UserData
+	PhysicsUserData data(collider->GetOwner(), shape);
+	customActor->userData = &data;
+
+	// 다 만들었으면 shape 붙여주고
+	customActor->attachShape(*shape);
+
+	// scene에 추가
+	_pxScene->addActor(*customActor);
+
+	// 관리를 위해 physicsSystem의 멤버로
+	_dynamicMap.insert(std::make_pair(collider, customActor));
+	_rigidDynamics.push_back(customActor);
+}
 
 void KunrealEngine::PhysicsSystem::CreateDynamicSphereCollider(SphereCollider* collider)
 {
