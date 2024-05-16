@@ -97,13 +97,15 @@ namespace KunrealEngine
 
 		GameObject* _eyeLight;
 
+		//GameObject* _eyeLightCollider;
+
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
 		bool _isRotateFinish;
 
 	private:
-		bool _isCoreStart;
+		bool _isCoreStart;  
 		bool _isRandomStart;
 
 		// logic
@@ -128,6 +130,8 @@ namespace KunrealEngine
 		float randomX;
 
 		float randomZ;
+
+		bool isEyesLightStart;
 
 
 	private:	// 코루틴 대진수의 패턴 야미
