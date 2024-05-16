@@ -37,6 +37,7 @@ namespace KunrealEngine
 		virtual void SetActive(bool active) override;
 
 	private:
+	public:
 		DirectX::XMFLOAT3 _position;
 		DirectX::XMFLOAT3 _rotation;				// local
 		DirectX::XMFLOAT3 _scale;
