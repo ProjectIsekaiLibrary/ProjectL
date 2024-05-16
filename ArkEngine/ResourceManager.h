@@ -30,6 +30,7 @@ namespace ArkEngine
 	namespace ArkDX11
 	{
 		class ArkBuffer;
+		class TransparentMesh;
 	}
 }
 
@@ -233,6 +234,9 @@ namespace ArkEngine
 		void AddParticleResource(const std::string& particleName, ParticleResource* particleResource);
 
 	public:
+		void AddTransParentMesh(const std::string& meshName, ArkEngine::ArkDX11::TransparentMesh* mesh);
+
+	public:
 		void ReleaseAll();
 
 	private:
@@ -289,6 +293,8 @@ namespace ArkEngine
 		std::vector<ArkEngine::ParticleSystem*> _particleList;
 		// Particle에서 사용되는 리소스 리스트
 		std::unordered_map<std::string, ParticleResource*> _particleResourceList;
+
+		std::unordered_map<std::string, ArkEngine::ArkDX11::TransparentMesh*> _transParentMeshList;
 
 	private:
 		unsigned int _objectIndex;

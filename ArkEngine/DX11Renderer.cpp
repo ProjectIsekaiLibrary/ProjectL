@@ -33,6 +33,7 @@
 #include "LineObject.h"
 #include "MeshRenderer.h"
 #include "ParticleSystem.h"
+#include "TransparentMesh.h"
 
 #include "DX11Renderer.h"
 
@@ -93,6 +94,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	CreateRenderState();
 	CreateDepthStecilState();
+	CreateBlendState();
 
 	SetResourceManager();
 
@@ -261,21 +263,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 			index->ShadowRender();
 		}
 
-		//for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
-		//{
-		//	// 그림자는 프러스텀에 안들어와도 그려질 수 있으니 그려지고 있는 모든 물체에 대해
-		//	if (index->GetRenderingState())
-		//	{
-		//		// 그림자를 갖지 않도록 설정한 물체 외에
-		//		if (index->GetShadowState() == true)
-		//		{
-		//			index->SetMainCamera(_mainCamera);
-		//			// 1번 패스로 렌더링 (그림자 용) -> 픽셀 쉐이더에서 (0,0,0,0)만 출력
-		//			index->Render(1);
-		//		}
-		//	}
-		//}
-
 		// 광원 시점에서 기존 시점에서의 카메라로 되돌림
 		_mainCamera = _originMainCamera;
 	}
@@ -288,23 +275,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		index->SetMainCamera(_mainCamera);
 		index->Render();
 	}
-
-	//for (const auto& index : ResourceManager::GetInstance()->GetRenderableList())
-	//{
-	//	auto a = ResourceManager::GetInstance()->GetRenderableList();
-	//
-	//	// 그려지고 프러스텀 내에 들어온 (시야에 들어온) 오브젝트들만
-	//	if (index->GetRenderingState() && index->GetInsideFrustumState())
-	//	{
-	//		index->SetMainCamera(_mainCamera);
-	//		
-	//		testCullingNum++;
-	//		DrawDebugText(1500, 0, 40, "Rendered Object : %d", testCullingNum);
-	//		// 0번 패스로 렌더링
-	//		index->Render(0);
-	//	}
-	//}
-
 
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
@@ -321,18 +291,16 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
 
-
 	// 디퍼드 버퍼를 조합하여 빈 Texture2D에 완성된 화면을 출력함
 	_deferredRenderer->Render();
 
+	TransparentRender();
 
 	// 큐브맵 렌더링
 	if (_mainCubeMap != nullptr)
 	{
 		_mainCubeMap->Render();
 	}
-
-
 
 	// 디버그 모드일 경우
 	if (_isDebugMode)
@@ -356,6 +324,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		}
 
 		// DrawDebugText를 통해 생성된 모든 디버그용 폰트 렌더링
+		_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+
 		_font->Render();
 	}
 
@@ -394,8 +364,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	{
 		_deviceContext->PSSetShaderResources(i, 1, &srv);
 	}
-
-
 
 	EndRender();
 }
@@ -874,6 +842,27 @@ void ArkEngine::ArkDX11::DX11Renderer::EndRender()
 {
 	// Present (모니터의 주사율, 동기화 방식 -> 0이 기본, 표시에 대한 플래그나 추가 옵션 -> 0이 기본)
 	_swapChain->Present(0, 0);
+}
+
+
+void ArkEngine::ArkDX11::DX11Renderer::TransparentRender()
+{
+	// 렌더링 컨텍스트에 블렌딩 스테이트 설정
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+
+	/// 여기서 투명 오브젝트들 렌더링하기
+	static TransparentMesh* a  = new TransparentMesh("testMesh", "asdf", 1.0f, true);
+	a->Update(_mainCamera);
+	a->Render();
+
+	// 블렌딩 해제
+	_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::DrawDebugText(int posX, int posY, int fontSize, const char* text, ...)
@@ -1439,11 +1428,11 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateRenderState()
 	_device->CreateRasterizerState(&wireDesc, _wireRS.GetAddressOf());
 
 	D3D11_RASTERIZER_DESC shadowDesc;
-	ZeroMemory(&wireDesc, sizeof(D3D11_RASTERIZER_DESC));
-	wireDesc.FillMode = D3D11_FILL_WIREFRAME;
-	wireDesc.CullMode = D3D11_CULL_NONE;
-	wireDesc.FrontCounterClockwise = false;
-	wireDesc.DepthClipEnable = true;
+	ZeroMemory(&shadowDesc, sizeof(D3D11_RASTERIZER_DESC));
+	shadowDesc.FillMode = D3D11_FILL_WIREFRAME;
+	shadowDesc.CullMode = D3D11_CULL_NONE;
+	shadowDesc.FrontCounterClockwise = false;
+	shadowDesc.DepthClipEnable = true;
 	_device->CreateRasterizerState(&shadowDesc, _shadowRS.GetAddressOf());
 }
 
@@ -1488,6 +1477,29 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDepthStecilState()
 	equalDesc2.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	equalDesc2.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	_device->CreateDepthStencilState(&equalDesc2, _depthStencilStateDisable.GetAddressOf());
+}
+
+
+void ArkEngine::ArkDX11::DX11Renderer::CreateBlendState()
+{
+	// 블렌딩 스테이트를 생성할 때 사용할 구조체 초기화
+	D3D11_BLEND_DESC blendDesc;
+	ZeroMemory(&blendDesc, sizeof(blendDesc));
+	blendDesc.AlphaToCoverageEnable = FALSE;
+	blendDesc.IndependentBlendEnable = FALSE; // 단일 렌더 타겟만 사용하는 경우
+
+	// 블렌딩 옵션 설정
+	blendDesc.RenderTarget[0].BlendEnable = TRUE;
+	blendDesc.RenderTarget[0].SrcBlend = D3D11_BLEND_SRC_ALPHA;
+	blendDesc.RenderTarget[0].DestBlend = D3D11_BLEND_INV_SRC_ALPHA;
+	blendDesc.RenderTarget[0].BlendOp = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].SrcBlendAlpha = D3D11_BLEND_ONE;
+	blendDesc.RenderTarget[0].DestBlendAlpha = D3D11_BLEND_ZERO;
+	blendDesc.RenderTarget[0].BlendOpAlpha = D3D11_BLEND_OP_ADD;
+	blendDesc.RenderTarget[0].RenderTargetWriteMask = D3D11_COLOR_WRITE_ENABLE_ALL;
+
+	// 블렌딩 스테이트 생성
+	_device->CreateBlendState(&blendDesc, &_blendState);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::SetResourceManager()

@@ -237,6 +237,7 @@
     <ClInclude Include="SpotLight.h" />
     <ClInclude Include="tinyxml2.h" />
     <ClInclude Include="Transform.h" />
+    <ClInclude Include="TransparentMesh.h" />
     <ClInclude Include="UIImage.h" />
   </ItemGroup>
   <ItemGroup>
@@ -280,6 +281,7 @@
     <ClCompile Include="SpotLight.cpp" />
     <ClCompile Include="tinyxml2.cpp" />
     <ClCompile Include="Transform.cpp" />
+    <ClCompile Include="TransparentMesh.cpp" />
     <ClCompile Include="UIImage.cpp" />
   </ItemGroup>
   <ItemGroup>
