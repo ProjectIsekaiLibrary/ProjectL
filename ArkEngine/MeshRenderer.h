@@ -20,6 +20,8 @@ namespace ArkEngine
 		class ArkEffect;
 		class ArkDevice;
 		struct Material;
+
+		//class ArkTexture;
 	}
 }
 
@@ -110,5 +112,29 @@ namespace ArkEngine
 		ArkEngine::ArkDX11::ArkEffect* _arkEffect;
 
 		ICamera* _mainCamera;
+
+	private:
+		void SetGradation(float value);
+		void SetGradationSRV(float value);
+
+		ID3DX11EffectShaderResourceVariable* _noiseMap;
+		ID3DX11EffectShaderResourceVariable* _burnGradation;
+
+		ID3D11ShaderResourceView* _noiseMapSRV;
+		ID3D11ShaderResourceView* _burnGradationSRV;
+
+		std::string _noiseMapName;
+		std::string _burnGradationName;
+
+		ID3DX11EffectScalarVariable* _dissolveValueEffect;
+		ID3DX11EffectScalarVariable* _burnValueEffect;
+
+		float _dissolveValue;
+		float _burnValue;
+
+		float timeMan = 0.0f;
+
+		void SetBurnValue(float value);
+		void SetBurnValueSRV(float value);
 	};
 }
