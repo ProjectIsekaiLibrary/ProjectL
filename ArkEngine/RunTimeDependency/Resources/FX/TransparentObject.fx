@@ -6,7 +6,7 @@
 
 Texture2D gDiffuseMap;
 float gTransParency;
-float gTest;
+float gTime;
 
 SamplerState samAnisotropic
 {
@@ -52,6 +52,20 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
+PSOut PSBasic(VertexOut pin)
+{
+    PSOut output;
+   
+    // 텍스처 좌표를 사용하여 색상 샘플링
+    output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+    
+    float alpha = saturate(gTime);
+    
+    output.Diffuse.a = alpha * gTransParency;
+    
+    return output;
+}
+
 PSOut PSHorizontal(VertexOut pin)
 {
     PSOut output;
@@ -59,7 +73,13 @@ PSOut PSHorizontal(VertexOut pin)
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
     
-    output.Diffuse.a = (0.0f - pin.Tex.x) + gTest;
+    float alpha = (0.0f - pin.Tex.x) + gTime;
+    
+    alpha = saturate(alpha);
+    
+    alpha *= gTransParency;
+    
+    output.Diffuse.a = alpha;
     
     return output;
 }
@@ -71,7 +91,13 @@ PSOut PSVertical(VertexOut pin)
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
     
-    output.Diffuse.a = (pin.Tex.y - 1.0f) + gTest;
+    float alpha = (pin.Tex.y - 1.0f) + gTime;
+    
+    alpha = saturate(alpha);
+    
+    alpha *= gTransParency;
+    
+    output.Diffuse.a = alpha;
     
     return output;
 }
@@ -87,7 +113,43 @@ PSOut PSCenter(VertexOut pin)
     
     float maxDistance = length(float2(0.0f, 0.0f) - float2(0.5f, 0.5f));
     
-    output.Diffuse.a = ((-1 * (distanceFromCenter + 0.5f)) + gTest); // * gTransParency;
+    float alpha = (-1 * (distanceFromCenter + 0.5f)) + gTime;
+    
+    alpha = saturate(alpha);
+    
+    alpha *= gTransParency;
+    
+    output.Diffuse.a = alpha;
+    
+    return output;
+}
+
+PSOut PSCenterWithLine(VertexOut pin)
+{
+    PSOut output;
+   
+    // 텍스처 좌표를 사용하여 색상 샘플링
+    output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+    
+    float distanceFromCenter = length(pin.Tex - float2(0.5f, 0.5f));
+    
+    if (distanceFromCenter >= 0.499f)
+    {
+        output.Diffuse.a = 1.0f;
+    }
+    
+    else
+    {
+        float maxDistance = length(float2(0.0f, 0.0f) - float2(0.5f, 0.5f));
+    
+        float alpha = (-1 * (distanceFromCenter + 0.5f)) + gTime;
+    
+        alpha = saturate(alpha);
+    
+        alpha *= gTransParency;
+            
+        output.Diffuse.a = alpha;
+    }
     
     return output;
 }
@@ -98,20 +160,34 @@ technique11 Tech
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSCenter()));
+        SetPixelShader(CompileShader(ps_5_0, PSBasic()));
     }
 
     pass P1
     {
-        SetVertexShader( CompileShader( vs_5_0, VS() ) );
-		SetGeometryShader( NULL );
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PSHorizontal()));
     }
 
     pass P2
     {
+        SetVertexShader( CompileShader( vs_5_0, VS() ) );
+		SetGeometryShader( NULL );
+        SetPixelShader(CompileShader(ps_5_0, PSVertical()));
+    }
+
+    pass P3
+    {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSVertical()));
+        SetPixelShader(CompileShader(ps_5_0, PSCenter()));
+    }
+
+    pass P4
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PSCenterWithLine()));
     }
 }
