@@ -52,5 +52,8 @@
     <ClInclude Include="GraphicsParticle.h">
       <Filter>GraphicsInterface</Filter>
     </ClInclude>
+    <ClInclude Include="GraphicsTransParentMesh.h">
+      <Filter>GraphicsInterface</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

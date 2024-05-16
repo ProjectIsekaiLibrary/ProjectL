@@ -163,6 +163,7 @@
     <ClInclude Include="GraphicsPointLight.h" />
     <ClInclude Include="GraphicsRenderable.h" />
     <ClInclude Include="GraphicsStruct.h" />
+    <ClInclude Include="GraphicsTransParentMesh.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

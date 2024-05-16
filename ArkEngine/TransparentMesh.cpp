@@ -16,14 +16,15 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_meshTransform(nullptr), _vertexBuffer(nullptr), _indexBuffer(nullptr), _totalIndexCount(0),
 	_tech(nullptr), _fxWorld(nullptr), _fxWorldViewProj(nullptr), _world(), _view(), _proj(),
 	_fxTransParency(nullptr), _isCircle(isCircle),
-	_test(0.0f)
+	_timer(0.0f), _renderType(0),
+	_renderTime(0.0f), _isRenderFinsh(false)
 {
 	Initialize();
 }
 
 ArkEngine::ArkDX11::TransparentMesh::~TransparentMesh()
 {
-
+	Finalize();
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::Initialize()
@@ -35,72 +36,81 @@ void ArkEngine::ArkDX11::TransparentMesh::Initialize()
 
 	BuildGeomtryBuffers();
 	SetEffect();
-	SetTexture("Resources/Textures/bricks.dds");
+	SetTexture(_textureName);
 
 	_meshTransform = new Transform();
 
-	_meshTransform->SetTranslationMatrix(0.0f, 0.1f, 0.0f);
-
-	_meshTransform->SetScaleMatrix(10.0f, 10.0f, 10.0f);
-
-	if (! _isCircle)
-	{
-		_meshTransform->SetRotationMatrix(90.0f);
-	}
-
-	ResourceManager::GetInstance()->AddTransParentMesh(_objectName, this);
+	ResourceManager::GetInstance()->AddTransParentMesh(this);
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 {
-	DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
-	DirectX::XMStoreFloat4x4(&_view, p_Camera->GetViewMatrix());
-	DirectX::XMStoreFloat4x4(&_proj, p_Camera->GetProjMatrix());
-
-	if (GetAsyncKeyState('Y'))
+	if (!_isRenderFinsh)
 	{
-		_test = 0.0f;
+		DirectX::XMStoreFloat4x4(&_world, _meshTransform->GetTransformMatrix());
+		DirectX::XMStoreFloat4x4(&_view, p_Camera->GetViewMatrix());
+		DirectX::XMStoreFloat4x4(&_proj, p_Camera->GetProjMatrix());
 	}
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::Render()
 {
-	//if (_test < 1)
+	if (!_isRenderFinsh)
 	{
-		_test += 0.001f;
+		auto deviceContext = _arkDevice->GetDeviceContext();
+
+		deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
+		deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+		deviceContext->RSSetState(_arkDevice->GetSolidRS());
+
+		UINT stride = sizeof(ArkEngine::ArkDX11::Postex);
+		UINT offset = 0;
+
+		deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
+		deviceContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
+
+		D3DX11_TECHNIQUE_DESC techDesc;
+		_tech->GetDesc(&techDesc);
+
+
+		DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
+
+		DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
+		DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
+		DirectX::XMMATRIX WorldViewProj = world * view * proj;
+		_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
+		_texture->SetResource(_diffuseMapSRV);
+
+		_fxTransParency->SetFloat(_transParency);
+
+		_fxTime->SetFloat(_renderTime);
+
+		_tech->GetPassByIndex(_renderType)->Apply(0, deviceContext);
+		deviceContext->DrawIndexed(_totalIndexCount, 0, 0);
 	}
+}
 
-	auto deviceContext = _arkDevice->GetDeviceContext();
+void ArkEngine::ArkDX11::TransparentMesh::Reset()
+{
+	_timer = 0.0f;
+	_renderTime = 0.0f;
+	_isRenderFinsh = false;
+}
 
-	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
-	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-
-	deviceContext->RSSetState(_arkDevice->GetSolidRS());
-
-	UINT stride = sizeof(ArkEngine::ArkDX11::Postex);
-	UINT offset = 0;
-
-	deviceContext->IASetVertexBuffers(0, 1, &_vertexBuffer, &stride, &offset);
-	deviceContext->IASetIndexBuffer(_indexBuffer, DXGI_FORMAT_R32_UINT, 0);
-
+void ArkEngine::ArkDX11::TransparentMesh::SetRenderType(unsigned int index)
+{
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
 
-
-	DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
-
-	DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
-	DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
-	DirectX::XMMATRIX WorldViewProj = world * view * proj;
-	_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
-	_texture->SetResource(_diffuseMapSRV);
-
-	_fxTransParency->SetFloat(_transParency);
-
-	_fxTest->SetFloat(_test);
-
-	_tech->GetPassByIndex(2)->Apply(0, deviceContext);
-	deviceContext->DrawIndexed(_totalIndexCount, 0, 0);
+	if (index < techDesc.Passes)
+	{
+		_renderType = index;
+	}
+	else
+	{
+		_renderType = 0;
+	}
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::Finalize()
@@ -116,13 +126,25 @@ void ArkEngine::ArkDX11::TransparentMesh::Finalize()
 	_fxWorldViewProj->Release();
 	_fxWorld->Release();
 
+	_texture->Release();
+
+	_fxTransParency->Release();
+
+	_fxTime->Release();
+
 	_tech = nullptr;
 	_effect = nullptr;
 }
 
-const std::string& ArkEngine::ArkDX11::TransparentMesh::GetName()
+void ArkEngine::ArkDX11::TransparentMesh::SetTransform(const DirectX::XMFLOAT4X4& matrix)
 {
-	return _objectName;
+	_meshTransform->SetTransformMatrix(matrix);
+}
+
+
+void ArkEngine::ArkDX11::TransparentMesh::Delete()
+{
+	ResourceManager::GetInstance()->DeleteTransParentMesh(this);
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
@@ -172,12 +194,12 @@ void ArkEngine::ArkDX11::TransparentMesh::SetEffect()
 
 	_fxTransParency = _effect->GetVariableByName("gTransParency")->AsScalar();
 
-	_fxTest = _effect->GetVariableByName("gTest")->AsScalar();
+	_fxTime = _effect->GetVariableByName("gTime")->AsScalar();
 }
 
-void ArkEngine::ArkDX11::TransparentMesh::SetTexture(const std::string& name)
+void ArkEngine::ArkDX11::TransparentMesh::SetTexture(const std::string& textureName)
 {
-	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(name);
+	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(textureName);
 
 	if (texture != nullptr)
 	{
@@ -185,7 +207,28 @@ void ArkEngine::ArkDX11::TransparentMesh::SetTexture(const std::string& name)
 	}
 	else
 	{
-		ArkTexture* newTexture = new ArkTexture(name.c_str());
+		ArkTexture* newTexture = new ArkTexture(textureName.c_str());
 		_diffuseMapSRV = newTexture->GetDiffuseMapSRV();
 	}
+}
+
+bool ArkEngine::ArkDX11::TransparentMesh::RenderWithTimer(float deltaTime, float timer)
+{
+	if (_isRenderFinsh)
+	{
+		return _isRenderFinsh;
+	}
+
+	if (_timer >= timer)
+	{
+		_isRenderFinsh = true;
+	
+		return _isRenderFinsh;
+	}
+
+	_timer += deltaTime;
+
+	_renderTime = (_timer / timer) * 2;
+
+	return _isRenderFinsh;
 }

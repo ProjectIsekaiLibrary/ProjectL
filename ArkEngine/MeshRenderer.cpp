@@ -59,7 +59,7 @@ void ArkEngine::MeshRenderer::Render()
 {
 	_renderList.clear();
 
-	for (auto index : _meshList)
+	for (const auto& index : _meshList)
 	{
 		if (index->GetInsideFrustumState())
 		{
@@ -112,7 +112,7 @@ void ArkEngine::MeshRenderer::Render()
 		_normalMap->SetResource(_meshList[0]->GetNormalSRV()[i]);
 		_emissionMap->SetResource(_meshList[0]->GetEmmisionSRV()[i]);
 
-		for (auto index : _renderList)
+		for (const auto& index : _renderList)
 		{
 			_colorList.emplace_back(index->GetColor());
 
@@ -219,7 +219,7 @@ void ArkEngine::MeshRenderer::ShadowRender()
 		_worldInvList.clear();
 		_worldViewProjList.clear();
 
-		for (auto index : _meshList)
+		for (const auto& index : _meshList)
 		{
 			DirectX::XMMATRIX world = index->GetTransformMat();
 

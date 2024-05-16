@@ -1,4 +1,5 @@
 #pragma once
+#include  "GraphicsTransParentMesh.h"
 
 struct ID3DX11Effect;
 struct ID3DX11EffectTechnique;
@@ -28,11 +29,24 @@ namespace ArkEngine
 {
 	namespace ArkDX11
 	{
-		class TransparentMesh
+		class TransparentMesh : public GInterface::GraphicsTransparentMesh
 		{
 		public:
 			TransparentMesh(const std::string& objectName, const std::string& textureName, float transParency, bool isCircle = false);
 			~TransparentMesh();
+
+		public:
+			virtual void SetTexture(const std::string& textureName) override;
+
+			virtual bool RenderWithTimer(float deltaTime, float timer) override;
+
+			virtual void Reset() override;
+
+			virtual void SetRenderType(unsigned int index) override;
+
+			virtual void SetTransform(const DirectX::XMFLOAT4X4& matrix) override;
+			
+			virtual void Delete() override;
 
 		public:
 			void Initialize();
@@ -40,13 +54,9 @@ namespace ArkEngine
 			void Render();
 			void Finalize();
 
-		public:
-			const std::string& GetName();
-
 		private:
 			void BuildGeomtryBuffers();
 			void SetEffect();
-			void SetTexture(const std::string& name);
 
 		private:
 			std::string _objectName;
@@ -79,11 +89,17 @@ namespace ArkEngine
 
 			ID3DX11EffectScalarVariable* _fxTransParency;
 
-			ID3DX11EffectScalarVariable* _fxTest;
+			ID3DX11EffectScalarVariable* _fxTime;
 
 			bool _isCircle;
 
-			float _test;
+			float _timer;
+
+			unsigned int _renderType;
+
+			float _renderTime;
+
+			bool _isRenderFinsh;
 		};
 	}
 }

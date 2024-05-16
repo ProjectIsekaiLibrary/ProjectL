@@ -168,6 +168,10 @@ namespace ArkEngine
 			virtual std::vector<unsigned int> GetMeshIndexData(const std::string& fileName) override;
 
 		public:
+			virtual GInterface::GraphicsTransparentMesh* CreateTransParentMesh(const std::string& objectName, const std::string& textureName, float transParency, bool isCircle = false) override;
+			virtual void DeleteTransParentMesh(GInterface::GraphicsTransparentMesh* mesh) override;
+
+		public:
 			void CreateShadowViewPort(int shadowWidth, int shadowHeight);
 
 		public:

@@ -239,6 +239,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		index->Update(timaplus, gameTime);
 	}
+
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
+		index->Update(_mainCamera);
+	}
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
@@ -854,10 +859,10 @@ void ArkEngine::ArkDX11::DX11Renderer::TransparentRender()
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
-	/// 여기서 투명 오브젝트들 렌더링하기
-	static TransparentMesh* a  = new TransparentMesh("testMesh", "asdf", 1.0f, true);
-	a->Update(_mainCamera);
-	a->Render();
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
+		index->Render();
+	}
 
 	// 블렌딩 해제
 	_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);
@@ -1119,6 +1124,22 @@ std::vector<unsigned int> ArkEngine::ArkDX11::DX11Renderer::GetMeshIndexData(con
 	auto buffer = ResourceManager::GetInstance()->GetArkBuffer(fileName);
 
 	return buffer[0]->GetIndexList();
+}
+
+
+GInterface::GraphicsTransparentMesh* ArkEngine::ArkDX11::DX11Renderer::CreateTransParentMesh(const std::string& objectName, const std::string& textureName, float transParency, bool isCircle /*= false*/)
+{
+	auto newObject = new TransparentMesh(objectName, textureName, transParency, isCircle);
+
+	GInterface::GraphicsTransparentMesh* tempObject = dynamic_cast<GInterface::GraphicsTransparentMesh*>(newObject);
+
+	return tempObject;
+}
+
+
+void ArkEngine::ArkDX11::DX11Renderer::DeleteTransParentMesh(GInterface::GraphicsTransparentMesh* mesh)
+{
+	mesh->Delete();
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::CreateDevice()
