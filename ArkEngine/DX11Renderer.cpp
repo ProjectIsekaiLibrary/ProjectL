@@ -149,6 +149,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		}
 	}
 
+	ResourceManager::GetInstance()->SortMeshRendererByAlpha();
 
 	if (_isDebugMode)
 	{
@@ -278,6 +279,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
 	{
 		index->SetMainCamera(_mainCamera);
+		index->Render();
+	}
+
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
 		index->Render();
 	}
 
@@ -832,6 +838,12 @@ void ArkEngine::ArkDX11::DX11Renderer::BeginRender()
 	_deviceContext->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0F, 0);
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::FinalRender()
@@ -855,14 +867,11 @@ void ArkEngine::ArkDX11::DX11Renderer::TransparentRender()
 	// 렌더링 컨텍스트에 블렌딩 스테이트 설정
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
-	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
 
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-
-	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	{
-		index->Render();
-	}
+	//for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	//{
+	//	index->Render();
+	//}
 
 	// 블렌딩 해제
 	_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);

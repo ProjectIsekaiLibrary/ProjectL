@@ -13,6 +13,10 @@ cbuffer cbPerObject
     float4x4 gWorldViewProj[100];
     float4x4 gTexTransform;
     Material gMaterial;
+    
+            // Dissolve
+    float gDissolveValue;
+    float gGradation;
 };
 
 cbuffer cbSkinned
@@ -26,7 +30,12 @@ Texture2D gNormalMap;
 Texture2D gEmissiveMap;
 float gCartoon;
 
+// Dissolve Effect
+Texture2D gNoiseTexture;
+Texture2D gBurnTexture;
+
 float4 gColor[100];
+float gAlpha[100];
 
 SamplerState samAnisotropic
 {
@@ -113,7 +122,7 @@ VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 
 	// Transform to world space space.
     vout.PosW = mul(float4(posL, 1.0f), gWorld[instanceID]).xyz;
-    vout.NormalW = mul(normalL, (float3x3) gWorldInvTranspose[instanceID]);
+    vout.NormalW = normalize(mul(normalL, (float3x3) gWorldInvTranspose[instanceID]));
     vout.TangentW = mul(vin.TangentL, (float3x3) gWorld[instanceID]);
     
 	// Transform to homogeneous clip space.
@@ -132,9 +141,6 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 {
     PSOut output;
 
-    // Interpolating normal can unnormalize it, so normalize it.
-    pin.NormalW = normalize(pin.NormalW);
-
     float3 normalMap = gNormalMap.Sample(samAnisotropic, pin.Tex).xyz;
 
     float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
@@ -145,13 +151,32 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 
     float4 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW, orthonormalizedTangent);
 
-    output.Position = float4(pin.PosW, 1.0f);
-    output.Diffuse = float4(diffuse, 1.0f);
-    output.BumpedNormal = bumpedNormal;
-    output.Emissive = float4(emissive, 1.0f);
-    output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
-    output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
-    output.Color = gColor[pin.InstanceID];
+   output.Position = float4(pin.PosW, 1.0f);
+   output.Diffuse = float4(diffuse, gAlpha[pin.InstanceID]);
+   output.BumpedNormal = bumpedNormal;
+   output.Emissive = float4(emissive, 1.0f);
+   output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
+   output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
+   output.Color = gColor[pin.InstanceID];
+   
+  //// 디졸브 효과 계산
+  //float dissolveFactor = gDissolveValue; // 디졸브 효과에 사용될 값으로, 예를 들어 uniform으로 설정된 값으로 계산할 수 있습니다.
+  //float noiseVel = gNoiseTexture.Sample(samAnisotropic, pin.Tex).x; // 노이즈 텍스처 샘플링
+  // 
+  // output.Diffuse.w *= floor(gDissolveValue + min(0.99f, noiseVel));
+  // //output.Diffuse.w = 0.0f;
+  // float d = (2.0f * 0.5f + noiseVel) - 1.0f;
+  // float overOne = saturate(d * gGradation); // 그라데이션 강조
+  // 
+  //float dissolveSmooth = smoothstep(0.0f, 1.0f, dissolveFactor + noiseVel); // 디졸브 효과를 부드럽게 만듭니다.
+   
+   
+   // 디졸브 효과를 디졸브 효과에 적용할 렌더 타깃에 곱합니다.
+  // output.Diffuse *= dissolveSmooth;
+  // output.BumpedNormal *= dissolveSmooth;
+  // output.Emissive *= dissolveSmooth;
+  // output.Material *= dissolveSmooth;
+  // output.Color *= dissolveSmooth;
     
     return output;
 }

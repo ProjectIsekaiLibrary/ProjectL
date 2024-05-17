@@ -48,6 +48,7 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _color;		// RGB		// 이 색을 추가하겠다
 		DirectX::XMFLOAT3 _direction;	// 방출 방향
 		DirectX::XMFLOAT3 _rotation;	// 회전 각도
+		DirectX::XMFLOAT3 _offset;		// 위치 여백
 
 	public:
 		// 어떤 파티클을 출력할 것인가		// 처음에 반드시 해줘야함
@@ -89,7 +90,8 @@ namespace KunrealEngine
 		// 특정 본으로 트랜스폼 설정
 		void SetTransform(GameObject* renderable, std::string boneName);
 
-
+		// offset 설정
+		void SetOffSet(float x, float y, float z);
 
 	public:
 		// 파티클 정보 전달용

@@ -9,6 +9,7 @@
 #include "MeshRenderer.h"
 #include "Animator.h"
 #include "ImageRenderer.h"
+#include "TransparentMesh.h"
 #include "Light.h"
 
 #include "BoxCollider.h"

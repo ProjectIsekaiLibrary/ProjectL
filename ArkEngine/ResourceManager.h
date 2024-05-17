@@ -114,6 +114,7 @@ namespace ArkEngine
 		ArkEngine::MeshRenderer* GetMeshRenderer(const std::string& fileName);
 		// 인스턴싱을 활용하여 렌더링하기 위한 renderer를 만듬
 		void AddMeshRenderer(ArkEngine::MeshRenderer* meshRenderer);
+		void SortMeshRendererByAlpha();
 
 	public:
 		// 모든 디버그 오브젝트들은 담아놓은 백터 반환
