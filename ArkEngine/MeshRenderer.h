@@ -54,6 +54,8 @@ namespace ArkEngine
 	public:
 		void SetMainCamera(ICamera* mainCamera);
 
+		float GetAlpha();
+
 	public:
 		const std::string& GetName();
 

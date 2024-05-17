@@ -318,6 +318,12 @@ void ArkEngine::MeshRenderer::SetMainCamera(ICamera* mainCamera)
 	_mainCamera = mainCamera;
 }
 
+
+float ArkEngine::MeshRenderer::GetAlpha()
+{
+	return timeMan;
+}
+
 const std::string& ArkEngine::MeshRenderer::GetName()
 {
 	return _fileName;
