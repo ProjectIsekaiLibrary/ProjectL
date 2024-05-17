@@ -282,6 +282,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		index->Render();
 	}
 
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
+		index->Render();
+	}
+
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
@@ -863,10 +868,10 @@ void ArkEngine::ArkDX11::DX11Renderer::TransparentRender()
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 
-	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	{
-		index->Render();
-	}
+	//for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	//{
+	//	index->Render();
+	//}
 
 	// 블렌딩 해제
 	_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);

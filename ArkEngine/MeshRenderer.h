@@ -75,6 +75,7 @@ namespace ArkEngine
 	private:
 		std::vector<IRenderable*> _renderList;
 		std::vector<IRenderable*> _shadowList;
+		std::vector<IRenderable*> _transparentList;
 
 		// 오브젝트마다 다른 것
 	private:
