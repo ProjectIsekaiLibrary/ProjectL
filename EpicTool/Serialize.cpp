@@ -98,11 +98,6 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 				pod.customComponent["Aracne"] = true;
 			}
 
-			if (gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetAlpha() == 0)
-			{
-				pod.customComponent["Aracne"] = true;
-			}
-
 			if ((gameObject->GetComponent<KunrealEngine::Camera>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
 			{
 				pod.customComponent["Camera"] = true;
@@ -120,7 +115,7 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 				}
 			}
 
-			if (gameObject->GetComponent<KunrealEngine::Player>() == NULL || gameObject->GetComponent<KunrealEngine::Kamen>() == NULL)
+			if (gameObject->GetComponent<KunrealEngine::Player>() == NULL && gameObject->GetComponent<KunrealEngine::Kamen>() == NULL)
 			{
 				if ((gameObject->GetComponent<KunrealEngine::MeshRenderer>()) != NULL)
 				{
@@ -143,6 +138,11 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 					pod.meshRenderer["Normal"] = meshNormalJson;
 
 					//pod.animationFrame = gameObject->GetComponent<KunrealEngine::Animator>()->GetCurrentFrame();
+
+					if (gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetAlpha() == 0)
+					{
+						pod.customComponent["Invisible"] = true;
+					}
 				}
 
 				if ((gameObject->GetComponent<KunrealEngine::Light>()) != NULL)

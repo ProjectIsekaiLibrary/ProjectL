@@ -108,12 +108,11 @@ void KunrealEngine::Ent::SetBossCollider()
 void KunrealEngine::Ent::CreatePattern()
 {
 	CreateSubObject();
-	CreateLeftAttack();
-	CreateRightAttack();
-	CreateLeftRootShot();
-	CreateRightRootShot();
-	CreateRandomRootAttack();
-	CreateEyeLight();
+	//CreateRightAttack();
+	//CreateLeftRootShot();
+	//CreateRightRootShot();
+	//CreateRandomRootAttack();
+	//CreateEyeLight();
 	CreateSwiping();
 	//CreateJumpAttack();
 	//CreateCorePatternFirst();
@@ -208,18 +207,19 @@ void KunrealEngine::Ent::CreateSubObject()
 	_eyeLight->SetTag("BossSub");
 	_eyeLight->AddComponent<BoxCollider>();
 	_eyeLight->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 5.0f, 5.0f);
-	_eyeLight->GetComponent<BoxCollider>()->SetOffset(_playerTransform->GetPosition().x, _playerTransform->GetPosition().y - 17.0f, _playerTransform->GetPosition().z + 8.0f);  //(0.0f, -17.0f, 8.0f);
+	_eyeLight->GetComponent<BoxCollider>()->SetOffset(_playerTransform->GetPosition().x, _playerTransform->GetPosition().y - 15.0f, _playerTransform->GetPosition().z + 8.0f);  //(0.0f, -17.0f, 8.0f);
 
 	_eyeLight->GetComponent<BoxCollider>()->SetActive(false);
 
 	_eyeLight->AddComponent<Particle>();
 	_eyeLight->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
 	_eyeLight->GetComponent<Particle>()->SetParticleDuration(3.0f, 12.0f);
-	_eyeLight->GetComponent<Particle>()->SetParticleVelocity(70.0f, false);
+	_eyeLight->GetComponent<Particle>()->SetParticleVelocity(60.0f, false);
 	_eyeLight->GetComponent<Particle>()->SetTransform(_boss, "jaw");
 	_eyeLight->GetComponent<Particle>()->SetParticleRotation(210.0f, _bossTransform->GetRotation().y, 0.0f);  // 여기서 동적으로
-	_eyeLight->GetComponent<Particle>()->SetParticleSize(4.0f, 4.0f);
-	_eyeLight->GetComponent<Particle>()->AddParticleColor(12.0f, 2.5f, 1.5f);
+	_eyeLight->GetComponent<Particle>()->SetParticleSize(1.5f, 1.5f);
+	_eyeLight->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 2.5f);
+	_eyeLight->GetComponent<Particle>()->SetOffSet(0.0f, 1.3f, 0.0f);
 	_eyeLight->GetComponent<Particle>()->SetActive(false);
 	//_eyeLight->SetActive(false);
 
@@ -275,7 +275,6 @@ void KunrealEngine::Ent::CreateRightAttack()
 
 	//_rightAttack = pattern;
 	_basicPattern.emplace_back(pattern);
-
 }
 
 void KunrealEngine::Ent::CreateLeftRootShot()
@@ -641,6 +640,8 @@ void KunrealEngine::Ent::CreateSwiping()
 
 	pattern->_subObject.emplace_back(_leftHand);
 
+	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(7.0f, 8.0f, 7.0f);
+
 	auto swipingLogic = [pattern, this]
 		{
 			auto animator = _boss->GetComponent<Animator>();
@@ -652,10 +653,7 @@ void KunrealEngine::Ent::CreateSwiping()
 			{
 				_leftHand->GetComponent<BoxCollider>()->SetActive(true);
 
-				_leftHand->GetComponent<BoxCollider>()->SetBoxSize(7.0f, 8.0f, 7.0f);
-
 				_leftHand->GetComponent<Particle>()->SetActive(true);
-
 			}
 
 			if (isAnimationPlaying == false)
