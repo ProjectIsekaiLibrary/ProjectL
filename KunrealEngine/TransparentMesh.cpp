@@ -39,7 +39,7 @@ void KunrealEngine::TransparentMesh::Update()
 	if (GetMeshStatus())
 	{
 		this->_tMesh->SetTransform(_transform->GetWorldTM());
-		this->_tMesh->RenderWithTimer(TimeManager::GetInstance().GetDeltaTime(), _timer);
+		auto condition = this->_tMesh->RenderWithTimer(TimeManager::GetInstance().GetDeltaTime(), _timer);
 	}
 }
 
