@@ -36,6 +36,21 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 	// 오브젝트의 갯수 만큼 반복 할 것
 	for (const auto gameObject : gameObjectlist)
 	{
+		 // 보스나 플레이어면 넘어감
+		//if (gameObject->GetComponent<KunrealEngine::Kamen>() != nullptr ||
+		//	gameObject->GetComponent<KunrealEngine::Player>() != nullptr ||
+		//	gameObject->GetComponent<KunrealEngine::Aracne>() != nullptr ||
+		//	gameObject->GetComponent<KunrealEngine::Ent>() != nullptr)
+		//{
+		//	continue;
+		//}
+
+
+		if (gameObject->GetTag() == "BossSub") // 보스나 플레이어에서 내부적으로 만든거면 넘어감
+		{
+			continue;
+		}
+
 		if (gameObject->GetObjectName() != "MainCamera" )
 		{		
 			//pod.animationFrame = 0.0f;

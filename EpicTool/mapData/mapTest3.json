@@ -1129,50 +1129,6 @@
             "lightType": {},
             "meshRenderer": {
                 "Diffuse": [
-                    "Resources/Textures/PlayerWithCloak/T_Clothes_Albedo.tga",
-                    "Resources/Textures/PlayerWithCloak/T_Albedo_Body_Nude.tga",
-                    "Resources/Textures/PlayerWithCloak/T_Hair_Albedo.tga"
-                ],
-                "Mesh": [
-                    "PlayerWithCloak/PlayerWithCloak"
-                ],
-                "Normal": [
-                    "Resources/Textures/PlayerWithCloak/",
-                    "Resources/Textures/PlayerWithCloak/",
-                    "Resources/Textures/PlayerWithCloak/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Player",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -32.36591720581055,
-                "position_y": 4.505427837371826,
-                "position_z": -36.41360092163086,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.05000000074505806,
-                "scale_y": 0.05000000074505806,
-                "scale_z": 0.05000000074505806
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
                     "Resources/Textures/SM_platform_ruins_01/M_stoneblocks_ruins_BaseMap.png",
                     "Resources/Textures/SM_platform_ruins_01/M_groundtiles_BaseMap.png"
                 ],
@@ -1950,59 +1906,6 @@
                 "position_z": -97.59026336669922,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.10000000149011612,
-                "scale_y": 0.10000000149011612,
-                "scale_z": 0.10000000149011612
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {
-                "BoxSize_x": 5.0,
-                "BoxSize_y": 12.0,
-                "BoxSize_z": 5.0,
-                "Offset_x": 0.0,
-                "Offset_y": 8.0,
-                "Offset_z": 0.0
-            },
-            "customComponent": {
-                "Player": true
-            },
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
-                    "Resources/Textures/PlayerWithCloak/T_Clothes_Albedo.tga",
-                    "Resources/Textures/PlayerWithCloak/T_Albedo_Body_Nude.tga",
-                    "Resources/Textures/PlayerWithCloak/T_Hair_Albedo.tga"
-                ],
-                "Mesh": [
-                    "PlayerWithCloak/PlayerWithCloak"
-                ],
-                "Normal": [
-                    "Resources/Textures/PlayerWithCloak/M_Clothes_normal.png",
-                    "Resources/Textures/PlayerWithCloak/M_Body_normal.png",
-                    "Resources/Textures/PlayerWithCloak/M_Hair_normal.png"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Create Empty",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 1.8186895847320557,
-                "position_y": 0.0,
-                "position_z": -14.618058204650879,
-                "rotation_x": 0.0,
-                "rotation_y": -44.9626579284668,
                 "rotation_z": 0.0,
                 "scale_x": 0.10000000149011612,
                 "scale_y": 0.10000000149011612,
