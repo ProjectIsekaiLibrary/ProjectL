@@ -93,11 +93,11 @@ float ToonShade(float intensity)
 }
 
 
-void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float3 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon)
+void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float4 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon)
 {
     position = PositionTexture.Sample(samAnisotropic, texCoord).xyz;
 
-    diffuseAlbedo = DiffuseAlbedoTexture.Sample(samAnisotropic, texCoord).xyz;
+    diffuseAlbedo = DiffuseAlbedoTexture.Sample(samAnisotropic, texCoord);
 
     normal = BumpedNormalTexture.Sample(samAnisotropic, texCoord).xyz;
 	
@@ -143,7 +143,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 {
     float3 normal;
     float3 position;
-    float3 diffuseAlbedo;
+    float4 diffuseAlbedo;
     float3 emissive;
     float4 material;
     float cartoon;
@@ -153,7 +153,12 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 _SpecularColor;
 
     GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon);
-  
+   
+   if (diffuseAlbedo.a == 0.f)
+   {
+       return float4(diffuseAlbedo.xyz, 1.0f);
+   }
+    
     float3 toEye = gEyePosW - position;
 
     float distToEye = length(toEye);
@@ -180,7 +185,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         shadowFactor = 1.0f;
     }
     
-    float4 texColor = float4(diffuseAlbedo * shadowFactor, 1.0f);
+    float4 texColor = float4(diffuseAlbedo.xyz * shadowFactor, 1.0f);
     
     Material nowMat;
     nowMat.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);

@@ -127,6 +127,9 @@ namespace KunrealEngine
 		void SetCartoonState(bool flag);
 		bool GetCartoonState();
 
+		void SetAlpha(float alpha);
+		float GetAlpha();
+
 		DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName);
 	};
 }

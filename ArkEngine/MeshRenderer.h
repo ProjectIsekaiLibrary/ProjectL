@@ -54,7 +54,7 @@ namespace ArkEngine
 	public:
 		void SetMainCamera(ICamera* mainCamera);
 
-		float GetAlpha();
+		bool GetAlphaExist();
 
 	public:
 		const std::string& GetName();
@@ -107,6 +107,11 @@ namespace ArkEngine
 
 		ID3DX11EffectVectorVariable* _fxColor;
 		ID3DX11EffectScalarVariable* _fxCartoon;
+
+		ID3DX11EffectScalarVariable* _fxAlpha;
+		std::vector<float> _alphaList;
+
+		bool _isTransparentExist;
 
 	private:
 		// 기초 세팅 가져오기

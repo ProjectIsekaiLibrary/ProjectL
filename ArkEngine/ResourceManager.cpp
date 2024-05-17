@@ -132,7 +132,7 @@ void ArkEngine::ResourceManager::SortMeshRendererByAlpha()
 	
 	for (auto& index : _meshRendererList)
 	{
-		if (index->GetAlpha() >= 1.0f)
+		if (! index->GetAlphaExist())
 		{
 			noTransParentList.emplace_back(index);
 		}
