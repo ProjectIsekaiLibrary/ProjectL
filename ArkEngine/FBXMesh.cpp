@@ -34,7 +34,8 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_meshCount(0), _boneIndexNum(0),
 	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
 	_animator(nullptr),
-	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent()
+	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent(), 
+	_alpha(1.0f)
 {
 	Initialize();
 }
@@ -596,6 +597,17 @@ bool ArkEngine::ArkDX11::FBXMesh::GetCartoonRenderingState()
 	return _applyCartoonRendering;
 }
 
+
+void ArkEngine::ArkDX11::FBXMesh::SetAlpha(float alpha)
+{
+	_alpha = alpha;
+}
+
+
+float ArkEngine::ArkDX11::FBXMesh::GetAlhpa()
+{
+	return _alpha;
+}
 
 const std::string& ArkEngine::ArkDX11::FBXMesh::GetName()
 {

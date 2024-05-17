@@ -33,6 +33,7 @@ Texture2D gNoiseTexture;
 Texture2D gBurnTexture;
 
 float4 gColor[100];
+float gAlpha[100];
 
 SamplerState samAnisotropic
 {
@@ -99,7 +100,7 @@ VertexOut VS(VertexIn vin, uint instanceID : SV_InstanceID)
 PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 {
     PSOut output;
-
+    
     // Interpolating normal can unnormalize it, so normalize it.
     pin.NormalW = normalize(pin.NormalW);
 
@@ -114,7 +115,7 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     float4 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW, orthonormalizedTangent);
     
     output.Position = float4(pin.PosW, 1.0f);
-    output.Diffuse = float4(diffuse, 1.0f);
+    output.Diffuse = float4(diffuse, gAlpha[pin.InstanceID]);
     output.BumpedNormal = bumpedNormal;
     output.Emissive = float4(emissive, 1.0f);
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);

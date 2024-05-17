@@ -19,7 +19,7 @@ ArkEngine::MeshRenderer::MeshRenderer(IRenderable* mesh)
 	_effect(nullptr), _tech(nullptr), _fxBoneTransforms(nullptr),
 	_fxWorld(nullptr), _fxWorldInvTranspose(nullptr), _fxworldViewProj(nullptr),
 	_fxTexTransform(nullptr), _fxMaterial(nullptr), _diffuseMap(nullptr), _normalMap(nullptr), _emissionMap(nullptr),
-	_fxColor(nullptr), _fxCartoon(nullptr),
+	_fxColor(nullptr), _fxCartoon(nullptr), _fxAlpha(nullptr), _isTransparentExist(false),
 	_noiseMap(nullptr), _burnGradation(nullptr),
 	_noiseMapSRV(nullptr), _burnGradationSRV(nullptr),
 	_noiseMapName("Resources/Textures/Dissolve/DissolvePattern.png"),
@@ -30,6 +30,7 @@ ArkEngine::MeshRenderer::MeshRenderer(IRenderable* mesh)
 
 ArkEngine::MeshRenderer::~MeshRenderer()
 {
+	_fxAlpha->Release();
 	_fxCartoon->Release();
 	_fxColor->Release();
 
@@ -127,6 +128,7 @@ void ArkEngine::MeshRenderer::Render()
 
 		auto nowMesh = _meshes[i];
 
+		_alphaList.clear();
 		_colorList.clear();
 		_worldList.clear();
 		_worldInvList.clear();
@@ -139,6 +141,12 @@ void ArkEngine::MeshRenderer::Render()
 		for (const auto& index : _renderList)
 		{
 			_colorList.emplace_back(index->GetColor());
+			_alphaList.emplace_back(index->GetAlhpa());
+
+			if (index->GetAlhpa() == 0.0f)
+			{
+				_isTransparentExist = true;
+			}
 
 			DirectX::XMMATRIX world = index->GetTransformMat();
 
@@ -206,6 +214,8 @@ void ArkEngine::MeshRenderer::Render()
 
 		_fxColor->SetFloatVectorArray(reinterpret_cast<float*>(&_colorList[0]), 0, static_cast<uint32_t>(_colorList.size()));
 
+		_fxAlpha->SetFloatArray(reinterpret_cast<float*>(&_alphaList[0]), 0, static_cast<uint32_t>(_alphaList.size()));
+
 		_tech->GetPassByIndex(0)->Apply(0, deviceContext);
 		deviceContext->DrawIndexedInstanced(nowMesh->indexNum, _renderList.size(), 0, 0, 0);
 	}
@@ -222,6 +232,18 @@ void ArkEngine::MeshRenderer::ShadowRender()
 
 	UINT stride = sizeof(ArkEngine::ArkDX11::Vertex);
 	UINT offset = 0;
+
+	for (auto it = _meshList.begin(); it != _meshList.end();)
+	{
+		if ((*it)->GetAlhpa() <= 0.f)
+		{
+			it = _meshList.erase(it);
+		}
+		else
+		{
+			++it;
+		}
+	}
 
 	// 컬링 적용된 메쉬는 그리지 않음
 	if (_meshList.empty())
@@ -318,6 +340,12 @@ void ArkEngine::MeshRenderer::SetMainCamera(ICamera* mainCamera)
 	_mainCamera = mainCamera;
 }
 
+
+bool ArkEngine::MeshRenderer::GetAlphaExist()
+{
+	return _isTransparentExist;
+}
+
 const std::string& ArkEngine::MeshRenderer::GetName()
 {
 	return _fileName;
@@ -386,6 +414,8 @@ void ArkEngine::MeshRenderer::SetEffect(IRenderable* mesh)
 	_fxColor = _effect->GetVariableByName("gColor")->AsVector();
 
 	_fxCartoon = _effect->GetVariableByName("gCartoon")->AsScalar();
+
+	_fxAlpha = _effect->GetVariableByName("gAlpha")->AsScalar();
 
 	_noiseMap = _effect->GetVariableByName("gNoiseTexture")->AsShaderResource();
 	_burnGradation = _effect->GetVariableByName("gBurnTexture")->AsShaderResource();

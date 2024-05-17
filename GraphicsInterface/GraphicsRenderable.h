@@ -106,5 +106,11 @@ namespace GInterface
 		virtual void SetCartoonRendering(bool tf) abstract;
 		// 카툰 렌더링 적용 여부 가져오기
 		virtual bool GetCartoonRenderingState() abstract;
+
+	public:
+		// 투명도 설정
+		virtual void SetAlpha(float alpha) abstract;
+		// 투명도 적용 값 가져오기
+		virtual float GetAlhpa() abstract;
 	};
 }
