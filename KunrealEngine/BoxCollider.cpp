@@ -4,10 +4,11 @@
 #include "MeshRenderer.h"
 #include "PhysicsSystem.h"
 
-KunrealEngine::BoxCollider::BoxCollider()
+KunrealEngine::BoxCollider::BoxCollider(bool isCylinder /*=false*/)
 	:_isStatic(false), _boxSize(1.0f, 1.0f, 1.0f), _position(0.0f, 0.0f, 0.0f), _offset(0.0f, 0.0f, 0.0f), _quaternion()
 	, _debugObject(nullptr), _transform(nullptr), _isCollided(false), _targetObj(nullptr),
-	_parentObject(nullptr), _parentBoneName(), _shape(nullptr)
+	_parentObject(nullptr), _parentBoneName(), _shape(nullptr),
+	_isCylinder(isCylinder)
 {
 
 }
@@ -21,7 +22,15 @@ void KunrealEngine::BoxCollider::Initialize()
 {
 	_transform = this->GetOwner()->GetComponent<Transform>();
 	_position = this->_transform->GetPosition();
-	PhysicsSystem::GetInstance().CreateDynamicBoxCollider(this);		// 기본은 Dynamic으로 
+	
+	if (!_isCylinder)
+	{
+		PhysicsSystem::GetInstance().CreateDynamicBoxCollider(this);		// 기본은 Dynamic으로 
+	}
+	else
+	{
+		PhysicsSystem::GetInstance().CreateCylinderCollider(this);
+	}
 
 	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), _boxSize.x, _boxSize.y, _boxSize.z);
 }
@@ -149,7 +158,6 @@ void KunrealEngine::BoxCollider::SetBoxSize(float x, float y, float z)
 	_boxSize.y = y;
 	_boxSize.z = z;
 
-	//_debugObject->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 	_debugObject->SetScale(x, y, z);
 
 	PhysicsSystem::GetInstance().SetBoxSize(this);

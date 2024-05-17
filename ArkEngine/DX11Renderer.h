@@ -168,6 +168,10 @@ namespace ArkEngine
 			virtual std::vector<unsigned int> GetMeshIndexData(const std::string& fileName) override;
 
 		public:
+			virtual GInterface::GraphicsTransparentMesh* CreateTransParentMesh(const std::string& objectName, const std::string& textureName, float transParency, bool isCircle = false) override;
+			virtual void DeleteTransParentMesh(GInterface::GraphicsTransparentMesh* mesh) override;
+
+		public:
 			void CreateShadowViewPort(int shadowWidth, int shadowHeight);
 
 		public:
@@ -178,6 +182,8 @@ namespace ArkEngine
 			void BeginRender();
 			void FinalRender();
 			void EndRender();
+
+			void TransparentRender();
 
 		private:
 			void CreateDevice();			// ID3D11Device 인터페이스와 DeviceContext 인터페이스를 생성
@@ -192,6 +198,7 @@ namespace ArkEngine
 			void SetViewportWithDefaultCamera();				// 뷰포트 설정
 			void CreateRenderState();		// 렌더 상태 집합
 			void CreateDepthStecilState();	// 깊이 버퍼 설정
+			void CreateBlendState();
 
 		private:
 			void SetResourceManager();
@@ -250,6 +257,7 @@ namespace ArkEngine
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilState;
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilStateDisable;
 
+			Microsoft::WRL::ComPtr<ID3D11BlendState> _blendState;
 
 			float _backGroundColor[4];
 

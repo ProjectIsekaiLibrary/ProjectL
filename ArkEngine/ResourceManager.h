@@ -30,6 +30,7 @@ namespace ArkEngine
 	namespace ArkDX11
 	{
 		class ArkBuffer;
+		class TransparentMesh;
 	}
 }
 
@@ -113,6 +114,7 @@ namespace ArkEngine
 		ArkEngine::MeshRenderer* GetMeshRenderer(const std::string& fileName);
 		// 인스턴싱을 활용하여 렌더링하기 위한 renderer를 만듬
 		void AddMeshRenderer(ArkEngine::MeshRenderer* meshRenderer);
+		void SortMeshRendererByAlpha();
 
 	public:
 		// 모든 디버그 오브젝트들은 담아놓은 백터 반환
@@ -233,6 +235,12 @@ namespace ArkEngine
 		void AddParticleResource(const std::string& particleName, ParticleResource* particleResource);
 
 	public:
+		
+		const std::vector<ArkEngine::ArkDX11::TransparentMesh*>& GetTransParentMeshList();
+		void AddTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
+		void DeleteTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
+
+	public:
 		void ReleaseAll();
 
 	private:
@@ -289,6 +297,8 @@ namespace ArkEngine
 		std::vector<ArkEngine::ParticleSystem*> _particleList;
 		// Particle에서 사용되는 리소스 리스트
 		std::unordered_map<std::string, ParticleResource*> _particleResourceList;
+
+		std::vector<ArkEngine::ArkDX11::TransparentMesh*> _transParentMeshList;
 
 	private:
 		unsigned int _objectIndex;

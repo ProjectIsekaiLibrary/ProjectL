@@ -300,6 +300,18 @@ bool KunrealEngine::MeshRenderer::GetCartoonState()
 	return this->_mesh->GetCartoonRenderingState();
 }
 
+
+void KunrealEngine::MeshRenderer::SetAlpha(float alpha)
+{
+	this->_mesh->SetAlpha(alpha);
+}
+
+
+float KunrealEngine::MeshRenderer::GetAlpha()
+{
+	return this->_mesh->GetAlhpa();
+}
+
 DirectX::XMFLOAT4X4 KunrealEngine::MeshRenderer::GetBoneTransform(const std::string& boneName)
 {
 	return _mesh->GetBoneTransform(boneName);

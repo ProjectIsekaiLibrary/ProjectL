@@ -293,6 +293,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 			this->GetComponent<Particle>()->SetActive(false);
 		}
 
+		if (this->GetComponent<TransparentMesh>() != nullptr)
+		{
+			this->GetComponent<TransparentMesh>()->SetActive(false);
+		}
+
 		// physx 관련 부분
 		if (this->GetComponent<BoxCollider>() != nullptr)
 		{
@@ -320,6 +325,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		if (this->GetComponent<Particle>() != nullptr)
 		{
 			this->GetComponent<Particle>()->SetActive(this->GetComponent<Particle>()->GetActivated());
+		}
+
+		if (this->GetComponent<TransparentMesh>() != nullptr)
+		{
+			this->GetComponent<TransparentMesh>()->SetActive(this->GetComponent<TransparentMesh>()->GetActivated());
 		}
 
 		if (this->GetComponent<BoxCollider>() != nullptr)

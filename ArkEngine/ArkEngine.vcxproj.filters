@@ -144,6 +144,9 @@
     <Filter Include="MeshRenderer">
       <UniqueIdentifier>{97ac8e3f-167e-4a73-a179-eee14b47036e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="TransparentMesh">
+      <UniqueIdentifier>{243187fe-17f4-4abb-a8be-7e52f636c7e2}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -302,6 +305,9 @@
     <ClInclude Include="MeshRenderer.h">
       <Filter>MeshRenderer</Filter>
     </ClInclude>
+    <ClInclude Include="TransparentMesh.h">
+      <Filter>TransparentMesh</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="DX11Renderer.cpp">
@@ -426,6 +432,9 @@
     </ClCompile>
     <ClCompile Include="MeshRenderer.cpp">
       <Filter>MeshRenderer</Filter>
+    </ClCompile>
+    <ClCompile Include="TransparentMesh.cpp">
+      <Filter>TransparentMesh</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>

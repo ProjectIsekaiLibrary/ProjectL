@@ -47,6 +47,10 @@ namespace ArkEngine
 		virtual bool GetShadowState() abstract;
 
 	public:
+		virtual void SetAlpha(float alpha) abstract;
+		virtual float GetAlhpa() abstract;
+
+	public:
 		virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetScale(float x = 1.0f, float y = 1.0f, float z = 1.0f) abstract;

@@ -123,6 +123,34 @@ void ArkEngine::ResourceManager::AddMeshRenderer(ArkEngine::MeshRenderer* meshRe
 	_meshRendererList.emplace_back(meshRenderer);
 }
 
+
+void ArkEngine::ResourceManager::SortMeshRendererByAlpha()
+{
+	std::vector<MeshRenderer*> transParentList;
+	std::vector<MeshRenderer*> noTransParentList;
+
+	
+	for (auto& index : _meshRendererList)
+	{
+		if (! index->GetAlphaExist())
+		{
+			noTransParentList.emplace_back(index);
+		}
+		else
+		{
+			transParentList.emplace_back(index);
+		}
+	}
+
+	_meshRendererList.clear();
+
+	_meshRendererList.reserve(noTransParentList.size() + transParentList.size());
+
+	_meshRendererList.insert(_meshRendererList.end(), noTransParentList.begin(), noTransParentList.end());
+
+	_meshRendererList.insert(_meshRendererList.end(), transParentList.begin(), transParentList.end());
+}
+
 std::vector<ArkEngine::IDebugObject*>& ArkEngine::ResourceManager::GetDebugObjectList()
 {
 	return _debugList;
@@ -477,6 +505,24 @@ void ArkEngine::ResourceManager::AddParticleResource(const std::string& particle
 	{
 		_particleResourceList.insert(std::make_pair(particleName, particleResource));
 	}
+}
+
+
+const std::vector<ArkEngine::ArkDX11::TransparentMesh*>& ArkEngine::ResourceManager::GetTransParentMeshList()
+{
+	return _transParentMeshList;
+}
+
+void ArkEngine::ResourceManager::AddTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh)
+{
+	_transParentMeshList.emplace_back(mesh);
+}
+
+void ArkEngine::ResourceManager::DeleteTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh)
+{
+	_transParentMeshList.erase(std::remove(_transParentMeshList.begin(), _transParentMeshList.end(), mesh), _transParentMeshList.end());
+
+	delete mesh;
 }
 
 void ArkEngine::ResourceManager::SetTextureNameList(std::string name)

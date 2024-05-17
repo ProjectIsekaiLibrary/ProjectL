@@ -133,6 +133,10 @@ namespace ArkEngine
 			virtual void SetCartoonRendering(bool tf) override;
 			virtual bool GetCartoonRenderingState() override;
 
+	
+			virtual void SetAlpha(float alpha) override;
+			virtual float GetAlhpa() override;
+
 		public:
 			virtual const std::string& GetName() override;
 			virtual const std::string& GetEffectName() override;
@@ -196,7 +200,8 @@ namespace ArkEngine
 			bool _haveShadow;
 
 			bool _applyCartoonRendering;
-				
+			
+			float _alpha;
 
 			/// <summary>
 			/// 김현재가 추가한 것들

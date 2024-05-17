@@ -34,6 +34,7 @@ namespace GInterface
 	class GraphicsDebug;
 	class GraphicsImage;
 	class GraphicsParticle;
+	class GraphicsTransparentMesh;
 
 	class GraphicsInterface
 	{
@@ -168,7 +169,11 @@ namespace GInterface
 		virtual std::vector<DirectX::XMFLOAT3> GetMeshVertexData(const std::string& fileName) abstract;
 		
 		virtual std::vector<unsigned int> GetMeshIndexData(const std::string& fileName) abstract;
-
+		
+		// 투명 오브젝트 생성 후 반환	// 오브젝트 이름, 텍스쳐 이름, max 투명도, 원형인가 여부
+		virtual GInterface::GraphicsTransparentMesh* CreateTransParentMesh(const std::string& objectName, const std::string& textureName, float transParency = 1.0f, bool isCircle = false) abstract;
+		// 투명 오브젝트 삭제
+		virtual void DeleteTransParentMesh(GInterface::GraphicsTransparentMesh* mesh) abstract;
 	};
 };
 

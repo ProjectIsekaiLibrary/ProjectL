@@ -20,6 +20,8 @@ namespace ArkEngine
 		class ArkEffect;
 		class ArkDevice;
 		struct Material;
+
+		//class ArkTexture;
 	}
 }
 
@@ -51,6 +53,8 @@ namespace ArkEngine
 
 	public:
 		void SetMainCamera(ICamera* mainCamera);
+
+		bool GetAlphaExist();
 
 	public:
 		const std::string& GetName();
@@ -104,11 +108,40 @@ namespace ArkEngine
 		ID3DX11EffectVectorVariable* _fxColor;
 		ID3DX11EffectScalarVariable* _fxCartoon;
 
+		ID3DX11EffectScalarVariable* _fxAlpha;
+		std::vector<float> _alphaList;
+
+		bool _isTransparentExist;
+
 	private:
 		// 기초 세팅 가져오기
 		ArkEngine::ArkDX11::ArkDevice* _arkDevice;
 		ArkEngine::ArkDX11::ArkEffect* _arkEffect;
 
 		ICamera* _mainCamera;
+
+	private:
+		void SetGradation(float value);
+		void SetGradationSRV(float value);
+
+		ID3DX11EffectShaderResourceVariable* _noiseMap;
+		ID3DX11EffectShaderResourceVariable* _burnGradation;
+
+		ID3D11ShaderResourceView* _noiseMapSRV;
+		ID3D11ShaderResourceView* _burnGradationSRV;
+
+		std::string _noiseMapName;
+		std::string _burnGradationName;
+
+		ID3DX11EffectScalarVariable* _dissolveValueEffect;
+		ID3DX11EffectScalarVariable* _burnValueEffect;
+
+		float _dissolveValue;
+		float _burnValue;
+
+		float timeMan = 0.0f;
+
+		void SetBurnValue(float value);
+		void SetBurnValueSRV(float value);
 	};
 }
