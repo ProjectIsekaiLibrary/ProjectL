@@ -6,8 +6,8 @@
 KunrealEngine::Particle::Particle()
 	:_particle(nullptr), _transform(nullptr),
 	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f),
-	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f }),
-	_parentObject(nullptr), _parentBoneName()
+	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f }), _rotation({0.0f, 0.0f, 0.0f}),
+	_parentObject(nullptr), _parentBoneName(), _offset({0.0f, 0.0f, 0.0f})
 {
 
 }
@@ -53,11 +53,11 @@ void KunrealEngine::Particle::Update()
 		}
 		 
 		auto pos = this->GetOwner()->GetComponent<Transform>()->_posForBone;
-		SetParticlePos(pos.x, pos.y, pos.z);
+		SetParticlePos(pos.x + _offset.x, pos.y + _offset.y, _offset.z + _offset.z);
 	}
 	else
 	{
-		SetParticlePos(this->_transform->GetPosition());
+		SetParticlePos(this->_transform->GetPosition().x + _offset.x, this->_transform->GetPosition().y + _offset.y, this->_transform->GetPosition().z + _offset.z);
 	}
 }
 
@@ -192,6 +192,14 @@ void KunrealEngine::Particle::SetTransform(GameObject* renderable, std::string b
 			this->GetOwner()->SetParent(renderable);
 		}
 	}
+}
+
+
+void KunrealEngine::Particle::SetOffSet(float x, float y, float z)
+{
+	this->_offset.x = x;
+	this->_offset.y = y;
+	this->_offset.z = z;
 }
 
 DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()

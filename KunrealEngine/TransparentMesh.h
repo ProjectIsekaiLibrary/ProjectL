@@ -22,6 +22,7 @@ namespace KunrealEngine
 
 	class _DECLSPEC TransparentMesh : public Component
 	{
+		friend class GameObject;
 	private:
 		TransparentMesh();
 	public:
