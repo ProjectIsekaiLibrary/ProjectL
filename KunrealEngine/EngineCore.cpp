@@ -181,7 +181,12 @@ void KunrealEngine::EngineCore::Update()
 		{
 			if (GetCurrentScene()->GetGameObject("RuneStoneEnte")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
 			{
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-52, 5, -72);
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest3.json");
 				ChangeScene("mapTest3.json");
+				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 0);
+				navigationInstance.LoadAll("Resources/Navimesh/3-b.bin", 1);
+
 			}
 		}
 	}
