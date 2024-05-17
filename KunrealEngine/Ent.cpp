@@ -108,13 +108,13 @@ void KunrealEngine::Ent::SetBossCollider()
 void KunrealEngine::Ent::CreatePattern()
 {
 	CreateSubObject();
-	//CreateLeftAttack();
-	//CreateRightAttack();
-	//CreateLeftRootShot();
-	//CreateRightRootShot();
-	//CreateRandomRootAttack();
-	//CreateEyeLight();
-	//CreateSwiping();
+	CreateLeftAttack();
+	CreateRightAttack();
+	CreateLeftRootShot();
+	CreateRightRootShot();
+	CreateRandomRootAttack();
+	CreateEyeLight();
+	CreateSwiping();
 	//CreateJumpAttack();
 	//CreateCorePatternFirst();
 }

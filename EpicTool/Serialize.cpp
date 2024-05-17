@@ -78,14 +78,29 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 			}
 
 			// 커스텀 컴포넌트 (특수한 경우의 컴포넌트)
-			if ((gameObject->GetComponent<KunrealEngine::Player>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
+			if ((gameObject->GetComponent<KunrealEngine::Player>()) != NULL)  
 			{
 				pod.customComponent["Player"] = true;
 			}
 
-			if ((gameObject->GetComponent<KunrealEngine::Kamen>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
+			if ((gameObject->GetComponent<KunrealEngine::Kamen>()) != NULL)  
 			{
 				pod.customComponent["Kamen"] = true;
+			}
+
+			if ((gameObject->GetComponent<KunrealEngine::Ent>()) != NULL)
+			{
+				pod.customComponent["Ent"] = true;
+			}
+
+			if ((gameObject->GetComponent<KunrealEngine::Aracne>()) != NULL)
+			{
+				pod.customComponent["Aracne"] = true;
+			}
+
+			if (gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetAlpha() == 0)
+			{
+				pod.customComponent["Aracne"] = true;
 			}
 
 			if ((gameObject->GetComponent<KunrealEngine::Camera>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?

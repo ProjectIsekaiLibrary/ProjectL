@@ -306,6 +306,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
 
 	ent -> AddComponent<Ent>();
+	//ent->GetComponent<MeshRenderer>()->SetAlpha(0);
 	//ent -> GetComponent<MeshRenderer>() -> SetMeshObject("Ent_Generic/Ent_Generic", true);
 
 
