@@ -102,8 +102,12 @@ namespace KunrealEngine
 		physx::PxMaterial*					_material;
 		physx::PxPvd*						_pvd;
 
+		physx::PxConvexMesh* _convexMesh;
+		std::vector<DirectX::XMFLOAT3> _cylinderVertices;	// FBX 실린더의 데이터를 담을
 	private:
-		std::vector<DirectX::XMFLOAT3> cylinderVertices;	// FBX 실린더의 데이터를 담을
+		// FBX로부터 Cylinder 모양 추출
+		void CreateCylinderData();
+
 
 	// eventcallback 대응함수
 	private:
