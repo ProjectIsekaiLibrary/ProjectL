@@ -13,7 +13,7 @@
 
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false)
-	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _posY(0.0f)
+	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _posY(4.0f)
 {
 	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x - 0;
 	_tempY = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().y - 0;
@@ -127,7 +127,7 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 { 
 	// 네비게이션으로부터 이동목표 노드들을 받아옴
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
-		_targetPos.x, _targetPos.y, _targetPos.z);
+		_targetPos.x, _transform->GetPosition().y, _targetPos.z);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(0);
 	_nodeCount = 0;

@@ -73,32 +73,9 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.HandleBuild(0);
-	//navigationInstance.LoadAll("Resources/Navimesh/Player_navmesh.bin", 0);
+	navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
+	//navigationInstance.HandleBuild(0);
 	navigationInstance.HandleBuild(1);
-	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 1);
-	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 2);
-	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 3);
-	//navigationInstance.LoadAll("Resources/Navimesh/Boss_navmesh.bin", 4);
-	navigationInstance.SetSEpos(0, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
-	navigationInstance.SetSEpos(1, -23.0f, 0.0f, -10.0f, -90.0f, 0.0f, 96.0f);
-
-	navigationInstance.AddTempObstacle(DirectX::XMFLOAT3(20.0f, 0.0f, 10.0f), 4.0f, 4.0f);
-
-	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos1 = navigationInstance.FindStraightPath(0);
-	std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> navipos2 = navigationInstance.FindStraightPath(1);
-	DirectX::XMFLOAT3 navipos3 = navigationInstance.FindRaycastPath(0);
-
-	for (auto path : navipos1)
-	{
-		GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
-	}
-
-	for (auto path : navipos2)
-	{
-		GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(1.0f, 0.0f, 0.0f, 1.0f));
-	}
-	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(-23.0f, 0.0f, -10.0f), navipos3, DirectX::XMFLOAT4(1.0f, 0.0f, 1.0f, 1.0f));
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
@@ -111,7 +88,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest5.json");
 
 	/// 니들 맘대로 해
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -187,11 +164,18 @@ void KunrealEngine::EngineCore::Update()
 		{
 			if (GetCurrentScene()->GetGameObject("RuneStoneEnte")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
 			{
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-52, 5, -72);
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-52, 6, -72);
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(6.0);
 				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest3.json");
 				ChangeScene("mapTest3.json");
 				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 0);
+
 				navigationInstance.LoadAll("Resources/Navimesh/3-b.bin", 1);
+
+				std::vector<DirectX::XMFLOAT3> vertices;
+				std::vector<unsigned int> indices;
+				navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+				GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
 
 			}
 		}
@@ -203,7 +187,19 @@ void KunrealEngine::EngineCore::Update()
 		{
 			if (GetCurrentScene()->GetGameObject("RuneStoneKamen")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
 			{
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
 				ChangeScene("mapTest4.json");
+				navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
+
+				navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
+
+				std::vector<DirectX::XMFLOAT3> vertices;
+				std::vector<unsigned int> indices;
+				navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+				GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
+
 			}
 		}
 	}
@@ -221,7 +217,10 @@ void KunrealEngine::EngineCore::Update()
 
 	if (InputSystem::GetInstance()->KeyUp(KEY::CAPSLOCK))
 	{
+		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(0, 4, 0);
+		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("Main");
 		ChangeScene("Main");
+		navigationInstance.LoadAll("Resources/Navimesh/0-p.bin", 0);
 	}
 	Updatecoroutine();
 }

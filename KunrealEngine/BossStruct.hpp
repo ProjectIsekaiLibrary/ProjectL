@@ -180,6 +180,7 @@ struct BossPattern
 	BossPattern& SetPattern(BossPattern* pattern) { _patternList.emplace_back(pattern); return *this; };
 	BossPattern& SetSkipChase(bool tf) { _skipChase = tf; return *this; };
 	BossPattern& SetSkipMove(bool tf) { _skipMove = tf; return *this; };
+	BossPattern& SetSubObject(KunrealEngine::GameObject* object) { _subObject.emplace_back(object);	object->SetTag("BossSub"); object->SetTotalComponentState(false);  return *this; };
 
 	std::string _patternName;		// 패턴 이름
 

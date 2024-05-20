@@ -6,7 +6,8 @@
 
 KunrealEngine::TransparentMesh::TransparentMesh()
 	:_transform(nullptr), _tMesh(nullptr)
-	, _objectName(), _textureName(), _transparency(1.0f), _isCircle(false), _timer(0.0f)
+	, _objectName(), _textureName(), _transparency(1.0f), _isCircle(false), _timer(0.0f), 
+	_isRendering(false), _isPlayed(false)
 {
 
 }
@@ -38,8 +39,17 @@ void KunrealEngine::TransparentMesh::Update()
 {
 	if (GetMeshStatus())
 	{
-		this->_tMesh->SetTransform(_transform->GetWorldTM());
-		auto condition = this->_tMesh->RenderWithTimer(TimeManager::GetInstance().GetDeltaTime(), _timer);
+		// 플레이가 한번 완료되었다면
+		if (_isPlayed == true)
+		{
+			return;
+		}
+
+		if (_isRendering)
+		{
+			this->_tMesh->SetTransform(_transform->GetWorldTM());
+			_isPlayed = this->_tMesh->RenderWithTimer(TimeManager::GetInstance().GetDeltaTime(), _timer);
+		}
 	}
 }
 
@@ -129,4 +139,19 @@ void KunrealEngine::TransparentMesh::Reset()
 {
 	// tMesh 안 만들고 이걸 불렀다는거 자체가 문제니까 예외처리는 안함
 	this->_tMesh->Reset();
+
+	_isPlayed = false;
+
+	_isRendering = false;
+}
+
+bool KunrealEngine::TransparentMesh::PlayOnce()
+{
+	// 실행되지 않았다면
+	if (! _isPlayed)
+	{
+		_isRendering = true;
+	}
+
+	return _isPlayed;
 }
