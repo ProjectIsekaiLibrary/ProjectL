@@ -19,9 +19,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 1.6943957805633545,
-                "position_y": 90.92789459228516,
-                "position_z": -69.61346435546875,
+                "position_x": 5.699999809265137,
+                "position_y": 77.0,
+                "position_z": -37.04600143432617,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -2634,11 +2634,11 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": -13.660099029541016,
-                "position_y": 0.0,
-                "position_z": 36.269248962402344,
+                "position_x": 16.699872970581055,
+                "position_y": 4.0,
+                "position_z": 49.954017639160156,
                 "rotation_x": 0.0,
-                "rotation_y": 6.669297695159912,
+                "rotation_y": -134.36163330078125,
                 "rotation_z": 0.0,
                 "scale_x": 0.10000000149011612,
                 "scale_y": 0.10000000149011612,
@@ -2681,11 +2681,11 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 1633.8287353515625,
+                "position_x": -850.7840576171875,
                 "position_y": 5.0,
-                "position_z": 1034.3658447265625,
+                "position_z": -71.43805694580078,
                 "rotation_x": 0.0,
-                "rotation_y": 143506.671875,
+                "rotation_y": 63145.0,
                 "rotation_z": 0.0,
                 "scale_x": 0.30000001192092896,
                 "scale_y": 0.30000001192092896,
@@ -2778,7 +2778,7 @@
                 ]
             },
             "meshRenderingState": true,
-            "name": "Meteor (1)",
+            "name": "Meteor (1) (1)",
             "parent": {},
             "particle": {
                 "Color_X": 0.0,
@@ -2836,7 +2836,7 @@
                 ]
             },
             "meshRenderingState": true,
-            "name": "Shot (1)",
+            "name": "Shot (1) (1)",
             "parent": {},
             "particle": {
                 "Color_X": 0.0,
