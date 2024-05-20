@@ -292,15 +292,15 @@ void KunrealEngine::EngineCore::PlayGround()
 	//kamen->AddComponent<Kamen>();
 	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
-	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
+	//spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
 	//spider -> AddComponent<MeshRenderer>();
 	//spider -> GetComponent<MeshRenderer>() -> SetMeshObject("SpiderQueen/SpiderQueen", true);
 	//spider->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
-	spider->AddComponent<Aracne>();
+	//spider->AddComponent<Aracne>();
 
-	//ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
+	ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
 
-	//ent -> AddComponent<Ent>();
+	ent -> AddComponent<Ent>();
 	//ent -> GetComponent<MeshRenderer>() -> SetMeshObject("Ent_Generic/Ent_Generic", true);
 
 
