@@ -4,6 +4,7 @@
 #include "CommonHeader.h"
 #include "Component.h"
 #include "Player.h"
+#include "Coroutine.h"
 
 namespace KunrealEngine
 {
@@ -36,10 +37,13 @@ namespace KunrealEngine
 		GameObject* _ice;			// W 스킬 객체
 		GameObject* _meteor;		// R 스킬 운석 객체
 
+		bool _destroyIce;			// coroutine을 활용한 소멸 조건을 위한 변수
+
 	private:
 		void ResetShotPos();
 		void CreateAbility1();
 
+		void ResetIcePos();
 		void CreateAbility2();
 
 		void ResetMeteorPos();
@@ -47,6 +51,15 @@ namespace KunrealEngine
 
 	public:
 		void AddToContanier(Ability* abil);
+
+		Coroutine_Func(iceTimer)
+		{
+			auto* ability = this;
+
+			Waitforsecond(3.0f);
+
+			ability->_destroyIce = true;
+		};
 	};
 }
 
