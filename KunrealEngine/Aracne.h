@@ -153,14 +153,14 @@ namespace KunrealEngine
 			while (true)
 			{
 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-				animator->Play("Run", 30.0f, true);
+				animator->Play("Run", 70.0f, true);
 
 				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
 				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
 				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
 				Return_null;
 				
-				if (!some->Move(mine, target, 30.0f))
+				if (!some->Move(mine, target, 50.0f))
 				{
 					animator->Stop();
 					break;
@@ -169,7 +169,7 @@ namespace KunrealEngine
 
 			while (true)
 			{
-				if (!(animator->Play("Attak_Take_down", 30.0f)))
+				if (!(animator->Play("Attak_Take_down", 70.0f)))
 				{
 					animator->Stop();
 					break;
