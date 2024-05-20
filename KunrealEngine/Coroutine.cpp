@@ -3,58 +3,115 @@
 
 namespace KunrealEngine
 {
-	std::vector<int> KunrealEngine::Coroutine::keybox;
-	std::map<int, Coroutine*> KunrealEngine::Coroutine::_AddedCoroutines; // 코루틴의 주소를 저장하는 집합
+	std::vector<KunrealEngine::Coroutine::Coroutine_type*> KunrealEngine::Coroutine::_coroutines;
+	std::map<int, std::function<KunrealEngine::Coroutine::Coroutine_type()>> KunrealEngine::Coroutine::_AddedCoroutines; // 코루틴의 주소를 저장하는 집합
 	int KunrealEngine::Coroutine::idexKey;
 
-
-	/////////////////////////////////
-	/////////////Coroutine///////////
-	/////////////////////////////////
-
-
-	Coroutine::Coroutine(std::coroutine_handle<promise_type> handle) : coro_handle(handle)
+	Coroutine::Coroutine()
 	{
 
 	};
 
 	Coroutine::~Coroutine()
 	{
-		coro_handle.destroy();
+
 	};
+
+	/////////////////////////////////////////
+	/////////////DurationManager/////////////
+	/////////////////////////////////////////
+
+	Coroutine::DurationManager& Coroutine::DurationManager::getInstance()
+	{
+		static DurationManager instance;
+		return instance;
+	}
+
+	float* Coroutine::DurationManager::getDuration() const
+	{
+		return duration;
+	}
+
+	void Coroutine::DurationManager::setDuration(float newDuration)
+	{
+		float* ptr = new float(newDuration);
+		duration = ptr;
+	}
+
+	void Coroutine::DurationManager::durationtonull()
+	{
+		delete duration;
+		duration = nullptr;
+	}
+
+	/////////////////////////////////
+	/////////////Coroutine///////////
+	/////////////////////////////////
+
+	Coroutine::Coroutine_type::Coroutine_type()
+	{
+
+	}
+
+	Coroutine::Coroutine_type::Coroutine_type(std::coroutine_handle<promise_type> handle) : coro_handle(handle)
+	{
+
+	}
+
+	Coroutine::Coroutine_type::~Coroutine_type()
+	{
+		coro_handle.destroy();
+	}
 
 	////////////////////////////////////
 	/////////////promise_type///////////
 	////////////////////////////////////
 
-	Coroutine Coroutine::promise_type::get_return_object()
+	Coroutine::Coroutine_type Coroutine::Coroutine_type::promise_type::get_return_object()
 	{
-		return Coroutine(std::coroutine_handle<promise_type>::from_promise(*this));
+		return Coroutine_type(std::coroutine_handle<promise_type>::from_promise(*this));
 	}
 
-	std::suspend_never Coroutine::promise_type::initial_suspend() noexcept
+	std::suspend_never Coroutine::Coroutine_type::promise_type::initial_suspend() noexcept
 	{
 		return {};
 	}
 
-	std::suspend_always Coroutine::promise_type::final_suspend() noexcept
+	std::suspend_always Coroutine::Coroutine_type::promise_type::final_suspend() noexcept
 	{
 		return {};
 	}
 
-	void Coroutine::promise_type::return_void() noexcept
+	void Coroutine::Coroutine_type::promise_type::return_void() noexcept
 	{
 
 	}
 
-	void Coroutine::promise_type::unhandled_exception() noexcept
+	void Coroutine::Coroutine_type::promise_type::unhandled_exception() noexcept
 	{
 
 	}
 
-	bool Coroutine::promise_type::await_ready() noexcept
+	bool Coroutine::Coroutine_type::promise_type::await_ready() noexcept
 	{
-		return false;
+		if (DurationManager::getInstance().getDuration() != nullptr)
+		{
+			timer += TimeManager::GetInstance().GetDeltaTime();
+
+			if (timer > *(DurationManager::getInstance().getDuration()))
+			{
+				timer = 0;
+				return true;
+				DurationManager::getInstance().durationtonull();
+			}
+
+			else
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 
 	//////////////////////////////////////
@@ -62,49 +119,37 @@ namespace KunrealEngine
 	//////////////////////////////////////
 
 	// WaitForSeconds 구현
-	WaitForSeconds::WaitForSeconds(float seconds)
-		: time(seconds)
+	Coroutine::Coroutine_type::WaitForSeconds::WaitForSeconds(float seconds)
 	{
-
+		DurationManager::getInstance().setDuration(seconds);
 	}
 
-	bool WaitForSeconds::await_ready()
+	bool Coroutine::Coroutine_type::WaitForSeconds::await_ready()
 	{
 		return false;
 	}
 
-	void WaitForSeconds::await_suspend(std::coroutine_handle<> handle)
+	void Coroutine::Coroutine_type::WaitForSeconds::await_suspend(std::coroutine_handle<> handle)
 	{
-		timer += TimeManager::GetInstance().GetDeltaTime();
 
-		if (timer > time)
-		{
-			timer = 0;
-			await_resume();
-		}
-
-		else
-		{
-			return;
-		}
 	}
 
-	void WaitForSeconds::await_resume() const noexcept {}
+	void Coroutine::Coroutine_type::WaitForSeconds::await_resume() const noexcept {}
 
 	////////////////////////////////////////
 	/////////////////CheckBool//////////////
 	////////////////////////////////////////
 
-	CheckBool::CheckBool(bool& param)
+	Coroutine::Coroutine_type::CheckBool::CheckBool(bool& param)
 		:flag(param)
 	{
 
 	}
-	bool CheckBool::await_ready()
+	bool Coroutine::Coroutine_type::CheckBool::await_ready()
 	{
 		return false;
 	}
-	void CheckBool::await_suspend(std::coroutine_handle<> handle)
+	void Coroutine::Coroutine_type::CheckBool::await_suspend(std::coroutine_handle<> handle)
 	{
 		if (flag)
 		{
@@ -112,68 +157,55 @@ namespace KunrealEngine
 		}
 	}
 
-	void CheckBool::await_resume() const noexcept
+	void Coroutine::Coroutine_type::CheckBool::await_resume() const noexcept
 	{
 
 	}
 
 	////////////////////////////////////////
-	/////////////////ReturnNull/////////////	
+	/////////////////ReturnNull//////////////	
 	////////////////////////////////////////
 
-	ReturnNull::ReturnNull()
-		:flag(false)
+	Coroutine::Coroutine_type::ReturnNull::ReturnNull()
 	{
 
 	}
 
-	bool ReturnNull::await_ready()
+	bool Coroutine::Coroutine_type::ReturnNull::await_ready()
 	{
-		return false;	
+		return false;
 	}
 
-	void ReturnNull::await_suspend(std::coroutine_handle<> handle)
+	void Coroutine::Coroutine_type::ReturnNull::await_suspend(std::coroutine_handle<> handle)
 	{
-		if (!flag)
-		{
-			flag = true;
-		}
-
-		else if (flag)
-		{
-			await_ready();
-		}
+		
 	}
 
-	void ReturnNull::await_resume() const noexcept
+	void Coroutine::Coroutine_type::ReturnNull::await_resume() const noexcept
 	{
-
 	}
 
 	//////////////////////////////////////
 	/////////////StartCoroutine///////////
 	//////////////////////////////////////
 
-	void Coroutine::StartCoroutine(std::function<Coroutine()> coro)
+	void Coroutine::StartCoroutine(std::function<Coroutine_type()> coro)
 	{
-		//이미 추가된 코루틴인지 확인
+		// 이미 추가된 코루틴인지 확인
 		for (auto& coron : _AddedCoroutines)
 		{
-			for (auto key : keybox)
+			if (coron.second.target_type() == coro.target_type())
 			{
-				if (coron.first != 0 && coron.first == key)
-				{
-					return;
-				}
+				return;
 			}
 		}
 
+		Coroutine_type* coroutineInstance = new Coroutine_type(coro());
+		_coroutines.emplace_back(coroutineInstance);
 		idexKey++;
-		keybox.push_back(idexKey);
-		Coroutine* coroutineInstance = new Coroutine(coro());
-		coroutineInstance->corofunc = coro;
+		coroutineInstance->mapKey = idexKey;
 
-		_AddedCoroutines.insert(std::make_pair(idexKey, coroutineInstance));
+		_AddedCoroutines.insert(std::make_pair(idexKey, coro));
 	}
 
 	////////////////////////////////////////
@@ -182,29 +214,23 @@ namespace KunrealEngine
 
 	void Coroutine::UpdateCoroutines()
 	{
-		std::vector<std::map<int, Coroutine*>::iterator> itervec;
-
-		for (auto& coroutine : _AddedCoroutines)
+		for (auto& coroutine : _coroutines)
 		{
-			std::coroutine_handle<promise_type> handle = coroutine.second->coro_handle;
-
-			if (handle.done())
+			if (!coroutine->coro_handle.done() && coroutine->coro_handle.promise().await_ready())
 			{
-				auto iter = std::find(_AddedCoroutines.begin(), _AddedCoroutines.end(), coroutine);
-				delete coroutine.second;
-				coroutine.second = nullptr;
-				itervec.push_back(iter);
+				// 코루틴이 완료되지 않고, 지정된 시간이 경과하지 않은 경우 resume하지 않음
+				coroutine->coro_handle.resume();
 			}
 
-			else if (handle)
+			else if (coroutine->coro_handle.done())
 			{
-				handle.promise().await_ready();
-			}
-		}
+				_AddedCoroutines.erase(coroutine->mapKey);
 
-		for (auto& iter : itervec)
-		{
-			_AddedCoroutines.erase(iter); // 맵에서 제거
+				auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
+				delete coroutine;
+				coroutine = nullptr;
+				_coroutines.erase(iter); // 벡터에서 제거
+			}
 		}
 	}
 }
