@@ -92,7 +92,7 @@ void ArkEngine::MeshRenderer::Render()
 
 
 	/// Dissolve Effect
-	timeMan -= 0.01f;
+	timeMan -= 0.001f;
 	if (timeMan <= 0.0f)
 	{
 		timeMan = 1.0f;

@@ -41,11 +41,15 @@ namespace KunrealEngine
 
 	private:
 		// 1페이즈
-		void ChargeAttack();// 돌진 공격
-		void DropWeb();
+		void ChargeAttack();// 돌진 공격 - 2페 시작하고 사라져야
+		void DropWeb();		// 코어패턴을 위한 거미줄 드롭
 		void LeftAttack();	// 좌수 공격
 		void RightAttack();	// 우수 공격
 		void FrontAttack();	// 양발 정면 찍기
+
+		//2페이즈 개막 패턴
+		void PullAllWeb();	// 깔아둔 거미줄 끌어올리기
+
 		// 2페이즈
 		void JumpAttack();	// 점프 - 내려찍기 공격
 		void TailAttack();	// 꼬리 공격
@@ -58,24 +62,27 @@ namespace KunrealEngine
 
 	private:	// 여긴 패턴만 넣어라
 		BossPattern* _jumpAttack;
+		BossPattern* _ChargeAttack;
 		BossPattern* _leftAttack;
 		BossPattern* _righttAttack;
 		BossPattern* _frontAttack;
 		BossPattern* _tailAttack;
 
 	private:	// 여긴 콜라이더만 넣어라
-		GameObject* _colJumpAttack;
+		GameObject* _colbodyAttack;
 		GameObject* _colFrontAttack;
 		GameObject* _colTailAttack;
 		GameObject* _colLeftHand;
 		GameObject* _colRightHand;
 
 	private:	// 그 외
-		const float jumpAttackRange = 10.0f;
-		int call = 0;
+		const float _jumpAttackRange = 10.0f;
+		int _call = 0;
 
 		// 패턴 종료 전달용
-		bool jumpAttack_end = false;
+		bool _jumpAttack_end = false;
+		bool _chargeAttack_end = false;
+
 	private:	// 코루틴
 		Coroutine_Func(JumpAttackCo)
 		{	// 보스의 점공패턴. 지금은 점프하고 날아서 플레이어에게 이동한 다음 떨어지는건데 
@@ -86,7 +93,7 @@ namespace KunrealEngine
 			auto animator = _boss->GetComponent<Animator>();
 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
 			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
-			some->jumpAttack_end = true;
+			some->_jumpAttack_end = true;
 
 			while (true)
 			{
@@ -116,22 +123,66 @@ namespace KunrealEngine
 				Return_null;
 			}
 
-			some->_colJumpAttack->SetActive(true);
+			some->_colbodyAttack->SetActive(true);
 			while (true)
 			{
 				if (!(animator->Play("Anim_Land", 30.0f)))
 				{
-					some->_colJumpAttack->SetActive(false);
-			 		animator->Stop();
-			 		break;
+					some->_colbodyAttack->SetActive(false);
+					animator->Stop();
+					break;
 				}
 				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
-				some->_colJumpAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
-				some->_colJumpAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0,rot.y,0));
+				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
 				Return_null;
 			}
 
-			some->jumpAttack_end = false;
+			some->_jumpAttack_end = false;
+		};
+
+		Coroutine_Func(ChargeAttackCo)
+		{
+			Aracne* some = this;
+			auto animator = _boss->GetComponent<Animator>();
+			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
+			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
+			some->_chargeAttack_end = true;
+
+			some->_colbodyAttack->SetActive(true);
+			while (true)
+			{
+				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+				animator->Play("Run", 30.0f, true);
+
+				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
+				Return_null;
+				
+				if (!some->Move(mine, target, 30.0f))
+				{
+					animator->Stop();
+					break;
+				}
+			}
+
+			while (true)
+			{
+				if (!(animator->Play("Attak_Take_down", 30.0f)))
+				{
+					animator->Stop();
+					break;
+				}
+
+				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
+				Return_null;
+			}
+
+			some->_colbodyAttack->SetActive(false);
+			some->_chargeAttack_end = false;
 		};
 	};
 }

@@ -34,12 +34,12 @@ namespace KunrealEngine
 		{
 		public:
 			static DurationManager& getInstance();
-			float* getDuration() const;
+			float getDuration() const;
 			void setDuration(float newDuration);
 			void durationtonull();
 
 		private:
-			float* duration = nullptr;
+			float duration = 0;
 		};
 
 		// 코루틴의 본체
@@ -56,6 +56,7 @@ namespace KunrealEngine
 				bool await_ready() noexcept;					// 꼭 있어야 하는 함수
 
 				float timer = 0;
+				float duration = 0;
 			};
 
 
@@ -94,6 +95,7 @@ namespace KunrealEngine
 
 			std::coroutine_handle<promise_type> coro_handle;
 			int mapKey = 0;
+			float duration = 0;
 		};
 
 		static void StartCoroutine(std::function<Coroutine_type()> coro);	// 코루틴 함수를 받아서 시작시킴

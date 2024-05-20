@@ -103,12 +103,12 @@ void KunrealEngine::Aracne::SetBossCollider()
 
 void KunrealEngine::Aracne::CreatesubObject()
 {
-	_colJumpAttack = _boss->GetObjectScene()->CreateObject("Jump");
-	_colJumpAttack->AddComponent<BoxCollider>();
+	_colbodyAttack = _boss->GetObjectScene()->CreateObject("Jump");
+	_colbodyAttack->AddComponent<BoxCollider>();
 	//_colJumpAttack->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
-	_colJumpAttack->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 4.0f);
-	_colJumpAttack->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 6.0f, 30.0f);
-	_colJumpAttack->SetActive(false);
+	_colbodyAttack->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 4.0f);
+	_colbodyAttack->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 6.0f, 30.0f);
+	_colbodyAttack->SetActive(false);
 
 	_colFrontAttack = _boss->GetObjectScene()->CreateObject("FrontAttack");
 	_colFrontAttack->AddComponent<BoxCollider>();
@@ -143,11 +143,12 @@ void KunrealEngine::Aracne::CreatePattern()
 {
 	CreatesubObject();
 
-	JumpAttack();
-	LeftAttack();
-	RightAttack();
-	FrontAttack();
-	TailAttack();
+	ChargeAttack();
+	//JumpAttack();
+	//LeftAttack();
+	//RightAttack();
+	//FrontAttack();
+	//TailAttack();
 	//ShootingWeb();
 	//Casting();
 }
@@ -158,18 +159,43 @@ void KunrealEngine::Aracne::JumpAttack()
 
 	_jumpAttack->SetPatternName("Jump_Attack");
 
-	_jumpAttack->SetAnimName("Anim_Jump").SetDamage(100.0f).SetSpeed(20.0f).SetRange(jumpAttackRange).SetAfterDelay(0.5);
+	_jumpAttack->SetAnimName("Anim_Jump").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_jumpAttackRange).SetAfterDelay(0.5);
 	_jumpAttack->SetIsWarning(false).SetWarningName("");
 	_jumpAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	std::function logic = [this]()
 		{
 			Startcoroutine(JumpAttackCo);
-			return this->jumpAttack_end;
+			return this->_jumpAttack_end;
 		};
 
 	_jumpAttack->SetLogic(logic);
 	_basicPattern.emplace_back(_jumpAttack);
+}
+
+void KunrealEngine::Aracne::ChargeAttack()
+{
+	_ChargeAttack = new BossPattern();
+
+	_ChargeAttack->SetPatternName("Charge_Attack");
+
+	_ChargeAttack->SetAnimName("Run").SetDamage(100.0f).SetSpeed(20.0f).SetRange(100.0f).SetAfterDelay(0.5);
+	_ChargeAttack->SetIsWarning(false).SetWarningName("");
+	_ChargeAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	std::function logic = [this]()
+		{
+			Startcoroutine(ChargeAttackCo);
+			return this->_chargeAttack_end;
+		};
+
+	_ChargeAttack->SetLogic(logic);
+	_basicPattern.emplace_back(_ChargeAttack);
+}
+
+void KunrealEngine::Aracne::DropWeb()
+{
+
 }
 
 void KunrealEngine::Aracne::LeftAttack()
@@ -218,6 +244,11 @@ void KunrealEngine::Aracne::FrontAttack()
 
 	_frontAttack->SetLogic(frontAttackLogic);
 	_basicPattern.emplace_back(_frontAttack);
+}
+
+void KunrealEngine::Aracne::PullAllWeb()
+{
+
 }
 
 void KunrealEngine::Aracne::TailAttack()
