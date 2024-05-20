@@ -3,6 +3,36 @@
         "POD": {
             "animationFrame": -431602080.0,
             "collider": {},
+            "customComponent": {},
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {},
+            "meshRenderingState": true,
+            "name": "MainCamera (1)",
+            "parent": {},
+            "particle": {},
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 0.0,
+                "position_y": 0.0,
+                "position_z": 0.0,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 1.0,
+                "scale_y": 1.0,
+                "scale_z": 1.0
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
             "customComponent": {
                 "Camera": true
             },
@@ -19,9 +49,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 7.318175315856934,
-                "position_y": 151.45199584960938,
-                "position_z": -266.3841857910156,
+                "position_x": 1.0239806175231934,
+                "position_y": 76.84955596923828,
+                "position_z": -141.74839782714844,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -1481,50 +1511,6 @@
             "lightType": {},
             "meshRenderer": {
                 "Diffuse": [
-                    "Resources/Textures/PlayerWithCloak/T_Clothes_Albedo.tga",
-                    "Resources/Textures/PlayerWithCloak/T_Albedo_Body_Nude.tga",
-                    "Resources/Textures/PlayerWithCloak/T_Hair_Albedo.tga"
-                ],
-                "Mesh": [
-                    "PlayerWithCloak/PlayerWithCloak"
-                ],
-                "Normal": [
-                    "Resources/Textures/PlayerWithCloak/",
-                    "Resources/Textures/PlayerWithCloak/",
-                    "Resources/Textures/PlayerWithCloak/"
-                ]
-            },
-            "meshRenderingState": true,
-            "name": "Create Empty (1)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": -45.02510070800781,
-                "position_y": 2.727745771408081,
-                "position_z": -55.4625358581543,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 0.05000000074505806,
-                "scale_y": 0.05000000074505806,
-                "scale_z": 0.05000000074505806
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {
-                "Diffuse": [
                     "Resources/Textures/SM_arch_stones_ruins/M_stoneblocks_ruins_BaseMap.png"
                 ],
                 "Mesh": [
@@ -1716,6 +1702,102 @@
                 "scale_x": 3.869999885559082,
                 "scale_y": 3.869999885559082,
                 "scale_z": 3.869999885559082
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {
+                "Invisible": true
+            },
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/cube/"
+                ],
+                "Mesh": [
+                    "cube/cube"
+                ],
+                "Normal": [
+                    "Resources/Textures/cube/"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "Create Empty (4)",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 7.400000095367432,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0999999046325684,
+                "LifeTime": 3.700000047683716,
+                "Random": 1.0,
+                "Velocity": 5.300000190734863
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 6.138973236083984,
+                "position_y": 1.5613821744918823,
+                "position_z": -36.185791015625,
+                "rotation_x": 0.0,
+                "rotation_y": 0.0,
+                "rotation_z": 0.0,
+                "scale_x": 56.0,
+                "scale_y": 1.0,
+                "scale_z": 56.0
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {},
+            "customComponent": {
+                "Kamen": true
+            },
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {},
+            "meshRenderingState": true,
+            "name": "Create Empty (1)",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 7.400000095367432,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0999999046325684,
+                "LifeTime": 3.700000047683716,
+                "Random": 1.0,
+                "Velocity": 5.300000190734863
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": 5.0,
+                "position_y": 0.0,
+                "position_z": -20.0,
+                "rotation_x": 0.0,
+                "rotation_y": 59.88916015625,
+                "rotation_z": 0.0,
+                "scale_x": 1.0,
+                "scale_y": 1.0,
+                "scale_z": 1.0
             }
         }
     }

@@ -37,13 +37,10 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 	for (const auto gameObject : gameObjectlist)
 	{
 		 // 보스나 플레이어면 넘어감
-		//if (gameObject->GetComponent<KunrealEngine::Kamen>() != nullptr ||
-		//	gameObject->GetComponent<KunrealEngine::Player>() != nullptr ||
-		//	gameObject->GetComponent<KunrealEngine::Aracne>() != nullptr ||
-		//	gameObject->GetComponent<KunrealEngine::Ent>() != nullptr)
-		//{
-		//	continue;
-		//}
+		if (gameObject->GetComponent<KunrealEngine::Player>() != nullptr)
+		{
+			continue;
+		}
 
 
 		if (gameObject->GetTag() == "BossSub") // 보스나 플레이어에서 내부적으로 만든거면 넘어감

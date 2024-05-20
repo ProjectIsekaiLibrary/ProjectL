@@ -673,8 +673,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 
 	ImGui::Spacing();
 
-
-	_isInvisible = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetAlpha();
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetMeshStatus() != false)
+	{
+    	_isInvisible = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->GetAlpha();
+	}
 
 	if (ImGui::DragFloat("Transparency", &_isInvisible, 0.0f, 0.0f, 1.0f))
 	{
