@@ -782,7 +782,7 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMF
 		direction = DirectX::XMVector3Normalize(direction);
 
 		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
-		_bossTransform->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+		_bossTransform->SetPosition(newPosition.m128_f32[0], _bossTransform->GetPosition().y, newPosition.m128_f32[2]);
 
 		_prevPos = _bossTransform->GetPosition();
 
@@ -806,7 +806,7 @@ void KunrealEngine::Boss::TeleportToPlayer()
 
 	// 보스와 플레이어 까지의 경로 계산
 	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-		newPlayerPosition.m128_f32[0], newPlayerPosition.m128_f32[1], newPlayerPosition.m128_f32[2]);
+		newPlayerPosition.m128_f32[0], _bossTransform->GetPosition().y, newPlayerPosition.m128_f32[2]);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
 
@@ -850,7 +850,7 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 		DirectX::XMVECTOR targetVec = DirectX::XMLoadFloat3(&targetPos);
 
 		Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-			targetVec.m128_f32[0], targetVec.m128_f32[1], targetVec.m128_f32[2]);
+			targetVec.m128_f32[0], _bossTransform->GetPosition().y, targetVec.m128_f32[2]);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(1);
 
@@ -962,13 +962,13 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 			{
 				// 가로막힌 물체의 포지션을 찾고
 				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-					targetPos.x, targetPos.y, targetPos.z);
+					targetPos.x, _bossTransform->GetPosition().y, targetPos.z);
 
 				auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
 				// 그 물체의 포지션을 기반으로 네비메쉬 길찾기
 				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-					targetPosition.x, targetPosition.y, targetPosition.z);
+					targetPosition.x, _bossTransform->GetPosition().y, targetPosition.z);
 
 				_stopover = Navigation::GetInstance().FindStraightPath(1);
 
@@ -984,7 +984,7 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 			else
 			{
 				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-					targetPos.x, targetPos.y, targetPos.z);
+					targetPos.x, _bossTransform->GetPosition().y, targetPos.z);
 
 				_stopover = Navigation::GetInstance().FindStraightPath(1);
 
@@ -1305,7 +1305,7 @@ void KunrealEngine::Boss::UpdateMoveNode()
 	auto range = _nowTitlePattern->_range + _nowTitlePattern->_rangeOffset;
 
 	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-		playerPos.x + range * dirVec.m128_f32[0], playerPos.y, playerPos.z + range * dirVec.m128_f32[2]);
+		playerPos.x + range * dirVec.m128_f32[0], _bossTransform->GetPosition().y, playerPos.z + range * dirVec.m128_f32[2]);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
 
