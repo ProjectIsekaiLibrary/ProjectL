@@ -69,6 +69,8 @@ namespace KunrealEngine
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
 
+		void CreateOutsideSafe();
+
 		//void CreateMultiCall();
 
 		// «ŸΩ… ±‚πÕ ∆–≈œ
@@ -88,6 +90,7 @@ namespace KunrealEngine
 		BossPattern* _teleportWithLook;
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
+		BossPattern* _outsideSafe;
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -99,6 +102,9 @@ namespace KunrealEngine
 		GameObject* _call;
 		GameObject* _call2;
 		GameObject* _lazer;
+
+		GameObject* _insideWarning;
+		GameObject* _outsideAttack;
 
 		std::vector<GameObject*> _fakeBoss;
 
@@ -119,6 +125,9 @@ namespace KunrealEngine
 
 	private:
 		unsigned int _targetIndex;
+
+	private:
+		float _insideWarningTimer;
 
 	// logic
 	private:

@@ -69,6 +69,12 @@ namespace KunrealEngine
 
 		// 타이머 리셋
 		void Reset();
+
+		bool PlayOnce();
+
+	private:
+		bool _isRendering;
+		bool _isPlayed;
 	};
 }
 
