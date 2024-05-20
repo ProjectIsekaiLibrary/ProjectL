@@ -53,7 +53,7 @@ void KunrealEngine::Particle::Update()
 		}
 		 
 		auto pos = this->GetOwner()->GetComponent<Transform>()->_posForBone;
-		SetParticlePos(pos.x + _offset.x, pos.y + _offset.y, _offset.z + _offset.z);
+		SetParticlePos(pos.x + _offset.x, pos.y + _offset.y, pos.z + _offset.z);
 	}
 	else
 	{

@@ -4,10 +4,13 @@
 #include "SceneManager.h"
 #include "Ent.h"
 
+#include <algorithm>
+#include <random>
+
 KunrealEngine::Ent::Ent()
 	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _leftRoot(nullptr), _rightRoot(nullptr), _bigRootShotStart(false),
 	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
-	_leftAttack(nullptr), _rightAttack(nullptr), _bigRootShot(nullptr), _isIdleHealing(false), _rootY(-50.0f), randomX(0.0f), randomZ(0.0f), isEyesLightStart(false)
+	_leftAttack(nullptr), _rightAttack(nullptr), _bigRootShot(nullptr), _isIdleHealing(false), _rootY(-50.0f), randomX(0.0f), randomZ(0.0f), isEyesLightStart(false), _successCountCoreFirst(0)
 {
 	BossBasicInfo info;
 
@@ -105,12 +108,11 @@ void KunrealEngine::Ent::SetBossCollider()
 void KunrealEngine::Ent::CreatePattern()
 {
 	CreateSubObject();
-	//CreateLeftAttack();
-	CreateRightAttack();
-	CreateLeftRootShot();
-	CreateRightRootShot();
-	CreateRandomRootAttack();
-	CreateEyeLight();
+	//CreateRightAttack();
+	//CreateLeftRootShot();
+	//CreateRightRootShot();
+	//CreateRandomRootAttack();
+	//CreateEyeLight();
 	CreateSwiping();
 	//CreateJumpAttack();
 	//CreateCorePatternFirst();
@@ -120,6 +122,7 @@ void KunrealEngine::Ent::CreateSubObject()
 {
 	// 왼손
 	_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
+	_leftHand->SetTag("BossSub");
 	_leftHand->AddComponent<BoxCollider>();
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "hand_l");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 3.0f, 4.0f);
@@ -136,12 +139,14 @@ void KunrealEngine::Ent::CreateSubObject()
 	
 	// 오른손
 	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
+	_rightHand->SetTag("BossSub");
 	_rightHand->AddComponent<BoxCollider>();
 	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "ik_hand_r");
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 3.0f, 4.0f);
 	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
 
 	_leftRoot = _boss->GetObjectScene()->CreateObject("leftRoot");
+	_leftRoot->SetTag("BossSub");
 	_leftRoot->AddComponent<MeshRenderer>();
 	_leftRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02/SM_root_large_02"); // w줄기 이름
 	_leftRoot->GetComponent<MeshRenderer>()->SetActive(true);
@@ -153,6 +158,7 @@ void KunrealEngine::Ent::CreateSubObject()
 	_leftRoot->SetActive(false);
 
 	_rightRoot = _boss->GetObjectScene()->CreateObject("rightRoot");
+	_rightRoot->SetTag("BossSub");
 	_rightRoot->AddComponent<MeshRenderer>();
 	_rightRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02/SM_root_large_02"); // w줄기 이름
 	_rightRoot->GetComponent<MeshRenderer>()->SetActive(true);
@@ -171,6 +177,7 @@ void KunrealEngine::Ent::CreateSubObject()
 		GameObject* smallRoot = nullptr;
 
 		smallRoot = _boss->GetObjectScene()->CreateObject("smallRoot");
+		smallRoot->SetTag("BossSub");
 		smallRoot->AddComponent<MeshRenderer>();
 		smallRoot->GetComponent<MeshRenderer>()->SetMeshObject("SM_root_large_02/SM_root_large_02");
 		smallRoot->GetComponent<MeshRenderer>()->SetActive(true);
@@ -184,6 +191,7 @@ void KunrealEngine::Ent::CreateSubObject()
 	}
 
 	_colJumpAttack = _boss->GetObjectScene()->CreateObject("Jump");
+	_colJumpAttack->SetTag("BossSub");
 	_colJumpAttack->AddComponent<BoxCollider>();
 	_colJumpAttack->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 0.0f);
 	_colJumpAttack->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 5.0f, 10.0f);
@@ -196,21 +204,22 @@ void KunrealEngine::Ent::CreateSubObject()
 	// 사이즈 2
 
 	_eyeLight = _boss->GetObjectScene()->CreateObject("EyeLight");
-
+	_eyeLight->SetTag("BossSub");
 	_eyeLight->AddComponent<BoxCollider>();
 	_eyeLight->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 5.0f, 5.0f);
-	_eyeLight->GetComponent<BoxCollider>()->SetOffset(_playerTransform->GetPosition().x, _playerTransform->GetPosition().y - 17.0f, _playerTransform->GetPosition().z + 8.0f);  //(0.0f, -17.0f, 8.0f);
+	_eyeLight->GetComponent<BoxCollider>()->SetOffset(_playerTransform->GetPosition().x, _playerTransform->GetPosition().y - 15.0f, _playerTransform->GetPosition().z + 8.0f);  //(0.0f, -17.0f, 8.0f);
 
 	_eyeLight->GetComponent<BoxCollider>()->SetActive(false);
 
 	_eyeLight->AddComponent<Particle>();
 	_eyeLight->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
 	_eyeLight->GetComponent<Particle>()->SetParticleDuration(3.0f, 12.0f);
-	_eyeLight->GetComponent<Particle>()->SetParticleVelocity(70.0f, false);
+	_eyeLight->GetComponent<Particle>()->SetParticleVelocity(60.0f, false);
 	_eyeLight->GetComponent<Particle>()->SetTransform(_boss, "jaw");
 	_eyeLight->GetComponent<Particle>()->SetParticleRotation(210.0f, _bossTransform->GetRotation().y, 0.0f);  // 여기서 동적으로
-	_eyeLight->GetComponent<Particle>()->SetParticleSize(4.0f, 4.0f);
-	_eyeLight->GetComponent<Particle>()->AddParticleColor(12.0f, 2.5f, 1.5f);
+	_eyeLight->GetComponent<Particle>()->SetParticleSize(1.5f, 1.5f);
+	_eyeLight->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 2.5f);
+	_eyeLight->GetComponent<Particle>()->SetOffSet(0.0f, 1.3f, 0.0f);
 	_eyeLight->GetComponent<Particle>()->SetActive(false);
 	//_eyeLight->SetActive(false);
 
@@ -266,7 +275,6 @@ void KunrealEngine::Ent::CreateRightAttack()
 
 	//_rightAttack = pattern;
 	_basicPattern.emplace_back(pattern);
-
 }
 
 void KunrealEngine::Ent::CreateLeftRootShot()
@@ -632,6 +640,8 @@ void KunrealEngine::Ent::CreateSwiping()
 
 	pattern->_subObject.emplace_back(_leftHand);
 
+	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(7.0f, 8.0f, 7.0f);
+
 	auto swipingLogic = [pattern, this]
 		{
 			auto animator = _boss->GetComponent<Animator>();
@@ -643,10 +653,7 @@ void KunrealEngine::Ent::CreateSwiping()
 			{
 				_leftHand->GetComponent<BoxCollider>()->SetActive(true);
 
-				_leftHand->GetComponent<BoxCollider>()->SetBoxSize(7.0f, 8.0f, 7.0f);
-
 				_leftHand->GetComponent<Particle>()->SetActive(true);
-
 			}
 
 			if (isAnimationPlaying == false)
@@ -716,10 +723,10 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true); // 모션 시작
 
-			if (animator->GetCurrentFrame() >= 60)
-			{
-				isPatternEnd = true;		
-			}
+			//if (animator->GetCurrentFrame() >= 60)
+			//{
+			//	isPatternEnd = true;		
+			//}
 
 			for (auto treeObject : _treeObject)
 			{
@@ -770,7 +777,7 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 
 
 
-			if (isAnimationPlaying == false && isPatternEnd == true)
+			if (_successCountCoreFirst == 3)
 			{
 				return false;
 			}
@@ -782,7 +789,7 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 
 void KunrealEngine::Ent::CorePatternObjectFirst()
 {
-	int treeCount = 3;
+	int treeCount = 4;
 
 	for (int i = 0; i < treeCount; ++i)
 	{
@@ -800,17 +807,17 @@ void KunrealEngine::Ent::CorePatternObjectFirst()
 		_treeObject.push_back(treeObject);
 	}
 
-	_treeObjectReal = _boss->GetObjectScene()->CreateObject("treeObjectReal");
-	_treeObjectReal->AddComponent<MeshRenderer>();
-	_treeObjectReal->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_01/SM_tree_large_ancient_01");
-	_treeObjectReal->GetComponent<MeshRenderer>()->SetActive(true);
-	_treeObjectReal->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
-	_treeObjectReal->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	_treeObjectReal->AddComponent<BoxCollider>();
-	_treeObjectReal->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 10.0f, 5.0f);
-	_treeObjectReal->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
-	_treeObjectReal->SetActive(false);
-	_treeObject.push_back(_treeObjectReal);
+	//_treeObjectReal = _boss->GetObjectScene()->CreateObject("treeObjectReal");
+	//_treeObjectReal->AddComponent<MeshRenderer>();
+	//_treeObjectReal->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_01/SM_tree_large_ancient_01");
+	//_treeObjectReal->GetComponent<MeshRenderer>()->SetActive(true);
+	//_treeObjectReal->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+	//_treeObjectReal->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	//_treeObjectReal->AddComponent<BoxCollider>();
+	//_treeObjectReal->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 10.0f, 5.0f);
+	//_treeObjectReal->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
+	//_treeObjectReal->SetActive(false);
+	//_treeObject.push_back(_treeObjectReal);
 
 }
 

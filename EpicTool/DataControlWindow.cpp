@@ -200,6 +200,7 @@ void EpicTool::DataControlWindow::LoadToFile(const std::string& filePath)
 void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 {
 	std::string scene = KunrealEngine::GetCurrentScene()->GetSceneName();
+
 	 if (scene == "mapTest2.json" && _scene2First == false)
 	{
 		// 파일명 설정
@@ -209,6 +210,8 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		std::filesystem::path filePath = _executablePath / filename;
 
 		filename = filePath.string();
+
+		
 
 		Deserialize* _deserialize = new Deserialize();
 		_deserialize->Initialize(filename);
@@ -225,6 +228,7 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		std::filesystem::path filePath = _executablePath / filename;
 
 		filename = filePath.string();
+		
 
 		Deserialize* _deserialize = new Deserialize();
 		_deserialize->Initialize(filename);
@@ -266,6 +270,13 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 	}
 	else if (scene == "Main" && _scene1First == false)
 	{
+		 _scene1First = true;
+		 // _scene2First = false;
+		 // _scene3First = false;
+		 // _scene4First = false;
+		 // _scene5First = false;
+		 selectedObjectIndex = -1;
+
 		 // 파일명 설정
 		 std::string filename = "mapTest1.json"; // 예시 파일명
 
@@ -273,7 +284,7 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		 std::filesystem::path filePath = _executablePath / filename;
 
 		 filename = filePath.string();
-
+		    
 		 Deserialize* _deserialize = new Deserialize();
 		 _deserialize->Initialize(filename);
 
@@ -288,12 +299,6 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 			}
 		 }
 
-		 _scene1First = true;
-		 _scene2First = false;
-		 _scene3First = false;
-		 _scene4First = false;
-		 _scene5First = false;
-		 selectedObjectIndex = -1;
 	 }
 
 }
