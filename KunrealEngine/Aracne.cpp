@@ -144,10 +144,10 @@ void KunrealEngine::Aracne::CreatePattern()
 	CreatesubObject();
 
 	JumpAttack();
-	//LeftAttack();
-	//RightAttack();
-	//FrontAttack();
-	//TailAttack();
+	LeftAttack();
+	RightAttack();
+	FrontAttack();
+	TailAttack();
 	//ShootingWeb();
 	//Casting();
 }
@@ -165,7 +165,7 @@ void KunrealEngine::Aracne::JumpAttack()
 	std::function logic = [this]()
 		{
 			Startcoroutine(JumpAttackCo);
-			return true;
+			return this->jumpAttack_end;
 		};
 
 	_jumpAttack->SetLogic(logic);
