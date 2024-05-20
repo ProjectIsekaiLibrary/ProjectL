@@ -85,7 +85,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest2.json");
 	sceneInstance.CreateScene("mapTest3.json");
 	sceneInstance.CreateScene("mapTest4.json");
-	sceneInstance.CreateScene("mapTest5.json");
+	sceneInstance.CreateScene("mapTest6.json");
 
 	/// 니들 맘대로 해
 	//PlayGround();
@@ -210,7 +210,7 @@ void KunrealEngine::EngineCore::Update()
 		{
 			if (GetCurrentScene()->GetGameObject("RuneStoneArachne")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
 			{
-				ChangeScene("mapTest5.json");
+				ChangeScene("mapTest6.json");
 			}
 		}
 	}

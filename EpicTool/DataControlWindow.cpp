@@ -252,7 +252,7 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		_scene4First = true;
 		selectedObjectIndex = -1;
 	}
-	else if (scene == "mapTest5.json" && _scene5First == false)
+	else if (scene == "mapTest6.json" && _scene5First == false)
 	{
 		// 파일명 설정
 		std::string filename = scene; // 예시 파일명
