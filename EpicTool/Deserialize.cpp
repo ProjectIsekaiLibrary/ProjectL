@@ -44,6 +44,8 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 				object = KunrealEngine::GetCurrentScene()->CreateObject(objectName);
 			//}
 
+				bool isInvisible = false;
+
 			if (object)
 			{
 				// Ä¿½ºÅÒÄÄÆ÷³ÍÆ®
@@ -67,6 +69,12 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 					auto player = jsonItem["POD"]["customComponent"].find("Player");
 					
 					auto kamen = jsonItem["POD"]["customComponent"].find("Kamen");
+
+					auto ent = jsonItem["POD"]["customComponent"].find("Ent");
+
+					auto aracne = jsonItem["POD"]["customComponent"].find("Aracne");
+
+					auto invisivle = jsonItem["POD"]["customComponent"].find("Invisible");
 	
 					if (player != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Player"].empty())
 					{
@@ -81,9 +89,22 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 						isBoss = true;
 					}
 	
-					
+					if (ent != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Ent"].empty())
+					{
+						object->AddComponent<KunrealEngine::Ent>();
+						isBoss = true;
+					}
 	
-	
+					if (aracne != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Aracne"].empty())
+					{
+						object->AddComponent<KunrealEngine::Aracne>();
+						isBoss = true;
+					}
+
+					if (invisivle != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Invisible"].empty())
+					{
+						isInvisible = true;
+					}
 				}
 
 
@@ -135,6 +156,11 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 						if (renderingState != jsonItem["POD"]["meshRenderer"].end() && jsonItem["POD"]["meshRenderer"]["RenderingState"] == "\u0000")
 						{
 							object->GetComponent<KunrealEngine::MeshRenderer>()->SetActive(false);
+						}
+
+						if (isInvisible == true)
+						{
+							object->GetComponent<KunrealEngine::MeshRenderer>()->SetAlpha(0);
 						}
 
 					}

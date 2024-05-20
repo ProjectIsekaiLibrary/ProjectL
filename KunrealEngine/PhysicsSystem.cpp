@@ -9,7 +9,7 @@
 
 KunrealEngine::PhysicsSystem::PhysicsSystem()
 	:_foundation(nullptr), _physics(nullptr), _dispatcher(nullptr), _pxScene(nullptr),
-	_material(nullptr), _pvd(nullptr)
+	_material(nullptr), _pvd(nullptr), _convexMesh(nullptr)
 {
 
 }
@@ -46,9 +46,6 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	//
 	//// Add the collider to a rigid body
 	//_pxScene->addActor(*capsuleActor);
-
-	// 실린더 데이터 
-	cylinderVertices = GRAPHICS->GetMeshVertexData("cylinder/cylinder");
 
 	
 	///
@@ -163,28 +160,10 @@ void KunrealEngine::PhysicsSystem::CreateStaticBoxCollider(BoxCollider* collider
 
 void KunrealEngine::PhysicsSystem::CreateCylinderCollider(BoxCollider* collider)
 {
-	// 정점 정보
-	physx::PxConvexMeshDesc convexDesc;
-	convexDesc.points.count = cylinderVertices.size();
-	convexDesc.points.stride = sizeof(DirectX::XMFLOAT3);
-	convexDesc.points.data = &cylinderVertices[0];
-	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
-
-	const physx::PxCookingParams params(_physics->getTolerancesScale());
-
-	// 정점 메모리 버퍼
-	physx::PxDefaultMemoryOutputStream buf;
-	physx::PxConvexMeshCookingResult::Enum result;
-	const bool status = PxCookConvexMesh(params, convexDesc, buf, &result);
-
-	// mesh 생성
-	physx::PxDefaultMemoryInputData inputi(buf.getData(), buf.getSize());
-	physx::PxConvexMesh* convexMesh = _physics->createConvexMesh(inputi);
-
 	physx::PxMeshScale scale(physx::PxVec3(
 		collider->GetBoxSize().x, collider->GetBoxSize().y, collider->GetBoxSize().z), 
 		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
-	physx::PxConvexMeshGeometry geom(convexMesh, scale);
+	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
 
 	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
@@ -269,17 +248,25 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(BoxCollider* collider)
 	/// detachShape에서 delete까지 해주는 모양이다
 	//static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape->release();
 
-	// 크기에 맞게 새로운 shape 생성
-	physx::PxShape* boxShape = _physics->createShape(physx::PxBoxGeometry(
-		collider->GetBoxSize().x / 2.f, 
-		collider->GetBoxSize().y / 2.f, 
-		collider->GetBoxSize().z / 2.f), *_material);
+	// 모양에 따라 분기 결정
+	if (!collider->_isCylinder)
+	{
+		// 크기에 맞게 새로운 shape 생성
+		physx::PxShape* boxShape = _physics->createShape(physx::PxBoxGeometry(
+			collider->GetBoxSize().x / 2.f,
+			collider->GetBoxSize().y / 2.f,
+			collider->GetBoxSize().z / 2.f), *_material);
 
-	// 새롭게 만든 shape 추가
-	_dynamicMap.at(collider)->attachShape(*boxShape);
+		// 새롭게 만든 shape 추가
+		_dynamicMap.at(collider)->attachShape(*boxShape);
 
-	// userData 업데이트
-	static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = boxShape;
+		// userData 업데이트
+		static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = boxShape;
+	}
+	else
+	{
+
+	}
 }
 
 void KunrealEngine::PhysicsSystem::TestFunc()
@@ -317,6 +304,31 @@ void KunrealEngine::PhysicsSystem::TestFunc()
 
 	//_pxScene->addActor(*boxActor);
 	//_pxScene->addActor(*boxActor2);
+}
+
+
+void KunrealEngine::PhysicsSystem::CreateCylinderData()
+{
+	// 실린더 데이터 
+	_cylinderVertices = GRAPHICS->GetMeshVertexData("cylinder/cylinder");
+
+	// 정점 정보
+	physx::PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = _cylinderVertices.size();
+	convexDesc.points.stride = sizeof(DirectX::XMFLOAT3);
+	convexDesc.points.data = &_cylinderVertices[0];
+	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+	const physx::PxCookingParams params(_physics->getTolerancesScale());
+
+	// 정점 메모리 버퍼
+	physx::PxDefaultMemoryOutputStream buf;
+	physx::PxConvexMeshCookingResult::Enum result;
+	const bool status = PxCookConvexMesh(params, convexDesc, buf, &result);
+
+	// mesh 생성
+	physx::PxDefaultMemoryInputData inputi(buf.getData(), buf.getSize());
+	_convexMesh = _physics->createConvexMesh(inputi);
 }
 
 bool KunrealEngine::PhysicsSystem::IsTrigger(const physx::PxFilterData& data)
