@@ -36,6 +36,21 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 	// 오브젝트의 갯수 만큼 반복 할 것
 	for (const auto gameObject : gameObjectlist)
 	{
+		 // 보스나 플레이어면 넘어감
+		//if (gameObject->GetComponent<KunrealEngine::Kamen>() != nullptr ||
+		//	gameObject->GetComponent<KunrealEngine::Player>() != nullptr ||
+		//	gameObject->GetComponent<KunrealEngine::Aracne>() != nullptr ||
+		//	gameObject->GetComponent<KunrealEngine::Ent>() != nullptr)
+		//{
+		//	continue;
+		//}
+
+
+		if (gameObject->GetTag() == "BossSub") // 보스나 플레이어에서 내부적으로 만든거면 넘어감
+		{
+			continue;
+		}
+
 		if (gameObject->GetObjectName() != "MainCamera" )
 		{		
 			//pod.animationFrame = 0.0f;
@@ -63,14 +78,24 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 			}
 
 			// 커스텀 컴포넌트 (특수한 경우의 컴포넌트)
-			if ((gameObject->GetComponent<KunrealEngine::Player>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
+			if ((gameObject->GetComponent<KunrealEngine::Player>()) != NULL)  
 			{
 				pod.customComponent["Player"] = true;
 			}
 
-			if ((gameObject->GetComponent<KunrealEngine::Kamen>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
+			if ((gameObject->GetComponent<KunrealEngine::Kamen>()) != NULL)  
 			{
 				pod.customComponent["Kamen"] = true;
+			}
+
+			if ((gameObject->GetComponent<KunrealEngine::Ent>()) != NULL)
+			{
+				pod.customComponent["Ent"] = true;
+			}
+
+			if ((gameObject->GetComponent<KunrealEngine::Aracne>()) != NULL)
+			{
+				pod.customComponent["Aracne"] = true;
 			}
 
 			if ((gameObject->GetComponent<KunrealEngine::Camera>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
@@ -90,7 +115,7 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 				}
 			}
 
-			if (gameObject->GetComponent<KunrealEngine::Player>() == NULL || gameObject->GetComponent<KunrealEngine::Kamen>() == NULL)
+			if (gameObject->GetComponent<KunrealEngine::Player>() == NULL && gameObject->GetComponent<KunrealEngine::Kamen>() == NULL)
 			{
 				if ((gameObject->GetComponent<KunrealEngine::MeshRenderer>()) != NULL)
 				{
@@ -113,6 +138,11 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 					pod.meshRenderer["Normal"] = meshNormalJson;
 
 					//pod.animationFrame = gameObject->GetComponent<KunrealEngine::Animator>()->GetCurrentFrame();
+
+					if (gameObject->GetComponent<KunrealEngine::MeshRenderer>()->GetAlpha() == 0)
+					{
+						pod.customComponent["Invisible"] = true;
+					}
 				}
 
 				if ((gameObject->GetComponent<KunrealEngine::Light>()) != NULL)

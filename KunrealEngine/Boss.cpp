@@ -782,7 +782,7 @@ bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMF
 		direction = DirectX::XMVector3Normalize(direction);
 
 		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
-		_bossTransform->SetPosition(newPosition.m128_f32[0], 0.0f, newPosition.m128_f32[2]);
+		_bossTransform->SetPosition(newPosition.m128_f32[0], _bossTransform->GetPosition().y, newPosition.m128_f32[2]);
 
 		_prevPos = _bossTransform->GetPosition();
 
@@ -806,7 +806,7 @@ void KunrealEngine::Boss::TeleportToPlayer()
 
 	// 보스와 플레이어 까지의 경로 계산
 	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-		newPlayerPosition.m128_f32[0], 0.0f, newPlayerPosition.m128_f32[2]);
+		newPlayerPosition.m128_f32[0], _bossTransform->GetPosition().y, newPlayerPosition.m128_f32[2]);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
 
@@ -825,7 +825,7 @@ void KunrealEngine::Boss::TeleportToPlayer()
 
 	_prevPos = _bossTransform->GetPosition();
 
-	_bossTransform->SetPosition(target.x, 0.0f, target.z);
+	_bossTransform->SetPosition(target.x, target.y, target.z);
 
 	// 플레이어를 바라보도록 
 	auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
@@ -850,7 +850,7 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 		DirectX::XMVECTOR targetVec = DirectX::XMLoadFloat3(&targetPos);
 
 		Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-			targetVec.m128_f32[0], 0.0f, targetVec.m128_f32[2]);
+			targetVec.m128_f32[0], _bossTransform->GetPosition().y, targetVec.m128_f32[2]);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(1);
 
@@ -863,7 +863,7 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 		auto playerRotation = _playerTransform->GetRotation();
 
 		auto target = _stopover.back().second;
-		_bossTransform->SetPosition(target.x, 0.0f, target.z);
+		_bossTransform->SetPosition(target.x, target.y, target.z);
 		_prevPos = _bossTransform->GetPosition();
 
 		// 플레이어를 바라보도록 
@@ -962,39 +962,39 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 			{
 				// 가로막힌 물체의 포지션을 찾고
 				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-					targetPos.x, targetPos.y, targetPos.z);
+					targetPos.x, _bossTransform->GetPosition().y, targetPos.z);
 
 				auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
 				// 그 물체의 포지션을 기반으로 네비메쉬 길찾기
 				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-					targetPosition.x, targetPosition.y, targetPosition.z);
+					targetPosition.x, _bossTransform->GetPosition().y, targetPosition.z);
 
 				_stopover = Navigation::GetInstance().FindStraightPath(1);
 
 				_prevPos = _stopover[0].first;
 
-				for (auto& index : _stopover)
-				{
-					index.first.y = 0.0f;
-					index.second.y = 0.0f;
-				}
+				//for (auto& index : _stopover)
+				//{
+				//	index.first.y = 0.0f;
+				//	index.second.y = 0.0f;
+				//}
 			}
 			// 그냥 타겟 포지션까지 네비메쉬로 길찾기
 			else
 			{
 				Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
-					targetPos.x, targetPos.y, targetPos.z);
+					targetPos.x, _bossTransform->GetPosition().y, targetPos.z);
 
 				_stopover = Navigation::GetInstance().FindStraightPath(1);
 
 				_prevPos = _stopover[0].first;
 
-				for (auto& index : _stopover)
-				{
-					index.first.y = 0.0f;
-					index.second.y = 0.0f;
-				}
+				//for (auto& index : _stopover)
+				//{
+				//	index.first.y = 0.0f;
+				//	index.second.y = 0.0f;
+				//}
 			}
 
 			// 이제 움직이기 시작
@@ -1081,10 +1081,6 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 					}
 				}
 			}
-			else
-			{
-				int a = 5;
-			}
 
 			// 1타를 맞았다면
 			if (pattern->_colliderOnCount == 0)
@@ -1154,7 +1150,7 @@ bool KunrealEngine::Boss::BackStep(float speed, float distance)
 	DirectX::XMFLOAT3 newPosition;
 
 	newPosition.x = _backStepPos.x - distance * _direction.x;
-	newPosition.y = 0.0f;
+	newPosition.y = _backStepPos.y;
 	newPosition.z = _backStepPos.z - distance * _direction.z;
 
 	return Move(newPosition, speed, false, true);
@@ -1193,6 +1189,8 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 
 			// 오브젝트에 대한 비활성화 시키기
 			object->SetActive(tf);
+
+			object->SetTag("BossSub");
 		}
 	}
 
@@ -1213,6 +1211,8 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 
 			// 오브젝트에 대한 비활성화 시키기
 			object->SetActive(tf);
+
+			object->SetTag("BossSub");
 		}
 	}
 }
@@ -1304,16 +1304,16 @@ void KunrealEngine::Boss::UpdateMoveNode()
 	auto dirVec = DirectX::XMVector3Normalize(tempVec);
 	auto range = _nowTitlePattern->_range + _nowTitlePattern->_rangeOffset;
 
-	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, 0.0f, _bossTransform->GetPosition().z,
-		playerPos.x + range * dirVec.m128_f32[0], 0.0f, playerPos.z + range * dirVec.m128_f32[2]);
+	Navigation::GetInstance().SetSEpos(1, _bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z,
+		playerPos.x + range * dirVec.m128_f32[0], _bossTransform->GetPosition().y, playerPos.z + range * dirVec.m128_f32[2]);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
 
-	for (auto& index : _stopover)
-	{
-		index.first.y = 0.0f;
-		index.second.y = 0.0f;
-	}
+	//for (auto& index : _stopover)
+	//{
+	//	index.first.y = 0.0f;
+	//	index.second.y = 0.0f;
+	//}
 
 
 	_nodeCount = 0;
@@ -1353,7 +1353,7 @@ bool KunrealEngine::Boss::MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMF
 		direction = DirectX::XMVector3Normalize(direction);
 
 		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
-		_bossTransform->SetPosition(newPosition.m128_f32[0], 0.0f, newPosition.m128_f32[2]);
+		_bossTransform->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 
 		_prevPos = _bossTransform->GetPosition();
 

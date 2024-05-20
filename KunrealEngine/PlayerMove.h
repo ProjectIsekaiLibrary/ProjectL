@@ -35,6 +35,7 @@ namespace KunrealEngine
 		float _errorRange;						// 이 정도 오차범위 이내로 움직이면 움직임이 완료된 것으로 판단
 		int _nodeCount;							// 이동할 노드의 수
 		float _movedRange;						// 대시로 이동한 거리 체크용 변수
+		float _posY;							// 맵마다 다른 높이를 적용할 변수
 
 		// 이동할 위치를 마우스 우클릭 시 업데이트
 		void UpdateTargetPosition();
@@ -60,6 +61,9 @@ namespace KunrealEngine
 
 		// 플레이어 대시
 		void PlayerDash(DirectX::XMFLOAT3 targetPos, float speed);
+
+		// 플레이어의 Y 좌표를 고정시키는 함수
+		void SetPlayerY(float y);
 
 		// Navigation을 이용한 움직임
 		void NavigationMove(float speed);

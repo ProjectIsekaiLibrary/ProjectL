@@ -16,7 +16,7 @@ EpicTool::InspectorWindow::InspectorWindow()
 	, _selectedNormal(0), _comboMeshSelect(-1), _comboNormalSelect(-1), _comboDiffuseSelect(-1), _selectObjectNumber(-1), _isObjectActive(true), _comboLightSelect(-1), _comboImageSelect(-1), _comboSoundSelect(-1), _soundVolEditor(100), _comboNewSoundSelect(-1)
 	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
 	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
-	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{1.0f, 1.0f, 1.0f}, _directionParticle{0}, _sizeParticle{0}
+	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{1.0f, 1.0f, 1.0f}, _directionParticle{0}, _sizeParticle{0}, _isInvisible(0)
 { 
 																			
 }																			
@@ -670,6 +670,16 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::MeshRenderer>(K
 		ImGui::ListBox("NormalList2", &_currentNormal, itemsNor.data(), itemsNor.size(), 4);
 	}
 
+
+	ImGui::Spacing();
+
+
+	if (ImGui::DragFloat("Invisible", &_isInvisible))
+	{
+
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::MeshRenderer>()->SetAlpha(_isInvisible);
+	}
+
 	ImGui::Spacing();
 
 	ImGui::Text("Animator");
@@ -1058,6 +1068,48 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Kamen>(KunrealE
 	ImGui::Spacing();
 }
 
+/// <summary>
+/// Boss[Aracne]을 관리하는 UI
+/// </summary>
+/// <param name="instance"></param>
+template<>
+void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Aracne>(KunrealEngine::Aracne* instance)
+{
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Aracne");
+
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Aracne>() == NULL) // 깡통 추가
+	{
+		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Aracne>();
+	}
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Aracne>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+}
+
+/// <summary>
+/// Boss[Ent]을 관리하는 UI
+/// </summary>
+/// <param name="instance"></param>
+template<>
+void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Ent>(KunrealEngine::Ent* instance)
+{
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Ent");
+
+	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Ent>() == NULL) // 깡통 추가
+	{
+		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Ent>();
+	}
+
+	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Ent>());
+
+	ImGui::Spacing();
+	ImGui::Separator();
+	ImGui::Spacing();
+}
+
 void EpicTool::InspectorWindow::Initialize()
 {
     _meshList = KunrealEngine::GraphicsSystem::GetInstance().GetRenderableList();
@@ -1096,6 +1148,8 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 	bool soundPlayerOpen = false;
 	bool playerOpen = false;
 	bool KamenOpen = false;
+	bool AracneOpen = false;
+	bool EntOpen = false;
 	bool particleOpen = false;
 	bool collider = false;
 	_DebugType = DebugType::None;
@@ -1151,10 +1205,10 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 
 		if (selectedComponentIndex)
 		{
-			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer","Particle", "Player", "Kamen"};
+			const char* items[] = { "MeshRenderer" , "Camera" , "Light", "ImageRenderer", "BoxCollider", "SoundPlayer","Particle", "Player", "Kamen", "Aracne", "Ent"};
 			int selectedItem = -1;
 
-			if (ImGui::Combo("Component", &selectedItem, items, 9)) {
+			if (ImGui::Combo("Component", &selectedItem, items, 11)) {
 				// 사용자가 새로운 아이템을 선택했을 때 실행할 코드
 				// 임시 테스트 용이며 삭제할것임
 				switch (selectedItem)
@@ -1196,6 +1250,14 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 					break;
 				case 8:
 					IsCheckItem(KamenOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 9:
+					IsCheckItem(AracneOpen);
+					selectedComponentIndex = !selectedComponentIndex;
+					break;
+				case 10:
+					IsCheckItem(EntOpen);
 					selectedComponentIndex = !selectedComponentIndex;
 					break;
 
@@ -1245,6 +1307,14 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			if (checkComponentName == "Kamen")
 			{
 				KamenOpen = true;
+			}
+			if (checkComponentName == "Aracne")
+			{
+				AracneOpen = true;
+			}
+			if (checkComponentName == "Ent")
+			{
+				EntOpen = true;
 			}
 			if (checkComponentName == "Particle")
 			{
@@ -1296,6 +1366,16 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 		if (particleOpen == true)
 		{
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>());
+		}
+
+		if (AracneOpen == true)
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Aracne>());
+		}
+
+		if (EntOpen == true)
+		{
+			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Ent>());
 		}
 
 		if (ImGui::Button("Add Component"))
