@@ -62,6 +62,9 @@ namespace KunrealEngine
 		// 플레이어 대시
 		void PlayerDash(DirectX::XMFLOAT3 targetPos, float speed);
 
+		// 플레이어의 Y 좌표를 고정시키는 함수
+		void SetPlayerY(float y);
+
 		// Navigation을 이용한 움직임
 		void NavigationMove(float speed);
 		void NavigationDash(float speed);
