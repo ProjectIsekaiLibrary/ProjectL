@@ -117,9 +117,6 @@ namespace KunrealEngine
 		bool _isRotateFinish;
 
 	private:
-		bool _spellStart;
-
-	private:
 		bool _isCoreStart;
 		bool _isRandomStart;
 

@@ -1057,7 +1057,7 @@ std::function<bool()> KunrealEngine::Boss::CreateBackStepLogic(BossPattern* patt
 
 std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, float activeColliderFrame)
 {
-	pattern->_subObject.emplace_back(subObject);
+	pattern->SetSubObject(subObject);
 
 	auto attackLogic = [pattern, subObject, activeColliderFrame, this]()
 		{
