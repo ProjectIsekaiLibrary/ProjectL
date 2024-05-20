@@ -13,6 +13,7 @@
 
 KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr)
+	, _destroyIce(false)
 {
 
 }
@@ -27,6 +28,7 @@ void KunrealEngine::PlayerAbility::Initialize()
 	_playerComp = GetOwner()->GetComponent<Player>();
 
 	CreateAbility1();
+	CreateAbility2();
 	CreateAbility4();
 }
 
@@ -62,6 +64,16 @@ void KunrealEngine::PlayerAbility::Update()
 		_shot->GetComponent<Projectile>()->ResetCondition();
 	}
 
+	if (InputSystem::GetInstance()->KeyDown(KEY::W))
+	{
+		this->_destroyIce = false;								// 소멸 조건 초기화
+		ResetIcePos();											// 투사체 위치 리셋
+		Startcoroutine(iceTimer);								// 코루틴 타이머 시작
+		_ice->SetActive(true);
+		_ice->GetComponent<Projectile>()->SetActive(true);
+		_ice->GetComponent<Projectile>()->ResetCondition();
+	}
+
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
 	{
 		_meteor->SetActive(true);
@@ -71,6 +83,7 @@ void KunrealEngine::PlayerAbility::Update()
 
 	_abilityContainer[0]->_abilityLogic();
 	_abilityContainer[1]->_abilityLogic();
+	_abilityContainer[2]->_abilityLogic();
 }
 
 void KunrealEngine::PlayerAbility::LateUpdate()
@@ -182,62 +195,64 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 }
 
 
+void KunrealEngine::PlayerAbility::ResetIcePos()
+{
+	// 마우스 3D좌표로에 위치시키도록
+	_ice->GetComponent<Transform>()->SetPosition(GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y));
+	_ice->GetComponent<Transform>()->SetPosition
+	(
+		_ice->GetComponent<Transform>()->GetPosition().x,
+		_ice->GetComponent<Transform>()->GetPosition().y,
+		_ice->GetComponent<Transform>()->GetPosition().z
+	);
+}
+
 void KunrealEngine::PlayerAbility::CreateAbility2()
 {
-	//Ability* ice = new Ability();
-	//ice->Initialize("Ice");
-	//
-	//ice->SetTotalData(
-	//	"Ice",			// 이름
-	//	20.0f,			// 데미지
-	//	15.0f,			// 마나
-	//	10.0f,			// 무력화 피해량
-	//	8.0f,			// 쿨타임
-	//	12.0f			// 사거리
-	//);
-	//
-	//_ice = ice->_projectile;
-	//
-	//// 크기 조정
-	//_ice->GetComponent<Transform>()->SetScale(0.3f, 0.3, 0.3f);
-	//
-	//// 투사체 컴포넌트 추가
-	//_ice->AddComponent<Projectile>();
-	//Projectile* iceProj = _ice->GetComponent<Projectile>();
-	//
-	//iceProj->SetMeshObject("Meteor/Meteor");
-	//iceProj->GetCollider()->SetBoxSize(5.0f, 10.0f, 10.0f);
-	//iceProj->SetDestoryCondition([iceProj, this]()->bool
-	//	{
-	//		if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())
-	//		{
-	//			return true;
-	//		}
-	//		else
-	//		{
-	//			return false;
-	//		}
-	//	});
-	//
-	//_ice->SetActive(false);
-	//
-	//shot->SetLogic([shot, shotProj, this]()
-	//	{
-	//		if (_shot->GetActivated())
-	//		{
-	//			DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
-	//
-	//			DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);
-	//			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(shotProj->GetDirection(), 40.0f * TimeManager::GetInstance().GetDeltaTime()));
-	//
-	//			_shot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
-	//			_shot->GetComponent<Transform>()->SetRotation(0.0f, _shot->GetComponent<Transform>()->GetRotation().y + 50.0f, 0.0f);
-	//			shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec)));
-	//
-	//		}
-	//	});
-	//
-	//AddToContanier(shot);
+	Ability* ice = new Ability();
+	ice->Initialize("Ice");
+	
+	ice->SetTotalData(
+		"Ice",			// 이름
+		20.0f,			// 데미지
+		15.0f,			// 마나
+		10.0f,			// 무력화 피해량
+		8.0f,			// 쿨타임
+		12.0f			// 사거리
+	);
+	
+	_ice = ice->_projectile;
+	
+	// 크기 조정
+	_ice->GetComponent<Transform>()->SetScale(15.0f, 15.0f, 15.0f);
+	_ice->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
+	
+	// 투사체 컴포넌트 추가
+	_ice->AddComponent<Projectile>();
+	Projectile* iceProj = _ice->GetComponent<Projectile>();
+	
+	iceProj->SetMeshObject("Ice/Ice", "Ice/Ice.png");
+	iceProj->GetCollider()->SetBoxSize(10.0f, 10.0f, 10.0f);
+	iceProj->SetDestoryCondition([iceProj, this]()->bool
+		{
+			if (this->_destroyIce)
+			{
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		});
+	
+	_ice->SetActive(false);
+	
+	ice->SetLogic([ice, iceProj, this]()
+		{
+			/// 로직
+		});
+	
+	AddToContanier(ice);
 }
 
 void KunrealEngine::PlayerAbility::ResetMeteorPos()

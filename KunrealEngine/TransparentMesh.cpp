@@ -77,6 +77,12 @@ void KunrealEngine::TransparentMesh::CreateTMesh(const std::string& objectName, 
 	this->_textureName = textureName;
 	this->_transparency = transparency;
 	this->_isCircle = isCircle;
+
+	// circle이 아닐때 x의 각도를 90만큼 회전
+	if (!isCircle)
+	{
+		this->_transform->SetRotation(90.0f, this->_transform->GetRotation().y, this->_transform->GetRotation().z);
+	}
 }
 
 bool KunrealEngine::TransparentMesh::GetMeshStatus()
