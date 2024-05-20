@@ -172,6 +172,7 @@ namespace EpicTool
 
         bool isNormalMax;
 
+        float _isInvisible;
     private:
         // 그래픽스에서 받아온 목록을 저장
         std::vector<std::string> _meshList;

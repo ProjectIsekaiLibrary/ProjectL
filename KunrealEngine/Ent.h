@@ -134,6 +134,14 @@ namespace KunrealEngine
 		bool isEyesLightStart;
 
 
+	private:
+		// 코어패턴에서 사용할 변수들
+
+		int _successCountCoreFirst;
+
+		std::vector<std::string> _objectOrderCoreFirst;
+
+
 	private:	// 코루틴 대진수의 패턴 야미
 		Coroutine_Func(JumpAttackCo)
 		{	
