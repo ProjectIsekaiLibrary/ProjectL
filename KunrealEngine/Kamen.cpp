@@ -129,16 +129,16 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//BasicPattern();
+	BasicPattern();						// 기본 spell, call
 	
-	//LeftRightPattern();
-	//RightLeftPattern();
-	//BackStepCallPattern();
-	//TeleportSpellPattern();
-	//TeleportTurnClockPattern();
-	//TeleportTurnAntiClockPattern();
+	LeftRightPattern();					// 전방 좌, 우 어택
+	RightLeftPattern();					// 전방 좌, 후방 우 어택
+	BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	//TeleportSpellPattern();			// 텔포 후 spell	
+	//TeleportTurnClockPattern();		// 텔포 후 시계 -> 내부 안전
+	//TeleportTurnAntiClockPattern();	// 텔포 후 반시계 -> 외부 안전
 
-	CoreEmmergencePattern();
+	//CoreEmmergencePattern();
 }
 
 void KunrealEngine::Kamen::CreateSubObject()

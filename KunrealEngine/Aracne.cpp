@@ -90,7 +90,7 @@ void KunrealEngine::Aracne::SetTexture()
 void KunrealEngine::Aracne::SetBossTransform()
 {
 	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
-	_boss->GetComponent<Transform>()->SetScale(7.5f, 7.5f, 7.5f);
+	_boss->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 }
 
 void KunrealEngine::Aracne::SetBossCollider()
@@ -110,18 +110,32 @@ void KunrealEngine::Aracne::CreatesubObject()
 	_colJumpAttack->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 6.0f, 30.0f);
 	_colJumpAttack->SetActive(false);
 
+	_colFrontAttack = _boss->GetObjectScene()->CreateObject("FrontAttack");
+	_colFrontAttack->AddComponent<BoxCollider>();
+    _colFrontAttack->GetComponent<BoxCollider>()->SetTransform(_boss, "root");
+	_colFrontAttack->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 4.0f);
+	_colFrontAttack->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 12.0f, 35.0f);
+	_colFrontAttack->SetActive(false);
+
+	_colTailAttack = _boss->GetObjectScene()->CreateObject("tailtAttack");
+	_colTailAttack->AddComponent<BoxCollider>();
+    _colTailAttack->GetComponent<BoxCollider>()->SetTransform(_boss, "root");
+	_colTailAttack->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 4.0f);
+	_colTailAttack->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 12.0f, 35.0f);
+	_colTailAttack->SetActive(false);
+
 	_colLeftHand = _boss->GetObjectScene()->CreateObject("left_hand");
 	_colLeftHand->AddComponent<BoxCollider>();
-  //_colLeftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
-	_colLeftHand->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 4.0f);
-	_colLeftHand->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 6.0f, 30.0f);
+	_colLeftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "FrontLeg3_L");
+	_colLeftHand->GetComponent<BoxCollider>()->SetOffset(-3.0f, 0.0f, 0.0f);
+	_colLeftHand->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 19.0f, 10.0f);
 	_colLeftHand->SetActive(false);
 
 	_colRightHand = _boss->GetObjectScene()->CreateObject("Right_hand");
 	_colRightHand->AddComponent<BoxCollider>();
-  //_colRightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
-	_colRightHand->GetComponent<BoxCollider>()->SetOffset(0.0f, 3.0f, 4.0f);
-	_colRightHand->GetComponent<BoxCollider>()->SetBoxSize(27.0f, 6.0f, 30.0f);
+	_colRightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "FrontLeg3_R");
+	_colRightHand->GetComponent<BoxCollider>()->SetOffset(3.0f, 0.0f, 0.0f);
+	_colRightHand->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 19.0f, 10.0f);
 	_colRightHand->SetActive(false);
 }
 
@@ -129,10 +143,13 @@ void KunrealEngine::Aracne::CreatePattern()
 {
 	CreatesubObject();
 
-	//JumpAttack();
-	LeftAttack();
-	RightAttack();
+	JumpAttack();
+	//LeftAttack();
+	//RightAttack();
+	//FrontAttack();
+	//TailAttack();
 	//ShootingWeb();
+	//Casting();
 }
 
 void KunrealEngine::Aracne::JumpAttack()
@@ -187,10 +204,51 @@ void KunrealEngine::Aracne::RightAttack()
 	_basicPattern.emplace_back(_righttAttack);
 }
 
+void KunrealEngine::Aracne::FrontAttack()
+{
+	_frontAttack = new BossPattern();
+
+	_frontAttack->SetPatternName("Front_Attack");
+
+	_frontAttack->SetAnimName("Attak_Take_down").SetDamage(100.0f).SetSpeed(30.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
+	_frontAttack->SetIsWarning(false).SetWarningName("");
+	_frontAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	auto frontAttackLogic = CreateBasicAttackLogic(_frontAttack, _colFrontAttack, 10);
+
+	_frontAttack->SetLogic(frontAttackLogic);
+	_basicPattern.emplace_back(_frontAttack);
+}
+
+void KunrealEngine::Aracne::TailAttack()
+{
+	_tailAttack = new BossPattern();
+
+	_tailAttack->SetPatternName("Front_Attack");
+
+	_tailAttack->SetAnimName("tail_attack").SetDamage(100.0f).SetSpeed(30.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
+	_tailAttack->SetIsWarning(false).SetWarningName("");
+	_tailAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	auto tailAttackLogic = CreateBasicAttackLogic(_tailAttack, _colTailAttack, 10);
+
+	_tailAttack->SetLogic(tailAttackLogic);
+	_basicPattern.emplace_back(_tailAttack);
+}
+
 void KunrealEngine::Aracne::ShootingWeb()
+{
+	
+}
+
+void KunrealEngine::Aracne::Casting()
 {
 
 }
+
+///
+/// 패턴을 위해 필요한 함수들
+/// 
 
 bool KunrealEngine::Aracne::Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)
 {

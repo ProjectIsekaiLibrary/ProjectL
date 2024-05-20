@@ -37,7 +37,7 @@ struct VertexOut
 
 struct PSOut
 {
-    float4 Diffuse : SV_Target;
+    float4 Diffuse : SV_Target1;
 };
 
 VertexOut VS(VertexIn vin)

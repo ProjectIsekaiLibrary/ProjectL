@@ -40,10 +40,13 @@ namespace KunrealEngine
 
 
 	private:
-		void JumpAttack();
-		void LeftAttack();
-		void RightAttack();
-		void ShootingWeb();
+		void JumpAttack();	// 점프 - 내려찍기 공격
+		void LeftAttack();	// 좌수 공격
+		void RightAttack();	// 우수 공격
+		void FrontAttack();	// 양발 정면 찍기
+		void TailAttack();	// 꼬리 공격
+		void ShootingWeb();	// 거미줄 쏘기 공격 - 부채꼴 방사형
+		void Casting();		// 마술 시전(뭔 패턴일지는 미지수)
 
 	private:
 		bool Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
@@ -53,9 +56,13 @@ namespace KunrealEngine
 		BossPattern* _jumpAttack;
 		BossPattern* _leftAttack;
 		BossPattern* _righttAttack;
+		BossPattern* _frontAttack;
+		BossPattern* _tailAttack;
 
 	private:	// 여긴 콜라이더만 넣어라
 		GameObject* _colJumpAttack;
+		GameObject* _colFrontAttack;
+		GameObject* _colTailAttack;
 		GameObject* _colLeftHand;
 		GameObject* _colRightHand;
 

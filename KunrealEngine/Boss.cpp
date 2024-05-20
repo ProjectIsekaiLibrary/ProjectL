@@ -1193,6 +1193,8 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 
 			// 오브젝트에 대한 비활성화 시키기
 			object->SetActive(tf);
+
+			object->SetTag("BossSub");
 		}
 	}
 
@@ -1213,6 +1215,8 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 
 			// 오브젝트에 대한 비활성화 시키기
 			object->SetActive(tf);
+
+			object->SetTag("BossSub");
 		}
 	}
 }

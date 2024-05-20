@@ -143,7 +143,7 @@ void ArkEngine::MeshRenderer::Render()
 			_colorList.emplace_back(index->GetColor());
 			_alphaList.emplace_back(index->GetAlhpa());
 
-			if (index->GetAlhpa() == 0.0f)
+			if (index->GetAlhpa() < 1.0f)
 			{
 				_isTransparentExist = true;
 			}
@@ -233,15 +233,21 @@ void ArkEngine::MeshRenderer::ShadowRender()
 	UINT stride = sizeof(ArkEngine::ArkDX11::Vertex);
 	UINT offset = 0;
 
-	for (auto it = _meshList.begin(); it != _meshList.end();)
+	for (int i = 0; i < _transparentList.size(); i++)
 	{
-		if ((*it)->GetAlhpa() <= 0.f)
+		if (_transparentList[i]->GetAlhpa() > 0.0f)
 		{
-			it = _meshList.erase(it);
+			_meshList.emplace_back(_transparentList[i]);
+			_transparentList.erase(_transparentList.begin() + i);
 		}
-		else
+	}
+
+	for (int i = 0; i < _meshList.size(); i++)
+	{
+		if (_meshList[i]->GetAlhpa() <= 0.0f)
 		{
-			++it;
+			_transparentList.emplace_back(_meshList[i]);
+			_meshList.erase(_meshList.begin()+i);
 		}
 	}
 
