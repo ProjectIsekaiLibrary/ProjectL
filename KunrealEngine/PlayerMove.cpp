@@ -13,7 +13,7 @@
 
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false)
-	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f)
+	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _posY(0.0f)
 {
 	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x - 0;
 	_tempY = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().y - 0;
@@ -245,7 +245,7 @@ void KunrealEngine::PlayerMove::MoveToTarget(DirectX::XMFLOAT3 targetPos, float 
 
 				// 플레이어 이동
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, speed * _playerComp->_playerInfo._speedScale));
-				_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
+				_transform->SetPosition(newPosition.m128_f32[0], _posY, newPosition.m128_f32[2]);
 
 				// 카메라 이동
 				DirectX::XMFLOAT3 cameraPos(_tempX + newPosition.m128_f32[0], _tempY, _tempZ + newPosition.m128_f32[2]);
@@ -313,7 +313,7 @@ void KunrealEngine::PlayerMove::NavigationMove(float speed)
 
 				// 플레이어 이동
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, speed * _playerComp->_playerInfo._speedScale));
-				_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
+				_transform->SetPosition(newPosition.m128_f32[0], _posY, newPosition.m128_f32[2]);
 
 				// 카메라 이동
 				DirectX::XMFLOAT3 cameraPos(_tempX + newPosition.m128_f32[0], _tempY, _tempZ + newPosition.m128_f32[2]);
@@ -367,7 +367,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 
 			// 플레이어 이동
 			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(_playerComp->_directionVector, _playerComp->_playerInfo._dashSpeed * _playerComp->_playerInfo._speedScale * TimeManager::GetInstance().GetDeltaTime()));
-			_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
+			_transform->SetPosition(newPosition.m128_f32[0], _posY, newPosition.m128_f32[2]);
 
 			// 이동한 거리 계산
 			_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec)));
@@ -440,7 +440,7 @@ void KunrealEngine::PlayerMove::PlayerDash(DirectX::XMFLOAT3 targetPos, float sp
 
 			// 플레이어 이동
 			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(dashTo, speed * _playerComp->_playerInfo._speedScale));
-			this->_transform->SetPosition(newPosition.m128_f32[0], 0, newPosition.m128_f32[2]);
+			this->_transform->SetPosition(newPosition.m128_f32[0], _posY, newPosition.m128_f32[2]);
 
 			// 카메라 이동
 			DirectX::XMFLOAT3 cameraPos(_tempX + newPosition.m128_f32[0], _tempY, _tempZ + newPosition.m128_f32[2]);
@@ -463,6 +463,12 @@ void KunrealEngine::PlayerMove::PlayerDash(DirectX::XMFLOAT3 targetPos, float sp
 			this->_targetPos = this->_transform->GetPosition();
 		}
 	}
+}
+
+
+void KunrealEngine::PlayerMove::SetPlayerY(float y)
+{
+	this->_posY = y;
 }
 
 void KunrealEngine::PlayerMove::ShowPlayerInfo()
