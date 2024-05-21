@@ -106,6 +106,8 @@ namespace KunrealEngine
 		GameObject* _insideWarning;
 		GameObject* _outsideAttack;
 
+		GameObject* _sword;
+
 		std::vector<GameObject*> _fakeBoss;
 
 		std::vector<GameObject*> _callVec;
@@ -115,9 +117,6 @@ namespace KunrealEngine
 		float _callMoveDistance;
 		unsigned int _call2PrevStep;
 		bool _isRotateFinish;
-
-	private:
-		bool _spellStart;
 
 	private:
 		bool _isCoreStart;

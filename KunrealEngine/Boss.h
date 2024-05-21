@@ -116,6 +116,8 @@ namespace KunrealEngine
 
 		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, float activeColliderFrame);
 
+		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, GameObject* subObject2, float activeColliderFrame);
+
 		std::function<bool()> CreateBasicAttackLogic(BossPattern* pattern, const std::string& animName, GameObject* subObject, float activeColliderFrame);
 
 		// 플레이어를 바라보도록 텔레포트

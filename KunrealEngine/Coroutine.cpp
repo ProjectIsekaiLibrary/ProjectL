@@ -97,8 +97,8 @@ namespace KunrealEngine
 			if (timer > duration)
 			{
 				timer = 0;
+				duration = 0;
 				return true;
-				DurationManager::getInstance().durationtonull();
 			}
 
 			else
@@ -126,7 +126,7 @@ namespace KunrealEngine
 
 	void Coroutine::Coroutine_type::WaitForSeconds::await_suspend(std::coroutine_handle<> handle)
 	{
-
+		
 	}
 
 	void Coroutine::Coroutine_type::WaitForSeconds::await_resume() const noexcept {}
@@ -187,10 +187,12 @@ namespace KunrealEngine
 	void Coroutine::StartCoroutine(std::function<Coroutine_type()> coro)
 	{
 		// 이미 추가된 코루틴인지 확인
-		for (auto& coron : _AddedCoroutines)
+		for (auto& coron : _AddedCoroutines) // 코루틴들의 배열을 순회
 		{
-			if (coron.second.target_type() == coro.target_type())
+
+			if (coron.second.target_type() == coro.target_type()) // 배열속코루틴의 함수포인터와 coro의 함수 포인터를 비교
 			{
+
 				return;
 			}
 		}
@@ -199,7 +201,7 @@ namespace KunrealEngine
 		_coroutines.emplace_back(coroutineInstance);
 		idexKey++;
 		coroutineInstance->mapKey = idexKey;
-		coroutineInstance->duration = DurationManager::getInstance().getDuration();
+		coroutineInstance->coro_handle.promise().duration = DurationManager::getInstance().getDuration();
 		DurationManager::getInstance().durationtonull();
 
 		_AddedCoroutines.insert(std::make_pair(idexKey, coro));
@@ -213,11 +215,21 @@ namespace KunrealEngine
 	{
 		for (auto& coroutine : _coroutines)
 		{
-			coroutine->coro_handle.promise().duration = coroutine->duration;
 			if (!coroutine->coro_handle.done() && coroutine->coro_handle.promise().await_ready())
 			{
 				// 코루틴이 완료되지 않고, 지정된 시간이 경과하지 않은 경우 resume하지 않음
 				coroutine->coro_handle.resume();
+
+				for (auto& coron : _AddedCoroutines) // 코루틴들의 배열을 순회
+				{
+					if (coroutine->mapKey == coron.first) //  찾아줘요 coro_handle
+					{
+						if (coroutine->coro_handle.promise().duration == 0 && DurationManager::getInstance().getDuration() != 0)
+						{
+							coroutine->coro_handle.promise().duration = DurationManager::getInstance().getDuration();
+						}
+					}
+				}
 			}
 
 			else if (coroutine->coro_handle.done())
