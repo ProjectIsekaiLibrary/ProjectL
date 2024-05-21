@@ -106,6 +106,8 @@ namespace KunrealEngine
 		GameObject* _insideWarning;
 		GameObject* _outsideAttack;
 
+		GameObject* _sword;
+
 		std::vector<GameObject*> _fakeBoss;
 
 		std::vector<GameObject*> _callVec;

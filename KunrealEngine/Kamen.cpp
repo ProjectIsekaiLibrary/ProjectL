@@ -133,38 +133,35 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();						// 기본 spell, call
 	//
-	//LeftRightPattern();					// 전방 좌, 우 어택
+	LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 	//TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	//TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 
 	//CoreEmmergencePattern();
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
 {
-	//for (int i = 0; i < 3; i++)
-	//{
-	//	std::string index = "multiCall" + std::to_string(i + 1);
-	//
-	//	auto call = _boss->GetObjectScene()->CreateObject("index");
-	//
-	//	call->AddComponent<BoxCollider>();
-	//	call->GetComponent<BoxCollider>()->SetBoxSize(100.0f, 10.0f, 10.0f);
-	//	call->GetComponent<BoxCollider>()->SetActive(false);
-	//	call->AddComponent<Particle>();
-	//	call->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	//	call->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
-	//	call->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
-	//	call->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
-	//	call->GetComponent<Particle>()->SetParticleDirection(0.0f, 7.0f, 0.0f);
-	//	call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	//	call->GetComponent<Particle>()->SetActive(false);
-	//
-	//	_callVec.emplace_back(call);
-	//}
+	_sword = _boss->GetObjectScene()->CreateObject("KamenSword");
+	_sword->AddComponent<MeshRenderer>();
+	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+
+	_sword->GetComponent<Transform>()->SetScale(0.2f, 0.2f, 0.2f);
+	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+
+	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+
+	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
+
+	for (int i = 0; i < texSize; i++)
+	{
+		_sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+		_sword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+		_sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+	}
 }
 
 
