@@ -170,11 +170,11 @@ void KunrealEngine::EngineCore::Update()
 				ChangeScene("mapTest3.json");
 				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 0);
 
-				navigationInstance.LoadAll("Resources/Navimesh/3-b.bin", 1);
+				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 1);
 
 				std::vector<DirectX::XMFLOAT3> vertices;
 				std::vector<unsigned int> indices;
-				navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+				navigationInstance.GetNavmeshRenderInfo(1, vertices, indices);
 				GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
 
 			}
