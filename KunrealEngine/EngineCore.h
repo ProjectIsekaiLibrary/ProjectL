@@ -77,6 +77,8 @@ namespace KunrealEngine
 		POINT _editorMousepos = {-1, -1};
 
 		POINT _finalMousePosition = { 0,0 };
+
+		float _timeMan = 1.0f;
 	};
 }
 

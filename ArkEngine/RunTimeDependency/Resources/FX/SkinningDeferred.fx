@@ -16,7 +16,7 @@ cbuffer cbPerObject
     
             // Dissolve
     float gDissolveValue;
-    float gGradation;
+    bool gIsDissolve;
 };
 
 cbuffer cbSkinned
@@ -153,22 +153,25 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 
     float4 bumpedNormal = NormalSampleToWorldSpace(normalMap, pin.NormalW, pin.TangentW, orthonormalizedTangent);
 
-   output.Position = float4(pin.PosW, 1.0f);
-   output.Diffuse = float4(diffuse, gAlpha[pin.InstanceID]);
-   output.BumpedNormal = bumpedNormal;
-   output.Emissive = float4(emissive, 1.0f);
-   output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
-   output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
-   output.Color = gColor[pin.InstanceID];
+    output.Position = float4(pin.PosW, 1.0f);
+    output.Diffuse = float4(diffuse, gAlpha[pin.InstanceID]);
+    output.BumpedNormal = bumpedNormal;
+    output.Emissive = float4(emissive, 1.0f);
+    output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
+    output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
+    output.Color = gColor[pin.InstanceID];
    
+    if (gIsDissolve == true)
+    {
       // 디졸브 효과 계산
-    float noiseVel = gNoiseTexture.Sample(samAnisotropic, pin.Tex).w;
-    float d = (2.0f * gDissolveValue + noiseVel) - 1.0f;
-    float overOne = saturate(d * 2.0f);
-    float4 burn = gBurnTexture.Sample(samPoint, float2(overOne, 0.5f));
-    float dissolveSmooth = smoothstep(0.0f, 1.0f, burn);
+        float noiseVel = gNoiseTexture.Sample(samAnisotropic, pin.Tex).w;
+        float d = (2.0f * gDissolveValue + noiseVel) - 1.0f;
+        float overOne = saturate(d * 2.0f);
+        float4 burn = gBurnTexture.Sample(samPoint, float2(overOne, 0.5f));
+        float dissolveSmooth = smoothstep(0.0f, 1.0f, burn);
     
-    output.Diffuse *= burn;
+        output.Diffuse *= burn;
+    }
     
     return output;
 }

@@ -131,6 +131,13 @@ namespace KunrealEngine
 		float GetAlpha();
 
 		DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName);
+
+	public:
+		void SetDissolve(float value);
+		void SetIsDissolve(bool isDissolve);
+		float GetDissolveValue();
+		bool GetIsDissolve();
+
 	};
 }
 

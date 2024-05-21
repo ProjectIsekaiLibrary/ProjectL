@@ -1057,7 +1057,7 @@ std::function<bool()> KunrealEngine::Boss::CreateBackStepLogic(BossPattern* patt
 
 std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, float activeColliderFrame)
 {
-	pattern->_subObject.emplace_back(subObject);
+	pattern->SetSubObject(subObject);
 
 	auto attackLogic = [pattern, subObject, activeColliderFrame, this]()
 		{
@@ -1099,6 +1099,51 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 	return attackLogic;
 }
 
+
+std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* pattern, GameObject* subObject, GameObject* subObject2, float activeColliderFrame)
+{
+	pattern->SetSubObject(subObject);
+
+	auto attackLogic = [pattern, subObject, subObject2, activeColliderFrame, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (pattern->_colliderOnCount > 0)
+			{
+				if (animator->GetCurrentFrame() >= activeColliderFrame)
+				{
+					if (subObject != nullptr)
+					{
+						subObject->GetComponent<BoxCollider>()->SetActive(true);
+						subObject2->GetComponent<MeshRenderer>()->SetActive(true);
+					}
+
+					if (subObject->GetComponent<Particle>() != nullptr)
+					{
+						subObject->GetComponent<Particle>()->SetActive(true);
+					}
+				}
+			}
+
+			// 1타를 맞았다면
+			if (pattern->_colliderOnCount == 0)
+			{
+				pattern->SetNextPatternForcePlay(true);
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+	return attackLogic;
+}
 
 std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* pattern, const std::string& animName, GameObject* subObject, float activeColliderFrame)
 {

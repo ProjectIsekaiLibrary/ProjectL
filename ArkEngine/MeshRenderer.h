@@ -121,9 +121,17 @@ namespace ArkEngine
 
 		ICamera* _mainCamera;
 
+		// Dissolve Effect
+	public:
+		// 1일때는 정상 0에 가까워 질수록 투명해짐
+		void SetDissolve();
+		float GetDissolveValue();
+		void SetIsDissolve();
+
 	private:
-		void SetGradation(float value);
-		void SetGradationSRV(float value);
+		void SetDissolveSRV(float value);
+		void SetDissolveTexture();
+		void SetIsDissolveSRV(bool isDissolve);
 
 		ID3DX11EffectShaderResourceVariable* _noiseMap;
 		ID3DX11EffectShaderResourceVariable* _burnGradation;
@@ -135,14 +143,12 @@ namespace ArkEngine
 		std::string _burnGradationName;
 
 		ID3DX11EffectScalarVariable* _dissolveValueEffect;
-		ID3DX11EffectScalarVariable* _burnValueEffect;
+		ID3DX11EffectScalarVariable* _isDisolveEffect;
 
 		float _dissolveValue;
-		float _burnValue;
 
-		float timeMan = 0.0f;
+		float timeMan = 1.0f;
 
-		void SetBurnValue(float value);
-		void SetBurnValueSRV(float value);
+		bool _isDissolve;
 	};
 }

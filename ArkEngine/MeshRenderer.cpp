@@ -23,7 +23,8 @@ ArkEngine::MeshRenderer::MeshRenderer(IRenderable* mesh)
 	_noiseMap(nullptr), _burnGradation(nullptr),
 	_noiseMapSRV(nullptr), _burnGradationSRV(nullptr),
 	_noiseMapName("Resources/Textures/Dissolve/DissolvePattern.png"),
-	_burnGradationName("Resources/Textures/Dissolve/burngradient.png")
+	_burnGradationName("Resources/Textures/Dissolve/burngradient.png"),
+	_isDissolve(false), _dissolveValue(1.0f)
 {
 	Initialize(mesh);
 }
@@ -98,15 +99,16 @@ void ArkEngine::MeshRenderer::Render()
 		timeMan = 1.0f;
 	}
 
-	SetBurnValue(timeMan);
-	SetGradation(timeMan);
+
+	SetIsDissolve();
+	SetDissolve();
 
 	_noiseMap->SetResource(_noiseMapSRV);
 	_burnGradation->SetResource(_burnGradationSRV);
 
-	SetGradationSRV(_dissolveValue);
-	SetBurnValueSRV(_burnValue);
 
+	SetIsDissolveSRV(_isDissolve);
+	SetDissolveSRV(_dissolveValue);
 
 	DirectX::XMMATRIX texTransform = DirectX::XMMatrixIdentity();
 	_fxTexTransform->SetMatrix(reinterpret_cast<float*>(&texTransform));
@@ -247,7 +249,7 @@ void ArkEngine::MeshRenderer::ShadowRender()
 		if (_meshList[i]->GetAlhpa() <= 0.0f)
 		{
 			_transparentList.emplace_back(_meshList[i]);
-			_meshList.erase(_meshList.begin()+i);
+			_meshList.erase(_meshList.begin() + i);
 		}
 	}
 
@@ -380,13 +382,9 @@ void ArkEngine::MeshRenderer::Initialize(IRenderable* mesh)
 
 	_meshes = ResourceManager::GetInstance()->GetFbxParsingData(_fileName);
 
-	auto noiseTexture = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkTexture>(_noiseMapName);
-	ArkEngine::ArkDX11::ArkTexture* newNoiseMap = new ArkEngine::ArkDX11::ArkTexture(_noiseMapName.c_str());
-	_noiseMapSRV = newNoiseMap->GetDiffuseMapSRV();
+	// Dissolve 이펙트를 위한 텍스쳐 설정
+	SetDissolveTexture();
 
-	auto burnTexture = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkTexture>(_burnGradationName);
-	ArkEngine::ArkDX11::ArkTexture* newBurnTexture = new ArkEngine::ArkDX11::ArkTexture(_burnGradationName.c_str());
-	_burnGradationSRV = newBurnTexture->GetDiffuseMapSRV();
 
 	SetEffect(mesh);
 }
@@ -426,26 +424,43 @@ void ArkEngine::MeshRenderer::SetEffect(IRenderable* mesh)
 	_noiseMap = _effect->GetVariableByName("gNoiseTexture")->AsShaderResource();
 	_burnGradation = _effect->GetVariableByName("gBurnTexture")->AsShaderResource();
 	_dissolveValueEffect = _effect->GetVariableByName("gDissolveValue")->AsScalar();
-	_burnValueEffect = _effect->GetVariableByName("gGradation")->AsScalar();
+	_isDisolveEffect = _effect->GetVariableByName("gIsDissolve")->AsScalar();
 }
 
 
-void ArkEngine::MeshRenderer::SetGradation(float value)
+void ArkEngine::MeshRenderer::SetDissolve()
 {
-	_dissolveValue = value;
+	_dissolveValue = _meshList[0]->GetDissolveValue();
 }
 
-void ArkEngine::MeshRenderer::SetGradationSRV(float value)
+float ArkEngine::MeshRenderer::GetDissolveValue()
+{
+	return _dissolveValue;
+}
+
+void ArkEngine::MeshRenderer::SetDissolveSRV(float value)
 {
 	_dissolveValueEffect->SetFloat(value);
 }
 
-void ArkEngine::MeshRenderer::SetBurnValue(float value)
+void ArkEngine::MeshRenderer::SetIsDissolve()
 {
-	_burnValue = value;
+	_isDissolve = _meshList[0]->GetIsDissolve();
 }
 
-void ArkEngine::MeshRenderer::SetBurnValueSRV(float value)
+void ArkEngine::MeshRenderer::SetIsDissolveSRV(bool isDissolve)
 {
-	_burnValueEffect->SetFloat(value);
+	_isDisolveEffect->SetBool(isDissolve);
 }
+
+void ArkEngine::MeshRenderer::SetDissolveTexture()
+{
+	auto noiseTexture = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkTexture>(_noiseMapName);
+	ArkEngine::ArkDX11::ArkTexture* newNoiseMap = new ArkEngine::ArkDX11::ArkTexture(_noiseMapName.c_str());
+	_noiseMapSRV = newNoiseMap->GetDiffuseMapSRV();
+
+	auto burnTexture = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkTexture>(_burnGradationName);
+	ArkEngine::ArkDX11::ArkTexture* newBurnTexture = new ArkEngine::ArkDX11::ArkTexture(_burnGradationName.c_str());
+	_burnGradationSRV = newBurnTexture->GetDiffuseMapSRV();
+}
+

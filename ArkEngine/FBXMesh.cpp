@@ -17,6 +17,7 @@
 #include "../FbxLoader/Utils.h"
 #include "FBXAnimator.h"
 #include "DWFont.h"
+
 #include "MeshRenderer.h"
 
 #include "FBXMesh.h"
@@ -35,7 +36,12 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_newVertexVector(0), _newIndexVector(0), _boneTransforms(0),
 	_animator(nullptr),
 	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent(), 
-	_alpha(1.0f)
+	_alpha(1.0f),
+	_noiseMap(nullptr), _burnGradation(nullptr),
+	_noiseMapSRV(nullptr), _burnGradationSRV(nullptr),
+	_noiseMapName("Resources/Textures/Dissolve/DissolvePattern.png"),
+	_burnGradationName("Resources/Textures/Dissolve/burngradient.png"),
+	_isDissolve(false), _dissolveValue(1.0f)
 {
 	Initialize();
 }
@@ -1022,3 +1028,24 @@ void ArkEngine::ArkDX11::FBXMesh::ReadMaterial(std::wstring fileName)
 
 	_material = modelMaterialData->_material;
 }
+
+void ArkEngine::ArkDX11::FBXMesh::SetDissolve(float value)
+{
+	_dissolveValue = value;
+}
+
+float ArkEngine::ArkDX11::FBXMesh::GetDissolveValue()
+{
+	return _dissolveValue;
+}
+
+void ArkEngine::ArkDX11::FBXMesh::SetIsDissolve(bool isDissolve)
+{
+	_isDissolve = isDissolve;
+}
+
+bool ArkEngine::ArkDX11::FBXMesh::GetIsDissolve()
+{
+	return _isDissolve;
+}
+
