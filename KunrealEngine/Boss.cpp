@@ -810,6 +810,12 @@ void KunrealEngine::Boss::TeleportToPlayer()
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
 
+	for (auto& index : _stopover)
+	{
+		index.first.y = _bossTransform->GetPosition().y;
+		index.second.y = _bossTransform->GetPosition().y;
+	}
+
 	if (_stopover.empty())
 	{
 		return;
@@ -853,6 +859,12 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 			targetVec.m128_f32[0], _bossTransform->GetPosition().y, targetVec.m128_f32[2]);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(1);
+
+		for (auto& index : _stopover)
+		{
+			index.first.y = _bossTransform->GetPosition().y;
+			index.second.y = _bossTransform->GetPosition().y;
+		}
 
 		if (_stopover.empty())
 		{
@@ -974,11 +986,11 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 
 				_prevPos = _stopover[0].first;
 
-				//for (auto& index : _stopover)
-				//{
-				//	index.first.y = 0.0f;
-				//	index.second.y = 0.0f;
-				//}
+				for (auto& index : _stopover)
+				{
+					index.first.y = _bossTransform->GetPosition().y;
+					index.second.y = _bossTransform->GetPosition().y;
+				}
 			}
 			// 그냥 타겟 포지션까지 네비메쉬로 길찾기
 			else
@@ -990,11 +1002,11 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 
 				_prevPos = _stopover[0].first;
 
-				//for (auto& index : _stopover)
-				//{
-				//	index.first.y = 0.0f;
-				//	index.second.y = 0.0f;
-				//}
+				for (auto& index : _stopover)
+				{
+					index.first.y = _bossTransform->GetPosition().y;
+					index.second.y = _bossTransform->GetPosition().y;
+				}
 			}
 
 			// 이제 움직이기 시작
@@ -1354,11 +1366,11 @@ void KunrealEngine::Boss::UpdateMoveNode()
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
 
-	//for (auto& index : _stopover)
-	//{
-	//	index.first.y = 0.0f;
-	//	index.second.y = 0.0f;
-	//}
+	for (auto& index : _stopover)
+	{
+		index.first.y = _bossTransform->GetPosition().y;
+		index.second.y = _bossTransform->GetPosition().y;
+	}
 
 
 	_nodeCount = 0;
@@ -1417,5 +1429,12 @@ void KunrealEngine::Boss::UpdateMoveNode(DirectX::XMFLOAT3& targetPos)
 		targetPos.x, targetPos.y, targetPos.z);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(1);
+
+	for (auto& index : _stopover)
+	{
+		index.first.y = _bossTransform->GetPosition().y;
+		index.second.y = _bossTransform->GetPosition().y;
+	}
+
 	_nodeCount = 0;
 }

@@ -171,6 +171,8 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
         float dissolveSmooth = smoothstep(0.0f, 1.0f, burn);
     
         output.Diffuse *= burn;
+        output.Emissive *= burn;
+        output.BumpedNormal *= burn;
     }
     
     return output;
