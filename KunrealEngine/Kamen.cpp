@@ -12,7 +12,7 @@ KunrealEngine::Kamen::Kamen()
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
 	_emergence9Lich(nullptr), _targetIndex(0),
 	_call2PrevStep(1),
-	_insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f), _swordDissolveTimer(1.0f)
+	_insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f), _swordDissolveTimer(0.0f)
 {
 	BossBasicInfo info;
 
@@ -20,6 +20,10 @@ KunrealEngine::Kamen::Kamen()
 	info.SetAttackRange(5.0f);
 
 	SetInfo(info);
+
+	_centerPos.x = 6.5f;
+	_centerPos.y = 2.0f;
+	_centerPos.z = -34.0f;
 }
 
 KunrealEngine::Kamen::~Kamen()
@@ -46,13 +50,6 @@ void KunrealEngine::Kamen::Update()
 {
 	// 반드시 해야함
 	Boss::Update();
-
-
-	if (_swordDissolveTimer > 0 && _sword->GetComponent<MeshRenderer>()->GetIsDissolve())
-	{
-		_swordDissolveTimer -= TimeManager::GetInstance().GetDeltaTime();
-		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
-	}
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -101,7 +98,7 @@ void KunrealEngine::Kamen::SetTexture()
 
 void KunrealEngine::Kamen::SetBossTransform()
 {
-	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
+	_boss->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
 }
 
 
@@ -145,7 +142,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 	//TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	//TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 
 	//CoreEmmergencePattern();
 }
@@ -240,6 +237,8 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
 	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 	_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+	_sword->AddComponent<BoxCollider>() ->SetBoxSize(5.0f, 20.0f, 5.0f);
+	_sword->GetComponent<BoxCollider>()->SetTransform(_boss, "Wrist_L");
 
 	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
 
@@ -262,9 +261,19 @@ void KunrealEngine::Kamen::CreateRightAttack()
 
 	auto attackLogic = [pattern, this]()
 		{
+
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
+			// 디졸브 이펙트 키키
+			_sword->GetComponent<MeshRenderer>()->SetActive(true);
+			_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+
+			if (_swordDissolveTimer < 1)
+			{
+				_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime()* 0.5f;
+				_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+			}
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 			if (pattern->_colliderOnCount > 0)
@@ -272,6 +281,7 @@ void KunrealEngine::Kamen::CreateRightAttack()
 				if (animator->GetCurrentFrame() >= 10.0f)
 				{
 					_rightHand->GetComponent<BoxCollider>()->SetActive(true);
+					_sword->GetComponent<BoxCollider>()->SetActive(true);
 					_sword->GetComponent<MeshRenderer>()->SetActive(true);
 				}
 			}
@@ -284,7 +294,7 @@ void KunrealEngine::Kamen::CreateRightAttack()
 
 			if (isAnimationPlaying == false)
 			{
-				//_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+				_swordDissolveTimer = 0.0f;
 				return false;
 			}
 
@@ -356,7 +366,7 @@ void KunrealEngine::Kamen::CreateTeleportToCenter()
 
 	auto teleport = [pattern, this]()
 	{
-		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true, 1.0f);
+		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
 
 		if (isTeleportFinish)
 		{
@@ -385,7 +395,7 @@ void KunrealEngine::Kamen::CreateTeleportToCenterWithLook()
 
 	auto teleport = [pattern, this]()
 	{
-		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), true, 1.0f);
+		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
 
 		if (isTeleportFinish)
 		{
@@ -494,6 +504,7 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 	_insideWarning->AddComponent<TransparentMesh>();
 	_insideWarning->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Warning.dds", 1.0f, false);
 	_insideWarning->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
+	_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z);
 
 	_insideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
 
@@ -518,6 +529,7 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 		_insideWarning->GetComponent<TransparentMesh>()->Reset();
 		_insideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 		_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
+		_outsideAttack->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
 		_insideWarningTimer = 0.0f;
 
 		_boss->GetComponent<BoxCollider>()->SetActive(false);

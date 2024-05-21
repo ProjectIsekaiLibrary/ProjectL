@@ -133,5 +133,8 @@ namespace KunrealEngine
 	// logic
 	private:
 		std::function<void()> _callInitLogic;
+
+	private:
+		DirectX::XMFLOAT3 _centerPos;
 	};
 }
