@@ -110,7 +110,7 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
 
     float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
 
-    float3 emissive = gMaskMap.Sample(samAnisotropic, pin.Tex).xyz;
+    float3 emissive = gEmissiveMap.Sample(samAnisotropic, pin.Tex).xyz;
 
     float4 orthonormalizedTangent;
 
