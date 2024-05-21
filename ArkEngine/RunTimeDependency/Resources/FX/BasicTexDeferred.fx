@@ -124,16 +124,18 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
     output.Color = gColor[pin.InstanceID];
 
-    if(gIsDissolve == true)
+    if (gIsDissolve == true)
     {
       // 디졸브 효과 계산
-    float noiseVel = gNoiseTexture.Sample(samAnisotropic, pin.Tex).w;
-    float d = (2.0f * gDissolveValue + noiseVel) - 1.0f;
-    float overOne = saturate(d * 2.0f);
-    float4 burn = gBurnTexture.Sample(samPoint, float2(overOne, 0.5f));
-    float dissolveSmooth = smoothstep(0.0f, 1.0f, burn);
+        float noiseVel = gNoiseTexture.Sample(samAnisotropic, pin.Tex).w;
+        float d = (2.0f * gDissolveValue + noiseVel) - 1.0f;
+        float overOne = saturate(d * 2.0f);
+        float4 burn = gBurnTexture.Sample(samPoint, float2(overOne, 0.5f));
+        float dissolveSmooth = smoothstep(0.0f, 1.0f, burn);
     
-    output.Diffuse *= burn;
+        output.Diffuse *= burn;
+        output.Emissive *= burn;
+        output.BumpedNormal *= burn;
     }
     
     return output;

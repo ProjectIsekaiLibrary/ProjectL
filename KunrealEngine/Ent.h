@@ -72,6 +72,8 @@ namespace KunrealEngine
 
 		void CorePatternObjectFirst();
 
+		void LightControl(int onNumber);
+
 	private:
 		float GetRandomRange(float center, float range);
 		bool Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
@@ -139,8 +141,38 @@ namespace KunrealEngine
 
 		int _successCountCoreFirst;
 
+		bool _isPartternStart;
+
 		std::vector<std::string> _objectOrderCoreFirst;
 
+		std::vector<int> _baseNumber;
+
+		std::vector<int> _firstPattarn;
+
+		std::vector<int> _secendPattarn;
+
+		std::vector<int> _thirdPattarn;
+
+		std::vector<GameObject*> _problemAnswer;
+
+		std::vector<GameObject*> _playerAnswer;
+
+
+		bool _firstQuestion;
+
+		bool _secendQuestion;
+
+		bool _thirdQuestion;
+
+		bool _firstProblem;
+
+		bool _secendProblem;
+
+		bool _thirdProblem;
+
+		bool _isShuffle;
+
+		int _answerCount;
 
 	private:	// 코루틴 대진수의 패턴 야미
 		Coroutine_Func(JumpAttackCo)
@@ -161,7 +193,7 @@ namespace KunrealEngine
 				if (25 < animator->GetCurrentFrame())
 				{
 					DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-					some->Move(mine, target, 10.0f);
+					some->Move(mine, target, 30.0f);
 				}
 				Return_null;
 			}
@@ -169,7 +201,7 @@ namespace KunrealEngine
 			while (true)
 			{
 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-				if (!(some->Move(mine, target, 30.0f)))
+				if (!(some->Move(mine, target, 50.0f)))
 				{
 					animator->Stop();
 					break;
@@ -181,7 +213,7 @@ namespace KunrealEngine
 			some->_colJumpAttack->SetActive(true);
 			while (true)
 			{
-				if (!(animator->Play("Anim_Jump_End", 30.0f)))
+				if (!(animator->Play("Anim_Jump_End", 50.0f)))
 				{
 					some->_colJumpAttack->SetActive(false);
 					animator->Stop();

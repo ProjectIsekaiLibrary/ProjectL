@@ -10,7 +10,8 @@
 KunrealEngine::Ent::Ent()
 	: Boss(), _leftHand(nullptr), _rightHand(nullptr), _leftRoot(nullptr), _rightRoot(nullptr), _bigRootShotStart(false),
 	_callMoveDistance(0.0f), _isRotateFinish(false), _isCoreStart(false), _isRandomStart(false),
-	_leftAttack(nullptr), _rightAttack(nullptr), _bigRootShot(nullptr), _isIdleHealing(false), _rootY(-50.0f), randomX(0.0f), randomZ(0.0f), isEyesLightStart(false), _successCountCoreFirst(0)
+	_leftAttack(nullptr), _rightAttack(nullptr), _bigRootShot(nullptr), _isIdleHealing(false), _rootY(-50.0f), randomX(0.0f), randomZ(0.0f), isEyesLightStart(false), _successCountCoreFirst(0), _baseNumber{0,1,2,3}
+	, _firstQuestion(true), _secendQuestion(false), _thirdQuestion(false), _isShuffle(false), _isPartternStart(true), _firstProblem(true), _answerCount(0)
 {
 	BossBasicInfo info;
 
@@ -108,13 +109,13 @@ void KunrealEngine::Ent::SetBossCollider()
 void KunrealEngine::Ent::CreatePattern()
 {
 	CreateSubObject();
-	//CreateRightAttack();
-	//CreateLeftRootShot();
-	//CreateRightRootShot();
-	//CreateRandomRootAttack();
-	//CreateEyeLight();
+	CreateRightAttack();
+	CreateLeftRootShot();
+	CreateRightRootShot();
+	CreateRandomRootAttack();
+	CreateEyeLight();
 	CreateSwiping();
-	//CreateJumpAttack();
+	CreateJumpAttack();
 	//CreateCorePatternFirst();
 }
     
@@ -440,7 +441,7 @@ void KunrealEngine::Ent::CreateRandomRootAttack()
 	pattern->SetAnimName("Anim_Root_Shot");
 	pattern->SetDamage(100.0f);
 	pattern->SetSpeed(40.0f);	
-	pattern->SetRange(100.0f);
+	pattern->SetRange(80.0f);
 	//pattern->SetAfterDelay(0.5f);
 	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
 	pattern->SetIsWarning("SmallRootShot");
@@ -557,7 +558,7 @@ void KunrealEngine::Ent::CreateEyeLight()
 	pattern->SetAnimName("Mutant_Roaring");
 	pattern->SetDamage(100.0f);
 	pattern->SetSpeed(40.0f);
-	pattern->SetRange(100.0f);
+	pattern->SetRange(30.0f);
 	//pattern->SetAfterDelay(0.5f);
 	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
 	pattern->SetIsWarning("EyeLight");
@@ -631,7 +632,7 @@ void KunrealEngine::Ent::CreateSwiping()
 	pattern->SetAnimName("Mutant_Swiping");
 	pattern->SetDamage(100.0f);
 	pattern->SetSpeed(40.0f);
-	pattern->SetRange(50.f);
+	pattern->SetRange(20.f);
 	//pattern->SetAfterDelay(0.5f);
 	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
 	pattern->SetIsWarning("Swiping");
@@ -691,7 +692,7 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 	pattern->SetPatternName("Core_Pattern_First"); // 세부조정은 이후에
 	pattern->SetAnimName("Anim_Healing");
 	pattern->SetDamage(100.0f);
-	pattern->SetSpeed(30.0f);
+	pattern->SetSpeed(10.0f);
 	pattern->SetRange(100.0f);
 	//pattern->SetAfterDelay(0.5f);
 	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
@@ -700,15 +701,18 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 
+
+
 	auto CorePatternFirstLogic = [pattern, this]()
 	{
 			auto isPatternEnd = false;
+			int patternAnimCount = 5;
 			auto animator = _boss->GetComponent<Animator>();
 			// 현재 보스의 포지션
 			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
 			auto nowPlayerPos = _player->GetComponent<Transform>()->GetPosition();
 
-			if (_isIdleHealing == false)
+			/*if (_isIdleHealing == false)
 			{
 				while (true)
 				{
@@ -719,58 +723,136 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 						break;
 					}
 				}
-			}
+			}*/
 
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true); // 모션 시작
-
-			//if (animator->GetCurrentFrame() >= 60)
-			//{
-			//	isPatternEnd = true;		
-			//}
-
-			for (auto treeObject : _treeObject)
+			if (_isPartternStart == true)
 			{
-				treeObject->SetActive(true);
-				treeObject->GetComponent<MeshRenderer>()->SetActive(true);
-				// 포지션은 종화형쪽에 비슷한게 있었다
+				for (auto treeObject : _treeObject)
+				{
+					treeObject->SetActive(true);
+					treeObject->GetComponent<MeshRenderer>()->SetActive(true);
+					// 포지션은 종화형쪽에 비슷한게 있었다
+				}
 				int index = 0;
 				for (int j = 0; j < 2; j++)
 				{
-					//for (int i = 0; i < 2; i++)
-					//{
-						_treeObject[index]->GetComponent<Transform>()->SetPosition(80.0f - (80.0 * j * 2.0f), 0.0f, 0.0f);
-						index++;
-						_treeObject[index]->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 80.0f - (80.0 * j * 2.0f));
-						index++;
-					//}
+					_treeObject[index]->GetComponent<Transform>()->SetPosition(40.0f - (45.0 * j * 2.0f), 0.0f, -30.0f);
+					index++;
+					_treeObject[index]->GetComponent<Transform>()->SetPosition(-5.0f, 0.0f, (45.0f - (45.0 * j * 2.0f)) - 30.0f);
+					index++;
+
+				}
+				_isPartternStart = false;
+			}
+
+
+			if (_firstQuestion == true) // 첫번째 질문         초기화 해주어야 하는것 셔플bool, 
+			{
+				if (_isShuffle == false)
+				{
+					unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+					std::default_random_engine engine(seed);
+
+					int numberOfRapetitions = 4;
+
+					std::shuffle(_baseNumber.begin(), _baseNumber.end(), engine);
+
+					_firstPattarn.insert(_firstPattarn.end(), _baseNumber.begin(), _baseNumber.end()); // 숫자 추가
+
+					_isShuffle = true;
+
+					_problemAnswer.emplace_back(_treeObject[_firstPattarn[0]]);
+					_problemAnswer.emplace_back(_treeObject[_firstPattarn[1]]);
+					_problemAnswer.emplace_back(_treeObject[_firstPattarn[2]]);
+					_problemAnswer.emplace_back(_treeObject[_firstPattarn[3]]); // 0,1,2,3
+
 				}
 
-				if (treeObject->GetComponent<BoxCollider>()->IsCollided())
+				if (_firstProblem)  // 첫번째 문제 제시, 오답시 다시 여기부터 시작하도록 추가 구현 필요
 				{
-					if (treeObject->GetComponent<BoxCollider>()->GetTargetObject() == _player)  // 현재 보스가 피격 당하는 구현이 없음, 나중에 수정
+					if (animator->GetCurrentFrame() >= patternAnimCount && animator->GetCurrentFrame() <= patternAnimCount + 3) // 첫번째
 					{
-						// 콜라이더 끼리 체크를 먼저 하기
+						// 첫번째차례의 나무
+						_treeObject[_firstPattarn[0]]->GetComponent<Particle>()->SetActive(true);
+					}
 
-						if (treeObject->GetObjectName() == "treeObjectReal") // 오브젝트의 이름에 따라 다른 처리
-						{
-							// 플레이어가 준 공격의 공격력 필요
-							
+					if (animator->GetCurrentFrame() >= 2 * patternAnimCount && animator->GetCurrentFrame() <= 2 * patternAnimCount + 3)
+					{
+						_treeObject[_firstPattarn[0]]->GetComponent<Particle>()->SetActive(false);
+					}
 
-							// 보스의 체력을 만질수있어야함, 일단 보류
-							
+					if (animator->GetCurrentFrame() >= 3 * patternAnimCount && animator->GetCurrentFrame() <= 3 * patternAnimCount + 3)
+					{
+						// 두번째차례의 나무
+						_treeObject[_firstPattarn[1]]->GetComponent<Particle>()->SetActive(true);
+					}
 
+					if (animator->GetCurrentFrame() >= 4 * patternAnimCount && animator->GetCurrentFrame() <= 4 * patternAnimCount + 3)
+					{
+						_treeObject[_firstPattarn[1]]->GetComponent<Particle>()->SetActive(false);
+					}
 
-						}
-						else
-						{
+					if (animator->GetCurrentFrame() >= 5 * patternAnimCount && animator->GetCurrentFrame() <= 5 * patternAnimCount + 3)
+					{
+						// 세번째차례의 나무
+						_treeObject[_firstPattarn[2]]->GetComponent<Particle>()->SetActive(true);
+					}
 
-						}
+					if (animator->GetCurrentFrame() >= 6 * patternAnimCount && animator->GetCurrentFrame() <= 6 * patternAnimCount + 3)
+					{
+						_treeObject[_firstPattarn[2]]->GetComponent<Particle>()->SetActive(false);
+					}
+
+					if (animator->GetCurrentFrame() >= 7 * patternAnimCount && animator->GetCurrentFrame() <= 7 * patternAnimCount + 3)
+					{
+						// 네번째차례의 나무
+						_treeObject[_firstPattarn[3]]->GetComponent<Particle>()->SetActive(true);
+					}
+
+					if (animator->GetCurrentFrame() >= 8 * patternAnimCount && animator->GetCurrentFrame() <= 8 * patternAnimCount + 1)
+					{
+						_treeObject[_firstPattarn[3]]->GetComponent<Particle>()->SetActive(false);
+						_firstProblem = false;
 					}
 				}
 
-				
+			}
+			else if (_secendQuestion == true) // 두번째 질문
+			{
 
 			}
+			else if (_thirdQuestion == true) // 세번째 질문
+			{
+
+			}
+			
+			// 답변
+
+			//for (auto treeObject : _treeObject)
+			//{
+			//	if (treeObject->GetComponent<BoxCollider>()->IsCollided())
+			//	{
+			//		if (treeObject->GetComponent<BoxCollider>()->GetTargetObject() == _player && )  // 현재 보스가 피격 당하는 구현이 없음, 나중에 수정
+			//		{
+			//			_playerAnswer.emplace_back(treeObject);
+			//			++_answerCount;
+			//		}
+			//	}
+			//}
+
+
+
+
+
+
+
+
+
+				
+
+				
+
 
 
 
@@ -803,6 +885,18 @@ void KunrealEngine::Ent::CorePatternObjectFirst()
 		treeObject->AddComponent<BoxCollider>();
 		treeObject->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 10.0f, 5.0f);
 		treeObject->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
+		treeObject->AddComponent<Particle>();
+
+		// 이쁜 파티클 추가
+		treeObject->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+		treeObject->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+		treeObject->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		treeObject->GetComponent<Particle>()->SetParticleSize(20.0f, 20.0f);
+		treeObject->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+		treeObject->GetComponent<Particle>()->SetOffSet(0.0f, 40.0f, 0.0f);
+		// 임시 파티클
+
+		treeObject->GetComponent<Particle>()->SetActive(false);
 		treeObject->SetTag("BossSub");
 		treeObject->SetActive(false);
 		_treeObject.push_back(treeObject);
@@ -820,6 +914,16 @@ void KunrealEngine::Ent::CorePatternObjectFirst()
 	//_treeObjectReal->SetActive(false);
 	//_treeObject.push_back(_treeObjectReal);
 
+}
+
+void KunrealEngine::Ent::LightControl(int onNumber)
+{
+	//for (auto treeObject : _treeObject)
+	//{
+	//	treeObject->GetComponent<Particle>()->SetActive(false);
+	//}
+
+	_treeObject[onNumber]->GetComponent<Particle>()->SetActive(true);
 }
 
 float KunrealEngine::Ent::GetRandomRange(float center, float range)
@@ -843,7 +947,7 @@ bool KunrealEngine::Ent::Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& ta
 		direction = DirectX::XMVector3Normalize(direction);
 
 		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
-		_bossTransform->SetPosition(newPosition.m128_f32[0], 0.0f, newPosition.m128_f32[2]);
+		_bossTransform->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 
 		return true;
 	}

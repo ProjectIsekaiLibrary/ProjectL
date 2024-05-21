@@ -154,10 +154,10 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
     GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon);
    
-   if (diffuseAlbedo.a == 0.f)
-   {
-       return float4(diffuseAlbedo.xyz, 1.0f);
-   }
+   //if (diffuseAlbedo.a == 0.f)
+   //{
+   //    return float4(diffuseAlbedo.xyz, 1.0f);
+   //}
     
     float3 toEye = gEyePosW - position;
 
@@ -185,7 +185,19 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         shadowFactor = 1.0f;
     }
     
-    float4 texColor = float4(diffuseAlbedo.xyz * shadowFactor, 1.0f);
+    float4 texColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    //diffuseAlbedo.a = 1.0f;
+    //float4 texColor = float4(diffuseAlbedo.xyz, 1.0f);
+    
+    if (diffuseAlbedo.a <= 0.f)
+    {
+        cartoon = 0.0f;
+        texColor = float4(diffuseAlbedo.xyz, 1.0f);
+    }
+    else
+    {
+        texColor = float4(diffuseAlbedo.xyz * shadowFactor, 1.0f);
+    }
     
     Material nowMat;
     nowMat.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
