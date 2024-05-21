@@ -128,6 +128,8 @@ namespace KunrealEngine
 	private:
 		float _insideWarningTimer;
 
+	private:
+		float _swordDissolveTimer;
 	// logic
 	private:
 		std::function<void()> _callInitLogic;

@@ -12,7 +12,7 @@ KunrealEngine::Kamen::Kamen()
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
 	_emergence9Lich(nullptr), _targetIndex(0),
 	_call2PrevStep(1),
-	_insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f)
+	_insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f), _swordDissolveTimer(1.0f)
 {
 	BossBasicInfo info;
 
@@ -47,18 +47,11 @@ void KunrealEngine::Kamen::Update()
 	// 반드시 해야함
 	Boss::Update();
 
-	if (GetAsyncKeyState('Y'))
-	{
-		_sword->GetComponent<MeshRenderer>()->DeleteParentBone();
-		_sword->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 20.0f, _bossTransform->GetPosition().z);
-		_sword->GetComponent<Transform>()->SetRotation(-180.0f, 0.0f, 0.0f);
-	}
 
-	if (GetAsyncKeyState('T'))
+	if (_swordDissolveTimer > 0 && _sword->GetComponent<MeshRenderer>()->GetIsDissolve())
 	{
-		_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
-		_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
-		_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+		_swordDissolveTimer -= TimeManager::GetInstance().GetDeltaTime();
+		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
 	}
 }
 
@@ -159,23 +152,7 @@ void KunrealEngine::Kamen::GamePattern()
 
 void KunrealEngine::Kamen::CreateSubObject()
 {
-	_sword = _boss->GetObjectScene()->CreateObject("KamenSword");
-	_sword->AddComponent<MeshRenderer>();
-	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
 
-	//_sword->GetComponent<Transform>()->SetScale(0.2f, 0.2f, 0.2f);
-	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
-
-	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
-
-	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
-
-	for (int i = 0; i < texSize; i++)
-	{
-		_sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
-		_sword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
-		_sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
-	}
 }
 
 
@@ -231,15 +208,6 @@ void KunrealEngine::Kamen::CreateLeftAttack()
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
-	_leftHand->AddComponent<Particle>();
-	_leftHand->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
-	_leftHand->GetComponent<Particle>()->SetParticleDuration(0.0f, 0.0f);
-	_leftHand->GetComponent<Particle>()->SetParticleVelocity(3.f, false);
-	_leftHand->GetComponent<Particle>()->SetParticleSize(30.f, 5.0f);
-	_leftHand->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	_leftHand->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_L");
-	//_leftHand->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-	_leftHand->GetComponent<Particle>()->SetActive(false);
 	
 	BossPattern* pattern = new BossPattern();
 
@@ -265,6 +233,23 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
 
+	
+	_sword = _boss->GetObjectScene()->CreateObject("KamenSword");
+	_sword->AddComponent<MeshRenderer>();
+	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+	_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+
+	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
+
+	for (int i = 0; i < texSize; i++)
+	{
+		_sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+		_sword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+		_sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+	}
+
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Right_Attack_Once");
@@ -273,10 +258,40 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_rightHand);
-	//pattern->SetSubObject(_sword);
-	auto rightHandLogic = CreateBasicAttackLogic(pattern, _rightHand, 10);
+	pattern->SetSubObject(_sword);
 
-	pattern->SetLogic(rightHandLogic);
+	auto attackLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (pattern->_colliderOnCount > 0)
+			{
+				if (animator->GetCurrentFrame() >= 10.0f)
+				{
+					_rightHand->GetComponent<BoxCollider>()->SetActive(true);
+					_sword->GetComponent<MeshRenderer>()->SetActive(true);
+				}
+			}
+
+			// 1타를 맞았다면
+			if (pattern->_colliderOnCount == 0)
+			{
+				pattern->SetNextPatternForcePlay(true);
+			}
+
+			if (isAnimationPlaying == false)
+			{
+				//_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(attackLogic);
 
 	_rightAttack = pattern;
 }
