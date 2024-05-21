@@ -174,6 +174,10 @@ namespace KunrealEngine
 
 		int _answerCount;
 
+	private:
+			// 코루틴 대진수의 패턴용 변수
+			bool _jumpAttack_end = false;
+
 	private:	// 코루틴 대진수의 패턴 야미
 		Coroutine_Func(JumpAttackCo)
 		{	
@@ -181,6 +185,7 @@ namespace KunrealEngine
 			auto animator = _boss->GetComponent<Animator>();
 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
 			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
+			some->_jumpAttack_end = true;
 
 			while (true)
 			{
@@ -193,7 +198,7 @@ namespace KunrealEngine
 				if (25 < animator->GetCurrentFrame())
 				{
 					DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-					some->Move(mine, target, 30.0f);
+					some->Move(mine, target, 40.0f);
 				}
 				Return_null;
 			}
@@ -201,12 +206,12 @@ namespace KunrealEngine
 			while (true)
 			{
 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-				if (!(some->Move(mine, target, 50.0f)))
+				if (!(some->Move(mine, target, 60.0f)))
 				{
 					animator->Stop();
 					break;
 				}
-				animator->Play("Anim_Fall", 30.0f, true);
+				animator->Play("Anim_Fall", 40.0f, true);
 				Return_null;
 			}
 
@@ -225,7 +230,7 @@ namespace KunrealEngine
 				Return_null;
 			}
 
-			some->_status = BossStatus::IDLE;
+			some->_jumpAttack_end = false;
 		};
 	};
 }
