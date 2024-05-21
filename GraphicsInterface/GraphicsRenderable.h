@@ -112,5 +112,11 @@ namespace GInterface
 		virtual void SetAlpha(float alpha) abstract;
 		// 투명도 적용 값 가져오기
 		virtual float GetAlhpa() abstract;
+
+	public:
+		virtual void SetDissolve(float value) abstract;
+		virtual void SetIsDissolve(bool isDissolve) abstract;
+		virtual float GetDissolveValue() abstract;
+		virtual bool GetIsDissolve()abstract;
 	};
 }

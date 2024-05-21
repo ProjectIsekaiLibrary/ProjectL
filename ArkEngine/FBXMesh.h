@@ -35,12 +35,17 @@ namespace ArkEngine
 		struct Material;
 
 		class FBXAnimator;
+
+		class ArkEffect;
+		class ArkDevice;
+
 		//class DirectionalLight;
 	}
 }
 
 /// 김현재 추가
 struct ModelMesh;
+struct ID3DX11EffectScalarVariable;
 
 namespace ArkEngine
 {
@@ -65,7 +70,7 @@ namespace ArkEngine
 		public:
 			virtual bool GetRenderingState() override;
 			virtual void SetRenderingState(bool tf) override;
-			
+
 		public:
 			virtual void SetShadowState(bool tf) override;
 			virtual bool GetShadowState() override;
@@ -133,7 +138,7 @@ namespace ArkEngine
 			virtual void SetCartoonRendering(bool tf) override;
 			virtual bool GetCartoonRenderingState() override;
 
-	
+
 			virtual void SetAlpha(float alpha) override;
 			virtual float GetAlhpa() override;
 
@@ -200,7 +205,7 @@ namespace ArkEngine
 			bool _haveShadow;
 
 			bool _applyCartoonRendering;
-			
+
 			float _alpha;
 
 			/// <summary>
@@ -242,6 +247,37 @@ namespace ArkEngine
 			DirectX::XMFLOAT4X4 _parentBoneTrasnform;
 			int _parentBoneIndex;
 			DirectX::XMFLOAT4X4 _transformEffectedByParent;
+
+			/// Dissolve
+		public:
+			// 1일때는 정상 0에 가까워 질수록 투명해짐
+			virtual void SetDissolve(float value) override;
+			virtual float GetDissolveValue() override;
+			virtual void SetIsDissolve(bool isDissolve) override;
+			virtual bool GetIsDissolve() override;
+
+
+		private:
+			void SetDissolveSRV(float value);
+			void SetDissolveTexture();
+			void SetIsDissolveSRV(bool isDissolve);
+
+			ID3DX11EffectShaderResourceVariable* _noiseMap;
+			ID3DX11EffectShaderResourceVariable* _burnGradation;
+
+			ID3D11ShaderResourceView* _noiseMapSRV;
+			ID3D11ShaderResourceView* _burnGradationSRV;
+
+			std::string _noiseMapName;
+			std::string _burnGradationName;
+
+
+			float _dissolveValue;
+			bool _isDissolve;
+		
+
+			float timeMan = 1.0f;
+
 		};
 	}
 }

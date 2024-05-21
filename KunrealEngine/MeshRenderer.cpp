@@ -316,3 +316,23 @@ DirectX::XMFLOAT4X4 KunrealEngine::MeshRenderer::GetBoneTransform(const std::str
 {
 	return _mesh->GetBoneTransform(boneName);
 }
+
+void KunrealEngine::MeshRenderer::SetDissolve(float value)
+{
+	this->_mesh->SetDissolve(value);
+}
+
+void KunrealEngine::MeshRenderer::SetIsDissolve(bool isDissolve)
+{
+	this->_mesh->SetIsDissolve(isDissolve);
+}
+
+float KunrealEngine::MeshRenderer::GetDissolveValue()
+{
+	return this->_mesh->GetDissolveValue();
+}
+
+bool KunrealEngine::MeshRenderer::GetIsDissolve()
+{
+	return this->_mesh->GetIsDissolve();
+}
