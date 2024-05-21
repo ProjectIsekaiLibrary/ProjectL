@@ -1,7 +1,7 @@
 #pragma once
+#define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 #include <windows.h>
 
-#define _SILENCE_CXX20_CISO646_REMOVED_WARNING
 
 /// <summary>
 /// 엔진의 클라이언트
