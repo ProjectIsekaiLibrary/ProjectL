@@ -73,8 +73,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
-	//navigationInstance.HandleBuild(0);
+	//navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
+	navigationInstance.HandleBuild(0);
 	navigationInstance.HandleBuild(1);
 
 	//// cube map test
@@ -303,15 +303,12 @@ void KunrealEngine::EngineCore::PlayGround()
 	//kamen->AddComponent<Kamen>();
 	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
-	//spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
-	//spider -> AddComponent<MeshRenderer>();
-	//spider -> GetComponent<MeshRenderer>() -> SetMeshObject("SpiderQueen/SpiderQueen", true);
-	//spider->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
-	//spider->AddComponent<Aracne>();
+	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
+	spider->AddComponent<Aracne>();
 
-	ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
+	//ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
 
-	ent -> AddComponent<Ent>();
+	//ent -> AddComponent<Ent>();
 	//ent->GetComponent<MeshRenderer>()->SetAlpha(0);
 	//ent -> GetComponent<MeshRenderer>() -> SetMeshObject("Ent_Generic/Ent_Generic", true);
 

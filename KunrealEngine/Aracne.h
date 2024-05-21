@@ -151,68 +151,46 @@ namespace KunrealEngine
 
 		Coroutine_Func(ChargeAttackCo)
 		{
-// 			Aracne* some = this;
-// 			auto animator = _boss->GetComponent<Animator>();
-// 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
-// 			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
-// 			some->_chargeAttack_end = true;
-// 
-// 			some->_colbodyAttack->SetActive(true);
-// 			while (true)
-// 			{
-// 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-// 				animator->Play("Run", 70.0f, true);
-// 
-// 				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
-// 				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
-// 				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
-// 				Return_null;
-// 				
-// 				if (!some->Move(mine, target, 50.0f))
-// 				{
-// 					animator->Stop();
-// 					break;
-// 				}
-// 			}
-// 
-// 			while (true)
-// 			{
-// 				if (!(animator->Play("Attak_Take_down", 70.0f)))
-// 				{
-// 					animator->Stop();
-// 					break;
-// 				}
-// 
-// 				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
-// 				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
-// 				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
-// 				Return_null;
-// 			}
-// 
-// 			some->_colbodyAttack->SetActive(false);
-// 			some->_chargeAttack_end = false;
+			Aracne* some = this;
+			auto animator = _boss->GetComponent<Animator>();
+			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
+			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
+			some->_chargeAttack_end = true;
 
-			float timer = 1;
-			int lefttime = 10;
-
-			for (;lefttime > 0 ; lefttime--)
+			some->_colbodyAttack->SetActive(true);
+			while (true)
 			{
-				GRAPHICS->DrawDebugText(200, 200, 40, "%d second first", lefttime);
-				Waitforsecond(1.0);
+				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+				animator->Play("Run", 70.0f, true);
+
+				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
+				Return_null;
+				
+				if (!some->Move(mine, target, 50.0f))
+				{
+					animator->Stop();
+					break;
+				}
 			}
 
-			GRAPHICS->DrawDebugText(200, 200, 40, "wait 3sec");
-			Waitforsecond(3.0);
-
-			GRAPHICS->DrawDebugText(200, 200, 40, "wait 5sec");
-			Waitforsecond(5.0);
-
-			lefttime = 3;
-			for (; lefttime > 0; lefttime--)
+			while (true)
 			{
-				GRAPHICS->DrawDebugText(200, 200, 40, "%d second first", lefttime);
-				Waitforsecond(1.0);
+				if (!(animator->Play("Attak_Take_down", 70.0f)))
+				{
+					animator->Stop();
+					break;
+				}
+
+				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
+				Return_null;
 			}
+
+			some->_colbodyAttack->SetActive(false);
+			some->_chargeAttack_end = false;
 		};
 
 // 		Coroutine_Func(WebShoot)
