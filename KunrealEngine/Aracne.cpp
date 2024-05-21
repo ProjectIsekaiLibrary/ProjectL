@@ -137,6 +137,18 @@ void KunrealEngine::Aracne::CreatesubObject()
 	_colRightHand->GetComponent<BoxCollider>()->SetOffset(3.0f, 0.0f, 0.0f);
 	_colRightHand->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 19.0f, 10.0f);
 	_colRightHand->SetActive(false);
+
+// 	_websubobj = _boss->GetObjectScene()->CreateObject("web_pattern_sub");
+// 	_websubobj->AddComponent<TransparentMesh>();
+// 	_websubobj->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Circle.png", 1.0f, true);
+// 	_websubobj->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
+// 	_websubobj->GetComponent<TransparentMesh>()->SetTimer(2.0f);
+// 
+// 	_websubobj->AddComponent<BoxCollider>();
+// 	_websubobj->GetComponent<BoxCollider>()->SetBoxSize(30.0f, 30.0f, 30.0f);
+// 	_websubobj->GetComponent<BoxCollider>()->SetActive(false);
+// 
+// 	_webthrow->SetSubObject(_websubobj);
 }
 
 void KunrealEngine::Aracne::CreatePattern()
@@ -144,13 +156,13 @@ void KunrealEngine::Aracne::CreatePattern()
 	CreatesubObject();
 
 	ChargeAttack();
-	JumpAttack();
-	LeftAttack();
-	RightAttack();
-	FrontAttack();
-	TailAttack();
+	//JumpAttack();
+	//LeftAttack();
+	//RightAttack();
+	//FrontAttack();
+	//TailAttack();
 	//ShootingWeb();
-	//Casting();
+	// Casting();
 }
 
 void KunrealEngine::Aracne::JumpAttack()
@@ -159,7 +171,7 @@ void KunrealEngine::Aracne::JumpAttack()
 
 	_jumpAttack->SetPatternName("Jump_Attack");
 
-	_jumpAttack->SetAnimName("Anim_Jump").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_jumpAttackRange).SetAfterDelay(0.5);
+	_jumpAttack->SetAnimName("Anim_Jump").SetDamage(100.0f).SetSpeed(20.0f).SetRange(0).SetAfterDelay(0.5);
 	_jumpAttack->SetIsWarning(false).SetWarningName("");
 	_jumpAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
@@ -255,7 +267,7 @@ void KunrealEngine::Aracne::TailAttack()
 {
 	_tailAttack = new BossPattern();
 
-	_tailAttack->SetPatternName("Front_Attack");
+	_tailAttack->SetPatternName("tail_Attack");
 
 	_tailAttack->SetAnimName("tail_attack").SetDamage(100.0f).SetSpeed(30.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
 	_tailAttack->SetIsWarning(false).SetWarningName("");
@@ -269,13 +281,65 @@ void KunrealEngine::Aracne::TailAttack()
 
 void KunrealEngine::Aracne::ShootingWeb()
 {
-	
+	_webthrow = new BossPattern();
+
+	_webthrow->SetPatternName("Charge_Attack");
+
+	_webthrow->SetAnimName("Run").SetDamage(100.0f).SetSpeed(20.0f).SetRange(100.0f).SetAfterDelay(0.5);
+	_webthrow->SetIsWarning(false).SetWarningName("");
+	_webthrow->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	std::function logic = [this]()
+		{
+			Startcoroutine(ChargeAttackCo);
+			return this->_webthrow_end;
+		};
+
+	_webthrow->SetLogic(logic);
+	_basicPattern.emplace_back(_webthrow);
 }
 
 void KunrealEngine::Aracne::Casting()
 {
+	_magicshow = new BossPattern();
 
+	_magicshow->SetPatternName("Charge_Attack");
+
+	_magicshow->SetAnimName("Run").SetDamage(100.0f).SetSpeed(20.0f).SetRange(100.0f).SetAfterDelay(0.5);
+	_magicshow->SetIsWarning(false).SetWarningName("");
+	_magicshow->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	std::function logic = [this]()
+		{
+			Startcoroutine(ChargeAttackCo);
+			return this->_magicshow_end;
+		};
+
+	_magicshow->SetLogic(logic);
+	_basicPattern.emplace_back(_magicshow);
 }
+
+// void KunrealEngine::Aracne::CreateOutsideSafe()
+// {
+// 	_magicshow = new BossPattern();
+// 
+// 	_magicshow->SetPatternName("OutSideSafe");
+// 
+// 	_magicshow->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
+// 
+// 	// 패턴 시작전에 초기화, 장판 켜줌
+// 	auto patternlogic = [this]()
+// 		{
+// 			Startcoroutine(WebShoot);
+// 			return this->_magicshow_end;
+// 		};
+// 
+// 
+// 	// 로직 함수 실행 가능하도록 넣어주기
+// 	_magicshow->SetLogic(patternlogic);
+// 
+// 	_basicPattern.emplace_back(_magicshow);
+// }
 
 ///
 /// 패턴을 위해 필요한 함수들
@@ -296,7 +360,7 @@ bool KunrealEngine::Aracne::Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3&
 		direction = DirectX::XMVector3Normalize(direction);
 
 		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
-		_bossTransform->SetPosition(newPosition.m128_f32[0], 0.0f, newPosition.m128_f32[2]);
+		_bossTransform->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 
 		return true;
 	}

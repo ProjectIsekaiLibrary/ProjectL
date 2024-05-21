@@ -95,7 +95,6 @@ namespace KunrealEngine
 
 			std::coroutine_handle<promise_type> coro_handle;
 			int mapKey = 0;
-			float duration = 0;
 		};
 
 		static void StartCoroutine(std::function<Coroutine_type()> coro);	// 코루틴 함수를 받아서 시작시킴

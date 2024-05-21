@@ -56,6 +56,8 @@ namespace KunrealEngine
 		void ShootingWeb();	// 거미줄 쏘기 공격 - 부채꼴 방사형
 		void Casting();		// 마술 시전(뭔 패턴일지는 미지수)
 
+		void CreateOutsideSafe();
+
 	private:
 		bool Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 		float CalculateParabolaHeight(DirectX::XMFLOAT3 start, DirectX::XMFLOAT3 end, DirectX::XMFLOAT3 current);
@@ -67,6 +69,8 @@ namespace KunrealEngine
 		BossPattern* _righttAttack;
 		BossPattern* _frontAttack;
 		BossPattern* _tailAttack;
+		BossPattern* _webthrow;
+		BossPattern* _magicshow;
 
 	private:	// 여긴 콜라이더만 넣어라
 		GameObject* _colbodyAttack;
@@ -75,13 +79,17 @@ namespace KunrealEngine
 		GameObject* _colLeftHand;
 		GameObject* _colRightHand;
 
+		GameObject* _websubobj;
+		GameObject* _magicsubobj;
+
 	private:	// 그 외
-		const float _jumpAttackRange = 10.0f;
 		int _call = 0;
 
 		// 패턴 종료 전달용
 		bool _jumpAttack_end = false;
 		bool _chargeAttack_end = false;
+		bool _webthrow_end = false;
+		bool _magicshow_end = false;
 
 	private:	// 코루틴
 		Coroutine_Func(JumpAttackCo)
@@ -143,46 +151,98 @@ namespace KunrealEngine
 
 		Coroutine_Func(ChargeAttackCo)
 		{
-			Aracne* some = this;
-			auto animator = _boss->GetComponent<Animator>();
-			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
-			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
-			some->_chargeAttack_end = true;
+// 			Aracne* some = this;
+// 			auto animator = _boss->GetComponent<Animator>();
+// 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
+// 			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
+// 			some->_chargeAttack_end = true;
+// 
+// 			some->_colbodyAttack->SetActive(true);
+// 			while (true)
+// 			{
+// 				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+// 				animator->Play("Run", 70.0f, true);
+// 
+// 				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+// 				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+// 				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
+// 				Return_null;
+// 				
+// 				if (!some->Move(mine, target, 50.0f))
+// 				{
+// 					animator->Stop();
+// 					break;
+// 				}
+// 			}
+// 
+// 			while (true)
+// 			{
+// 				if (!(animator->Play("Attak_Take_down", 70.0f)))
+// 				{
+// 					animator->Stop();
+// 					break;
+// 				}
+// 
+// 				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
+// 				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
+// 				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
+// 				Return_null;
+// 			}
+// 
+// 			some->_colbodyAttack->SetActive(false);
+// 			some->_chargeAttack_end = false;
 
-			some->_colbodyAttack->SetActive(true);
-			while (true)
+			float timer = 1;
+			int lefttime = 10;
+
+			for (;lefttime > 0 ; lefttime--)
 			{
-				DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-				animator->Play("Run", 70.0f, true);
-
-				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
-				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
-				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
-				Return_null;
-				
-				if (!some->Move(mine, target, 50.0f))
-				{
-					animator->Stop();
-					break;
-				}
+				GRAPHICS->DrawDebugText(200, 200, 40, "%d second first", lefttime);
+				Waitforsecond(1.0);
 			}
 
-			while (true)
+			GRAPHICS->DrawDebugText(200, 200, 40, "wait 3sec");
+			Waitforsecond(3.0);
+
+			GRAPHICS->DrawDebugText(200, 200, 40, "wait 5sec");
+			Waitforsecond(5.0);
+
+			lefttime = 3;
+			for (; lefttime > 0; lefttime--)
 			{
-				if (!(animator->Play("Attak_Take_down", 70.0f)))
-				{
-					animator->Stop();
-					break;
-				}
-
-				DirectX::XMFLOAT3 rot = some->_bossTransform->GetRotation();
-				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
-				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
-				Return_null;
+				GRAPHICS->DrawDebugText(200, 200, 40, "%d second first", lefttime);
+				Waitforsecond(1.0);
 			}
-
-			some->_colbodyAttack->SetActive(false);
-			some->_chargeAttack_end = false;
 		};
+
+// 		Coroutine_Func(WebShoot)
+// 		{
+// 			Aracne* some = this;
+// 			auto subobj = some->_websubobj;
+// 			DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
+// 
+// 			subobj->GetComponent<TransparentMesh>()->Reset();
+// 			subobj->GetComponent<TransparentMesh>()->SetActive(true);
+// 			subobj->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
+// 
+// 			auto animator = _boss->GetComponent<Animator>();
+// 			animator->Play("Idle", _magicshow->_speed, true);
+// 
+// 			// 장판 실행
+// 			auto isPlayed = _insideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+// 
+// 			// 장판 실행이 완료되면
+// 			if (isPlayed)
+// 			{
+// 				// n초동안 콜라이더 실행
+// 				_insideWarningTimer += TimeManager::GetInstance().GetDeltaTime();
+// 				_outsideAttack->GetComponent<BoxCollider>()->SetActive(true);
+// 
+// 				if (_insideWarningTimer >= 2.0f)
+// 				{
+// 					return false;
+// 				}
+// 			}
+//		};
 	};
 }
