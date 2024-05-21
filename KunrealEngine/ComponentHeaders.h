@@ -19,6 +19,7 @@
 
 #include "Player.h"
 #include "PlayerMove.h"
+#include "PlayerAbility.h"
 
 #include "Kamen.h"
 #include "Aracne.h"

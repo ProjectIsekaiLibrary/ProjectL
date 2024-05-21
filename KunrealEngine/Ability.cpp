@@ -20,6 +20,7 @@ KunrealEngine::Ability::~Ability()
 void KunrealEngine::Ability::Initialize(std::string objName)
 {
 	_projectile = SceneManager::GetInstance().GetCurrentScene()->CreateObject(objName);
+	_projectile->SetTag("playerSub");
 
 	// 스킬을 사용해야 활성화 되어야하니
 	_projectile->SetActive(false);

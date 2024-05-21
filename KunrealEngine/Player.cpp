@@ -12,7 +12,7 @@ KunrealEngine::Player::Player()
 	, _playerInfo(
 		100.0f,			// hp
 		100.0f,			// stamina
-		10.0f,			// movespeed
+		15.0f,			// movespeed
 		120.0f,			// dashspeed
 		40.0f,			// dashrange
 		8.0f,			// dashcooldown
@@ -36,6 +36,7 @@ void KunrealEngine::Player::Initialize()
 	_transform->SetScale(0.1f, 0.1f, 0.1f);
 	_transform->SetRotation(0.0f, 45.f, 0.0f);
 
+	GetOwner()->SetTag("Player");
 	GetOwner()->AddComponent<MeshRenderer>();
 	GetOwner()->GetComponent<MeshRenderer>()->SetMeshObject("PlayerWithCloak/PlayerWithCloak");
 	GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
@@ -117,7 +118,11 @@ void KunrealEngine::Player::AnimateByStatus()
 				GetOwner()->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::ABILITY:
-				if (_abilityAnimationIndex == 3)
+				if (this->_abilityAnimationIndex == 2)
+				{
+					GetOwner()->GetComponent<Animator>()->Play("Ice", 40.0f * _playerInfo._speedScale, false);
+				}
+				else if (this->_abilityAnimationIndex == 3)
 				{
 					GetOwner()->GetComponent<Animator>()->Play("Meteor", 40.0f * _playerInfo._speedScale, false);
 				}
@@ -156,6 +161,15 @@ void KunrealEngine::Player::SetHitState(int patternType)
 	{
 		_playerStatus = Status::SWEEP;
 	}
+}
+
+
+void KunrealEngine::Player::MoveToScene(std::string sceneName)
+{
+	this->GetOwner()->MoveToScene(sceneName);
+	this->GetOwner()->GetComponent<PlayerAbility>()->_shot->MoveToScene(sceneName);
+	this->GetOwner()->GetComponent<PlayerAbility>()->_ice->MoveToScene(sceneName);
+	this->GetOwner()->GetComponent<PlayerAbility>()->_meteor->MoveToScene(sceneName);
 }
 
 void KunrealEngine::Player::AfterHit()

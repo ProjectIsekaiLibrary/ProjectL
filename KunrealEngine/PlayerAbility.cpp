@@ -3,17 +3,24 @@
 #include "GraphicsSystem.h"
 #include "MeshRenderer.h"
 #include "BoxCollider.h"
-#include "Ability.h"
-#include "Projectile.h"
 #include "Particle.h"
 #include "TimeManager.h"
 #include "ToolBox.h"
 #include "Animator.h"
 #include "Transform.h"
 
+#include "Boss.h"
+#include "Kamen.h"
+#include "Ent.h"
+#include "Aracne.h"
+
+#include "SceneManager.h"
+#include "Scene.h"
+
 KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr)
-	, _destroyIce(false)
+	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isShotHit(false)
+	, _currentBoss(nullptr), _currentDamage(0.0f)
 {
 
 }
@@ -49,29 +56,40 @@ void KunrealEngine::PlayerAbility::Update()
 {
 	/// 함수로 나누자 나중에
 	/// 쿨타임 조건 필요
-	if (InputSystem::GetInstance()->KeyDown(KEY::R))
-	{
-		ResetMeteorPos();
-		_playerComp->_playerStatus = Player::Status::ABILITY;
-		_playerComp->_abilityAnimationIndex = 3;
-	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::Q))
+	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady)
 	{
 		ResetShotPos();
+		_isShotReady = false;
+		Startcoroutine(shotCoolDown);
 		_shot->SetActive(true);
 		_shot->GetComponent<Projectile>()->SetActive(true);
 		_shot->GetComponent<Projectile>()->ResetCondition();
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::W))
+	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isIceReady)
 	{
-		this->_destroyIce = false;								// 소멸 조건 초기화
 		ResetIcePos();											// 투사체 위치 리셋
-		Startcoroutine(iceTimer);								// 코루틴 타이머 시작
-		_ice->SetActive(true);
-		_ice->GetComponent<Projectile>()->SetActive(true);
-		_ice->GetComponent<Projectile>()->ResetCondition();
+		Startcoroutine(iceCoolDown);
+		Startcoroutine(iceStandby);								// 얼음 출현 대기	
+		_playerComp->_playerStatus = Player::Status::ABILITY;
+		_playerComp->_abilityAnimationIndex = 2;				// 얼음 소화 애니메이션
+		Startcoroutine(iceDestroy);
+	}
+
+	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady)
+	{
+		ResetMeteorPos();
+		_isMeteorReady = false;
+		Startcoroutine(meteorCoolDown);
+		_playerComp->_playerStatus = Player::Status::ABILITY;
+		_playerComp->_abilityAnimationIndex = 3;
+	}
+
+	/// 교통정리 필요
+	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 2 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+	{
+		_playerComp->_playerStatus = Player::Status::IDLE;
 	}
 
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
@@ -124,12 +142,28 @@ void KunrealEngine::PlayerAbility::ResetShotPos()
 
 	_shot->GetComponent<BoxCollider>()->Update();
 	_shot->GetComponent<MeshRenderer>()->Update();
+	_shot->GetComponent<Particle>()->Update();
 
 	// 방향벡터
 	DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
 	DirectX::XMFLOAT3 targetPoint = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
 
 	DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetPoint);
+	DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);
+
+	//플레이어 방향 돌리기
+	//DirectX::XMVECTOR dotResult = DirectX::XMVector3Dot(currentPosVec, direction);
+	//float dotProduct = DirectX::XMVectorGetX(dotResult);
+	//
+	//float angle = acos(dotProduct);	/// 어째서?
+	//angle = DirectX::XMConvertToDegrees(angle);
+	//
+	//if (direction.m128_f32[0] > currentPosVec.m128_f32[0])
+	//{
+	//	angle *= -1;
+	//}
+	//
+	//this->GetOwner()->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
 
 	_shot->GetComponent<Projectile>()->SetDirection(direction);
 	_shot->GetComponent<Projectile>()->_movedRange = 0.0f;
@@ -145,7 +179,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		10.0f,			// 데미지
 		10.0f,			// 마나
 		5.0f,			// 무력화 피해량
-		6.0f,			// 쿨타임
+		2.0f,			// 쿨타임
 		10.0f			// 사거리
 	);
 
@@ -159,12 +193,32 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shot->AddComponent<Projectile>();
 	Projectile* shotProj = _shot->GetComponent<Projectile>();
 
+	// 파티클 추가	// 번개공
+	Particle* shotParticle = _shot->AddComponent<Particle>();
+	shotParticle->SetParticleEffect("Shot", "Resources/Textures/Particles/fx_Flare6.dds", 1000);
+	shotParticle->SetParticleSize(15.0f, 15.0f);
+	shotParticle->SetParticleVelocity(24.0f, true);
+	shotParticle->SetParticleDuration(1.2f, 0.1f);
+	shotParticle->AddParticleColor(0.0f, 0.3f, 1.0f);
+	//shotParticle->SetParticleRotation(90.0f, _shot->GetComponent<Transform>()->GetRotation().y, 0.0f);
+	shotParticle->SetParticleDirection(17.1f, 0.0f, 1.0f);
+	shotParticle->SetActive(true);
+
 	shotProj->SetMeshObject("Meteor/Meteor");
+
+	// Q 스킬은 메쉬가 안 보이게
+	_shot->GetComponent<MeshRenderer>()->SetAlpha(0.0f);
+
 	shotProj->GetCollider()->SetBoxSize(3.0f, 3.0f, 3.0f);
-	shotProj->SetDestoryCondition([shotProj, this]()->bool
+	shotProj->SetDestoryCondition([shot, shotProj, this]()->bool
 		{
 			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())		
 			{
+				if (shotProj->GetCollider()->GetTargetObject()->GetTag() == "BOSS")
+				{
+					_isShotHit = true;
+				}
+
 				return true;
 			}
 			else
@@ -179,14 +233,21 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		{
 			if (_shot->GetActivated())
 			{
+				if (_isShotHit)
+				{
+					_currentBoss->_info._hp -= shot->_damage;
+					_isShotHit = false;
+				}
+
 				DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
 
 				DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);
-				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(shotProj->GetDirection(), 40.0f * TimeManager::GetInstance().GetDeltaTime()));
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(shotProj->GetDirection(), 50.0f * TimeManager::GetInstance().GetDeltaTime()));
 
 				_shot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
-				_shot->GetComponent<Transform>()->SetRotation(0.0f, _shot->GetComponent<Transform>()->GetRotation().y + 50.0f, 0.0f);
-				shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec)));
+				_shot->GetComponent<Transform>()->SetRotation(0.0f, _shot->GetComponent<Transform>()->GetRotation().y + 10.0f, 0.0f);
+				_shot->GetComponent<Particle>()->SetParticleRotation(_shot->GetComponent<Transform>()->GetRotation().y, 0.0f, 0.0f);
+				shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec))); 
 
 			}
 		});
@@ -198,13 +259,17 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 void KunrealEngine::PlayerAbility::ResetIcePos()
 {
 	// 마우스 3D좌표로에 위치시키도록
-	_ice->GetComponent<Transform>()->SetPosition(GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y));
+	DirectX::XMFLOAT3 newPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
 	_ice->GetComponent<Transform>()->SetPosition
 	(
-		_ice->GetComponent<Transform>()->GetPosition().x,
-		_ice->GetComponent<Transform>()->GetPosition().y,
-		_ice->GetComponent<Transform>()->GetPosition().z
+		newPos.x,
+		this->_playerComp->GetOwner()->GetComponent<Transform>()->GetPosition().y,
+		newPos.z
 	);
+
+	// 위치 조정
+	_ice->GetComponent<BoxCollider>()->Update();
+	_ice->GetComponent<MeshRenderer>()->Update();
 }
 
 void KunrealEngine::PlayerAbility::CreateAbility2()
@@ -217,14 +282,14 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 		20.0f,			// 데미지
 		15.0f,			// 마나
 		10.0f,			// 무력화 피해량
-		8.0f,			// 쿨타임
+		5.0f,			// 쿨타임
 		12.0f			// 사거리
 	);
 	
 	_ice = ice->_projectile;
 	
 	// 크기 조정
-	_ice->GetComponent<Transform>()->SetScale(15.0f, 15.0f, 15.0f);
+	_ice->GetComponent<Transform>()->SetScale(30.0f, 30.0f, 30.0f);
 	_ice->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
 	
 	// 투사체 컴포넌트 추가
@@ -232,7 +297,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	Projectile* iceProj = _ice->GetComponent<Projectile>();
 	
 	iceProj->SetMeshObject("Ice/Ice", "Ice/Ice.png");
-	iceProj->GetCollider()->SetBoxSize(10.0f, 10.0f, 10.0f);
+	iceProj->GetCollider()->SetBoxSize(15.0f, 15.0f, 15.0f);
 	iceProj->SetDestoryCondition([iceProj, this]()->bool
 		{
 			if (this->_destroyIce)
@@ -277,7 +342,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		50.0f,			// 데미지
 		10.0f,			// 마나
 		15.0f,			// 무력화 피해량
-		20.0f,			// 쿨타임
+		10.0f,			// 쿨타임
 		15.0f			// 사거리
 	);
 
@@ -342,4 +407,23 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 void KunrealEngine::PlayerAbility::AddToContanier(Ability* abil)
 {
 	_abilityContainer.emplace_back(abil);
+}
+
+void KunrealEngine::PlayerAbility::SetCurrentBossObject()
+{
+	std::string sceneName = SceneManager::GetInstance().GetCurrentScene()->GetSceneName();
+
+	if (sceneName == "mapTest3.json")
+	{
+		//this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS")->GetComponent<Ent>()->GetBoss();
+	}
+	else if (sceneName == "mapTest4.json")
+	{
+		//this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS")->GetComponent<Kamen>()->GetBoss();
+	}
+}
+
+float KunrealEngine::PlayerAbility::GetDamage()
+{
+	return this->_currentDamage;
 }

@@ -16,6 +16,8 @@
 #include "Navigation.h"
 #include "Boss.h"
 
+#include "PlayerAbility.h"
+
 KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
 	_distance(0.0f), _isCorePattern(false),
@@ -54,6 +56,7 @@ void KunrealEngine::Boss::DebugTest()
 {
 	// 애니메이션 확인용
 	GRAPHICS->DrawDebugText(500, 0, 50, "%s", _boss->GetComponent<Animator>()->GetNowAnimationName().c_str());
+	GRAPHICS->DrawDebugText(800, 0, 50, "%f", this->_info._hp);
 
 	// 상태 확인용
 	switch (_status)
@@ -1220,6 +1223,11 @@ const DirectX::XMVECTOR KunrealEngine::Boss::GetDirection()
 	return direction;
 }
 
+
+KunrealEngine::Boss* KunrealEngine::Boss::GetBoss()
+{
+	return this;
+}
 
 void KunrealEngine::Boss::SetBossCollider()
 {
