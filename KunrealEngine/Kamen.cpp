@@ -46,6 +46,20 @@ void KunrealEngine::Kamen::Update()
 {
 	// 반드시 해야함
 	Boss::Update();
+
+	if (GetAsyncKeyState('Y'))
+	{
+		_sword->GetComponent<MeshRenderer>()->DeleteParentBone();
+		_sword->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 20.0f, _bossTransform->GetPosition().z);
+		_sword->GetComponent<Transform>()->SetRotation(-180.0f, 0.0f, 0.0f);
+	}
+
+	if (GetAsyncKeyState('T'))
+	{
+		_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+		_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+	}
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -149,7 +163,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_sword->AddComponent<MeshRenderer>();
 	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
 
-	_sword->GetComponent<Transform>()->SetScale(0.2f, 0.2f, 0.2f);
+	//_sword->GetComponent<Transform>()->SetScale(0.2f, 0.2f, 0.2f);
 	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
 
 	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
@@ -226,7 +240,7 @@ void KunrealEngine::Kamen::CreateLeftAttack()
 	_leftHand->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_L");
 	//_leftHand->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 	_leftHand->GetComponent<Particle>()->SetActive(false);
-
+	
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Once");
@@ -259,7 +273,7 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_rightHand);
-
+	//pattern->SetSubObject(_sword);
 	auto rightHandLogic = CreateBasicAttackLogic(pattern, _rightHand, 10);
 
 	pattern->SetLogic(rightHandLogic);
