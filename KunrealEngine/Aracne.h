@@ -167,7 +167,7 @@ namespace KunrealEngine
 				some->_colbodyAttack->GetComponent<Transform>()->SetPosition(some->_bossTransform->GetPosition());
 				some->_colbodyAttack->GetComponent<Transform>()->SetRotation(DirectX::XMFLOAT3(0, rot.y, 0));
 				Return_null;
-				
+
 				if (!some->Move(mine, target, 50.0f))
 				{
 					animator->Stop();
@@ -193,34 +193,42 @@ namespace KunrealEngine
 			some->_chargeAttack_end = false;
 		};
 
-// 		Coroutine_Func(WebShoot)
-// 		{
-// 			Aracne* some = this;
-// 			auto subobj = some->_websubobj;
-// 			DirectX::XMFLOAT3 mine = some->_bossTransform->GetPosition();
-// 
-// 			subobj->GetComponent<TransparentMesh>()->Reset();
-// 			subobj->GetComponent<TransparentMesh>()->SetActive(true);
-// 			subobj->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
-// 
-// 			auto animator = _boss->GetComponent<Animator>();
-// 			animator->Play("Idle", _magicshow->_speed, true);
-// 
-// 			// 장판 실행
-// 			auto isPlayed = _insideWarning->GetComponent<TransparentMesh>()->PlayOnce();
-// 
-// 			// 장판 실행이 완료되면
-// 			if (isPlayed)
-// 			{
-// 				// n초동안 콜라이더 실행
-// 				_insideWarningTimer += TimeManager::GetInstance().GetDeltaTime();
-// 				_outsideAttack->GetComponent<BoxCollider>()->SetActive(true);
-// 
-// 				if (_insideWarningTimer >= 2.0f)
-// 				{
-// 					return false;
-// 				}
-// 			}
-//		};
+		Coroutine_Func(WebShoot)
+		{
+			Aracne* some = this;
+			GameObject* subobj = some->_websubobj;
+			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
+			some->_webthrow_end = true;
+
+			subobj->SetActive(true);
+			subobj->GetComponent<BoxCollider>()->SetActive(false);
+			subobj->GetComponent<TransparentMesh>()->Reset();
+			subobj->GetComponent<TransparentMesh>()->SetActive(true);
+			subobj->GetComponent<Transform>()->SetPosition(target.x, target.y + 1.0f, target.z);
+			auto animator = _boss->GetComponent<Animator>();
+
+			while (true)
+			{
+				// 장판 실행
+				if (subobj->GetComponent<TransparentMesh>()->PlayOnce())
+				{
+					// 장판 실행이 완료되면
+					animator->Stop();
+					subobj->GetComponent<TransparentMesh>()->SetActive(false);
+					break;
+				}
+
+				some->RotateToTarget(target);
+				animator->Play("Anim_Throw_a_web", 50.0f);
+				Return_null;
+			}
+
+			// n초동안 콜라이더 실행
+			subobj->GetComponent<BoxCollider>()->SetActive(true);
+			animator->Play("Idle", 10.0f, true);
+			Waitforsecond(2.0f);
+			subobj->SetActive(false);
+			some->_webthrow_end = false;
+		};
 	};
 }

@@ -138,17 +138,17 @@ void KunrealEngine::Aracne::CreatesubObject()
 	_colRightHand->GetComponent<BoxCollider>()->SetBoxSize(4.0f, 19.0f, 10.0f);
 	_colRightHand->SetActive(false);
 
-// 	_websubobj = _boss->GetObjectScene()->CreateObject("web_pattern_sub");
-// 	_websubobj->AddComponent<TransparentMesh>();
-// 	_websubobj->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Circle.png", 1.0f, true);
-// 	_websubobj->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
-// 	_websubobj->GetComponent<TransparentMesh>()->SetTimer(2.0f);
-// 
-// 	_websubobj->AddComponent<BoxCollider>();
-// 	_websubobj->GetComponent<BoxCollider>()->SetBoxSize(30.0f, 30.0f, 30.0f);
-// 	_websubobj->GetComponent<BoxCollider>()->SetActive(false);
-// 
-// 	_webthrow->SetSubObject(_websubobj);
+	_websubobj = _boss->GetObjectScene()->CreateObject("web_pattern_sub");
+	_websubobj->AddComponent<TransparentMesh>();
+	_websubobj->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Circle.png", 1.0f, true);
+	_websubobj->GetComponent<Transform>()->SetScale(20.0f, 1.0f, 20.0f);
+	_websubobj->GetComponent<TransparentMesh>()->SetTimer(1.8f);
+
+	_websubobj->AddComponent<BoxCollider>();
+	_websubobj->GetComponent<BoxCollider>()->SetBoxSize(20.0f, 20.0f, 20.0f);
+	_websubobj->GetComponent<BoxCollider>()->SetActive(false);
+
+	//_webthrow->SetSubObject(_websubobj);
 }
 
 void KunrealEngine::Aracne::CreatePattern()
@@ -156,13 +156,13 @@ void KunrealEngine::Aracne::CreatePattern()
 	CreatesubObject();
 
 	ChargeAttack();
-	//JumpAttack();
-	//LeftAttack();
-	//RightAttack();
-	//FrontAttack();
-	//TailAttack();
-	//ShootingWeb();
-	// Casting();
+	JumpAttack();
+	LeftAttack();
+	RightAttack();
+	FrontAttack();
+	TailAttack();
+	ShootingWeb();
+	//Casting();
 }
 
 void KunrealEngine::Aracne::JumpAttack()
@@ -289,13 +289,13 @@ void KunrealEngine::Aracne::ShootingWeb()
 	_webthrow->SetIsWarning(false).SetWarningName("");
 	_webthrow->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
-	std::function logic = [this]()
+	auto patternlogic = [this]()
 		{
-			Startcoroutine(ChargeAttackCo);
+			Startcoroutine(WebShoot);
 			return this->_webthrow_end;
 		};
 
-	_webthrow->SetLogic(logic);
+	_webthrow->SetLogic(patternlogic);
 	_basicPattern.emplace_back(_webthrow);
 }
 
@@ -319,27 +319,10 @@ void KunrealEngine::Aracne::Casting()
 	_basicPattern.emplace_back(_magicshow);
 }
 
-// void KunrealEngine::Aracne::CreateOutsideSafe()
-// {
-// 	_magicshow = new BossPattern();
-// 
-// 	_magicshow->SetPatternName("OutSideSafe");
-// 
-// 	_magicshow->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
-// 
-// 	// 패턴 시작전에 초기화, 장판 켜줌
-// 	auto patternlogic = [this]()
-// 		{
-// 			Startcoroutine(WebShoot);
-// 			return this->_magicshow_end;
-// 		};
-// 
-// 
-// 	// 로직 함수 실행 가능하도록 넣어주기
-// 	_magicshow->SetLogic(patternlogic);
-// 
-// 	_basicPattern.emplace_back(_magicshow);
-// }
+void KunrealEngine::Aracne::CreateOutsideSafe()
+{
+
+}
 
 ///
 /// 패턴을 위해 필요한 함수들
@@ -348,14 +331,15 @@ void KunrealEngine::Aracne::Casting()
 bool KunrealEngine::Aracne::Move(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)
 {
 	float moveSpeed = speed * TimeManager::GetInstance().GetDeltaTime();
+	auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
 	// 목적지까지 거리 계산
-	auto dist = ToolBox::GetDistance(startPos, targetPos);
+	auto dist = ToolBox::GetDistance(startPos, targetPosition);
 	if (dist > 0.5f)
 	{
 		DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&startPos);
 
-		DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), currentPosVec);
+		DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPosition), currentPosVec);
 
 		direction = DirectX::XMVector3Normalize(direction);
 

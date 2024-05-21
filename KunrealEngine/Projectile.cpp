@@ -1,6 +1,7 @@
 #include "Projectile.h"
 #include "BoxCollider.h"
 #include "MeshRenderer.h"
+#include "Particle.h"
 #include "Player.h"
 
 KunrealEngine::Projectile::Projectile()

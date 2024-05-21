@@ -93,6 +93,9 @@ namespace KunrealEngine
 		// 플레이어 피격처리
 		/// 보스쪽에서 타입을 ENUM으로 바꾸면 매개변수도 변경예정
 		void SetHitState(int patternType);
+
+		// 플레이어 scene 이동
+		void MoveToScene(std::string sceneName);
 	};
 }
 
