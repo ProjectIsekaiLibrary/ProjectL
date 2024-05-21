@@ -137,7 +137,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 {
 	// 네비게이션으로부터 이동목표 노드들을 받아옴
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
-		_targetPos.x, _targetPos.y, _targetPos.z);
+		_targetPos.x, _targetPos.y + _posY, _targetPos.z);
 
 	// 대시는 raycast로 현재 위치와 목표 위치 한점만을 비교
 	// 마우스 위치에 지정된 targetPos와 대시 거리를 계산
