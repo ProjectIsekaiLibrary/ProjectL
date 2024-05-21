@@ -3,36 +3,6 @@
         "POD": {
             "animationFrame": -431602080.0,
             "collider": {},
-            "customComponent": {},
-            "image": {},
-            "light": {},
-            "lightType": {},
-            "meshRenderer": {},
-            "meshRenderingState": true,
-            "name": "MainCamera (1)",
-            "parent": {},
-            "particle": {},
-            "sound_Is3D": [],
-            "sound_IsLoop": [],
-            "sound_Name": [],
-            "sound_Volume": [],
-            "transform": {
-                "position_x": 0.0,
-                "position_y": 0.0,
-                "position_z": 0.0,
-                "rotation_x": 0.0,
-                "rotation_y": 0.0,
-                "rotation_z": 0.0,
-                "scale_x": 1.0,
-                "scale_y": 1.0,
-                "scale_z": 1.0
-            }
-        }
-    },
-    {
-        "POD": {
-            "animationFrame": -431602080.0,
-            "collider": {},
             "customComponent": {
                 "Camera": true
             },
@@ -60,9 +30,9 @@
             "sound_Name": [],
             "sound_Volume": [],
             "transform": {
-                "position_x": 0.0,
-                "position_y": 114.38692474365234,
-                "position_z": -158.13946533203125,
+                "position_x": -26.86400032043457,
+                "position_y": 78.0,
+                "position_z": -110.50750732421875,
                 "rotation_x": 0.0,
                 "rotation_y": 0.0,
                 "rotation_z": 0.0,
@@ -2552,6 +2522,122 @@
                 "scale_x": 36.34000015258789,
                 "scale_y": 1.0,
                 "scale_z": 15.819999694824219
+            }
+        }
+    },
+    {
+        "POD": {
+            "animationFrame": -431602080.0,
+            "collider": {
+                "BoxSize_x": 6.0,
+                "BoxSize_y": 18.0,
+                "BoxSize_z": 10.0,
+                "Offset_x": 0.0,
+                "Offset_y": -1.5,
+                "Offset_z": 0.0
+            },
+            "customComponent": {
+                "Ent": true
+            },
+            "image": {},
+            "light": {},
+            "lightType": {},
+            "meshRenderer": {
+                "Diffuse": [
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_1_D.tga"
+                ],
+                "Mesh": [
+                    "Ent_Generic/Ent_Generic"
+                ],
+                "Normal": [
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga",
+                    "Resources/Textures/Ent_Generic/T_Ent_N.tga"
+                ]
+            },
+            "meshRenderingState": true,
+            "name": "Ent",
+            "parent": {},
+            "particle": {
+                "Color_X": 0.0,
+                "Color_Y": 0.0,
+                "Color_Z": 0.0,
+                "Direction_X": 0.0,
+                "Direction_Y": 20.0,
+                "Direction_Z": 0.0,
+                "FadeoutTime": 2.0,
+                "LifeTime": 2.0,
+                "Random": 1.0,
+                "Velocity": 20.0
+            },
+            "sound_Is3D": [],
+            "sound_IsLoop": [],
+            "sound_Name": [],
+            "sound_Volume": [],
+            "transform": {
+                "position_x": -5.566604137420654,
+                "position_y": 6.4400506019592285,
+                "position_z": -21.169361114501953,
+                "rotation_x": 0.0,
+                "rotation_y": 53.026084899902344,
+                "rotation_z": 0.0,
+                "scale_x": 10.0,
+                "scale_y": 10.0,
+                "scale_z": 10.0
             }
         }
     }

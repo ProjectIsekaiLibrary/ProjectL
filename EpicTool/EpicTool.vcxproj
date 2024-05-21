@@ -114,7 +114,11 @@
     </Link>
     <PostBuildEvent>
       <Command>xcopy "$(SolutionDir)nfd\build\lib\Debug\x64" "$(TargetDir)" /Y /E
-xcopy "$(SolutionDir)EpicTool\ini" "$(TargetDir)" /Y /E</Command>
+xcopy "$(SolutionDir)EpicTool\ini" "$(TargetDir)" /Y /E
+if not exist "$(TargetDir)Resources\mapData" (
+    mkdir "$(TargetDir)Resources\mapData"
+)
+xcopy "$(SolutionDir)EpicTool\mapData" "$(TargetDir)Resources\mapData" /Y /E</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

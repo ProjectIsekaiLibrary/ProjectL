@@ -144,11 +144,11 @@ void KunrealEngine::Aracne::CreatePattern()
 	CreatesubObject();
 
 	ChargeAttack();
-	//JumpAttack();
-	//LeftAttack();
-	//RightAttack();
-	//FrontAttack();
-	//TailAttack();
+	JumpAttack();
+	LeftAttack();
+	RightAttack();
+	FrontAttack();
+	TailAttack();
 	//ShootingWeb();
 	//Casting();
 }

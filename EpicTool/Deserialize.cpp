@@ -24,7 +24,7 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 	std::string playerName;
 	std::string playerCameraName;
 
-	float cameraPos[3] = { 0.0f, 30.0f, -55.0f };
+	float cameraPos[3] = { 0.0f, 70.0f, -75.0f };
 	float targetPos[3] = { 0.0f, -15.0f, 0.0f };
 	bool isPlayerCamera = false;
 

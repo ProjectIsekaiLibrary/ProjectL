@@ -93,7 +93,7 @@ void KunrealEngine::Ent::SetTexture()
 
 void KunrealEngine::Ent::SetBossTransform()
 {
-	_boss->GetComponent<Transform>()->SetPosition(5.0f, 0.0f, -20.0f);
+	_boss->GetComponent<Transform>()->SetPosition(5.0f, 6.0f, -20.0f);
 	_boss->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 }
 
@@ -803,6 +803,7 @@ void KunrealEngine::Ent::CorePatternObjectFirst()
 		treeObject->AddComponent<BoxCollider>();
 		treeObject->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 10.0f, 5.0f);
 		treeObject->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
+		treeObject->SetTag("BossSub");
 		treeObject->SetActive(false);
 		_treeObject.push_back(treeObject);
 	}
