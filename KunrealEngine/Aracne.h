@@ -196,8 +196,9 @@ namespace KunrealEngine
 		Coroutine_Func(WebShoot)
 		{
 			Aracne* some = this;
-			auto subobj = some->_websubobj;
+			GameObject* subobj = some->_websubobj;
 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
+			some->_webthrow_end = true;
 
 			subobj->SetActive(true);
 			subobj->GetComponent<BoxCollider>()->SetActive(false);
@@ -206,26 +207,28 @@ namespace KunrealEngine
 			subobj->GetComponent<Transform>()->SetPosition(target.x, target.y + 1.0f, target.z);
 			auto animator = _boss->GetComponent<Animator>();
 
-			while (1)
+			while (true)
 			{
-
+				// 장판 실행
 				if (subobj->GetComponent<TransparentMesh>()->PlayOnce())
 				{
 					// 장판 실행이 완료되면
+					animator->Stop();
 					subobj->GetComponent<TransparentMesh>()->SetActive(false);
 					break;
 				}
 
-				// 장판 실행
-				animator->Play("Anim_Throw_a_web", 20.0f, true);
+				some->RotateToTarget(target);
+				animator->Play("Anim_Throw_a_web", 50.0f);
 				Return_null;
 			}
 
 			// n초동안 콜라이더 실행
 			subobj->GetComponent<BoxCollider>()->SetActive(true);
+			animator->Play("Idle", 10.0f, true);
 			Waitforsecond(2.0f);
 			subobj->SetActive(false);
-
+			some->_webthrow_end = false;
 		};
 	};
 }
