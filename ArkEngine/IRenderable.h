@@ -91,5 +91,11 @@ namespace ArkEngine
 		virtual unsigned int GetParentBoneIndex() abstract;
 		virtual DirectX::XMMATRIX GetParentBoneTransform() abstract;
 		virtual const DirectX::XMFLOAT4 GetColor() abstract;
+
+	public:
+		virtual void SetDissolve(float value) abstract;
+		virtual void SetIsDissolve(bool isDissolve) abstract;
+		virtual float GetDissolveValue() abstract;
+		virtual bool GetIsDissolve()abstract;
 	};
 }

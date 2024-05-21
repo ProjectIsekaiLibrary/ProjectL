@@ -88,7 +88,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest6.json");
 
 	/// 니들 맘대로 해
-	//PlayGround();
+	PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -276,6 +276,13 @@ void KunrealEngine::EngineCore::PlayGround()
 	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
 	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
 	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
+	plane->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+	_timeMan -= 0.01f;
+	if (_timeMan <= 0.0f)
+	{
+		_timeMan = 1.0f;
+	}
+	plane->GetComponent<MeshRenderer>()->SetDissolve(0.5f);
 
 
 	// Player
@@ -441,16 +448,16 @@ void KunrealEngine::EngineCore::PlayGround()
 	cursorimage->SetRenderingState(false);
 
 	// 파티클 testCode
-	//auto asdf2 = GRAPHICS->CreateParticle("fire", "Resources/Textures/Particles/flare.dds", 1000);
-	//asdf2->SetParticleColor(DirectX::XMFLOAT3{1.0f, 0.0f, 0.0f});
-	//asdf2->SetEmitVelocity(4.0f, true);
-	//asdf2->SetParticleTime(1.0f, 3.0f);
-	//asdf2->SetParticleSize(DirectX::XMFLOAT2{10.f, 10.f});
+	//auto asdf2 = GRAPHICS->CreateParticle("fire", "Resources/Textures/Particles/fx_EnergyBolt9.dds", 1000);
+	//asdf2->SetParticleColor(DirectX::XMFLOAT3{ 0.0f, 1.0f, 1.0f });
+	//asdf2->SetEmitVelocity(3.0f, true);
+	//asdf2->SetParticleTime(1.0f, 1.0f);
+	//asdf2->SetParticleSize(DirectX::XMFLOAT2{ 10.f, 10.f });
 	//asdf2->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
-	//asdf2->SetParticleDirection(DirectX::XMFLOAT3{0.0f, 7.0f, 0.0f});
+	//asdf2->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
 	//asdf2->Start();
 	//
-	//auto asdf3 = GRAPHICS->CreateParticle("fire2", "Resources/Textures/Particles/flare.dds", 1000);
+	//auto asdf3 = GRAPHICS->CreateParticle("fire2", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	//asdf3->SetParticleColor(DirectX::XMFLOAT3{ 1.0f, 1.0f, 0.0f });
 	//asdf3->SetEmitVelocity(4.0f, true);
 	//asdf3->SetParticleTime(1.0f, 3.0f);
@@ -539,18 +546,18 @@ void KunrealEngine::EngineCore::PlayGround()
 	//}
 
 	
-	//GameObject* particleTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleTest");
-	//player->AddComponent<Particle>();
-	//
-	//Particle* partpart = player->GetComponent<Particle>();
-	//
-	//partpart->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
-	//partpart->SetParticleSize(40.0f, 40.0f);
-	//partpart->SetParticleVelocity(30.0f, true);
-	//partpart->SetParticleDuration(1.0f, 3.0f);
-	//partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
-	//partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
-	//partpart->SetActive(true);	
+	GameObject* particleTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleTest");
+	player->AddComponent<Particle>();
+
+	Particle* partpart = player->GetComponent<Particle>();
+
+	partpart->SetParticleEffect("fl", "Resources/Textures/Particles/fx_Thrust2.dds", 1000);
+	partpart->SetParticleSize(4.0f, 4.0f);
+	partpart->SetParticleVelocity(30.0f, true);
+	partpart->SetParticleDuration(1.0f, 3.0f);
+	partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
+	partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
+	partpart->SetActive(true);
 
 }
 
