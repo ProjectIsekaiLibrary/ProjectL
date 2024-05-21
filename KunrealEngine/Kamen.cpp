@@ -12,7 +12,8 @@ KunrealEngine::Kamen::Kamen()
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
 	_emergence9Lich(nullptr), _targetIndex(0),
 	_call2PrevStep(1),
-	_insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f), _swordDissolveTimer(0.0f)
+	_outsideAttack(nullptr), _insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f), 
+	_sword(nullptr), _swordDissolveTimer(0.0f), _swordHide(nullptr)
 {
 	BossBasicInfo info;
 
@@ -118,6 +119,9 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateRightAttack();
 	CreateTurn180();
 	CreateSpellAttack();
+	CreateSwordAttack();
+	CreateSwordHide();
+
 	CreateCallAttack();
 	CreateCall2Attack();
 	CreateBackStep();
@@ -136,14 +140,15 @@ void KunrealEngine::Kamen::CreatePattern()
 void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();						// 기본 spell, call
-	//
-	LeftRightPattern();					// 전방 좌, 우 어택
+	
+	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 	//TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-
+	//TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	BasicSwordAttackPattern();
+	
 	//CoreEmmergencePattern();
 }
 
@@ -230,25 +235,6 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
 
-	
-	_sword = _boss->GetObjectScene()->CreateObject("KamenSword");
-	_sword->AddComponent<MeshRenderer>();
-	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
-	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
-	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
-	_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
-	_sword->AddComponent<BoxCollider>() ->SetBoxSize(5.0f, 20.0f, 5.0f);
-	_sword->GetComponent<BoxCollider>()->SetTransform(_boss, "Wrist_L");
-
-	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
-
-	for (int i = 0; i < texSize; i++)
-	{
-		_sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
-		_sword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
-		_sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
-	}
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Right_Attack_Once");
@@ -257,51 +243,10 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_rightHand);
-	pattern->SetSubObject(_sword);
 
-	auto attackLogic = [pattern, this]()
-		{
+	auto rightHandLogic = CreateBasicAttackLogic(pattern, _rightHand, 10);
 
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			// 디졸브 이펙트 키키
-			_sword->GetComponent<MeshRenderer>()->SetActive(true);
-			_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
-
-			if (_swordDissolveTimer < 1)
-			{
-				_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime()* 0.5f;
-				_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
-			}
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (pattern->_colliderOnCount > 0)
-			{
-				if (animator->GetCurrentFrame() >= 10.0f)
-				{
-					_rightHand->GetComponent<BoxCollider>()->SetActive(true);
-					_sword->GetComponent<BoxCollider>()->SetActive(true);
-					_sword->GetComponent<MeshRenderer>()->SetActive(true);
-				}
-			}
-
-			// 1타를 맞았다면
-			if (pattern->_colliderOnCount == 0)
-			{
-				pattern->SetNextPatternForcePlay(true);
-			}
-
-			if (isAnimationPlaying == false)
-			{
-				_swordDissolveTimer = 0.0f;
-				return false;
-			}
-
-			return true;
-		};
-
-	pattern->SetLogic(attackLogic);
+	pattern->SetLogic(rightHandLogic);
 
 	_rightAttack = pattern;
 }
@@ -580,13 +525,18 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 	_lazer->GetComponent<Particle>()->SetActive(false);
 
+	_lazerCollider = _boss->GetObjectScene()->CreateObject("lazerCollider");
+	_lazerCollider->AddComponent<BoxCollider>();
+	_lazerCollider->GetComponent<BoxCollider>()->SetBoxSize(140.0f, 10.0f, 10.0f);
+
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Spell");
 
-	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 20.0f).SetAfterDelay(2.0f);
-	pattern->SetIsWarning(true).SetWarningName("Spell");
+	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 80.0f).SetAfterDelay(2.0f);
+	pattern->SetIsWarning(true).SetWarningName("Spell").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetSubObject(_lazer);
+	pattern->SetSubObject(_lazerCollider);
 
 	auto initLogic = [pattern, this]()
 	{
@@ -597,6 +547,13 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 		auto scaleDir = DirectX::XMVectorScale(direction, 15.0f);
 		_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir.m128_f32[2]);
 		_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+		pattern->SetSpeed(20.0f);
+
+		auto scaleDir2 = DirectX::XMVectorScale(direction, 80.0f);
+
+		_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir2.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir2.m128_f32[2]);
+
+		_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
 	};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -614,20 +571,19 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				if (animator->GetCurrentFrame() >= 55.0f)
 				{
 					_lazer->GetComponent<Particle>()->SetActive(false);
+					_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
 				}
 				else
 				{
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
 					_lazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+					_lazerCollider->GetComponent<BoxCollider>()->SetActive(true);
 				}
 			}
 		}
 		if (isAnimationPlaying == false)
 		{
-			pattern->SetSpeed(20.0f);
-			_lazer->SetActive(false);
-
 			return false;
 		}
 
@@ -657,13 +613,19 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	_call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 	_call->GetComponent<Particle>()->SetActive(false);
 
+	DirectX::XMFLOAT4 diffuse = { 0.0f, 0.6f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 ambient = { 0.0f, 0.15f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
+
+	_call->AddComponent<Light>();
+	_call->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 20.0f);
+
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Call");
 
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetRangeOffset(-20.0f);
 	pattern->SetSubObject(_call);
 
 	auto callLogic = [pattern, this]()
@@ -680,6 +642,8 @@ void KunrealEngine::Kamen::CreateCallAttack()
 				_call->GetComponent<BoxCollider>()->SetActive(true);
 				// 파티클 키기
 				_call->GetComponent<Particle>()->SetActive(true);
+				// 라이트 키기
+				_call->GetComponent<Light>()->SetActive(true);
 			}
 
 			// 보스가 바라보는 방향 가져옴
@@ -712,8 +676,6 @@ void KunrealEngine::Kamen::CreateCallAttack()
 
 		if (isAnimationPlaying == false)
 		{
-			_call->GetComponent<BoxCollider>()->SetActive(false);
-			_call->GetComponent<Particle>()->SetActive(false);
 			return false;
 		}
 
@@ -750,13 +712,19 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	_call2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 	_call2->GetComponent<Particle>()->SetActive(false);
 
+	DirectX::XMFLOAT4 diffuse = { 0.0f, 0.6f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 ambient = { 0.0f, 0.15f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
+	
+	_call2->AddComponent<Light>();
+	_call2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 20.0f);
+
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Call2");
 
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call2").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis);
-	pattern->SetRangeOffset(-20.0f);
 
 	pattern->SetSubObject(_call2);
 
@@ -774,6 +742,8 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				_call2->GetComponent<BoxCollider>()->SetActive(true);
 				// 파티클 키기
 				_call2->GetComponent<Particle>()->SetActive(true);
+				// 라이트도 키기
+				_call2->GetComponent<Light>()->SetActive(true);
 			}
 
 			// 보스가 바라보는 방향 가져옴
@@ -797,13 +767,11 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
 			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f * step));
 
-			_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1] + 5.0f, newPosition.m128_f32[2]);
+			_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
 		}
 
 		if (isAnimationPlaying == false)
 		{
-			_call2->GetComponent<BoxCollider>()->SetActive(false);
-			_call2->GetComponent<Particle>()->SetActive(false);
 			return false;
 		}
 
@@ -812,16 +780,141 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 	pattern->SetLogic(callLogic, false);
 
-	_callInitLogic = [pattern, this]()
+	_call2Attack = pattern;
+}
+
+
+void KunrealEngine::Kamen::CreateSwordAttack()
+{
+	_sword = _boss->GetObjectScene()->CreateObject("KamenSword");
+	_sword->AddComponent<MeshRenderer>();
+	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+	_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+	_sword->AddComponent<BoxCollider>()->SetBoxSize(5.0f, 20.0f, 5.0f);
+	_sword->GetComponent<BoxCollider>()->SetTransform(_boss, "Wrist_L");
+
+	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
+
+	for (int i = 0; i < texSize; i++)
 	{
-		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
-		_callMoveDistance = 0.0f;
+		_sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+		_sword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+		_sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+	}
+
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Sword_Attack");
+
+	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 25.0f).SetAfterDelay(1.0f);
+	pattern->SetIsWarning(false).SetWarningName("");
+	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+	pattern->SetSubObject(_sword);
+
+	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+		
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (pattern->_colliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10.0f)
+			{
+				pattern->_speed = 20.0f;
+				_sword->GetComponent<BoxCollider>()->SetActive(true);
+			}
+			else
+			{
+				pattern->_speed = 20 * 0.25f;
+			}
+		}
+
+		if (_swordDissolveTimer < 1)
+		{
+			_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
+			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			_sword->SetActive(true);
+			pattern->DeleteSubObject(_sword);
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(attackLogic);
+
+	auto swordInitLogic = [pattern, this]()
+	{
+		pattern->SetSubObject(_sword);
+
+		// 디졸브 이펙트 키기
+		_sword->SetActive(true);
+		_sword->GetComponent<MeshRenderer>()->SetActive(true);
+		_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+
+		_swordDissolveTimer = 0.0f;
+		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+		
 	};
 
 	// 이니셜라이즈 로직 함수 넣어주기
-	pattern->SetInitializeLogic(_callInitLogic);
+	pattern->SetInitializeLogic(swordInitLogic);
 
-	_call2Attack = pattern;
+	_basicSwordAttack = pattern;
+}
+
+
+void KunrealEngine::Kamen::CreateSwordHide()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Sword_Hide");
+
+	pattern->SetAnimName("Idle").SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
+	pattern->SetSubObject(_sword);
+
+	auto swordInitLogic = [pattern, this]()
+	{
+		// 디졸브 이펙트 키기
+		_sword->GetComponent<MeshRenderer>()->SetActive(true);
+		_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+
+		_swordDissolveTimer = 1.0f;
+		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+
+		_sword->GetComponent<BoxCollider>()->SetActive(false);
+	};
+
+	pattern->SetInitializeLogic(swordInitLogic);
+
+	auto hideLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
+
+		if (_swordDissolveTimer > 0)
+		{
+			_swordDissolveTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+		}
+		else
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(hideLogic);
+
+	_swordHide = pattern;
 }
 
 void KunrealEngine::Kamen::CreateEmergenceAttack()
@@ -1017,6 +1110,21 @@ void KunrealEngine::Kamen::TeleportTurnAntiClockPattern()
 	teleportTurnAntiClockPattern->SetRange(teleportTurnAntiClockPattern->_patternList[1]->_range);
 
 	_basicPattern.emplace_back(teleportTurnAntiClockPattern);
+}
+
+
+void KunrealEngine::Kamen::BasicSwordAttackPattern()
+{
+	BossPattern* basicSwordAttack = new BossPattern();
+
+	basicSwordAttack->SetNextPatternForcePlay(true);
+	basicSwordAttack->SetMaxColliderCount(0);
+	basicSwordAttack->SetPattern(_basicSwordAttack);
+	basicSwordAttack->SetPattern(_swordHide);
+
+	basicSwordAttack->SetRange(basicSwordAttack->_patternList[1]->_range);
+
+	_basicPattern.emplace_back(basicSwordAttack);
 }
 
 void KunrealEngine::Kamen::CoreEmmergencePattern()
