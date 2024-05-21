@@ -67,6 +67,9 @@ void KunrealEngine::Player::Update()
 {
 	AnimateByStatus();
 	AfterHit();
+	CheckDeath();
+
+	DebugFunc();
 }
 
 void KunrealEngine::Player::LateUpdate()
@@ -167,8 +170,11 @@ void KunrealEngine::Player::SetHitState(int patternType)
 void KunrealEngine::Player::MoveToScene(std::string sceneName)
 {
 	this->GetOwner()->MoveToScene(sceneName);
+	this->GetOwner()->GetComponent<PlayerAbility>()->_shot->SetActive(false);
 	this->GetOwner()->GetComponent<PlayerAbility>()->_shot->MoveToScene(sceneName);
+	this->GetOwner()->GetComponent<PlayerAbility>()->_ice->SetActive(false);
 	this->GetOwner()->GetComponent<PlayerAbility>()->_ice->MoveToScene(sceneName);
+	this->GetOwner()->GetComponent<PlayerAbility>()->_meteor->SetActive(false);
 	this->GetOwner()->GetComponent<PlayerAbility>()->_meteor->MoveToScene(sceneName);
 }
 
@@ -201,4 +207,32 @@ const KunrealEngine::Player::Status KunrealEngine::Player::GetPlayerStatus()
 KunrealEngine::Player::PlayerInfo& KunrealEngine::Player::GetPlayerData()
 {
 	return this->_playerInfo;
+}
+
+void KunrealEngine::Player::CheckDeath()
+{
+	if (this->_playerInfo._hp <= 0.0f)
+	{
+		this->_playerStatus = Status::DEAD;
+	}
+}
+
+void KunrealEngine::Player::DebugFunc()
+{
+	// O 누르면 하위객체들 비활성화 왜켜지는지 아무도 모름
+	if (InputSystem::GetInstance()->KeyDown(KEY::O))
+	{
+		this->GetOwner()->GetComponent<PlayerAbility>()->_shot->SetActive(false);
+		this->GetOwner()->GetComponent<PlayerAbility>()->_ice->SetActive(false);
+		this->GetOwner()->GetComponent<PlayerAbility>()->_meteor->SetActive(false);
+	}
+
+	// P누르면 부활
+	if (this->_playerStatus == Status::DEAD && InputSystem::GetInstance()->KeyDown(KEY::P))
+	{
+		this->_playerInfo._hp = 100.0f;
+		this->_playerStatus = Status::IDLE;
+	}
+
+	
 }
