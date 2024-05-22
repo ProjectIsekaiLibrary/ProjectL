@@ -73,8 +73,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	//navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
-	navigationInstance.HandleBuild(0);
+	navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
+	//navigationInstance.HandleBuild(0);
 	navigationInstance.HandleBuild(1);
 
 	//// cube map test
@@ -88,7 +88,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest6.json");
 
 	/// 니들 맘대로 해
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -166,7 +166,8 @@ void KunrealEngine::EngineCore::Update()
 			{
 				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-52, 6, -72);
 				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(6.0);
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest3.json");
+				//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest3.json");
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest3.json");
 				ChangeScene("mapTest3.json");
 				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 0);
 
@@ -189,7 +190,8 @@ void KunrealEngine::EngineCore::Update()
 			{
 				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
 				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
+				//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
+				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
 				ChangeScene("mapTest4.json");
 				navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
 
@@ -218,7 +220,8 @@ void KunrealEngine::EngineCore::Update()
 	if (InputSystem::GetInstance()->KeyUp(KEY::CAPSLOCK))
 	{
 		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(0, 4, 0);
-		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("Main");
+		//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("Main");
+		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("Main");
 		ChangeScene("Main");
 		navigationInstance.LoadAll("Resources/Navimesh/0-p.bin", 0);
 	}

@@ -258,20 +258,6 @@ namespace ArkEngine
 
 
 		private:
-			void SetDissolveSRV(float value);
-			void SetDissolveTexture();
-			void SetIsDissolveSRV(bool isDissolve);
-
-			ID3DX11EffectShaderResourceVariable* _noiseMap;
-			ID3DX11EffectShaderResourceVariable* _burnGradation;
-
-			ID3D11ShaderResourceView* _noiseMapSRV;
-			ID3D11ShaderResourceView* _burnGradationSRV;
-
-			std::string _noiseMapName;
-			std::string _burnGradationName;
-
-
 			float _dissolveValue;
 			bool _isDissolve;
 		
