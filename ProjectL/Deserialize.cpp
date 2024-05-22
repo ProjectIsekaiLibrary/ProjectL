@@ -525,15 +525,15 @@ void Deserialize::SetChangeSceneData()
 		// 파일의 절대 경로 생성
 		std::string filePath = "Resources/mapData/" + filename;;
 
-		Deserialize* _deserialize = new Deserialize();
-		_deserialize->CreateData(filePath);
+		//Deserialize* _deserialize = new Deserialize();
+		//_deserialize->CreateData(filePath);
 
 
 		auto gameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();
 
 		for (auto mainCamera : gameObjectList)
 		{
-			if (mainCamera->GetComponent<KunrealEngine::Camera>() != NULL)  // 카메라를 여러개 쓸경우 특정 카메라를 알수있는 수단이 필요 (태그 등)
+			if (mainCamera->GetComponent<KunrealEngine::Camera>() != NULL && mainCamera->GetObjectName() == "testCamera")  // 카메라를 여러개 쓸경우 특정 카메라를 알수있는 수단이 필요 (태그 등)
 			{
 				mainCamera->GetComponent<KunrealEngine::Camera>()->SetMainCamera();
 			}

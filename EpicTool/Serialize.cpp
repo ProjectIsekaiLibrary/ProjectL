@@ -42,6 +42,10 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 			continue;
 		}
 
+		if (gameObject->GetTag() == "PlayerSub") // 보스나 플레이어에서 내부적으로 만든거면 넘어감
+		{
+			continue;
+		}
 
 		if (gameObject->GetTag() == "BossSub") // 보스나 플레이어에서 내부적으로 만든거면 넘어감
 		{
@@ -244,6 +248,8 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 					pod.particle["Direction_Y"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetDirection().y;
 					pod.particle["Direction_Z"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetDirection().z;
 						
+					pod.particle["Size_X"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetSize().x;
+					pod.particle["Size_Y"] = gameObject->GetComponent<KunrealEngine::Particle>()->GetSize().y;
 				}
 
 
