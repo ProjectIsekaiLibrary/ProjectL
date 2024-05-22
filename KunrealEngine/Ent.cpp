@@ -543,7 +543,7 @@ void KunrealEngine::Ent::CreateJumpAttack()
 	std::function logic = [this]()
 		{
 			Startcoroutine(JumpAttackCo);
-			return true;
+			return _jumpend;
 		};
 
 	pattern->SetLogic(logic);

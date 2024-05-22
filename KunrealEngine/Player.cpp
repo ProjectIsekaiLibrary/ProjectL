@@ -6,11 +6,12 @@
 #include "MeshRenderer.h"
 #include "BoxCollider.h"
 #include "Transform.h"
+#include "GraphicsSystem.h"
 
 KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE)
 	, _playerInfo(
-		100.0f,			// hp
+		500.0f,			// hp
 		100.0f,			// stamina
 		15.0f,			// movespeed
 		120.0f,			// dashspeed
@@ -121,11 +122,19 @@ void KunrealEngine::Player::AnimateByStatus()
 				GetOwner()->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::ABILITY:
-				if (this->_abilityAnimationIndex == 2)
+				if (this->_abilityAnimationIndex == 1)
+				{
+					GetOwner()->GetComponent<Animator>()->Play("Shot", 40.0f * _playerInfo._speedScale, false);
+				}
+				else if (this->_abilityAnimationIndex == 2)
 				{
 					GetOwner()->GetComponent<Animator>()->Play("Ice", 40.0f * _playerInfo._speedScale, false);
 				}
 				else if (this->_abilityAnimationIndex == 3)
+				{
+					GetOwner()->GetComponent<Animator>()->Play("Area", 40.0f * _playerInfo._speedScale, false);
+				}
+				else if (this->_abilityAnimationIndex == 4)
 				{
 					GetOwner()->GetComponent<Animator>()->Play("Meteor", 40.0f * _playerInfo._speedScale, false);
 				}
@@ -230,9 +239,11 @@ void KunrealEngine::Player::DebugFunc()
 	// P누르면 부활
 	if (this->_playerStatus == Status::DEAD && InputSystem::GetInstance()->KeyDown(KEY::P))
 	{
-		this->_playerInfo._hp = 100.0f;
+		this->_playerInfo._hp = 500.0f;
 		this->_playerStatus = Status::IDLE;
 	}
 
-	
+	GRAPHICS->DrawDebugText(100, 400, 40, "%.3f", this->_playerInfo._hp);
+	//GRAPHICS->DrawColorText()
+
 }

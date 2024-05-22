@@ -79,6 +79,8 @@ namespace KunrealEngine
 		POINT _finalMousePosition = { 0,0 };
 
 		float _timeMan = 1.0f;
+
+		bool _isEditor;			// 에디터 실행인지
 	};
 }
 

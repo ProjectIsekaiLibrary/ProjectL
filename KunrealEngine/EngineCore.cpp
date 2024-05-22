@@ -46,7 +46,7 @@ KunrealEngine::GameObject* testCamera;
 DirectX::XMFLOAT3 targetPos;
 
 KunrealEngine::EngineCore::EngineCore()
-	:_gInterface(nullptr)
+	:_gInterface(nullptr), _isEditor(true)
 {
 
 }
@@ -78,7 +78,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	navigationInstance.HandleBuild(1);
 
 	//// cube map test
-	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
+	GRAPHICS->CreateCubeMap("test", "Texture6.dds", true);
 	auto list = GRAPHICS->GetCubeMapList();
 	GRAPHICS->SetMainCubeMap(list.back());
 
@@ -109,10 +109,21 @@ bool moveTo = true;
 
 void KunrealEngine::EngineCore::Update()
 {
+	CheckMousePosition();
 	inputInstance->Update(GetDeltaTime());
-	inputInstance->UpdateEditorMousePos(_editorMousepos);
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
-	GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
+
+	if (this->_isEditor)
+	{
+		inputInstance->UpdateEditorMousePos(_editorMousepos);
+		GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
+	}
+	else
+	{
+		inputInstance->UpdateEditorMousePos(_finalMousePosition);
+		GraphicsSystem::GetInstance().Update(_finalMousePosition.x, _finalMousePosition.y);
+	}
+	
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 
 	//std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
@@ -128,7 +139,6 @@ void KunrealEngine::EngineCore::Update()
 		//MakeObstacle();
 	}
 
-	CheckMousePosition();
 
 	if (inputInstance->KeyUp(KEY::CAPSLOCK))
 	{
@@ -569,12 +579,16 @@ void KunrealEngine::EngineCore::CheckMousePosition()
 		{
 			_finalMousePosition.x = _ingameMouseX;
 			_finalMousePosition.y = _ingameMouseY;
+
+			this->_isEditor = false;
 		}
 	}
 
 	else
 	{
 		_finalMousePosition = _editorMousepos;
+
+		this->_isEditor = true;
 	}
 }
 

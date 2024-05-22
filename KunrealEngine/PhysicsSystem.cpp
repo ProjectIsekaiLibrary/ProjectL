@@ -422,7 +422,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	}
 
 	// 충돌이 발생했을 때
-	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
+	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
+		| physx::PxPairFlag::eMODIFY_CONTACTS
 		&& col1->GetActivated() && col2->GetActivated())
 	{
 		// 충돌 여부를 true로
