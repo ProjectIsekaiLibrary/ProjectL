@@ -65,13 +65,18 @@ void KunrealEngine::PlayerMove::Update()
 	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
 	{
-		// 이동 상태 해제
-		_isMoving = false;
-		_movedRange = 0.0f;
+		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
+			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
+			)
+		{
+			// 이동 상태 해제
+			_isMoving = false;
+			_movedRange = 0.0f;
 
-		UpdateTargetPosition();
-		UpdateDashNode();
-		_isDash = true;
+			UpdateTargetPosition();
+			UpdateDashNode();
+			_isDash = true;
+		}
 	}
 
 	/// 디버깅용
@@ -495,6 +500,9 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 			break;
 		case Player::Status::ABILITY:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : ABILITY");
+			break;
+		case Player::Status::DEAD:
+			GRAPHICS->DrawDebugText(360, 400, 20, "Player : DEAD");
 			break;
 		default:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : IDK");
