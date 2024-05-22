@@ -37,10 +37,6 @@ ArkEngine::ArkDX11::FBXMesh::FBXMesh(const std::string& fileName, bool isSolid)
 	_animator(nullptr),
 	_parentMesh(nullptr), _parentBoneIndex(0), _parentBoneTrasnform(), _transformEffectedByParent(), 
 	_alpha(1.0f),
-	_noiseMap(nullptr), _burnGradation(nullptr),
-	_noiseMapSRV(nullptr), _burnGradationSRV(nullptr),
-	_noiseMapName("Resources/Textures/Dissolve/DissolvePattern.png"),
-	_burnGradationName("Resources/Textures/Dissolve/burngradient.png"),
 	_isDissolve(false), _dissolveValue(1.0f)
 {
 	Initialize();
