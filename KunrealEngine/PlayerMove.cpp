@@ -68,13 +68,15 @@ void KunrealEngine::PlayerMove::Update()
 		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
 			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
 			)
-		// 이동 상태 해제
-		_isMoving = false;
-		_movedRange = 0.0f;
+		{
+			// 이동 상태 해제
+			_isMoving = false;
+			_movedRange = 0.0f;
 
-		UpdateTargetPosition();
-		UpdateDashNode();
-		_isDash = true;
+			UpdateTargetPosition();
+			UpdateDashNode();
+			_isDash = true;
+		}
 	}
 
 	/// 디버깅용
@@ -498,6 +500,9 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 			break;
 		case Player::Status::ABILITY:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : ABILITY");
+			break;
+		case Player::Status::DEAD:
+			GRAPHICS->DrawDebugText(360, 400, 20, "Player : DEAD");
 			break;
 		default:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : IDK");
