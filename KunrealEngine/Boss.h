@@ -88,6 +88,8 @@ namespace KunrealEngine
 		// 현재 보스의 상태 가져오기
 		const BossStatus& GetStatus();
 
+		void SetStartTime(float time);
+
 		// 현재 보스가 바라보는 방향 벡터 가져오기
 		const DirectX::XMVECTOR GetDirection();
 
@@ -179,6 +181,9 @@ namespace KunrealEngine
 
 		Transform* _bossTransform;
 		Transform* _playerTransform;
+
+	private:
+		float _startTime;
 
 	private:
 		bool _isCorePattern;
