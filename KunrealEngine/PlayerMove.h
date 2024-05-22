@@ -64,6 +64,7 @@ namespace KunrealEngine
 
 		// 플레이어의 Y 좌표를 고정시키는 함수
 		void SetPlayerY(float y);
+		float GetPlayerY();
 
 		// Navigation을 이용한 움직임
 		void NavigationMove(float speed);

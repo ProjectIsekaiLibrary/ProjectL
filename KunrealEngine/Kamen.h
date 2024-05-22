@@ -49,6 +49,8 @@ namespace KunrealEngine
 		void TeleportTurnClockPattern();
 		void TeleportTurnAntiClockPattern();
 
+		void BasicSwordAttackPattern();
+
 		// ÄÚ¾î ÆÐÅÏ
 	private:
 		void CoreEmmergencePattern();
@@ -62,6 +64,10 @@ namespace KunrealEngine
 		void CreateCall2Attack();
 
 	private:
+		void CreateSwordAttack();
+		void CreateSwordHide();
+
+	private:
 		void CreateTurn180();
 		void CreateBackStep();
 		void CreateTeleportToCenter();
@@ -70,8 +76,6 @@ namespace KunrealEngine
 		void CreateTurnAntiClockWise();
 
 		void CreateOutsideSafe();
-
-		//void CreateMultiCall();
 
 		// ÇÙ½É ±â¹Í ÆÐÅÏ
 	private:
@@ -92,6 +96,9 @@ namespace KunrealEngine
 		BossPattern* _turnAntiClockWise;
 		BossPattern* _outsideSafe;
 
+		BossPattern* _basicSwordAttack;
+		BossPattern* _swordHide;
+
 	private:
 		BossPattern* _emergence9Lich;
 
@@ -102,6 +109,7 @@ namespace KunrealEngine
 		GameObject* _call;
 		GameObject* _call2;
 		GameObject* _lazer;
+		GameObject* _lazerCollider;
 
 		GameObject* _insideWarning;
 		GameObject* _outsideAttack;
@@ -133,5 +141,8 @@ namespace KunrealEngine
 	// logic
 	private:
 		std::function<void()> _callInitLogic;
+
+	private:
+		DirectX::XMFLOAT3 _centerPos;
 	};
 }

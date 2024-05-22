@@ -24,7 +24,7 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 	std::string playerName;
 	std::string playerCameraName;
 
-	float cameraPos[3] = { 0.0f, 70.0f, -75.0f };
+	float cameraPos[3] = { 0.0f, 120.0f, -75.0f };
 	float targetPos[3] = { 0.0f, -15.0f, 0.0f };
 	bool isPlayerCamera = false;
 
@@ -309,9 +309,7 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 						}
 
 					}
-
-					try
-					{
+				
 						auto particle = jsonItem["POD"].find("particle");
 
 						if (particle != jsonItem["POD"].end() && !jsonItem["POD"]["particle"].empty())
@@ -339,13 +337,9 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 
 							object->GetComponent<KunrealEngine::Particle>()->AddParticleColor(jsonItem["POD"]["particle"]["Color_X"], jsonItem["POD"]["particle"]["Color_Y"], jsonItem["POD"]["particle"]["Color_Z"]);
 							object->GetComponent<KunrealEngine::Particle>()->SetParticleDirection(jsonItem["POD"]["particle"]["Direction_X"], jsonItem["POD"]["particle"]["Direction_Y"], jsonItem["POD"]["particle"]["Direction_Z"]);
-						}
-					}
-					catch(const std::exception& e) // 성공적으로 저장이 되면 삭제할 try문
-					{
-						int test = 0;
-					}
-
+							object->GetComponent<KunrealEngine::Particle>()->SetParticleSize(jsonItem["POD"]["particle"]["Size_X"], jsonItem["POD"]["particle"]["Size_Y"]);
+						
+						}					
 				}
 
 				//카메라

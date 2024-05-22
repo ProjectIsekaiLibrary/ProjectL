@@ -18,6 +18,7 @@ namespace KunrealEngine
 
 	class _DECLSPEC Projectile : public Component
 	{
+		friend class PlayerAbility;
 	public:
 		Projectile();
 		~Projectile();
@@ -39,6 +40,7 @@ namespace KunrealEngine
 	private:
 		BoxCollider* _collider;				// 충돌 감지해주는 컴포넌트
 		MeshRenderer* _mesh;				// 투사체를 그려줄 3D 물체
+
 		DirectX::XMVECTOR _direction;		// 플레이어가 바라보는 방향벡터
 		std::function<bool()> _condition;	// 투사체 소멸 조건
 

@@ -16,6 +16,8 @@
 #include "Navigation.h"
 #include "Boss.h"
 
+#include "PlayerAbility.h"
+
 KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
 	_distance(0.0f), _isCorePattern(false),
@@ -24,7 +26,7 @@ KunrealEngine::Boss::Boss()
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
-	_rotAngle(0.0f), _sumRot(0.0f),_prevRot()
+	_rotAngle(0.0f), _sumRot(0.0f), _prevRot()
 {
 
 }
@@ -54,6 +56,7 @@ void KunrealEngine::Boss::DebugTest()
 {
 	// 애니메이션 확인용
 	GRAPHICS->DrawDebugText(500, 0, 50, "%s", _boss->GetComponent<Animator>()->GetNowAnimationName().c_str());
+	GRAPHICS->DrawDebugText(800, 0, 50, "%f", this->_info._hp);
 
 	// 상태 확인용
 	switch (_status)
@@ -516,35 +519,34 @@ void KunrealEngine::Boss::Attack()
 			for (const auto& object : pattern->_subObject)
 			{
 				auto collider = object->GetComponent<BoxCollider>();
-				if (collider == nullptr)
+				if (collider != nullptr)
 				{
-					return;
-				}
-				// 콜라이더와 충돌하였고 그 대상이 플레이어라면
-				if (collider->GetActivated())
-				{
-					if (_nowPlayingPattern->_colliderOnCount > 0)
+					// 콜라이더와 충돌하였고 그 대상이 플레이어라면
+					if (collider->GetActivated())
 					{
-						if (collider->IsCollided() && collider->GetTargetObject() == _player)
+						if (_nowPlayingPattern->_colliderOnCount > 0)
 						{
-							// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
-							collider->SetActive(false);
-
-							// 패턴의 최대 타격 횟수에서 하나를 감소시킴
-							_nowPlayingPattern->_colliderOnCount--;
-
-							// 패턴의 데미지를 가져옴
-							auto damage = _nowTitlePattern->_damage;
-
-							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
-							_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
-							_player->GetComponent<Player>()->SetHitState(0);
-
-							// 데미지가 들어간 후 메쉬를 꺼야한다면
-							if (object->GetComponent<MeshRenderer>() != nullptr && !_nowPlayingPattern->_isRemainMesh)
+							if (collider->IsCollided() && collider->GetTargetObject() == _player)
 							{
-								// 메쉬를 꺼버림
-								object->GetComponent<MeshRenderer>()->SetActive(false);
+								// 여러번 공격판정이 되는거를 막기 위해 콜라이더를 끄고
+								collider->SetActive(false);
+
+								// 패턴의 최대 타격 횟수에서 하나를 감소시킴
+								_nowPlayingPattern->_colliderOnCount--;
+
+								// 패턴의 데미지를 가져옴
+								auto damage = _nowTitlePattern->_damage;
+
+								// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+								_player->GetComponent<Player>()->GetPlayerData()._hp -= damage;
+								_player->GetComponent<Player>()->SetHitState(0);
+
+								// 데미지가 들어간 후 메쉬를 꺼야한다면
+								if (object->GetComponent<MeshRenderer>() != nullptr && !_nowPlayingPattern->_isRemainMesh)
+								{
+									// 메쉬를 꺼버림
+									object->GetComponent<MeshRenderer>()->SetActive(false);
+								}
 							}
 						}
 					}
@@ -1049,19 +1051,19 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 std::function<bool()> KunrealEngine::Boss::CreateBackStepLogic(BossPattern* pattern, float moveSpeed, float distance)
 {
 	auto backStepLogic = [pattern, this]()
+	{
+		auto moveFinish = BackStep(50.0f, 30.0f);
+
+		if (moveFinish == true)
 		{
-			auto moveFinish = BackStep(50.0f, 30.0f);
+			return false;
+		}
 
-			if (moveFinish == true)
-			{
-				return false;
-			}
+		// 다음 패턴을 실행시킴
+		pattern->_playNextPattern = true;
 
-			// 다음 패턴을 실행시킴
-			pattern->_playNextPattern = true;
-
-			return true;
-		};
+		return true;
+	};
 
 	return backStepLogic;
 }
@@ -1072,41 +1074,41 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 	pattern->SetSubObject(subObject);
 
 	auto attackLogic = [pattern, subObject, activeColliderFrame, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (pattern->_colliderOnCount > 0)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (pattern->_colliderOnCount > 0)
+			if (animator->GetCurrentFrame() >= activeColliderFrame)
 			{
-				if (animator->GetCurrentFrame() >= activeColliderFrame)
+				if (subObject != nullptr)
 				{
-					if (subObject != nullptr)
-					{
-						subObject->GetComponent<BoxCollider>()->SetActive(true);
-					}
+					subObject->GetComponent<BoxCollider>()->SetActive(true);
+				}
 
-					if (subObject->GetComponent<Particle>() != nullptr)
-					{
-						subObject->GetComponent<Particle>()->SetActive(true);
-					}
+				if (subObject->GetComponent<Particle>() != nullptr)
+				{
+					subObject->GetComponent<Particle>()->SetActive(true);
 				}
 			}
+		}
 
-			// 1타를 맞았다면
-			if (pattern->_colliderOnCount == 0)
-			{
-				pattern->SetNextPatternForcePlay(true);
-			}
+		// 1타를 맞았다면
+		if (pattern->_colliderOnCount == 0)
+		{
+			pattern->SetNextPatternForcePlay(true);
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	return attackLogic;
 }
@@ -1117,42 +1119,42 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 	pattern->SetSubObject(subObject);
 
 	auto attackLogic = [pattern, subObject, subObject2, activeColliderFrame, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (pattern->_colliderOnCount > 0)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (pattern->_colliderOnCount > 0)
+			if (animator->GetCurrentFrame() >= activeColliderFrame)
 			{
-				if (animator->GetCurrentFrame() >= activeColliderFrame)
+				if (subObject != nullptr)
 				{
-					if (subObject != nullptr)
-					{
-						subObject->GetComponent<BoxCollider>()->SetActive(true);
-						subObject2->GetComponent<MeshRenderer>()->SetActive(true);
-					}
+					subObject->GetComponent<BoxCollider>()->SetActive(true);
+					subObject2->GetComponent<MeshRenderer>()->SetActive(true);
+				}
 
-					if (subObject->GetComponent<Particle>() != nullptr)
-					{
-						subObject->GetComponent<Particle>()->SetActive(true);
-					}
+				if (subObject->GetComponent<Particle>() != nullptr)
+				{
+					subObject->GetComponent<Particle>()->SetActive(true);
 				}
 			}
+		}
 
-			// 1타를 맞았다면
-			if (pattern->_colliderOnCount == 0)
-			{
-				pattern->SetNextPatternForcePlay(true);
-			}
+		// 1타를 맞았다면
+		if (pattern->_colliderOnCount == 0)
+		{
+			pattern->SetNextPatternForcePlay(true);
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	return attackLogic;
 }
@@ -1160,35 +1162,35 @@ std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* p
 std::function<bool()> KunrealEngine::Boss::CreateBasicAttackLogic(BossPattern* pattern, const std::string& animName, GameObject* subObject, float activeColliderFrame)
 {
 	auto attackLogic = [pattern, animName, subObject, activeColliderFrame, this]()
-		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(animName, pattern->_speed, false);
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(animName, pattern->_speed, false);
 
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (pattern->_colliderOnCount > 0)
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (pattern->_colliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= activeColliderFrame)
 			{
-				if (animator->GetCurrentFrame() >= activeColliderFrame)
+				if (subObject != nullptr)
 				{
-					if (subObject != nullptr)
-					{
-						subObject->GetComponent<BoxCollider>()->SetActive(true);
-					}
+					subObject->GetComponent<BoxCollider>()->SetActive(true);
 				}
 			}
+		}
 
-			// 1타를 맞았다면
-			if (pattern->_colliderOnCount == 0)
-			{
-				pattern->SetNextPatternForcePlay(true);
-			}
+		// 1타를 맞았다면
+		if (pattern->_colliderOnCount == 0)
+		{
+			pattern->SetNextPatternForcePlay(true);
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	return attackLogic;
 }
@@ -1220,6 +1222,11 @@ const DirectX::XMVECTOR KunrealEngine::Boss::GetDirection()
 	return direction;
 }
 
+
+KunrealEngine::Boss* KunrealEngine::Boss::GetBoss()
+{
+	return this;
+}
 
 void KunrealEngine::Boss::SetBossCollider()
 {

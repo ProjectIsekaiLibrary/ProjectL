@@ -77,8 +77,14 @@ namespace KunrealEngine
 		// 플레이어의 상태에 따라 애니메이션 출력
 		void AnimateByStatus();
 
+		// 플레이어 사망처리
+		void CheckDeath();
+
 		// 피격 이후 처리
 		void AfterHit();
+
+		/// 디버그 모드에서만 사용할 보조 함수
+		void DebugFunc();
 
 	public:
 		// 플레이어가 바라보는 방향벡터
@@ -93,6 +99,9 @@ namespace KunrealEngine
 		// 플레이어 피격처리
 		/// 보스쪽에서 타입을 ENUM으로 바꾸면 매개변수도 변경예정
 		void SetHitState(int patternType);
+
+		// 플레이어 scene 이동
+		void MoveToScene(std::string sceneName);
 	};
 }
 

@@ -27,6 +27,7 @@ namespace KunrealEngine
 
 	class _DECLSPEC Boss
 	{
+		friend class PlayerAbility;
 	public:
 		Boss();
 		virtual ~Boss();
@@ -89,6 +90,9 @@ namespace KunrealEngine
 
 		// 현재 보스가 바라보는 방향 벡터 가져오기
 		const DirectX::XMVECTOR GetDirection();
+
+		// 보스 객체 반환
+		Boss* GetBoss();
 
 	public:
 		// 보스 히트 판정용 콜라이더 생성

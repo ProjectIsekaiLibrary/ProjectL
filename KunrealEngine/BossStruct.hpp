@@ -125,7 +125,7 @@ struct BossPattern
 			{
 				if (_patternList[_index]->_colliderOnCount > 0)
 				{
-					if (_patternList[_index]->_playNextPattern)
+					//if (_patternList[_index]->_playNextPattern)
 						return false;
 				}
 			}
@@ -181,7 +181,8 @@ struct BossPattern
 	BossPattern& SetSkipChase(bool tf) { _skipChase = tf; return *this; };
 	BossPattern& SetSkipMove(bool tf) { _skipMove = tf; return *this; };
 	BossPattern& SetSubObject(KunrealEngine::GameObject* object) { for (auto index : _subObject) { if (index == object) return *this; }  _subObject.emplace_back(object);	object->SetTag("BossSub"); object->SetTotalComponentState(false);  return *this; };
-
+	BossPattern& DeleteSubObject(KunrealEngine::GameObject* object) { auto it = std::find(_subObject.begin(), _subObject.end(), object); if (it != _subObject.end()) { _subObject.erase(it); } return *this; };
+	
 	std::string _patternName;		// 패턴 이름
 
 	std::string _animName;			// 패턴 애니메이션 이름

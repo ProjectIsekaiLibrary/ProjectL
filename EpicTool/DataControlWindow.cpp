@@ -207,14 +207,10 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		std::string filename = scene; // 예시 파일명
 
 		// 파일의 절대 경로 생성
-		std::filesystem::path filePath = _executablePath / filename;
-
-		filename = filePath.string();
-
-		
+		std::string filePath = "Resources/mapData/" + filename;	
 
 		Deserialize* _deserialize = new Deserialize();
-		_deserialize->Initialize(filename);
+		_deserialize->Initialize(filePath);
 
 		_scene2First = true;
 		selectedObjectIndex = -1;
@@ -225,13 +221,10 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		std::string filename = scene; // 예시 파일명
 
 		// 파일의 절대 경로 생성
-		std::filesystem::path filePath = _executablePath / filename;
-
-		filename = filePath.string();
-		
+		std::string filePath = "Resources/mapData/" + filename;
 
 		Deserialize* _deserialize = new Deserialize();
-		_deserialize->Initialize(filename);
+		_deserialize->Initialize(filePath);
 
 		_scene3First = true;
 		selectedObjectIndex = -1;
@@ -242,12 +235,10 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		std::string filename = scene; // 예시 파일명
 
 		// 파일의 절대 경로 생성
-		std::filesystem::path filePath = _executablePath / filename;
-
-		filename = filePath.string();
+		std::string filePath = "Resources/mapData/" + filename;
 
 		Deserialize* _deserialize = new Deserialize();
-		_deserialize->Initialize(filename);
+		_deserialize->Initialize(filePath);
 
 		_scene4First = true;
 		selectedObjectIndex = -1;
@@ -258,12 +249,10 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		std::string filename = scene; // 예시 파일명
 
 		// 파일의 절대 경로 생성
-		std::filesystem::path filePath = _executablePath / filename;
-
-		filename = filePath.string();
+		std::string filePath = "Resources/mapData/" + filename;
 
 		Deserialize* _deserialize = new Deserialize();
-		_deserialize->Initialize(filename);
+		_deserialize->Initialize(filePath);
 
 		_scene5First = true;
 		selectedObjectIndex = -1;
@@ -281,12 +270,9 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 		 std::string filename = "mapTest1.json"; // 예시 파일명
 
 		 // 파일의 절대 경로 생성
-		 std::filesystem::path filePath = _executablePath / filename;
-
-		 filename = filePath.string();
-		    
+		 std::string filePath = "Resources/mapData/" + filename;
 		 Deserialize* _deserialize = new Deserialize();
-		 _deserialize->Initialize(filename);
+		 _deserialize->Initialize(filePath);
 
 
 		 auto gameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();

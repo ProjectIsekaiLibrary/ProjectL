@@ -65,13 +65,18 @@ void KunrealEngine::PlayerMove::Update()
 	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
 	{
-		// 이동 상태 해제
-		_isMoving = false;
-		_movedRange = 0.0f;
+		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
+			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
+			)
+		{
+			// 이동 상태 해제
+			_isMoving = false;
+			_movedRange = 0.0f;
 
-		UpdateTargetPosition();
-		UpdateDashNode();
-		_isDash = true;
+			UpdateTargetPosition();
+			UpdateDashNode();
+			_isDash = true;
+		}
 	}
 
 	/// 디버깅용
@@ -137,7 +142,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 {
 	// 네비게이션으로부터 이동목표 노드들을 받아옴
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
-		_targetPos.x, _targetPos.y, _targetPos.z);
+		_targetPos.x, _targetPos.y + _posY, _targetPos.z);
 
 	// 대시는 raycast로 현재 위치와 목표 위치 한점만을 비교
 	// 마우스 위치에 지정된 targetPos와 대시 거리를 계산
@@ -495,6 +500,9 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 			break;
 		case Player::Status::ABILITY:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : ABILITY");
+			break;
+		case Player::Status::DEAD:
+			GRAPHICS->DrawDebugText(360, 400, 20, "Player : DEAD");
 			break;
 		default:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : IDK");
