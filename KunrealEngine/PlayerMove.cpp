@@ -65,6 +65,9 @@ void KunrealEngine::PlayerMove::Update()
 	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
 	{
+		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
+			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
+			)
 		// 이동 상태 해제
 		_isMoving = false;
 		_movedRange = 0.0f;
