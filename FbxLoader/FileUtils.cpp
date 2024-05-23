@@ -2,6 +2,7 @@
 
 
 ArkEngine::FileUtils::FileUtils()
+	: _handle(nullptr)
 {
 }
 
@@ -41,13 +42,15 @@ void ArkEngine::FileUtils::Open(std::wstring filePath, FileMode mode)
 		);
 	}
 
+
 	assert(_handle != INVALID_HANDLE_VALUE);
 }
 
 void ArkEngine::FileUtils::Write(void* data, unsigned int dataSize)
 {
 	unsigned int numOfBytes = 0;
-	assert(::WriteFile(_handle, data, dataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr));
+	WriteFile(_handle, data, dataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr);
+	//assert(::WriteFile(_handle, data, dataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr));
 }
 
 
@@ -65,7 +68,8 @@ void ArkEngine::FileUtils::Write(const std::string& data)
 void ArkEngine::FileUtils::Read(void** data, unsigned int dataSize)
 {
 	unsigned int numOfBytes = 0;
-	assert(::ReadFile(_handle, *data, dataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr));
+	ReadFile(_handle, *data, dataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr);
+	//assert(::ReadFile(_handle, *data, dataSize, reinterpret_cast<LPDWORD>(&numOfBytes), nullptr));
 }
 
 void ArkEngine::FileUtils::Read(OUT std::string& data)

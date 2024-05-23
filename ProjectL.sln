@@ -28,7 +28,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KunrealEngine", "KunrealEng
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "KunrealMath", "KunrealMath\KunrealMath.vcxproj", "{A85F06F5-9D12-4B29-9EF3-5D47A4B9FF05}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "TestImGui", "EpicTool\EpicTool.vcxproj", "{9F316E83-5AE5-4939-A723-305A94F48005}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "EpicTool", "EpicTool\EpicTool.vcxproj", "{9F316E83-5AE5-4939-A723-305A94F48005}"
 	ProjectSection(ProjectDependencies) = postProject
 		{D5CDBCC7-7C08-4681-B9AD-E68D4BD58DD9} = {D5CDBCC7-7C08-4681-B9AD-E68D4BD58DD9}
 	EndProjectSection
@@ -96,7 +96,6 @@ Global
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Debug|x86.ActiveCfg = Debug|Win32
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Debug|x86.Build.0 = Debug|Win32
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Release|x64.ActiveCfg = Release|x64
-		{9F316E83-5AE5-4939-A723-305A94F48005}.Release|x64.Build.0 = Release|x64
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Release|x86.ActiveCfg = Release|Win32
 		{9F316E83-5AE5-4939-A723-305A94F48005}.Release|x86.Build.0 = Release|Win32
 		{A7CA0837-5DEF-4088-BE5F-617D76DE7939}.Debug|x64.ActiveCfg = Debug|x64

@@ -693,7 +693,7 @@ void ArkEngine::ArkDX11::FBXMesh::BuildGeometryBuffersFBX(std::wstring fileName)
 
 		DirectX::XMFLOAT3 minPos = { FLT_MAX, FLT_MAX, FLT_MAX };
 		DirectX::XMFLOAT3 maxPos = { -FLT_MAX, -FLT_MAX, -FLT_MAX };
-
+		
 		std::wstring fullPath = _modelPath + fileName + L".mesh";
 
 		std::unique_ptr<ArkEngine::FileUtils> file = std::make_unique<ArkEngine::FileUtils>();
@@ -705,7 +705,7 @@ void ArkEngine::ArkDX11::FBXMesh::BuildGeometryBuffersFBX(std::wstring fileName)
 		file->Open(fullPath, FileMode::Read);
 
 		//Bones
-		const UINT boneCount = file->Read<UINT>();
+		UINT boneCount = file->Read<UINT>();
 
 		for (UINT i = 0; i < boneCount; i++)
 		{
