@@ -560,6 +560,9 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 	auto initLogic = [pattern, this]()
 		{
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
 			auto playerPos = _playerTransform->GetPosition();
 			auto bossPos = _bossTransform->GetPosition();
 			auto direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&playerPos), DirectX::XMLoadFloat3(&bossPos));

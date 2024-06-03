@@ -109,7 +109,7 @@ struct BossPattern
 		// 로직이 끝난다면
 		if (isLogicPlaying == false)
 		{
-			KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS")->GetComponent<KunrealEngine::Animator>()->Stop();
+			KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Boss")->GetComponent<KunrealEngine::Animator>()->Stop();
 			// 패턴이 지닌 하위 오브젝트들을 모두 끔
 			for (const auto& object : _patternList[_index]->_subObject)
 			{

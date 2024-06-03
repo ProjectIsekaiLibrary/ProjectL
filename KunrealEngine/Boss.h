@@ -65,8 +65,6 @@ namespace KunrealEngine
 		virtual void Enter();
 		virtual void Idle();
 		virtual void Chase();
-		virtual void Hit();
-		virtual void Attack();
 		virtual void Staggred();
 		virtual void OffStaggred();
 		virtual void Dead();
@@ -74,6 +72,9 @@ namespace KunrealEngine
 		virtual void BasicAttack();
 		virtual void CoreAttack();
 		virtual void PatternEnd();
+
+	public:
+		void PatternForceEnd();
 
 	public:
 		// 보스의 정보 넣기
@@ -85,9 +86,6 @@ namespace KunrealEngine
 		// 코어 패턴 만든 목록을 넣기
 		void SetCorePatternList(std::vector<BossPattern*>* corePatternList);
 
-		// 현재 보스의 상태 가져오기
-		const BossStatus& GetStatus();
-
 		void SetStartTime(float time);
 
 		// 현재 보스가 바라보는 방향 벡터 가져오기
@@ -95,6 +93,19 @@ namespace KunrealEngine
 
 		// 보스 객체 반환
 		Boss* GetBoss();
+
+	public:
+		// 현재 보스의 상태 가져오기
+		const BossStatus& GetStatus();
+		
+		// 현재 진행중인 패턴의 데미지 가져오기
+		const float GetDamage();
+
+		BossPattern* GetNowPattern();
+
+		BossBasicInfo& GetBossInfo();
+
+		bool isDead();
 
 	public:
 		// 보스 히트 판정용 콜라이더 생성

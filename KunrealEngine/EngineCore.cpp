@@ -9,6 +9,7 @@
 #include "SoundSystem.h"
 #include "Navigation.h"
 #include "ButtonSystem.h"
+#include "EventManager.h"
 
 #include "ComponentHeaders.h"
 
@@ -21,6 +22,7 @@ KunrealEngine::TimeManager& timeInstance = KunrealEngine::TimeManager::GetInstan
 KunrealEngine::InputSystem* inputInstance = KunrealEngine::InputSystem::GetInstance();
 KunrealEngine::SoundSystem& soundInstance = KunrealEngine::SoundSystem::GetInstance();
 KunrealEngine::Navigation& navigationInstance = KunrealEngine::Navigation::GetInstance();
+KunrealEngine::EventManager& eventInstance = KunrealEngine::EventManager::GetInstance();
 
 KunrealEngine::GameObject* player;
 KunrealEngine::GameObject* kamen;
@@ -144,7 +146,8 @@ void KunrealEngine::EngineCore::Update()
 	{
 		//sceneInstance.GetCurrentScene()->GetGameObject("BaeSung")->AddComponent<BoxCollider>();
 	}
-	GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
+	GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
+	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
@@ -203,6 +206,7 @@ void KunrealEngine::EngineCore::Update()
 				//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
 				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
 				ChangeScene("mapTest4.json");
+
 				navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
 
 				navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
@@ -247,6 +251,7 @@ void KunrealEngine::EngineCore::LateUpdate()
 void KunrealEngine::EngineCore::UpdateAll()
 {
 	timeInstance.Update();
+	eventInstance.Update();
 	this->FixedUpdate();
 	this->Update();
 	this->LateUpdate();
