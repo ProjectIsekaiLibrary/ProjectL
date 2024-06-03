@@ -66,6 +66,7 @@ namespace KunrealEngine
 		// ∞À ∆–≈œ
 	private:
 		void CreateSwordAttack();
+		void CreateSwordEmergence();
 		void CreateSwordHide();
 		void CraeteSwordTurnClockWise();
 		void CreateSwordTurnAntiClock();
@@ -100,6 +101,7 @@ namespace KunrealEngine
 		BossPattern* _outsideSafe;
 
 		BossPattern* _basicSwordAttack;
+		BossPattern* _swordEmmergence;
 		BossPattern* _swordHide;
 		BossPattern* _swordTurnClockWise;
 		BossPattern* _swordTurnAntiClockWise;

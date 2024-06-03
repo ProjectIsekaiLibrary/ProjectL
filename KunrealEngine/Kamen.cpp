@@ -125,6 +125,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateSpellAttack();
 	CreateSwordAttack();
 	CreateSwordHide();
+	CreateSwordEmergence();
 
 	CreateCallAttack();
 	CreateCall2Attack();
@@ -153,9 +154,10 @@ void KunrealEngine::Kamen::GamePattern()
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 	//TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	BasicSwordAttackPattern();
-
+	//TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	//BasicSwordAttackPattern();
+	_basicPattern.emplace_back(_swordHide);
+	_basicPattern.emplace_back(_swordEmmergence);
 	//CoreEmmergencePattern();
 }
 
@@ -903,6 +905,65 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 	_basicSwordAttack = pattern;
 }
 
+
+void KunrealEngine::Kamen::CreateSwordEmergence()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Sword_Emmergence");
+
+	pattern->SetAnimName("Idle").SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
+	pattern->SetSubObject(_sword);
+
+	auto swordInitLogic = [pattern, this]()
+	{
+		pattern->SetSubObject(_sword);
+
+		// 일단 랜덤으로
+		auto ranX = ToolBox::GetRandomFloat(0.0f, 20.0f);
+		auto ranZ = ToolBox::GetRandomFloat(0.0f, 20.0f);
+		
+		auto swordTransform = _sword->GetComponent<Transform>();
+		swordTransform->SetPosition(ranX, swordTransform->GetPosition().y, ranZ);
+
+		// 갱신 주기가 달라서 직접 업데이트 한번 해줘야 함
+		_sword->GetComponent<MeshRenderer>()->Update();
+
+		// 디졸브 이펙트 키기
+		_sword->GetComponent<MeshRenderer>()->SetActive(true);
+		_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+
+		_swordDissolveTimer = 0.0f;
+		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+
+		_sword->GetComponent<BoxCollider>()->SetActive(false);
+	};
+
+	pattern->SetInitializeLogic(swordInitLogic);
+
+	auto emmergenceLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
+
+		if (_swordDissolveTimer < 0.5f)
+		{
+			_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+		}
+		else
+		{
+			pattern->DeleteSubObject(_sword);
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(emmergenceLogic);
+
+	_swordEmmergence = pattern;
+}
 
 void KunrealEngine::Kamen::CreateSwordHide()
 {
