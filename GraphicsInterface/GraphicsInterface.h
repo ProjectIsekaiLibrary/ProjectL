@@ -127,7 +127,7 @@ namespace GInterface
 		// End 키를 통해 텍스트 출력 활성화 / 비활성화
 		virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) abstract;
 		// 색깔이 입혀진 텍스트 출력 (RGBA 0~255)
-		virtual void DrawColorText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) abstract;
+		virtual void DrawUIText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) abstract;
 
 	public:
 		// IMGUI에서 렌더링시키기 위해 이미지를 넘겨줌

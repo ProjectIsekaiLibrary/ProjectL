@@ -8,7 +8,7 @@
 ArkEngine::ArkDX11::DWFont::DWFont(IDXGISwapChain* swapChain)
 	: _d2dFactory(nullptr), _writeFactory(nullptr),
 	_swapChain(swapChain), _surface(nullptr), _d2dRenderTarget(nullptr),
-	_textFormat(), _textLayOut(), _brushList(), _textList()
+	_textFormat(), _textLayOut(), _brushList(), _debugTextList()
 {
 	Initialize();
 }
@@ -33,15 +33,28 @@ void ArkEngine::ArkDX11::DWFont::Initialize()
 	result = _d2dFactory->CreateDxgiSurfaceRenderTarget(_surface, &d2dRTProps, &_d2dRenderTarget);
 }
 
-void ArkEngine::ArkDX11::DWFont::Render()
+void ArkEngine::ArkDX11::DWFont::RenderDebug()
 {
 	_d2dRenderTarget->BeginDraw();
 
-	for (const auto& index : _textList)
+	for (const auto& index : _debugTextList)
 	{
 		_d2dRenderTarget->DrawTextLayout(D2D1::Point2F(index._posX, index._posY), index._layOut, index._brush);
 	}
 	
+	_d2dRenderTarget->EndDraw();
+}
+
+
+void ArkEngine::ArkDX11::DWFont::RenderUI()
+{
+	_d2dRenderTarget->BeginDraw();
+
+	for (const auto& index : _uiTextList)
+	{
+		_d2dRenderTarget->DrawTextLayout(D2D1::Point2F(index._posX, index._posY), index._layOut, index._brush);
+	}
+
 	_d2dRenderTarget->EndDraw();
 }
 
@@ -84,18 +97,19 @@ void ArkEngine::ArkDX11::DWFont::Finalize()
 	_d2dFactory->Release();
 }
 
-void ArkEngine::ArkDX11::DWFont::RenderText(int posX, int posY, std::string text, float fontSize, const DirectX::XMFLOAT4& color)
+
+void ArkEngine::ArkDX11::DWFont::RenderUIText(int posX, int posY, std::string text, float fontSize /*= 20.0f*/, const DirectX::XMFLOAT4& color /*= DirectX::XMFLOAT4(255.0f, 255.0f, 255.0f, 255.0f)*/)
 {
-	for (auto index = 0; index < _textList.size(); index++)
+	for (auto index = 0; index < _uiTextList.size(); index++)
 	{
-		if (_textList[index]._posX == posX && _textList[index]._posY == posY)
+		if (_uiTextList[index]._posX == posX && _uiTextList[index]._posY == posY)
 		{
-			if (_textList[index].text == text)
+			if (_uiTextList[index].text == text)
 			{
 				return;
 			}
 
-			_textList.erase(_textList.begin() + index);
+			_uiTextList.erase(_uiTextList.begin() + index);
 
 			break;
 		}
@@ -115,7 +129,41 @@ void ArkEngine::ArkDX11::DWFont::RenderText(int posX, int posY, std::string text
 	newFont._posX = posX;
 	newFont._posY = posY;
 
-	_textList.emplace_back(newFont);
+	_uiTextList.emplace_back(newFont);
+}
+
+void ArkEngine::ArkDX11::DWFont::RenderDebugText(int posX, int posY, std::string text, float fontSize, const DirectX::XMFLOAT4& color)
+{
+	for (auto index = 0; index < _debugTextList.size(); index++)
+	{
+		if (_debugTextList[index]._posX == posX && _debugTextList[index]._posY == posY)
+		{
+			if (_debugTextList[index].text == text)
+			{
+				return;
+			}
+
+			_debugTextList.erase(_debugTextList.begin() + index);
+
+			break;
+		}
+	}
+
+	POINT pos = { posX, posY };
+
+	auto brush = CreateBrush(color);
+	auto textFormat = CreateTextFormat(fontSize);
+	auto textLayOut = CreateTextLayout(pos, text, textFormat);
+
+	ArkFont newFont;
+	newFont._brush = brush;
+	newFont._format = textFormat;
+	newFont._layOut = textLayOut;
+	newFont.text = text;
+	newFont._posX = posX;
+	newFont._posY = posY;
+
+	_debugTextList.emplace_back(newFont);
 }
 
 ID2D1SolidColorBrush* ArkEngine::ArkDX11::DWFont::CreateBrush(const DirectX::XMFLOAT4& color)
