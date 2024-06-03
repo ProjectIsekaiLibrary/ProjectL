@@ -70,6 +70,7 @@ void KunrealEngine::Boss::DebugTest()
 		case BossStatus::IDLE:
 		{
 			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : IDLE");
+			GRAPHICS->DeleteAllLine();
 			break;
 		}
 		case BossStatus::CHASE:
@@ -185,7 +186,6 @@ void KunrealEngine::Boss::Update()
 		case BossStatus::IDLE:
 		{
 			Idle();
-			GRAPHICS->DeleteAllLine();
 			break;
 		}
 		case BossStatus::CHASE:

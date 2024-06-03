@@ -63,9 +63,12 @@ namespace KunrealEngine
 		void CreateCallAttack();
 		void CreateCall2Attack();
 
+		// ∞À ∆–≈œ
 	private:
 		void CreateSwordAttack();
 		void CreateSwordHide();
+		void CraeteSwordTurnClockWise();
+		void CreateSwordTurnAntiClock();
 
 	private:
 		void CreateTurn180();
@@ -98,6 +101,9 @@ namespace KunrealEngine
 
 		BossPattern* _basicSwordAttack;
 		BossPattern* _swordHide;
+		BossPattern* _swordTurnClockWise;
+		BossPattern* _swordTurnAntiClockWise;
+
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -144,5 +150,8 @@ namespace KunrealEngine
 
 	private:
 		DirectX::XMFLOAT3 _centerPos;
+
+	private:
+		float _swordRotateAngle;
 	};
 }

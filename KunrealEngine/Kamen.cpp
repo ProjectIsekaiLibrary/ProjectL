@@ -13,7 +13,8 @@ KunrealEngine::Kamen::Kamen()
 	_emergence9Lich(nullptr), _targetIndex(0),
 	_call2PrevStep(1), _lazerCollider(nullptr),
 	_outsideAttack(nullptr), _insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f),
-	_basicSwordAttack(nullptr), _sword(nullptr), _swordDissolveTimer(0.0f), _swordHide(nullptr)
+	_basicSwordAttack(nullptr), _sword(nullptr), _swordDissolveTimer(0.0f), _swordHide(nullptr),
+	_swordTurnClockWise(nullptr), _swordTurnAntiClockWise(nullptr), _swordRotateAngle(0.0f)
 {
 	BossBasicInfo info;
 
@@ -38,7 +39,7 @@ void KunrealEngine::Kamen::Initialize()
 	Boss::Initialize(this->GetOwner());
 
 	// 보스 타이머 설정
-	SetStartTime(5.0f);
+	SetStartTime(0.0f);
 }
 
 void KunrealEngine::Kamen::Release()
@@ -135,6 +136,9 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateOutsideSafe();
 	CreateEmergenceAttack();
 
+	CraeteSwordTurnClockWise();
+	CreateSwordTurnAntiClock();
+
 	// 실제 사용중인 패턴들 모아놓음
 	GamePattern();
 }
@@ -142,12 +146,12 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	BasicPattern();						// 기본 spell, call
-	
-	LeftRightPattern();					// 전방 좌, 우 어택
-	RightLeftPattern();					// 전방 좌, 후방 우 어택
-	BackStepCallPattern();				// 백스탭 뒤 콜 어택
-	TeleportSpellPattern();				// 텔포 후 spell	
+	//BasicPattern();						// 기본 spell, call
+	//
+	//LeftRightPattern();					// 전방 좌, 우 어택
+	//RightLeftPattern();					// 전방 좌, 후방 우 어택
+	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	//TeleportSpellPattern();				// 텔포 후 spell	
 	//TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	BasicSwordAttackPattern();
@@ -816,11 +820,7 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 	_sword = _boss->GetObjectScene()->CreateObject("KamenSword");
 	_sword->AddComponent<MeshRenderer>();
 	_sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
-	_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
-	_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
-	_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
-	_sword->AddComponent<BoxCollider>()->SetBoxSize(5.0f, 20.0f, 5.0f);
-	_sword->GetComponent<BoxCollider>()->SetTransform(_boss, "Wrist_L");
+	_sword->AddComponent<BoxCollider>();
 
 	auto texSize = _sword->GetComponent<MeshRenderer>()->GetTextures().size();
 
@@ -879,6 +879,12 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 
 	auto swordInitLogic = [pattern, this]()
 		{
+			_sword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+			_sword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+			_sword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+			_sword->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 20.0f, 5.0f);
+			_sword->GetComponent<BoxCollider>()->SetTransform(_boss, "Wrist_L");
+
 			pattern->SetSubObject(_sword);
 
 			// 디졸브 이펙트 키기
@@ -942,6 +948,124 @@ void KunrealEngine::Kamen::CreateSwordHide()
 	pattern->SetLogic(hideLogic);
 
 	_swordHide = pattern;
+}
+
+
+void KunrealEngine::Kamen::CraeteSwordTurnClockWise()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordTurnClockWise");
+
+	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetMaxColliderCount(0);
+	pattern->SetSubObject(_sword);
+
+	auto swordInitLogic = [pattern, this]()
+		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+
+			_sword->GetComponent<MeshRenderer>()->DeleteParentBone();
+
+			_sword->GetComponent<MeshRenderer>()->SetActive(true);
+			_sword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+
+			_sword->GetComponent<BoxCollider>()->SetActive(false);
+
+			_sword->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, 40.0f, _bossTransform->GetPosition().z);
+
+			_sword->GetComponent<Transform>()->SetRotation(180.0f, 0.0f, 0.0f);
+
+			_swordRotateAngle = 0.0f;
+		};
+
+	pattern->SetInitializeLogic(swordInitLogic);
+
+	auto swordTurnLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
+
+			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime();
+
+			auto rotationSpeed = 2.0f;
+
+			float x = -20.0f * cos(_swordRotateAngle * rotationSpeed);
+			float z = 20.0f * sin(_swordRotateAngle * rotationSpeed);
+
+			_sword->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + x, _sword->GetComponent<Transform>()->GetPosition().y, _bossTransform->GetPosition().z + z);
+
+			if (_swordRotateAngle >= 2 * DirectX::XM_PI)
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(swordTurnLogic);
+
+	_swordTurnClockWise = pattern;
+}
+
+
+void KunrealEngine::Kamen::CreateSwordTurnAntiClock()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordTurnClockWise");
+
+	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetMaxColliderCount(0);
+	pattern->SetSubObject(_sword);
+
+	auto swordInitLogic = [pattern, this]()
+		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+
+			_sword->GetComponent<MeshRenderer>()->DeleteParentBone();
+
+			_sword->GetComponent<MeshRenderer>()->SetActive(true);
+			_sword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+
+			_sword->GetComponent<BoxCollider>()->SetActive(false);
+
+			_sword->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
+
+			_sword->GetComponent<Transform>()->SetRotation(180.0f, 0.0f, 0.0f);
+
+			_swordRotateAngle = 0.0f;
+		};
+
+	pattern->SetInitializeLogic(swordInitLogic);
+
+	auto swordTurnLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
+
+			auto rotationSpeed = 2.0f;
+
+			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * rotationSpeed;
+
+			float x = -10.0f * cos(_swordRotateAngle);
+			float z = -10.0f * sin(_swordRotateAngle);
+
+			_sword->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + x, _sword->GetComponent<Transform>()->GetPosition().y, _bossTransform->GetPosition().z + z);
+
+			if (_swordRotateAngle >= 2 * DirectX::XM_PI)
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(swordTurnLogic);
+
+	_swordTurnAntiClockWise = pattern;
 }
 
 void KunrealEngine::Kamen::CreateEmergenceAttack()
@@ -1111,7 +1235,7 @@ void KunrealEngine::Kamen::TeleportTurnClockPattern()
 
 	teleportTurnClockPattern->SetPattern(_teleport);
 
-	teleportTurnClockPattern->SetPattern(_turnClockWise);
+	teleportTurnClockPattern->SetPattern(_swordTurnClockWise);
 
 	teleportTurnClockPattern->SetRange(teleportTurnClockPattern->_patternList[1]->_range);
 
@@ -1130,7 +1254,7 @@ void KunrealEngine::Kamen::TeleportTurnAntiClockPattern()
 
 	teleportTurnAntiClockPattern->SetPattern(_teleport);
 
-	teleportTurnAntiClockPattern->SetPattern(_turnAntiClockWise);
+	teleportTurnAntiClockPattern->SetPattern(_swordTurnAntiClockWise);
 
 	teleportTurnAntiClockPattern->SetPattern(_outsideSafe);
 
