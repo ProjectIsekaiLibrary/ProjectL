@@ -60,13 +60,8 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close, int& selectedObjectInd
 			SaveToFile(samplefilePath);
 
 		}
-		ImGui::SameLine();
-		if (ImGui::Button("ExportObj"))
-		{
-			_exportObj->ExportToObj("testObj.obj");
-		}
 
-		ImGui::SameLine(); // 같은 라인에 배치
+		ImGui::SameLine();
 
 		if (ImGui::Button("Load"))
 		{
@@ -74,6 +69,22 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close, int& selectedObjectInd
 		}
 
 		ImGui::SameLine();
+
+		char fileName[255] = { 0 };
+
+		if (ImGui::InputText(" ", fileName, sizeof(fileName)))
+		{
+			_exportObjName = fileName;
+		}
+
+		ImGui::SameLine();
+
+		if (ImGui::Button("ExportObj"))
+		{
+			_exportObj->ExportToObj(_exportObjName);
+		}
+
+		ImGui::SameLine(); // 같은 라인에 배치
 
 		if (ImGui::BeginMenuBar())
 		{
