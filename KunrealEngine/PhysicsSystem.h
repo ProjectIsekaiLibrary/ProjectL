@@ -120,5 +120,9 @@ namespace KunrealEngine
 	private:
 		// eventcallback으로부터 받은 actor가 어떤 collider에 대응하는지
 		BoxCollider* GetColliderFromDynamic(const physx::PxRigidDynamic* dynamic);
+
+	private:
+		BoxCollider* col1;
+		BoxCollider* col2;
 	};
 }

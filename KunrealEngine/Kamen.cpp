@@ -11,9 +11,9 @@ KunrealEngine::Kamen::Kamen()
 	_turn180(nullptr), _backStep(nullptr), _teleport(nullptr), _teleportWithLook(nullptr),
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
 	_emergence9Lich(nullptr), _targetIndex(0),
-	_call2PrevStep(1),
-	_outsideAttack(nullptr), _insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f), 
-	_sword(nullptr), _swordDissolveTimer(0.0f), _swordHide(nullptr)
+	_call2PrevStep(1), _lazerCollider(nullptr),
+	_outsideAttack(nullptr), _insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f),
+	_basicSwordAttack(nullptr), _sword(nullptr), _swordDissolveTimer(0.0f), _swordHide(nullptr)
 {
 	BossBasicInfo info;
 
@@ -36,6 +36,9 @@ void KunrealEngine::Kamen::Initialize()
 {
 	// 반드시 해야함
 	Boss::Initialize(this->GetOwner());
+
+	// 보스 타이머 설정
+	SetStartTime(5.0f);
 }
 
 void KunrealEngine::Kamen::Release()
@@ -139,16 +142,16 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//BasicPattern();						// 기본 spell, call
+	BasicPattern();						// 기본 spell, call
 	
-	//LeftRightPattern();					// 전방 좌, 우 어택
-	//RightLeftPattern();					// 전방 좌, 후방 우 어택
-	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
-	//TeleportSpellPattern();				// 텔포 후 spell	
+	LeftRightPattern();					// 전방 좌, 우 어택
+	RightLeftPattern();					// 전방 좌, 후방 우 어택
+	BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	TeleportSpellPattern();				// 텔포 후 spell	
 	//TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	//TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	BasicSwordAttackPattern();
-	
+
 	//CoreEmmergencePattern();
 }
 
@@ -210,7 +213,7 @@ void KunrealEngine::Kamen::CreateLeftAttack()
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
-	
+
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Once");
@@ -261,25 +264,25 @@ void KunrealEngine::Kamen::CreateTurn180()
 	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(200.0f);
 
 	auto turn180 = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-
-		animator->Play("Idle", pattern->_speed, false);
-
-		// 회전 시킴
-		auto rotateFinish = Rotate(180, pattern->_speed);
-
-		// 회전 끝나지 않았다면
-		if (rotateFinish == false)
 		{
-			// 계속 회전시키기 위함
-			return true;
-		}
-		else
-		{
-			return false;
-		}
-	};
+			auto animator = _boss->GetComponent<Animator>();
+
+			animator->Play("Idle", pattern->_speed, false);
+
+			// 회전 시킴
+			auto rotateFinish = Rotate(180, pattern->_speed);
+
+			// 회전 끝나지 않았다면
+			if (rotateFinish == false)
+			{
+				// 계속 회전시키기 위함
+				return true;
+			}
+			else
+			{
+				return false;
+			}
+		};
 
 
 	pattern->SetLogic(turn180);
@@ -310,18 +313,18 @@ void KunrealEngine::Kamen::CreateTeleportToCenter()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
 
 	auto teleport = [pattern, this]()
-	{
-		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
-
-		if (isTeleportFinish)
 		{
-			RotateByAngle(0.0f);
+			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
 
-			return false;
-		}
+			if (isTeleportFinish)
+			{
+				RotateByAngle(0.0f);
 
-		return true;
-	};
+				return false;
+			}
+
+			return true;
+		};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(teleport);
@@ -339,16 +342,16 @@ void KunrealEngine::Kamen::CreateTeleportToCenterWithLook()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
 
 	auto teleport = [pattern, this]()
-	{
-		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
-
-		if (isTeleportFinish)
 		{
-			return false;
-		}
+			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
 
-		return true;
-	};
+			if (isTeleportFinish)
+			{
+				return false;
+			}
+
+			return true;
+		};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(teleport);
@@ -364,31 +367,39 @@ void KunrealEngine::Kamen::CreateTurnClockWise()
 
 	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(50.0f);
 
-	auto turn = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-
-		// 회전 진행 안됐다면
-		if (_isRotateFinish == false)
+	auto initializeLogic = [pattern, this]()
 		{
-			animator->Play("Idle", pattern->_speed, true);
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+		};
 
-			// 회전 시킴
-			auto rotateFinish = RotateClockWise(60, false);
+	pattern->SetInitializeLogic(initializeLogic);
 
-			// 회전 끝나지 않았다면
-			if (rotateFinish == false)
+	auto turn = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+
+			// 회전 진행 안됐다면
+			if (_isRotateFinish == false)
 			{
-				// 계속 회전시키기 위함
-				return true;
+				animator->Play("Idle", pattern->_speed, true);
+
+				// 회전 시킴
+				auto rotateFinish = RotateClockWise(4 * pattern->_speed, false);
+
+				// 회전 끝나지 않았다면
+				if (rotateFinish == false)
+				{
+					// 계속 회전시키기 위함
+					return true;
+				}
+				else
+				{
+					_isRotateFinish = false;
+					return false;
+				}
 			}
-			else
-			{
-				_isRotateFinish = false;
-				return false;
-			}
-		}
-	};
+		};
 
 	pattern->SetLogic(turn);
 
@@ -404,31 +415,39 @@ void KunrealEngine::Kamen::CreateTurnAntiClockWise()
 
 	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(50.0f);
 
-	auto turn = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-
-		// 회전 진행 안됐다면
-		if (_isRotateFinish == false)
+	auto initializeLogic = [pattern, this]()
 		{
-			animator->Play("Idle", pattern->_speed, true);
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+		};
 
-			// 회전 시킴
-			auto rotateFinish = RotateClockWise(120, true);
+	pattern->SetInitializeLogic(initializeLogic);
 
-			// 회전 끝나지 않았다면
-			if (rotateFinish == false)
+	auto turn = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+
+			// 회전 진행 안됐다면
+			if (_isRotateFinish == false)
 			{
-				// 계속 회전시키기 위함
-				return true;
+				animator->Play("Idle", pattern->_speed, true);
+
+				// 회전 시킴
+				auto rotateFinish = RotateClockWise(4 * pattern->_speed, true);
+
+				// 회전 끝나지 않았다면
+				if (rotateFinish == false)
+				{
+					// 계속 회전시키기 위함
+					return true;
+				}
+				else
+				{
+					_isRotateFinish = false;
+					return false;
+				}
 			}
-			else
-			{
-				_isRotateFinish = false;
-				return false;
-			}
-		}
-	};
+		};
 
 	pattern->SetLogic(turn);
 
@@ -447,7 +466,7 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 
 	_insideWarning = _boss->GetObjectScene()->CreateObject("OutsideSafe");
 	_insideWarning->AddComponent<TransparentMesh>();
-	_insideWarning->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Warning.dds", 1.0f, false);
+	_insideWarning->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
 	_insideWarning->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 	_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z);
 
@@ -459,55 +478,55 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 	_outsideAttack->AddComponent<BoxCollider>();
 	_outsideAttack->GetComponent<BoxCollider>()->SetBoxSize(30.0f, 30.0f, 30.0f);
 	_outsideAttack->GetComponent<BoxCollider>()->SetActive(false);
-	
+
 	_outsideAttack->AddComponent<Particle>();
 	_outsideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
 	_outsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 	_outsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
-	_outsideAttack->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.0f);
+	_outsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 
 	pattern->SetSubObject(_outsideAttack);
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
-	{
-		_insideWarning->GetComponent<TransparentMesh>()->Reset();
-		_insideWarning->GetComponent<TransparentMesh>()->SetActive(true);
-		_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
-		_outsideAttack->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
-		_insideWarningTimer = 0.0f;
+		{
+			_insideWarning->GetComponent<TransparentMesh>()->Reset();
+			_insideWarning->GetComponent<TransparentMesh>()->SetActive(true);
+			_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
+			_outsideAttack->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y + 1.0f, _bossTransform->GetPosition().z);
+			_insideWarningTimer = 0.0f;
 
-		_boss->GetComponent<BoxCollider>()->SetActive(false);
-		_boss->GetComponent<MeshRenderer>()->SetActive(false);
-	};
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
+		};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto outsideSafe = [pattern, this]()
-	{
-		// 장판 실행
-		auto isPlayed = _insideWarning->GetComponent<TransparentMesh>()->PlayOnce();
-
-		// 장판 실행이 완료되면
-		if (isPlayed)
 		{
-			// n초동안 콜라이더 실행
-			_insideWarningTimer += TimeManager::GetInstance().GetDeltaTime();
-			_outsideAttack->GetComponent<BoxCollider>()->SetActive(true);
-			_outsideAttack->GetComponent<Particle>()->SetActive(true);
+			// 장판 실행
+			auto isPlayed = _insideWarning->GetComponent<TransparentMesh>()->PlayOnce();
 
-			_outsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-			if (_insideWarningTimer >= 2.0f)
+			// 장판 실행이 완료되면
+			if (isPlayed)
 			{
-				_boss->GetComponent<MeshRenderer>()->SetActive(true);
-				_boss->GetComponent<BoxCollider>()->SetActive(true);
-				return false;
-			}
-		}
+				// n초동안 콜라이더 실행
+				_insideWarningTimer += TimeManager::GetInstance().GetDeltaTime();
+				_outsideAttack->GetComponent<BoxCollider>()->SetActive(true);
+				_outsideAttack->GetComponent<Particle>()->SetActive(true);
 
-		return true;
-	};
+				_outsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+				if (_insideWarningTimer >= 2.0f)
+				{
+					_boss->GetComponent<MeshRenderer>()->SetActive(true);
+					_boss->GetComponent<BoxCollider>()->SetActive(true);
+					return false;
+				}
+			}
+
+			return true;
+		};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(outsideSafe);
@@ -523,6 +542,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
 	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
 	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+	_lazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
 	_lazer->GetComponent<Particle>()->SetActive(false);
 
 	_lazerCollider = _boss->GetObjectScene()->CreateObject("lazerCollider");
@@ -539,56 +559,60 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 	pattern->SetSubObject(_lazerCollider);
 
 	auto initLogic = [pattern, this]()
-	{
-		auto playerPos = _playerTransform->GetPosition();
-		auto bossPos = _bossTransform->GetPosition();
-		auto direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&playerPos), DirectX::XMLoadFloat3(&bossPos));
-		direction = DirectX::XMVector3Normalize(direction);
-		auto scaleDir = DirectX::XMVectorScale(direction, 15.0f);
-		_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir.m128_f32[2]);
-		_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-		pattern->SetSpeed(20.0f);
+		{
+			auto playerPos = _playerTransform->GetPosition();
+			auto bossPos = _bossTransform->GetPosition();
+			auto direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&playerPos), DirectX::XMLoadFloat3(&bossPos));
+			direction = DirectX::XMVector3Normalize(direction);
+			auto scaleDir = DirectX::XMVectorScale(direction, 15.0f);
+			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir.m128_f32[2]);
+			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+			pattern->SetSpeed(20.0f);
 
-		auto scaleDir2 = DirectX::XMVectorScale(direction, 80.0f);
+			auto scaleDir2 = DirectX::XMVectorScale(direction, 80.0f);
 
-		_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir2.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir2.m128_f32[2]);
+			_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir2.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir2.m128_f32[2]);
 
-		_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
-	};
+			_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
+		};
 
 	pattern->SetInitializeLogic(initLogic);
 	auto spellLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-
-		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-		if (pattern->_colliderOnCount > 0)
 		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+
 			if (animator->GetCurrentFrame() >= 30.0f)
 			{
 				if (animator->GetCurrentFrame() >= 55.0f)
 				{
 					_lazer->GetComponent<Particle>()->SetActive(false);
-					_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
+					if (pattern->_colliderOnCount > 0)
+					{
+						_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
+					}
 				}
 				else
 				{
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
 					_lazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
-					_lazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+					if (pattern->_colliderOnCount > 0)
+					{
+						_lazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+					}
 				}
 			}
-		}
-		if (isAnimationPlaying == false)
-		{
-			return false;
-		}
 
-		return true;
-	};
+			if (isAnimationPlaying == false)
+			{
+				return false;
+			}
+
+			return true;
+		};
 
 
 	pattern->SetLogic(spellLogic);
@@ -618,7 +642,7 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
 
 	_call->AddComponent<Light>();
-	_call->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 20.0f);
+	_call->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
 
 	BossPattern* pattern = new BossPattern();
 
@@ -629,66 +653,66 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	pattern->SetSubObject(_call);
 
 	auto callLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-		if (animator->GetCurrentFrame() >= 20)
 		{
-			if (pattern->_colliderOnCount > 0)
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (animator->GetCurrentFrame() >= 20)
 			{
-				// 콜라이더 키기
-				_call->GetComponent<BoxCollider>()->SetActive(true);
-				// 파티클 키기
-				_call->GetComponent<Particle>()->SetActive(true);
-				// 라이트 키기
-				_call->GetComponent<Light>()->SetActive(true);
+				if (pattern->_colliderOnCount > 0)
+				{
+					// 콜라이더 키기
+					_call->GetComponent<BoxCollider>()->SetActive(true);
+					// 파티클 키기
+					_call->GetComponent<Particle>()->SetActive(true);
+					// 라이트 키기
+					_call->GetComponent<Light>()->SetActive(true);
+				}
+
+				// 보스가 바라보는 방향 가져옴
+				auto direction = GetDirection();
+
+				// 현재 보스의 포지션
+				auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+				auto callNowPos = _call->GetComponent<Transform>()->GetPosition();
+				auto distance = ToolBox::GetDistance(nowPos, callNowPos);
+
+				if (distance < pattern->_range)
+				{
+					_callMoveDistance += (pattern->_speed * 1.5) * TimeManager::GetInstance().GetDeltaTime();
+				}
+				else
+				{
+					animator->Stop();
+					isAnimationPlaying = false;
+				}
+
+
+				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
+
+				_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 			}
 
-			// 보스가 바라보는 방향 가져옴
-			auto direction = GetDirection();
-
-			// 현재 보스의 포지션
-			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
-
-			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
-
-			auto callNowPos = _call->GetComponent<Transform>()->GetPosition();
-			auto distance = ToolBox::GetDistance(nowPos, callNowPos);
-
-			if (distance < pattern->_range)
+			if (isAnimationPlaying == false)
 			{
-				_callMoveDistance += (pattern->_speed * 1.5) * TimeManager::GetInstance().GetDeltaTime();
-			}
-			else
-			{
-				animator->Stop();
-				isAnimationPlaying = false;
+				return false;
 			}
 
-
-			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
-
-			_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-		}
-
-		if (isAnimationPlaying == false)
-		{
-			return false;
-		}
-
-		return true;
-	};
+			return true;
+		};
 
 	pattern->SetLogic(callLogic, false);
 
 	_callInitLogic = [pattern, this]()
-	{
-		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
-		_callMoveDistance = 0.0f;
-	};
+		{
+			_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
+			_callMoveDistance = 0.0f;
+		};
 
 	// 이니셜라이즈 로직 함수 넣어주기
 	pattern->SetInitializeLogic(_callInitLogic);
@@ -715,9 +739,9 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	DirectX::XMFLOAT4 diffuse = { 0.0f, 0.6f, 0.0f, 1.0f };
 	DirectX::XMFLOAT4 ambient = { 0.0f, 0.15f, 0.0f, 1.0f };
 	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
-	
+
 	_call2->AddComponent<Light>();
-	_call2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 20.0f);
+	_call2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
 
 	BossPattern* pattern = new BossPattern();
 
@@ -729,54 +753,54 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	pattern->SetSubObject(_call2);
 
 	auto callLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-		if (animator->GetCurrentFrame() >= 20)
 		{
-			if (pattern->_colliderOnCount > 0)
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (animator->GetCurrentFrame() >= 20)
 			{
-				// 콜라이더 키기
-				_call2->GetComponent<BoxCollider>()->SetActive(true);
-				// 파티클 키기
-				_call2->GetComponent<Particle>()->SetActive(true);
-				// 라이트도 키기
-				_call2->GetComponent<Light>()->SetActive(true);
+				if (pattern->_colliderOnCount > 0)
+				{
+					// 콜라이더 키기
+					_call2->GetComponent<BoxCollider>()->SetActive(true);
+					// 파티클 키기
+					_call2->GetComponent<Particle>()->SetActive(true);
+					// 라이트도 키기
+					_call2->GetComponent<Light>()->SetActive(true);
+				}
+
+				// 보스가 바라보는 방향 가져옴
+				auto direction = GetDirection();
+
+				// 현재 보스의 포지션
+				auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+				int step = (animator->GetCurrentFrame() - 20.0f) / 10.0f + 1;
+
+				if (step != _call2PrevStep)
+				{
+					pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+				}
+
+				_call2PrevStep = step;
+
+
+				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f * step));
+
+				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
 			}
 
-			// 보스가 바라보는 방향 가져옴
-			auto direction = GetDirection();
-
-			// 현재 보스의 포지션
-			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
-
-			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
-
-			int step = (animator->GetCurrentFrame() - 20.0f) / 10.0f + 1;
-
-			if (step != _call2PrevStep)
+			if (isAnimationPlaying == false)
 			{
-				pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+				return false;
 			}
 
-			_call2PrevStep = step;
-
-
-			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f * step));
-
-			_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
-		}
-
-		if (isAnimationPlaying == false)
-		{
-			return false;
-		}
-
-		return true;
-	};
+			return true;
+		};
 
 	pattern->SetLogic(callLogic, false);
 
@@ -808,61 +832,61 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 
 	pattern->SetPatternName("Sword_Attack");
 
-	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 25.0f).SetAfterDelay(1.0f);
+	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(15.0f).SetRange(_info._attackRange + 25.0f).SetAfterDelay(1.0f);
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_sword);
 
 	auto attackLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-		
-		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-		if (pattern->_colliderOnCount > 0)
 		{
-			if (animator->GetCurrentFrame() >= 10.0f)
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			if (pattern->_colliderOnCount > 0)
 			{
-				pattern->_speed = 20.0f;
-				_sword->GetComponent<BoxCollider>()->SetActive(true);
+				if (animator->GetCurrentFrame() >= 10.0f)
+				{
+					pattern->_speed = 15.0f;
+					_sword->GetComponent<BoxCollider>()->SetActive(true);
+				}
+				else
+				{
+					pattern->_speed = 15 * 0.3f;
+				}
 			}
-			else
+
+			if (_swordDissolveTimer < 0.5f)
 			{
-				pattern->_speed = 20 * 0.25f;
+				_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
+				_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
 			}
-		}
 
-		if (_swordDissolveTimer < 1)
-		{
-			_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
-			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
-		}
+			if (isAnimationPlaying == false)
+			{
+				_sword->SetActive(true);
+				pattern->DeleteSubObject(_sword);
+				return false;
+			}
 
-		if (isAnimationPlaying == false)
-		{
-			_sword->SetActive(true);
-			pattern->DeleteSubObject(_sword);
-			return false;
-		}
-
-		return true;
-	};
+			return true;
+		};
 
 	pattern->SetLogic(attackLogic);
 
 	auto swordInitLogic = [pattern, this]()
-	{
-		pattern->SetSubObject(_sword);
+		{
+			pattern->SetSubObject(_sword);
 
-		// 디졸브 이펙트 키기
-		_sword->SetActive(true);
-		_sword->GetComponent<MeshRenderer>()->SetActive(true);
-		_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+			// 디졸브 이펙트 키기
+			_sword->SetActive(true);
+			_sword->GetComponent<MeshRenderer>()->SetActive(true);
+			_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-		_swordDissolveTimer = 0.0f;
-		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
-		
-	};
+			_swordDissolveTimer = 0.0f;
+			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+
+		};
 
 	// 이니셜라이즈 로직 함수 넣어주기
 	pattern->SetInitializeLogic(swordInitLogic);
@@ -881,36 +905,36 @@ void KunrealEngine::Kamen::CreateSwordHide()
 	pattern->SetSubObject(_sword);
 
 	auto swordInitLogic = [pattern, this]()
-	{
-		// 디졸브 이펙트 키기
-		_sword->GetComponent<MeshRenderer>()->SetActive(true);
-		_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		{
+			// 디졸브 이펙트 키기
+			_sword->GetComponent<MeshRenderer>()->SetActive(true);
+			_sword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-		_swordDissolveTimer = 1.0f;
-		_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+			_swordDissolveTimer = 0.5f;
+			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
 
-		_sword->GetComponent<BoxCollider>()->SetActive(false);
-	};
+			_sword->GetComponent<BoxCollider>()->SetActive(false);
+		};
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	auto hideLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
-
-		if (_swordDissolveTimer > 0)
 		{
-			_swordDissolveTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
-			_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
-		}
-		else
-		{
-			return false;
-		}
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
 
-		return true;
-	};
+			if (_swordDissolveTimer > 0)
+			{
+				_swordDissolveTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+				_sword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+			}
+			else
+			{
+				return false;
+			}
+
+			return true;
+		};
 
 	pattern->SetLogic(hideLogic);
 
@@ -965,72 +989,72 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 	}
 
 	auto core1Logic = [pattern, this]()
-	{
-		// 9명의 분신 중 무엇이 사라질 지 인덱스 랜덤 설정
-		if (!_isRandomStart)
 		{
-			_targetIndex = ToolBox::GetRandomNum(_fakeBoss.size() - 1);
-
-			_isRandomStart = true;
-		}
-
-		// 패턴 시작 위해 중앙으로 텔레포트
-		if (!_isRotateFinish)
-		{
-			auto newPos = _fakeBoss[_targetIndex]->GetComponent<Transform>()->GetPosition();
-			auto isTeleportFinish = Teleport(newPos, false, 3.0f);
-
-			// 텔포 끝나면 패턴 시작
-			if (!isTeleportFinish)
+			// 9명의 분신 중 무엇이 사라질 지 인덱스 랜덤 설정
+			if (!_isRandomStart)
 			{
-				return true;
+				_targetIndex = ToolBox::GetRandomNum(_fakeBoss.size() - 1);
+
+				_isRandomStart = true;
 			}
-			else
+
+			// 패턴 시작 위해 중앙으로 텔레포트
+			if (!_isRotateFinish)
 			{
-				// 텔포 끝나면 다시 돌아오지 않도록
-				RotateByAngle(0.0f);
+				auto newPos = _fakeBoss[_targetIndex]->GetComponent<Transform>()->GetPosition();
+				auto isTeleportFinish = Teleport(newPos, false, 3.0f);
 
-				_isRotateFinish = true;
-			}
-		}
-
-		/// emergence 역애니메이션 한번 재생시켜줌 아직 미구현
-
-		// 패턴 시작 전 초기화해줄것들
-		if (!_isCoreStart)
-		{
-			// 페이크 보스들 켜줌
-			for (int i = 0; i < _fakeBoss.size(); i++)
-			{
-				if (i != _targetIndex)
+				// 텔포 끝나면 패턴 시작
+				if (!isTeleportFinish)
 				{
-					_fakeBoss[i]->SetActive(true);
-					_fakeBoss[i]->SetTotalComponentState(true);
+					return true;
 				}
-
 				else
 				{
-					_fakeBoss[i]->SetActive(false);
+					// 텔포 끝나면 다시 돌아오지 않도록
+					RotateByAngle(0.0f);
+
+					_isRotateFinish = true;
 				}
 			}
 
-			_isCoreStart = true;
-		}
+			/// emergence 역애니메이션 한번 재생시켜줌 아직 미구현
 
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+			// 패턴 시작 전 초기화해줄것들
+			if (!_isCoreStart)
+			{
+				// 페이크 보스들 켜줌
+				for (int i = 0; i < _fakeBoss.size(); i++)
+				{
+					if (i != _targetIndex)
+					{
+						_fakeBoss[i]->SetActive(true);
+						_fakeBoss[i]->SetTotalComponentState(true);
+					}
 
-		if (isAnimationPlaying == false)
-		{
-			_isCoreStart = false;
-			_isRotateFinish = false;
+					else
+					{
+						_fakeBoss[i]->SetActive(false);
+					}
+				}
 
-			_targetIndex = 0;
-			return false;
-		}
+				_isCoreStart = true;
+			}
 
-		return true;
-	};
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			if (isAnimationPlaying == false)
+			{
+				_isCoreStart = false;
+				_isRotateFinish = false;
+
+				_targetIndex = 0;
+				return false;
+			}
+
+			return true;
+		};
 
 	pattern->SetLogic(core1Logic, false);
 

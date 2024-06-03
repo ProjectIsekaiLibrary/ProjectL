@@ -120,9 +120,9 @@ HRESULT EpicTool::MainTool::Initialize()
     /// 로드 구현중 
    // LoadData(); // 로드 부분 구현되었으나 임시 주석
 
-	//_loadFilePath = "Resources/mapData/mapTest.json";
-	//Deserialize* _deserialize = new Deserialize();
-	//_deserialize->Initialize(_loadFilePath);
+	_loadFilePath = "Resources/mapData/mapTest.json";
+	Deserialize* _deserialize = new Deserialize();
+	_deserialize->Initialize(_loadFilePath);
 
     _windowManager = new ShowWindowManager;
     _windowManager->Initialize();

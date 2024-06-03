@@ -2,10 +2,6 @@
 #include "DetourCommon.h"
 #include "RecastDump.h"
 
-#pragma comment (lib, "../Lib/x64/Debug/recast.lib")
-#pragma comment (lib, "../Lib/x64/Debug/Detour.lib")
-#pragma comment (lib, "../Lib/x64/Debug/DetourTileCache.lib")
-
 namespace KunrealEngine
 {
 	/// LinearAllocator

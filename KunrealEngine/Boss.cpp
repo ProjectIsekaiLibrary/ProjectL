@@ -20,7 +20,7 @@
 
 KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
-	_distance(0.0f), _isCorePattern(false),
+	_distance(0.0f), _startTime(1.0f), _isCorePattern(false),
 	_basicPattern(), _corePattern(), _nowTitlePattern(nullptr), _nowPlayingPattern(nullptr),
 	_isStart(false), _isHit(false), _isRotateFinish(false), _isAngleCheck(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
@@ -237,12 +237,19 @@ void KunrealEngine::Boss::Enter()
 
 	auto playerPosition = _player->GetComponent<Transform>()->GetPosition();
 
-	auto distance = ToolBox::GetDistance(bossPosition, playerPosition);
+	_startTime -= TimeManager::GetInstance().GetDeltaTime();
+	
+	if (!_isStart)
+	{
+		_boss->GetComponent<BoxCollider>()->SetActive(false);
+		_boss->GetComponent<MeshRenderer>()->SetActive(false);
+	}
 
-	// 일정 거리 이내가 되면 시작
-	if (distance <= 1000.0f)
+	if (_startTime < 0.0f)
 	{
 		_isStart = true;
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
 	}
 
 	// 시작하면 
@@ -405,7 +412,7 @@ void KunrealEngine::Boss::Chase()
 				if (_stopover.size() > 0)
 				{
 					// 플레이어를 향하여 이동
-					auto isChasing = MoveToPlayer(_prevPos, _stopover[_nodeCount].second, _info._moveSpeed);
+ 					auto isChasing = MoveToPlayer(_prevPos, _stopover[_nodeCount].second, _info._moveSpeed);
 
 					// 첫 노드만큼 쫓아갔다면 다음 노드를 기반으로 이동
 					if (!isChasing)
@@ -415,6 +422,10 @@ void KunrealEngine::Boss::Chase()
 						{
 							_isRotate = false;
 							_isRotate = RotateToTarget(_stopover[_nodeCount + 1].second);
+						}
+						else
+						{
+							_nodeCount++;
 						}
 
 						// 회전이 끝났다면 다음 노드로 이동
@@ -712,6 +723,12 @@ void KunrealEngine::Boss::SetCorePatternList(std::vector<BossPattern*>* corePatt
 const BossStatus& KunrealEngine::Boss::GetStatus()
 {
 	return _status;
+}
+
+
+void KunrealEngine::Boss::SetStartTime(float time)
+{
+	_startTime = time;
 }
 
 bool KunrealEngine::Boss::CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2)

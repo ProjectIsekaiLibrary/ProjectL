@@ -174,14 +174,15 @@ namespace KunrealEngine
 
 		int _answerCount;
 
+		bool _jumpend;
 	private:
 			// 코루틴 대진수의 패턴용 변수
 			bool _jumpAttack_end = false;
-
 	private:	// 코루틴 대진수의 패턴 야미
 		Coroutine_Func(JumpAttackCo)
 		{	
 			Ent* some = this;
+			some->_jumpend = true;
 			auto animator = _boss->GetComponent<Animator>();
 			DirectX::XMFLOAT3 target = some->_playerTransform->GetPosition();	// 패턴 끝낼 지점
 			DirectX::XMFLOAT3 start = some->_bossTransform->GetPosition();	// 패턴 시작위치
@@ -230,6 +231,7 @@ namespace KunrealEngine
 				Return_null;
 			}
 
+			some->_jumpend = false;
 			some->_jumpAttack_end = false;
 		};
 	};

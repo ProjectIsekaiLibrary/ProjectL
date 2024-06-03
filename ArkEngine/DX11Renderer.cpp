@@ -58,7 +58,7 @@ ArkEngine::ArkDX11::DX11Renderer::DX11Renderer()
 	_depthStencilState(nullptr), _depthStencilStateDisable(nullptr),
 	_font(nullptr), _mainCamera(nullptr), _originMainCamera(nullptr), _mainCubeMap(nullptr),
 	_clientWidth(0), _clientHeight(0), _shadowHeight(0), _shadowWidth(0),
-	_isDebugMode(true), _renderingImageView(nullptr), _colorTexture(nullptr),
+	_isDebugMode(false), _renderingImageView(nullptr), _colorTexture(nullptr),
 	_viewPort(), _shadowViewPort()
 {
 	for (int i = 0; i < 4; i++)
@@ -337,8 +337,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		// DrawDebugText를 통해 생성된 모든 디버그용 폰트 렌더링
 		_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
-		_font->Render();
 	}
+		_font->Render();
 
 	// 디버그용이지만 일단 분리
 	{
@@ -1156,7 +1156,10 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDevice()
 	// 디버그 모드 빌드에서 디버그 계층을 활성화하기 위해 플래그 설정
 #if defined(DEBUG) || defined(_DEBUG)
 	UINT createDeviceFlags = 0;
-	createDeviceFlags |= D3D11_CREATE_DEVICE_DEBUG | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+	createDeviceFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
+#else
+	UINT createDeviceFlags = 0;
+	createDeviceFlags |= D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 #endif
 
 	/// DEVICE와 DEVICECONTEXT 동시에 생성하려면 D3D11CreateDeviceAndSwapChain을 사용해야 함

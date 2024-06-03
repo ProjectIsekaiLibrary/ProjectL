@@ -145,6 +145,8 @@ void ArkEngine::MeshRenderer::Render()
 			_colorList.emplace_back(index->GetColor());
 			_alphaList.emplace_back(index->GetAlhpa());
 
+			_isTransparentExist = index->GetIsDissolve();
+
 			if (index->GetAlhpa() < 1.0f)
 			{
 				_isTransparentExist = true;

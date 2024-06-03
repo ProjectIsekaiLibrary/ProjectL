@@ -94,7 +94,7 @@ void KunrealEngine::PlayerMove::Update()
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 	
-	ShowPlayerInfo();
+	//ShowPlayerInfo();
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
@@ -474,6 +474,12 @@ void KunrealEngine::PlayerMove::PlayerDash(DirectX::XMFLOAT3 targetPos, float sp
 void KunrealEngine::PlayerMove::SetPlayerY(float y)
 {
 	this->_posY = y;
+}
+
+
+float KunrealEngine::PlayerMove::GetPlayerY()
+{
+	return this->_posY;
 }
 
 void KunrealEngine::PlayerMove::ShowPlayerInfo()

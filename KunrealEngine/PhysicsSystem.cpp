@@ -9,7 +9,7 @@
 
 KunrealEngine::PhysicsSystem::PhysicsSystem()
 	:_foundation(nullptr), _physics(nullptr), _dispatcher(nullptr), _pxScene(nullptr),
-	_material(nullptr), _pvd(nullptr), _convexMesh(nullptr)
+	_material(nullptr), _pvd(nullptr), _convexMesh(nullptr), col1(nullptr), col2(nullptr)
 {
 
 }
@@ -412,8 +412,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	physx::PxRigidDynamic* casted1 = static_cast<physx::PxRigidDynamic*>(pairHeader.actors[0]);
 	physx::PxRigidDynamic* casted2 = static_cast<physx::PxRigidDynamic*>(pairHeader.actors[1]);
 
-	BoxCollider* col1 = GetColliderFromDynamic(casted1);
-	BoxCollider* col2 = GetColliderFromDynamic(casted2);
+	col1 = GetColliderFromDynamic(casted1);
+	col2 = GetColliderFromDynamic(casted2);
 
 	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
 	if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
@@ -422,7 +422,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	}
 
 	// 충돌이 발생했을 때
-	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD)
+	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
+		| physx::PxPairFlag::eMODIFY_CONTACTS
 		&& col1->GetActivated() && col2->GetActivated())
 	{
 		// 충돌 여부를 true로

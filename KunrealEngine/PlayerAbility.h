@@ -39,15 +39,21 @@ namespace KunrealEngine
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
 		GameObject* _ice;			// W 스킬 객체
+		GameObject* _area;			// E 스킬 객체
 		GameObject* _meteor;		// R 스킬 운석 객체
 
 		bool _isShotHit;			// 한 번만 데미지 받도록
+		bool _isIceHit;
+		bool _isAreaHit;
+		bool _isMeteorHit;
 
 		/// coroutine을 활용한 타이머 변수들
 		bool _isShotReady;			// Q 쿨타임 조건
 
 		bool _isIceReady;			// W 쿨타임 조건
 		bool _destroyIce;			// W 소멸 조건을 위한 변수
+		
+		bool _isAreaReady;			// E 스킬 쿨타임 조건
 
 		bool _isMeteorReady;		// R 쿨타임 조건
 
@@ -61,6 +67,9 @@ namespace KunrealEngine
 
 		void ResetIcePos();
 		void CreateAbility2();
+		
+		void ResetAreaPos();
+		void CreateAbility3();
 
 		void ResetMeteorPos();
 		void CreateAbility4();
@@ -113,11 +122,19 @@ namespace KunrealEngine
 			ability->_isIceReady = false;
 		};
 
+		// E스킬 쿨타임
+		Coroutine_Func(AreaCoolDown)
+		{
+			auto* ability = this;
+			Waitforsecond(ability->_abilityContainer[2]->_cooldown);
+			ability->_isAreaReady = true;
+		};
+
 		// R스킬 쿨타임
 		Coroutine_Func(meteorCoolDown)
 		{
 			auto* ability = this;
-			Waitforsecond(ability->_abilityContainer[2]->_cooldown);
+			Waitforsecond(ability->_abilityContainer[3]->_cooldown);
 			ability->_isMeteorReady = true;
 		};
 	};

@@ -23,7 +23,8 @@ namespace ArkEngine
 		void Write(const T& data)
 		{
 			DWORD numOfBytes = 0;
-			assert(::WriteFile(_handle, &data, sizeof(T), (LPDWORD)&numOfBytes, nullptr));
+			WriteFile(_handle, &data, sizeof(T), (LPDWORD)&numOfBytes, nullptr);
+			//assert(::WriteFile(_handle, &data, sizeof(T), (LPDWORD)&numOfBytes, nullptr));
 		}
 
 		template<>
@@ -39,7 +40,8 @@ namespace ArkEngine
 		void Read(OUT T& data)
 		{
 			DWORD numOfBytes = 0;
-			assert(::ReadFile(_handle, &data, sizeof(T), (LPDWORD)&numOfBytes, nullptr));
+			ReadFile(_handle, &data, sizeof(T), (LPDWORD)&numOfBytes, nullptr);
+			//assert(::ReadFile(_handle, &data, sizeof(T), (LPDWORD)&numOfBytes, nullptr));
 		}
 
 		template<typename T>
