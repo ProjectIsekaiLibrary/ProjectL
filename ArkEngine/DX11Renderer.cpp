@@ -313,6 +313,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		_mainCubeMap->Render();
 	}
 
+	_font->RenderUI();
+
 	// 디버그 모드일 경우
 	if (_isDebugMode)
 	{
@@ -337,9 +339,9 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		// DrawDebugText를 통해 생성된 모든 디버그용 폰트 렌더링
 		_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
+		_font->RenderDebug();
 	}
-		_font->Render();
-
+		
 	// 디버그용이지만 일단 분리
 	{
 		// 프러스텀 컬링용, 메쉬 크기만큼의 디버그용 오브젝트 렌더링
@@ -892,13 +894,13 @@ void ArkEngine::ArkDX11::DX11Renderer::DrawDebugText(int posX, int posY, int fon
 	std::string result(buffer);
 
 	// 넘긴 문자열을 출력
-	_font->RenderText(posX, posY, result, fontSize);
+	_font->RenderDebugText(posX, posY, result, fontSize);
 
 	va_end(vl);
 
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::DrawColorText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...)
+void ArkEngine::ArkDX11::DX11Renderer::DrawUIText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...)
 {
 	va_list vl;
 	// text의 위치를 기반으로 가변인자를 생성
@@ -911,7 +913,7 @@ void ArkEngine::ArkDX11::DX11Renderer::DrawColorText(int posX, int posY, int fon
 	std::string result(buffer);
 
 	// 넘긴 문자열을 출력
-	_font->RenderText(posX, posY, result, fontSize, color);
+	_font->RenderUIText(posX, posY, result, fontSize, color);
 
 	va_end(vl);
 }

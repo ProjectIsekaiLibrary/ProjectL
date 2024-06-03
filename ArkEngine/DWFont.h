@@ -97,11 +97,13 @@ namespace ArkEngine
 
 		public:
 			void Initialize();
-			void Render();
+			void RenderDebug();
+			void RenderUI();
 			void Finalize();
 
 		public:
-			void RenderText(int posX, int posY, std::string text, float fontSize = 20.0f, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(255.0f,255.0f,255.0f,255.0f));
+			void RenderUIText(int posX, int posY, std::string text, float fontSize = 20.0f, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(255.0f, 255.0f, 255.0f, 255.0f));
+			void RenderDebugText(int posX, int posY, std::string text, float fontSize = 20.0f, const DirectX::XMFLOAT4& color = DirectX::XMFLOAT4(255.0f,255.0f,255.0f,255.0f));
 
 		private:
 			ID2D1SolidColorBrush* CreateBrush(const DirectX::XMFLOAT4& color);
@@ -127,7 +129,9 @@ namespace ArkEngine
 			std::unordered_map<DirectX::XMFLOAT4, ID2D1SolidColorBrush*, XMFLOAT4Hash, XMFLOAT4Equal> _brushList;
 
 		private:
-			std::vector<ArkFont> _textList;
+			std::vector<ArkFont> _debugTextList;
+			std::vector<ArkFont> _uiTextList;
+
 		};
 	}
 }
