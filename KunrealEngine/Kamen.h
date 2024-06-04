@@ -48,6 +48,7 @@ namespace KunrealEngine
 		void TeleportSpellPattern();
 		void SwordTurnClockPattern();
 		void SwordTurnAntiClockPattern();
+		void SwordLinearAttackPattern();
 
 		void BasicSwordAttackPattern();
 
@@ -71,6 +72,14 @@ namespace KunrealEngine
 		void CraeteSwordTurnClockWise();
 		void CreateSwordTurnAntiClock();
 
+		void CreateSwordLinearReady();
+		void CreateSwordLinearAttack();
+
+		void CreateSwordLookPlayer();
+
+		void CreateOutsideSafe();
+		void CreateInsideSafe();
+
 		// Ä«¸à ÀÌµ¿ °ü·Ã
 	private:
 		void CreateTurn180();
@@ -79,9 +88,6 @@ namespace KunrealEngine
 		void CreateTeleportToCenterWithLook();
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
-
-		void CreateOutsideSafe();
-		void CreateInsideSafe();
 
 		// ÇÙ½É ±â¹Í ÆÐÅÏ
 	private:
@@ -109,6 +115,10 @@ namespace KunrealEngine
 		BossPattern* _swordHide;
 		BossPattern* _swordTurnClockWise;
 		BossPattern* _swordTurnAntiClockWise;
+		BossPattern* _swordLinearAtack;
+		BossPattern* _swordLinearReady;
+		BossPattern* _swordLookPlayer;
+
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -165,5 +175,7 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _swordOriginPos;
 
 		float _circleWarningRadius;
+
+		float _swordLinearDistance;
 	};
 }
