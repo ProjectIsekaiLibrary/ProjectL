@@ -71,6 +71,7 @@ namespace KunrealEngine
 		void CraeteSwordTurnClockWise();
 		void CreateSwordTurnAntiClock();
 
+		// Ä«¸à ÀÌµ¿ °ü·Ã
 	private:
 		void CreateTurn180();
 		void CreateBackStep();
@@ -80,6 +81,7 @@ namespace KunrealEngine
 		void CreateTurnAntiClockWise();
 
 		void CreateOutsideSafe();
+		void CreateInsideSafe();
 
 		// ÇÙ½É ±â¹Í ÆÐÅÏ
 	private:
@@ -96,16 +98,17 @@ namespace KunrealEngine
 		BossPattern* _turn180;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
+
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
 		BossPattern* _outsideSafe;
+		BossPattern* _insideSafe;
 
 		BossPattern* _basicSwordAttack;
 		BossPattern* _swordEmmergence;
 		BossPattern* _swordHide;
 		BossPattern* _swordTurnClockWise;
 		BossPattern* _swordTurnAntiClockWise;
-
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -120,7 +123,9 @@ namespace KunrealEngine
 		GameObject* _lazerCollider;
 
 		GameObject* _insideWarning;
-		GameObject* _outsideAttack;
+		GameObject* _insideAttack;
+		GameObject* _outsideWarning;
+
 
 		GameObject* _sword;
 
@@ -155,5 +160,10 @@ namespace KunrealEngine
 
 	private:
 		float _swordRotateAngle;
+
+		DirectX::XMFLOAT3 _swordStartPos;
+		DirectX::XMFLOAT3 _swordOriginPos;
+
+		float _circleWarningRadius;
 	};
 }

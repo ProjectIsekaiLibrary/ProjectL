@@ -76,6 +76,13 @@ void KunrealEngine::Boss::DebugTest()
 		case BossStatus::CHASE:
 		{
 			GRAPHICS->DrawDebugText(200, 350, 20, "Boss Status : CHASE");
+			if (_stopover.size() > 0)
+			{
+				for (const auto& path : _stopover)
+				{
+					GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f));
+				}
+			}
 			break;
 		}
 		case BossStatus::STAGGERED:
@@ -190,14 +197,6 @@ void KunrealEngine::Boss::Update()
 		}
 		case BossStatus::CHASE:
 		{
-			if (_stopover.size() > 0)
-			{
-				for (const auto& path : _stopover)
-				{
-					GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(0.0f, 1.0f, 1.0f, 1.0f));
-				}
-			}
-
 			Chase();
 			break;
 		}

@@ -115,9 +115,6 @@ struct BossPattern
 			{
 				// 모든 컴포넌트는 끔
 				object->SetTotalComponentState(false);
-
-				// 오브젝트도 꺼버림
-				object->SetActive(false);
 			}
 
 			// 패턴이 히트되지 않았다면 뒤에 패턴으로 가지않음

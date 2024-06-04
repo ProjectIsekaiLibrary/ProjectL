@@ -146,6 +146,9 @@ namespace KunrealEngine
 		// 지정한 곳으로 강제 이동
 		void ForceMove(const DirectX::XMFLOAT3& targetPos);
 
+		// 보스와 플레이어 사이의 각도 계산
+		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
+
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
@@ -155,8 +158,6 @@ namespace KunrealEngine
 		
 	private:
 		bool LookAtPlayer(float angle, float rotateSpeed);
-
-		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 
 		bool MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 
