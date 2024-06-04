@@ -156,8 +156,8 @@ void KunrealEngine::Kamen::GamePattern()
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
-	TeleportTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	//TeleportTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
+	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	//BasicSwordAttackPattern();
 	//CoreEmmergencePattern();
 }
@@ -564,16 +564,19 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 	_outsideWarning = _boss->GetObjectScene()->CreateObject("InsideSafe");
 	_outsideWarning->AddComponent<TransparentMesh>();
 	_outsideWarning->GetComponent<TransparentMesh>()->CreateTMesh("InsideSafe", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
-	_outsideWarning->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
+	_outsideWarning->GetComponent<Transform>()->SetScale(200.0f, 200.0f, 200.0f);
 	_outsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
 
 	_outsideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
+	_outsideWarning->GetComponent<TransparentMesh>()->SetRenderType(5);
+	_outsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 30.0f);
 
 	pattern->SetSubObject(_outsideWarning);
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
+			_outsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _circleWarningRadius);
 			_outsideWarning->GetComponent<TransparentMesh>()->Reset();
 			_outsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_outsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
@@ -1350,31 +1353,34 @@ void KunrealEngine::Kamen::TeleportSpellPattern()
 	_basicPattern.emplace_back(teleportSpellPattern);
 }
 
-void KunrealEngine::Kamen::TeleportTurnClockPattern()
+void KunrealEngine::Kamen::SwordTurnClockPattern()
 {
-	BossPattern* teleportTurnClockPattern = new BossPattern();
+	BossPattern* swordTurnClockPattern = new BossPattern();
 
-	teleportTurnClockPattern->SetNextPatternForcePlay(true);
-	teleportTurnClockPattern->SetSkipChase(true);
-	teleportTurnClockPattern->SetRange(100.0f);
+	swordTurnClockPattern->SetNextPatternForcePlay(true);
+	swordTurnClockPattern->SetSkipChase(true);
+	swordTurnClockPattern->SetRange(100.0f);
 
-	teleportTurnClockPattern->SetMaxColliderCount(0);
+	swordTurnClockPattern->SetMaxColliderCount(0);
 
-	teleportTurnClockPattern->SetPattern(_swordEmmergence);
+	swordTurnClockPattern->SetPattern(_swordEmmergence);
 
-	teleportTurnClockPattern->SetPattern(_swordTurnClockWise);
+	swordTurnClockPattern->SetPattern(_swordTurnClockWise);
 
-	teleportTurnClockPattern->SetPattern(_swordHide);
+	swordTurnClockPattern->SetPattern(_swordHide);
 
-	teleportTurnClockPattern->SetPattern(_insideSafe);
+	swordTurnClockPattern->SetPattern(_insideSafe);
 
-	teleportTurnClockPattern->SetRange(teleportTurnClockPattern->_patternList[1]->_range);
+	swordTurnClockPattern->SetRange(swordTurnClockPattern->_patternList[1]->_range);
 
-	auto swordInitLogic = [teleportTurnClockPattern, this]()
+	auto swordInitLogic = [swordTurnClockPattern, this]()
 		{
 			_circleWarningRadius = 30.0f;
 
-			_swordOriginPos = _centerPos;
+			auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
+			auto ranZ = ToolBox::GetRandomFloat(-50.0f, 50.0f);
+
+			_swordOriginPos = DirectX::XMFLOAT3{ ranX, 0.0f, ranZ };
 
 			float x = _swordOriginPos.x - _circleWarningRadius * cos(0.0f);
 			float z = _swordOriginPos.z - _circleWarningRadius * sin(0.0f);
@@ -1385,32 +1391,32 @@ void KunrealEngine::Kamen::TeleportTurnClockPattern()
 			_boss->GetComponent<BoxCollider>()->SetActive(false);
 		};
 
-	teleportTurnClockPattern->SetInitializeLogic(swordInitLogic);
+	swordTurnClockPattern->SetInitializeLogic(swordInitLogic);
 
-	_basicPattern.emplace_back(teleportTurnClockPattern);
+	_basicPattern.emplace_back(swordTurnClockPattern);
 }
 
-void KunrealEngine::Kamen::TeleportTurnAntiClockPattern()
+void KunrealEngine::Kamen::SwordTurnAntiClockPattern()
 {
-	BossPattern* teleportTurnAntiClockPattern = new BossPattern();
+	BossPattern* swordTurnAntiClockPattern = new BossPattern();
 
-	teleportTurnAntiClockPattern->SetNextPatternForcePlay(true);
-	teleportTurnAntiClockPattern->SetSkipChase(true);
-	teleportTurnAntiClockPattern->SetRange(100.0f);
+	swordTurnAntiClockPattern->SetNextPatternForcePlay(true);
+	swordTurnAntiClockPattern->SetSkipChase(true);
+	swordTurnAntiClockPattern->SetRange(100.0f);
 
-	teleportTurnAntiClockPattern->SetMaxColliderCount(0);
+	swordTurnAntiClockPattern->SetMaxColliderCount(0);
 
-	teleportTurnAntiClockPattern->SetPattern(_swordEmmergence);
+	swordTurnAntiClockPattern->SetPattern(_swordEmmergence);
 
-	teleportTurnAntiClockPattern->SetPattern(_swordTurnAntiClockWise);
+	swordTurnAntiClockPattern->SetPattern(_swordTurnAntiClockWise);
 
-	teleportTurnAntiClockPattern->SetPattern(_swordHide);
+	swordTurnAntiClockPattern->SetPattern(_swordHide);
 
-	teleportTurnAntiClockPattern->SetPattern(_outsideSafe);
+	swordTurnAntiClockPattern->SetPattern(_outsideSafe);
 
-	teleportTurnAntiClockPattern->SetRange(teleportTurnAntiClockPattern->_patternList[1]->_range);
+	swordTurnAntiClockPattern->SetRange(swordTurnAntiClockPattern->_patternList[1]->_range);
 
-	auto swordInitLogic = [teleportTurnAntiClockPattern, this]()
+	auto swordInitLogic = [swordTurnAntiClockPattern, this]()
 		{
 			_circleWarningRadius = 40.0f;
 
@@ -1428,9 +1434,9 @@ void KunrealEngine::Kamen::TeleportTurnAntiClockPattern()
 			_boss->GetComponent<BoxCollider>()->SetActive(false);
 		};
 
-	teleportTurnAntiClockPattern->SetInitializeLogic(swordInitLogic);
+	swordTurnAntiClockPattern->SetInitializeLogic(swordInitLogic);
 
-	_basicPattern.emplace_back(teleportTurnAntiClockPattern);
+	_basicPattern.emplace_back(swordTurnAntiClockPattern);
 }
 
 

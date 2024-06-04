@@ -89,10 +89,10 @@ void KunrealEngine::TransparentMesh::CreateTMesh(const std::string& objectName, 
 	this->_isCircle = isCircle;
 
 	// circle이 아닐때 x의 각도를 90만큼 회전
-	if (!isCircle)
-	{
-		this->_transform->SetRotation(90.0f, this->_transform->GetRotation().y, this->_transform->GetRotation().z);
-	}
+	//if (!isCircle)
+	//{
+	//	this->_transform->SetRotation(90.0f, this->_transform->GetRotation().y, this->_transform->GetRotation().z);
+	//}
 }
 
 bool KunrealEngine::TransparentMesh::GetMeshStatus()
@@ -154,4 +154,9 @@ bool KunrealEngine::TransparentMesh::PlayOnce()
 	}
 
 	return _isPlayed;
+}
+
+void KunrealEngine::TransparentMesh::SetExceptRange(const DirectX::XMFLOAT3& center, float range)
+{
+	this->_tMesh->SetExceptRange(center, range);
 }

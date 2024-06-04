@@ -46,8 +46,8 @@ namespace KunrealEngine
 		void RightLeftPattern();
 		void BackStepCallPattern();
 		void TeleportSpellPattern();
-		void TeleportTurnClockPattern();
-		void TeleportTurnAntiClockPattern();
+		void SwordTurnClockPattern();
+		void SwordTurnAntiClockPattern();
 
 		void BasicSwordAttackPattern();
 

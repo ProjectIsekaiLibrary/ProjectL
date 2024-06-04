@@ -5,8 +5,11 @@
 //***************************************************************************************
 
 Texture2D gDiffuseMap;
+
 float gTransParency;
 float gTime;
+float3 gDonutCenter;
+float gDonutRange;
 
 SamplerState samAnisotropic
 {
@@ -18,8 +21,18 @@ SamplerState samAnisotropic
     AddressV = CLAMP;
 };
 
+float2 ToTexcoord(float4 position)
+{
+    float4 ndcPos = position / position.w;
+    
+    float2 texCoord = float2((ndcPos.x + 1.0f) * 0.5f, (1.0f - ndcPos.y) * 0.5f);
+    
+    return texCoord;
+}
+
 cbuffer cbPerObject
 {
+    float4x4 gWorld;
     float4x4 gWorldViewProj;
 };
 
@@ -31,6 +44,7 @@ struct VertexIn
 
 struct VertexOut
 {
+    float3 PosL : POSITION;
     float4 PosH : SV_POSITION;
     float2 Tex : TEXCOORD;
 };
@@ -45,6 +59,7 @@ VertexOut VS(VertexIn vin)
 	VertexOut vout;
 	
 	// Transform to homogeneous clip space.
+    vout.PosL = vin.PosL;
     vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
     
     vout.Tex = vin.Tex;
@@ -154,6 +169,29 @@ PSOut PSCenterWithLine(VertexOut pin)
     return output;
 }
 
+PSOut PsDonut(VertexOut pin)
+{
+    PSOut output;
+   
+    
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    float distance = length(float2(newPos.x, newPos.z) - float2(gDonutCenter.x, gDonutCenter.z));
+            
+    output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+    
+    if (distance < gDonutRange)
+    {
+        output.Diffuse.a = 0.0f;
+    }
+    else
+    {
+        float alpha = saturate(gTime);
+    
+        output.Diffuse.a = alpha * gTransParency;
+    }
+    return output;
+}
+
 technique11 Tech
 {
     pass P0
@@ -189,5 +227,12 @@ technique11 Tech
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PSCenterWithLine()));
+    }
+
+    pass P5
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PsDonut()));
     }
 }

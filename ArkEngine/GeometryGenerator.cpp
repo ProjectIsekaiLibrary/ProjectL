@@ -39,6 +39,41 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateQuad()
 	ArkBuffer* newbuffer = new ArkBuffer("Quad", totalVertexCount, vertexList, totalIndexCount, indexList);
 }
 
+
+void ArkEngine::ArkDX11::GeometryGenerator::CreateFlatQuad()
+{
+	std::vector<Postex> vertexList;
+	std::vector<unsigned int> indexList;
+
+	unsigned int totalVertexCount = 4;
+	unsigned int totalIndexCount = 6;
+
+	vertexList.resize(totalVertexCount);
+
+	vertexList[0].pos = { -1.0f, 0.0f, -1.0f };
+	vertexList[0].tex = { 0.0f, 1.0f };
+
+	vertexList[1].pos = { -1.0f, 0.0f, 1.0f };
+	vertexList[1].tex = { 0.0f, 0.0f };
+
+	vertexList[2].pos = { 1.0f, 0.0f, 1.0f };
+	vertexList[2].tex = { 1.0f, 0.0f };
+
+	vertexList[3].pos = { 1.0f, 0.0f, -1.0f };
+	vertexList[3].tex = { 1.0f, 1.0f };
+
+	indexList.resize(totalIndexCount);
+
+	indexList[0] = 0;
+	indexList[1] = 1;
+	indexList[2] = 2;
+	indexList[3] = 0;
+	indexList[4] = 2;
+	indexList[5] = 3;
+
+	ArkBuffer* newbuffer = new ArkBuffer("FlatQuad", totalVertexCount, vertexList, totalIndexCount, indexList);
+}
+
 void ArkEngine::ArkDX11::GeometryGenerator::CreateBox(const char* geometryName, float width, float height, float depth)
 {
 	std::vector<Vertex> vertexList;
