@@ -119,7 +119,6 @@ namespace KunrealEngine
 		BossPattern* _swordLinearReady;
 		BossPattern* _swordLookPlayer;
 
-
 	private:
 		BossPattern* _emergence9Lich;
 
@@ -138,6 +137,7 @@ namespace KunrealEngine
 
 
 		GameObject* _sword;
+		GameObject* _swordPath;
 
 		std::vector<GameObject*> _fakeBoss;
 
@@ -177,5 +177,9 @@ namespace KunrealEngine
 		float _circleWarningRadius;
 
 		float _swordLinearDistance;
+
+		DirectX::XMFLOAT3 _swordDirection;
+
+		float _timer;
 	};
 }

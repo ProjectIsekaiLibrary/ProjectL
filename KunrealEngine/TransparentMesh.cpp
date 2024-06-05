@@ -123,6 +123,7 @@ void KunrealEngine::TransparentMesh::SetRenderType(unsigned int index)
 	// 2번 : 아래 -> 위로 그림 
 	// 3번 중앙 -> 외곽으로 그림
 	// 4번 중앙 -> 외곽선은 남긴채로 채워줌 (circle일때만 제대로 동작)
+	// 5번 도넛
 
 	if (this->_tMesh != nullptr)
 	{
