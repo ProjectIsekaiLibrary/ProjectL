@@ -70,7 +70,7 @@ namespace KunrealEngine
 		}
 
 
-		if (FAILED(hr = _keyboard->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
+		if (FAILED(hr = _keyboard->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
 		{
 			Assert("FAILED SetCooperativeLevel");
 			return false;
@@ -101,7 +101,7 @@ namespace KunrealEngine
 			return false;
 		}
 
-		if (FAILED(hr = _mouse->SetCooperativeLevel(hwnd, DISCL_BACKGROUND | DISCL_NONEXCLUSIVE)))
+		if (FAILED(hr = _mouse->SetCooperativeLevel(hwnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE)))
 		{
 			Assert("FAILED SetCooperativeLevel(Mouse)");
 			return false;
@@ -169,7 +169,7 @@ namespace KunrealEngine
 	{
 		HRESULT hr;
 
-		if (!GetFocus())
+		if (_hWnd != GetFocus())
 		{
 			return;
 		}
@@ -185,6 +185,11 @@ namespace KunrealEngine
 			{
 				//Assert("FAILED Acquire");
 			}
+		}
+
+		if(_mouse == nullptr)
+		{
+			return;
 		}
 
 		_mouse->Poll();
