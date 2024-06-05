@@ -1,5 +1,6 @@
 #pragma once
 
+#include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
 #include "GraphicsSystem.h"
@@ -39,6 +40,10 @@ namespace KunrealEngine
 	private:
 		GInterface::GraphicsImage* _image;
 		Transform* _transform;
+
+		DirectX::XMFLOAT3 _decomposedPos;
+		DirectX::XMFLOAT3 _decomposedRot;
+		DirectX::XMFLOAT3 _decomposedScale;
 
 	public:
 		// 어떤 이미지를 출력할 것인지 설정
