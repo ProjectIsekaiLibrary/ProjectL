@@ -13,6 +13,7 @@ namespace ArkEngine
 		{
 		public:
 			void CreateQuad();
+			void CreateFlatQuad();
 			void CreateBox(const char* geometryName, float width, float height, float depth);
 			void CreateSphere(const char* geometryName, float radius, unsigned int sliceCount, unsigned int stackCount);
 			void CreateCircle(const char* geometryName);

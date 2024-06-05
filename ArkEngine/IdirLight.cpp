@@ -18,7 +18,10 @@ ArkEngine::IdirLight::~IdirLight()
 
 void ArkEngine::IdirLight::Delete()
 {
-	ResourceManager::GetInstance()->GetShadowCamera()[_index]->Delete();
+	if (ResourceManager::GetInstance()->GetShadowCamera().size() > _index)
+	{
+		ResourceManager::GetInstance()->GetShadowCamera()[_index]->Delete();
+	}
 
 	auto& iLightList = ArkEngine::LightManager::GetInstance()->GetIDirLightList();
 

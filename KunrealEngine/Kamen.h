@@ -46,8 +46,9 @@ namespace KunrealEngine
 		void RightLeftPattern();
 		void BackStepCallPattern();
 		void TeleportSpellPattern();
-		void TeleportTurnClockPattern();
-		void TeleportTurnAntiClockPattern();
+		void SwordTurnClockPattern();
+		void SwordTurnAntiClockPattern();
+		void SwordLinearAttackPattern();
 
 		void BasicSwordAttackPattern();
 
@@ -63,10 +64,23 @@ namespace KunrealEngine
 		void CreateCallAttack();
 		void CreateCall2Attack();
 
+		// °Ë ÆÐÅÏ
 	private:
 		void CreateSwordAttack();
+		void CreateSwordEmergence();
 		void CreateSwordHide();
+		void CraeteSwordTurnClockWise();
+		void CreateSwordTurnAntiClock();
 
+		void CreateSwordLinearReady();
+		void CreateSwordLinearAttack();
+
+		void CreateSwordLookPlayer();
+
+		void CreateOutsideSafe();
+		void CreateInsideSafe();
+
+		// Ä«¸à ÀÌµ¿ °ü·Ã
 	private:
 		void CreateTurn180();
 		void CreateBackStep();
@@ -74,8 +88,6 @@ namespace KunrealEngine
 		void CreateTeleportToCenterWithLook();
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
-
-		void CreateOutsideSafe();
 
 		// ÇÙ½É ±â¹Í ÆÐÅÏ
 	private:
@@ -92,12 +104,21 @@ namespace KunrealEngine
 		BossPattern* _turn180;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
+
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
 		BossPattern* _outsideSafe;
+		BossPattern* _insideSafe;
 
 		BossPattern* _basicSwordAttack;
+		BossPattern* _swordEmmergence;
 		BossPattern* _swordHide;
+		BossPattern* _swordTurnClockWise;
+		BossPattern* _swordTurnAntiClockWise;
+		BossPattern* _swordLinearAtack;
+		BossPattern* _swordLinearReady;
+		BossPattern* _swordLookPlayer;
+
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -112,7 +133,9 @@ namespace KunrealEngine
 		GameObject* _lazerCollider;
 
 		GameObject* _insideWarning;
-		GameObject* _outsideAttack;
+		GameObject* _insideAttack;
+		GameObject* _outsideWarning;
+
 
 		GameObject* _sword;
 
@@ -144,5 +167,15 @@ namespace KunrealEngine
 
 	private:
 		DirectX::XMFLOAT3 _centerPos;
+
+	private:
+		float _swordRotateAngle;
+
+		DirectX::XMFLOAT3 _swordStartPos;
+		DirectX::XMFLOAT3 _swordOriginPos;
+
+		float _circleWarningRadius;
+
+		float _swordLinearDistance;
 	};
 }

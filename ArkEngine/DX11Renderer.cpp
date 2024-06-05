@@ -942,6 +942,11 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	}
 	_device->CreateShaderResourceView(renderingImage, nullptr, &_renderingImageView);
 
+	if (_renderingImageView == nullptr)
+	{
+		return nullptr;
+	}
+
 	backBuffer->Release();
 	renderingImage->Release();
 

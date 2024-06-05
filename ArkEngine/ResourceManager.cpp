@@ -279,10 +279,25 @@ void ArkEngine::ResourceManager::DeleteCamera(ArkEngine::ICamera* camera)
 {
 	if (camera->GetMain() == false)
 	{
-		_cameraList.erase(std::remove(_cameraList.begin(), _cameraList.end(), camera), _cameraList.end());
-		
-		delete camera;
+		auto iter = find(_cameraList.begin(), _cameraList.end(), camera);
+		if (iter != _cameraList.end())
+		{
+			_cameraList.erase(std::remove(_cameraList.begin(), _cameraList.end(), camera), _cameraList.end());
+			delete camera;
+
+			return;
+		}		
 	}
+
+	auto iter = find(_shadowCamera.begin(), _shadowCamera.end(), camera);
+	if (iter != _shadowCamera.end())
+	{
+		_shadowCamera.erase(std::remove(_shadowCamera.begin(), _shadowCamera.end(), camera), _shadowCamera.end());
+		delete camera;
+
+		return;
+	}
+
 }
 
 const std::unordered_map<TextPosition, std::string>& ArkEngine::ResourceManager::GetTextList()
