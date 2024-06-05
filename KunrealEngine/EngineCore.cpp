@@ -13,6 +13,8 @@
 
 #include "ComponentHeaders.h"
 
+#include "UIPackageFuntion.hpp"
+
 /// 꼭 지워야해 내 수학라이브러리와 동일한 결과가 나오는지 체크용
 #include <DirectXMath.h>
 /// 
@@ -28,11 +30,6 @@ KunrealEngine::GameObject* player;
 KunrealEngine::GameObject* kamen;
 KunrealEngine::GameObject* spider;
 KunrealEngine::GameObject* zeolight;
-KunrealEngine::GameObject* zeolight_Image;
-KunrealEngine::GameObject* Button_Image1;
-KunrealEngine::GameObject* Button_Image2;
-KunrealEngine::GameObject* Button_Image3;
-KunrealEngine::GameObject* Button_Image4;
 KunrealEngine::GameObject* tree1;
 KunrealEngine::GameObject* tree2;
 KunrealEngine::GameObject* tree3;
@@ -40,6 +37,9 @@ KunrealEngine::GameObject* tree4;
 KunrealEngine::GameObject* ent;
 KunrealEngine::GameObject* ent2;
 
+KunrealEngine::GameObject* Title_ui_box;	// 타이틀UI
+KunrealEngine::GameObject* pause_ui_box;	// 일시정지
+KunrealEngine::GameObject* battle_ui_box;	// 전투UI
 
 KunrealEngine::GameObject* testCamera;
 
@@ -90,7 +90,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.CreateScene("mapTest6.json");
 
 	/// 니들 맘대로 해
-	//PlayGround();
+	PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -145,8 +145,8 @@ void KunrealEngine::EngineCore::Update()
 	if (inputInstance->KeyUp(KEY::CAPSLOCK))
 	{
 		//sceneInstance.GetCurrentScene()->GetGameObject("BaeSung")->AddComponent<BoxCollider>();
+		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 	}
-	GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
@@ -321,8 +321,8 @@ void KunrealEngine::EngineCore::PlayGround()
 	//kamen->AddComponent<Kamen>();
 	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
-	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
-	spider->AddComponent<Aracne>();
+// 	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
+// 	spider->AddComponent<Aracne>();
 
 	//ent = sceneInstance.GetCurrentScene()->CreateObject("ent");
 
@@ -338,67 +338,10 @@ void KunrealEngine::EngineCore::PlayGround()
 	//ent->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 	//ent->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 10.0f);
 
-	// 워프용 비석_이미지
-	zeolight_Image = sceneInstance.GetCurrentScene()->CreateObject("zeolight_Image");
-	zeolight_Image->AddComponent<ImageRenderer>();
-	zeolight_Image->GetComponent<ImageRenderer>()->SetImage("BackGround.png");
-	zeolight_Image->GetComponent<ImageRenderer>()->SetImageStatus(false);
-	zeolight_Image->GetComponent<ImageRenderer>()->SetPosition(0.f, 0.f);
-	zeolight_Image->GetComponent<Transform>()->SetScale(10.0f, 10.0f, 1.0f);
-
-	Button_Image1 = sceneInstance.GetCurrentScene()->CreateObject("Button_Image1");
-	Button_Image1->SetParent(zeolight_Image);
-	Button_Image1->AddComponent<ImageRenderer>();
-	Button_Image1->GetComponent<ImageRenderer>()->SetImage("Stage1_test.png");
-	Button_Image1->GetComponent<ImageRenderer>()->SetImageStatus(false);
-	Button_Image1->GetComponent<ImageRenderer>()->SetPosition(300.f, 300.f);
-	Button_Image1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 1.0f);
-	Button_Image1->AddComponent<ButtonSystem>();
-	Button_Image1->GetComponent<ButtonSystem>()->SetImage(Button_Image1->GetComponent<ImageRenderer>());
-
-	Button_Image2 = sceneInstance.GetCurrentScene()->CreateObject("Button_Image2");
-	Button_Image2->SetParent(zeolight_Image);
-	Button_Image2->AddComponent<ImageRenderer>();
-	Button_Image2->GetComponent<ImageRenderer>()->SetImage("Stage2_test.png");
-	Button_Image2->GetComponent<ImageRenderer>()->SetImageStatus(false);
-	Button_Image2->GetComponent<ImageRenderer>()->SetPosition(300.f, 600.f);
-	Button_Image2->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 1.0f);
-	Button_Image2->AddComponent<ButtonSystem>();
-	Button_Image2->GetComponent<ButtonSystem>()->SetImage(Button_Image2->GetComponent<ImageRenderer>());
-
-	Button_Image3 = sceneInstance.GetCurrentScene()->CreateObject("Button_Image3");
-	Button_Image3->SetParent(zeolight_Image);
-	Button_Image3->AddComponent<ImageRenderer>();
-	Button_Image3->GetComponent<ImageRenderer>()->SetImage("Stage3_test.png");
-	Button_Image3->GetComponent<ImageRenderer>()->SetImageStatus(false);
-	Button_Image3->GetComponent<ImageRenderer>()->SetPosition(1200.f, 300.f);
-	Button_Image3->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 1.0f);
-	Button_Image3->AddComponent<ButtonSystem>();
-	Button_Image3->GetComponent<ButtonSystem>()->SetImage(Button_Image3->GetComponent<ImageRenderer>());
-
-	Button_Image4 = sceneInstance.GetCurrentScene()->CreateObject("Button_Image4");
-	Button_Image4->SetParent(zeolight_Image);
-	Button_Image4->AddComponent<ImageRenderer>();
-	Button_Image4->GetComponent<ImageRenderer>()->SetImage("Stage4_test.png");
-	Button_Image4->GetComponent<ImageRenderer>()->SetImageStatus(false);
-	Button_Image4->GetComponent<ImageRenderer>()->SetPosition(1200.f, 600.f);
-	Button_Image4->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 1.0f);
-	Button_Image4->AddComponent<ButtonSystem>();
-	Button_Image4->GetComponent<ButtonSystem>()->SetImage(Button_Image4->GetComponent<ImageRenderer>());
-
-	// 워프용 비석
-	zeolight = sceneInstance.GetCurrentScene()->CreateObject("NPC_zeolight");
-	zeolight->AddComponent<MeshRenderer>();
-	zeolight->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-	zeolight->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
-	zeolight->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-	zeolight->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
-		//	충돌판정(?)을 위한 콜라이더 컴포넌트
-	zeolight->AddComponent<BoxCollider>();
-	zeolight->GetComponent<BoxCollider>()->SetBoxSize(1.0f, 1.0f, 1.0f);
-		//	NPC로써 가지고 있어야할 컴포넌트
-	zeolight->AddComponent<Zeolight>();
-	zeolight->GetComponent<Zeolight>()->SetInteractionRange(10);
+	// UI의 부모가 될 0,0pos객체
+	battle_ui_box = MakeBattleUIPack();
+	pause_ui_box = MakeMenuUIPack();
+	//Title_ui_box = 
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
