@@ -7,6 +7,7 @@
 #include "Player.h"
 #include "Ability.h"
 #include "Projectile.h"
+#include "BoxCollider.h"
 #include "Coroutine.h"
 
 namespace KunrealEngine

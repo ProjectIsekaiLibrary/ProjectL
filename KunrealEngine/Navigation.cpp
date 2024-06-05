@@ -874,7 +874,7 @@ namespace KunrealEngine
 	void Navigation::SetSEpos(int index, DirectX::XMFLOAT3 startPosition, DirectX::XMFLOAT3 endPosition)
 	{
 		SetSEpos(index, startPosition.x, startPosition.y, startPosition.z
-			, startPosition.x, startPosition.y, startPosition.z);
+			, endPosition.x, endPosition.y, endPosition.z);
 	}
 
 	void Navigation::SetStartpos(int index, float x, float y, float z)

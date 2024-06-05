@@ -277,6 +277,8 @@ void KunrealEngine::MeshRenderer::DeleteParentBone()
 {
 	_transform->_haveParentBone = false;
 	this->_mesh->DeleteParentBone();
+
+	this->GetOwner()->DetachFromParent();
 }
 
 void KunrealEngine::MeshRenderer::SetShadowState(bool flag)

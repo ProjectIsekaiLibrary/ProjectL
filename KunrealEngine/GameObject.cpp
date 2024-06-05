@@ -166,7 +166,10 @@ void KunrealEngine::GameObject::SetParent(GameObject* obj)
 void KunrealEngine::GameObject::DetachFromParent()
 {
 	// 부모에 이 오브젝트와의 관계를 해제하라고 전달
-	_parent->DetachChild(this);
+	if (_parent != nullptr)
+	{
+		_parent->DetachChild(this);
+	}
 }
 
 void KunrealEngine::GameObject::DetachChild(GameObject* child)

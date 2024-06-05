@@ -13,7 +13,7 @@
 
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false)
-	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _posY(4.0f)
+	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(4.0f)
 {
 	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x - 0;
 	_tempY = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().y - 0;
@@ -72,6 +72,7 @@ void KunrealEngine::PlayerMove::Update()
 			// 이동 상태 해제
 			_isMoving = false;
 			_movedRange = 0.0f;
+			_movableRange = 0.0f;
 
 			UpdateTargetPosition();
 			UpdateDashNode();
@@ -94,7 +95,7 @@ void KunrealEngine::PlayerMove::Update()
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 	
-	//ShowPlayerInfo();
+	ShowPlayerInfo();
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
@@ -140,43 +141,32 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 
 void KunrealEngine::PlayerMove::UpdateDashNode()
 {
-	// 네비게이션으로부터 이동목표 노드들을 받아옴
+	// 플레이어 위치에서 마우스 위치로의 방향벡터
+	DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
+	DirectX::XMVECTOR currentVec = DirectX::XMLoadFloat3(&currentPoint);
+	DirectX::XMFLOAT3 targetPoint = _targetPos;
+	DirectX::XMFLOAT3 targetWithY = { targetPoint.x, targetPoint.y + _posY, targetPoint.z };
+
+	DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetWithY);
+	_playerComp->_directionVector = direction;
+
+	// 플레이어 위치에서 방향벡터 방향으로 대시 거리만큼의 좌표
+	direction = DirectX::XMVectorScale(direction, _playerComp->GetPlayerData()._dashRange);
+	DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(currentVec, direction);
+
+	// 목표지점 멤버변수에 결과값을 넣어주고
+	DirectX::XMStoreFloat3(&_targetPos, targetVector);
+
+	// 구한 좌표를 네비게이션의 SetEPos 함수에 매개변수로 넣는다
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
 		_targetPos.x, _targetPos.y + _posY, _targetPos.z);
 
-	// 대시는 raycast로 현재 위치와 목표 위치 한점만을 비교
-	// 마우스 위치에 지정된 targetPos와 대시 거리를 계산
-	DirectX::XMFLOAT3 targetPoint = Navigation::GetInstance().FindRaycastPath(0);
-	DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
-	DirectX::XMVECTOR currentVector = DirectX::XMLoadFloat3(&currentPoint);
-
-	float distance = ToolBox::GetDistance(currentPoint, targetPoint);
-
-	// 방향 벡터 구하기
-	DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetPoint);
-
-	// 플레이어의 방향벡터 변경
-	// 대시하면서 다시 연산할바에 이미 연산된 김에 여기서 추가해줌
- 	_playerComp->_directionVector = direction;
-
-
-	// 목표 좌표가 대시 가능 거리보다 멀리 있을 경우
-	if (distance > _playerComp->GetPlayerData()._dashRange)
-	{
-		// 대시 거리만큼 목표 좌표 이동
-		direction = DirectX::XMVectorScale(direction, _playerComp->GetPlayerData()._dashRange);
-		DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(currentVector, direction);
-		
-		// _targetPos에 연산값을 넣어줌
-		DirectX::XMStoreFloat3(&_targetPos, targetVector);
-
-	}
-	else
-	{
-		_targetPos = targetPoint;
-	}
-
+	// 목표 지점을 네비게이션의 RayCast 함수의 반환값으로 업데이트
+	_targetPos = Navigation::GetInstance().FindRaycastPath(0);
 	DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&_targetPos);
+
+	// 반환받은 노드를 바탕으로 대시 가능 거리 계산
+	_movableRange = ToolBox::GetDistance(currentPoint, _targetPos);
 
 	// 두 벡터 간의 각도를 계산
 	DirectX::XMVECTOR currentForward = DirectX::XMVectorSet(0.0f, _transform->GetRotation().y, -1.0f, 0.0f);
@@ -189,7 +179,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 	angle = DirectX::XMConvertToDegrees(angle);
 
 	// 각도가 반전되는 경우 처리
-	if (targetPosVec.m128_f32[0] > currentVector.m128_f32[0])
+	if (targetPosVec.m128_f32[0] > currentVec.m128_f32[0])
 	{
 		angle *= -1;
 	}
@@ -355,14 +345,15 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 		DirectX::XMFLOAT3 trans(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 
 		// 대시 가능 거리를 넘었는데도 움직이는 상황에 대한 예외처리
-		if (_movedRange >= _playerComp->GetPlayerData()._dashRange)
+		//if (_movedRange >= _playerComp->GetPlayerData()._dashRange)
+		if (_movedRange >= _movableRange)
 		{
 			_isDash = false;
 			_playerComp->_playerStatus = Player::Status::IDLE;
 		}
 		// 목표로 하는 좌표와 플레이어의 좌표가 다를 때
 		else if (std::abs(_transform->GetPosition().x - _targetPos.x) > _errorRange ||
-			std::abs(_transform->GetPosition().y - _targetPos.y) > _errorRange + 100.0f ||
+			//std::abs(_transform->GetPosition().y - _targetPos.y) > _errorRange + _posY ||
 			std::abs(_transform->GetPosition().z - _targetPos.z) > _errorRange)
 		{
 
@@ -484,11 +475,11 @@ float KunrealEngine::PlayerMove::GetPlayerY()
 
 void KunrealEngine::PlayerMove::ShowPlayerInfo()
 {
-	//GRAPHICS->DrawDebugText(300, 300, 20, "%.3f", _targetPos.x);
-	//GRAPHICS->DrawDebugText(360, 300, 20, "%.3f", _targetPos.y);
-	//GRAPHICS->DrawDebugText(420, 300, 20, "%.3f", _targetPos.z);
-	GRAPHICS->DrawDebugText(300, 200, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetMaxFrame());
-	GRAPHICS->DrawDebugText(300, 100, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetCurrentFrame());
+	GRAPHICS->DrawDebugText(300, 300, 20, "%.3f", _targetPos.x);
+	GRAPHICS->DrawDebugText(360, 300, 20, "%.3f", _targetPos.y);
+	GRAPHICS->DrawDebugText(420, 300, 20, "%.3f", _targetPos.z);
+	//GRAPHICS->DrawDebugText(300, 200, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetMaxFrame());
+	//GRAPHICS->DrawDebugText(300, 100, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetCurrentFrame());
 	
 	switch (_playerComp->_playerStatus)
 	{

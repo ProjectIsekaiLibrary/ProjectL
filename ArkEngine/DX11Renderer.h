@@ -130,7 +130,7 @@ namespace ArkEngine
 		public:
 			// End 키를 눌렀을때 활성화되는 텍스트
 			virtual void DrawDebugText(int posX, int posY, int fontSize, const char* text, ...) override;
-			virtual void DrawColorText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) override;
+			virtual void DrawUIText(int posX, int posY, int fontSize, const DirectX::XMFLOAT4& color, const char* text, ...) override;
 
 		public:
 			virtual void* GetRenderingImage() override;

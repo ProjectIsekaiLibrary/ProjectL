@@ -17,7 +17,8 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_tech(nullptr), _fxWorld(nullptr), _fxWorldViewProj(nullptr), _world(), _view(), _proj(),
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
-	_renderTime(0.0f), _isRenderFinsh(false)
+	_renderTime(0.0f), _isRenderFinsh(true),
+	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f)
 {
 	Initialize();
 }
@@ -73,18 +74,24 @@ void ArkEngine::ArkDX11::TransparentMesh::Render()
 		D3DX11_TECHNIQUE_DESC techDesc;
 		_tech->GetDesc(&techDesc);
 
-
 		DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
 
 		DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
 		DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
 		DirectX::XMMATRIX WorldViewProj = world * view * proj;
+		_fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
 		_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
 		_texture->SetResource(_diffuseMapSRV);
 
 		_fxTransParency->SetFloat(_transParency);
 
 		_fxTime->SetFloat(_renderTime);
+
+		if (_renderType == 5)
+		{
+			_fxDonutCenter->SetFloatVector(reinterpret_cast<float*>(&_donutCenter));
+			_fxDonutRange->SetFloat(_donutRange);
+		}
 
 		_tech->GetPassByIndex(_renderType)->Apply(0, deviceContext);
 		deviceContext->DrawIndexed(_totalIndexCount, 0, 0);
@@ -132,6 +139,10 @@ void ArkEngine::ArkDX11::TransparentMesh::Finalize()
 
 	_fxTime->Release();
 
+	_fxDonutCenter->Release();
+
+	_fxDonutRange->Release();
+
 	_tech = nullptr;
 	_effect = nullptr;
 }
@@ -141,6 +152,12 @@ void ArkEngine::ArkDX11::TransparentMesh::SetTransform(const DirectX::XMFLOAT4X4
 	_meshTransform->SetTransformMatrix(matrix);
 }
 
+
+void ArkEngine::ArkDX11::TransparentMesh::SetExceptRange(const DirectX::XMFLOAT3& center, float range)
+{
+	_donutCenter = center;
+	_donutRange = range;
+}
 
 void ArkEngine::ArkDX11::TransparentMesh::Delete()
 {
@@ -167,15 +184,15 @@ void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 	}
 	else
 	{
-		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("Quad");
+		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("FlatQuad");
 
 		if (buffer == nullptr)
 		{
 			GeometryGenerator generator;
 
-			generator.CreateCircle("Quad");
+			generator.CreateFlatQuad();
 
-			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("Quad");
+			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("FlatQuad");
 		}
 	}
 
@@ -188,6 +205,7 @@ void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 void ArkEngine::ArkDX11::TransparentMesh::SetEffect()
 {
 	_tech = _effect->GetTechniqueByIndex(0);
+	_fxWorld = _effect->GetVariableByName("gWorld")->AsMatrix();
 	_fxWorldViewProj = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
 
 	_texture = _effect->GetVariableByName("gDiffuseMap")->AsShaderResource();
@@ -195,6 +213,10 @@ void ArkEngine::ArkDX11::TransparentMesh::SetEffect()
 	_fxTransParency = _effect->GetVariableByName("gTransParency")->AsScalar();
 
 	_fxTime = _effect->GetVariableByName("gTime")->AsScalar();
+
+	_fxDonutCenter = _effect->GetVariableByName("gDonutCenter")->AsVector();
+
+	_fxDonutRange = _effect->GetVariableByName("gDonutRange")->AsScalar();
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::SetTexture(const std::string& textureName)
