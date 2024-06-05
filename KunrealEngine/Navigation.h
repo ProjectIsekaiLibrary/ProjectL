@@ -83,7 +83,7 @@ namespace KunrealEngine
 		// path 에서 빌드된 네비매쉬 파일을 저장합니다. .bin파일
 		void SaveAll(int index, const char* path);
 		// 네비매쉬를 직접 빌드 하기
-		bool HandleBuild(int index);
+		bool HandleBuild(int index, std::string path);
 		// 네비매쉬를 업데이트 한다.
 		void HandleUpdate(const float dt);
 
