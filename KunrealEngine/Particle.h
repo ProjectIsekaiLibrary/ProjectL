@@ -102,6 +102,7 @@ namespace KunrealEngine
 		float GetLifeTime();
 		DirectX::XMFLOAT3 GetColor();
 		DirectX::XMFLOAT3 GetDirection();
+		DirectX::XMFLOAT3 GetRotation();
 
 	private:
 		GameObject* _parentObject;

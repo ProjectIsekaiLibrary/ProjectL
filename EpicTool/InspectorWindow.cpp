@@ -17,6 +17,7 @@ EpicTool::InspectorWindow::InspectorWindow()
 	, _isLightActive(true), _isCameraActive(true), _ambient{ 0 }, _diffuse{ 0 }, _specular{ 0 }, _direction{ 0 }, _lightGet(true), _pointDiffuse{ 0 }, _pointRange(0),
 	_pointAmbient{0}, _pointSpecular{0}, _isPickedObjectName{0}, _quaternion(), _animationSpeed(10.0f), _offset{0},_boxSize{0}, _selectedDiffuse{0}, isDiffuseMax(false), isNormalMax(false), _currentNormal(0), _currentDiffuse(0)
 	, _isSound3DEditor(false), _isLoopSoundEditor(false), _controlSoundInfo{}, _newSoundName{0}, _isNewSoundVol(0), _setTargetPosition{0}, _velocityParticle(0), _randomParticle(false), _fadeoutTimeParticle(0), _lifeTimeParticle(0), _colorParticle{1.0f, 1.0f, 1.0f}, _directionParticle{0}, _sizeParticle{0}, _isInvisible(1.0f)
+	, _rotationParticle{0}
 { 
 																			
 }																			
@@ -979,6 +980,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Particle>(Kunre
 
 		_sizeParticle[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetSize().x;
 		_sizeParticle[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetSize().y;
+
+		_rotationParticle[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetRotation().x;
+		_rotationParticle[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetRotation().y;
+		_rotationParticle[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->GetRotation().z;
 	}
 
 	
@@ -1020,6 +1025,11 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Particle>(Kunre
 	{
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleSize(_sizeParticle[0], _sizeParticle[1]);
 
+	}
+
+	if (ImGui::DragFloat3("RotationParticle", _rotationParticle, 1.f, 1.f, FLT_MAX))
+	{
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>()->SetParticleRotation(_rotationParticle[0], _rotationParticle[1], _rotationParticle[2]);;
 	}
 
 	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>());

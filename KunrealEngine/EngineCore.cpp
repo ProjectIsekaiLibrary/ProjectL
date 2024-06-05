@@ -1061,7 +1061,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	// 플레이어 W, 왜 다시 안나오는가?
 
 	GameObject* ice = sceneInstance.GetCurrentScene()->CreateObject("Ice");
-	ice->GetComponent<Transform>()->SetScale(30.0f, 30.0f, 30.0f);
+	ice->GetComponent<Transform>()->SetScale(15.0f, 15.0f, 15.0f);
 	ice->GetComponent<Transform>()->SetPosition(-50, 0, 0.f);
 	ice->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
 	ice->AddComponent<MeshRenderer>()->SetMeshObject("Ice/Ice", "Ice/Ice.png");
@@ -1082,14 +1082,15 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particlePlayerW2->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 10);
 	particlePlayerW2->GetComponent<Particle>()->SetParticleDuration(4.0f, 6.0f);
 	particlePlayerW2->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
-	particlePlayerW2->GetComponent<Particle>()->SetParticleSize(10.0f, 10.0f);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
 	particlePlayerW2->GetComponent<Particle>()->AddParticleColor(0.5f, 3.0f, 5.0f);
 	particlePlayerW2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	//플레이어 R
 
 	GameObject* meteor = sceneInstance.GetCurrentScene()->CreateObject("Meteor");;
-	meteor->GetComponent<Transform>()->SetPosition(-46.5f, 10, 60);
+	meteor->GetComponent<Transform>()->SetPosition(-47.3f, 11, 60);
+	meteor->GetComponent<Transform>()->SetRotation(0, 0, 90);
 	meteor->AddComponent<MeshRenderer>();   
 	meteor->GetComponent<MeshRenderer>()->SetMeshObject("Meteor/Meteor");
 
@@ -1097,39 +1098,40 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particlePlayerR1->GetComponent<Transform>()->SetPosition(-47.5f, 10, 60.f);
 	particlePlayerR1->AddComponent<Particle>();
 	particlePlayerR1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	particlePlayerR1->GetComponent<Particle>()->SetParticleDuration(1.0f, 4.0f);
-	particlePlayerR1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	particlePlayerR1->GetComponent<Particle>()->SetParticleDuration(1.5f, 1.5f);
+	particlePlayerR1->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
 	particlePlayerR1->GetComponent<Particle>()->SetParticleSize(17.f, 20.0f);
-	particlePlayerR1->GetComponent<Particle>()->AddParticleColor(6.0f, 0.1f, 0.1f);
+	particlePlayerR1->GetComponent<Particle>()->AddParticleColor(6.0f, 0.2f, 0.1f);
 	particlePlayerR1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 
 	particlePlayerR2 = sceneInstance.GetCurrentScene()->CreateObject("PlayerR2");
 	particlePlayerR2->GetComponent<Transform>()->SetPosition(-47.6f, 10, 59.5f);
 	particlePlayerR2->AddComponent<Particle>();
 	particlePlayerR2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-	particlePlayerR2->GetComponent<Particle>()->SetParticleDuration(1.5f, 0.7f);
+	particlePlayerR2->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.4f);
 	particlePlayerR2->GetComponent<Particle>()->SetParticleVelocity(6.5f, true);
 	particlePlayerR2->GetComponent<Particle>()->SetParticleSize(17.f, 20.0f);
-	particlePlayerR2->GetComponent<Particle>()->AddParticleColor(2.3f, 0.3f, 0.1f);
-	particlePlayerR2->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
+	particlePlayerR2->GetComponent<Particle>()->AddParticleColor(2.0f, 1.0f, 0.0f);
+	particlePlayerR2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 
 	particlePlayerR3 = sceneInstance.GetCurrentScene()->CreateObject("PlayerR3");
-	particlePlayerR3->GetComponent<Transform>()->SetPosition(-48, 21.45f, 57.5f);
+	particlePlayerR3->GetComponent<Transform>()->SetPosition(-47.5f, 21.7f, 60.6f);
 	particlePlayerR3->AddComponent<Particle>();
 	particlePlayerR3->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
-	particlePlayerR3->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.6f);
+	particlePlayerR3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
 	particlePlayerR3->GetComponent<Particle>()->SetParticleVelocity(6.0f, true);
-	particlePlayerR3->GetComponent<Particle>()->SetParticleSize(14.f, 14.0f);
+	particlePlayerR3->GetComponent<Particle>()->SetParticleSize(13.f, 13.0f);
 	particlePlayerR3->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
 	particlePlayerR3->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
+	particlePlayerR3->GetComponent<Particle>()->SetParticleRotation(0.0f, 0.0f, 90.0f);
 
 	particlePlayerR4 = sceneInstance.GetCurrentScene()->CreateObject("PlayerR4");
-	particlePlayerR4->GetComponent<Transform>()->SetPosition(-27, 13, 56.5f);
+	particlePlayerR4->GetComponent<Transform>()->SetPosition(-49.3f, 21.7f, 55.3f);
 	particlePlayerR4->AddComponent<Particle>();
 	particlePlayerR4->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
-	particlePlayerR4->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.6f);
+	particlePlayerR4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
 	particlePlayerR4->GetComponent<Particle>()->SetParticleVelocity(6.0f, true);
-	particlePlayerR4->GetComponent<Particle>()->SetParticleSize(3.f, 3.0f);
+	particlePlayerR4->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 	particlePlayerR4->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
 	particlePlayerR4->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
 
@@ -1223,7 +1225,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossPillar1->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
 	particleBossPillar1->GetComponent<Particle>()->SetParticleDuration(2.1f, 4.f);
 	particleBossPillar1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	particleBossPillar1->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	particleBossPillar1->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 	particleBossPillar1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.6f, 0.0f);
 	particleBossPillar1->GetComponent<Particle>()->SetParticleDirection(0.0f, 80.0f, 0.0f);
 
@@ -1233,7 +1235,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossPillar2->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
 	particleBossPillar2->GetComponent<Particle>()->SetParticleDuration(6.4f, 1.2f);
 	particleBossPillar2->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
-	particleBossPillar2->GetComponent<Particle>()->SetParticleSize(60.f, 60.0f);
+	particleBossPillar2->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
 	particleBossPillar2->GetComponent<Particle>()->AddParticleColor(0.6f, 1.5f, 0.4f);
 	particleBossPillar2->GetComponent<Particle>()->SetParticleDirection(0.0f, 80.0f, 0.0f);
 
@@ -1243,7 +1245,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossPillar3->GetComponent<Particle>()->SetParticleEffect("Blaster2", "Resources/Textures/Particles/fx_Blaster2.dds", 1000);
 	particleBossPillar3->GetComponent<Particle>()->SetParticleDuration(4.1f, 1.15f);
 	particleBossPillar3->GetComponent<Particle>()->SetParticleVelocity(0.4f, true);
-	particleBossPillar3->GetComponent<Particle>()->SetParticleSize(39.f, 30.0f);
+	particleBossPillar3->GetComponent<Particle>()->SetParticleSize(13.f, 10.0f);
 	particleBossPillar3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
 	particleBossPillar3->GetComponent<Particle>()->SetParticleDirection(0.0f, 80.0f, 0.0f);
 }
