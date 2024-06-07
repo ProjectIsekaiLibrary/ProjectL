@@ -230,10 +230,12 @@ namespace KunrealEngine
 		fclose(fp);
 	}
 
-	bool Navigation::HandleBuild(int index)
+	bool Navigation::HandleBuild(int index, std::string path)
 	{
+		path = "Resources/MapObj/" + path + ".obj";
+
 		dtStatus status;
-		_geom->load(_ctx, "Resources/MapObj/testObj.obj");
+		_geom->load(_ctx, path);
 
 		if (!_geom || !_geom->getMesh())
 		{
@@ -466,6 +468,24 @@ namespace KunrealEngine
 	{
 		namespace fs = std::filesystem;
 		std::string directory = "Resources/Navimesh";
+		std::vector<std::string> fileNames;
+
+		// Iterate over the files in the directory
+		for (const auto& entry : fs::directory_iterator(directory)) {
+			// Check if it's a regular file
+			if (fs::is_regular_file(entry)) {
+				// Get the filename from the path and add it to the vector
+				fileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		return fileNames;
+	}
+
+	std::vector<std::string> KunrealEngine::Navigation::GetMapObjPathList()
+	{
+		namespace fs = std::filesystem;
+		std::string directory = "Resources/MapObj";
 		std::vector<std::string> fileNames;
 
 		// Iterate over the files in the directory

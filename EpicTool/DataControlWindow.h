@@ -62,5 +62,7 @@ namespace EpicTool
         bool _scene5First;
 
         std::filesystem::path _executablePath;
+
+        std::string _exportObjName;
     };
 }

@@ -115,20 +115,20 @@ namespace KunrealEngine
 		////////////////////// 여기까지 마우스 초기화 //////////////////////
 		// 마우스 커서 위치 잡기.
 		// 마우스 커서는 (스크린 기준)
- 		POINT curspos = {};
- 		GetClientRect(_hWnd, &_clientRect);	// 클라이언트의 윈도우 크기를 받아오기
- 		GetCursorPos(&curspos);	// 마우스의 현재위치를 받아오기
- 		ScreenToClient(_hWnd, &curspos);	// 받아온 마우스의 현재 위치를 클라 기준으로 변경
-		
+		POINT curspos = {};
+		GetClientRect(_hWnd, &_clientRect);	// 클라이언트의 윈도우 크기를 받아오기
+		GetCursorPos(&curspos);	// 마우스의 현재위치를 받아오기
+		ScreenToClient(_hWnd, &curspos);	// 받아온 마우스의 현재 위치를 클라 기준으로 변경
+
 		// 클라이언트의 중앙을 저장
- 		_centerpos.x = _clientRect.right / 2;
+		_centerpos.x = _clientRect.right / 2;
 		_centerpos.y = _clientRect.bottom / 2;
 		_mouseX = _centerpos.x;					// 클라이언트의 마우스 좌표도 거기로 옮기기
 		_mouseY = _centerpos.y;
 
 		ClientToScreen(_hWnd, &_centerpos);	// 그 좌표를 스크린 기준으로 변경
 		SetCursorPos(_centerpos.x, _centerpos.y);	// 그곳에 마우스 커서를 가져다 두기
-		
+
 		_windowsHeight = screenHeight;
 		_windowsWidth = screenWidth;
 
@@ -208,7 +208,7 @@ namespace KunrealEngine
 
 		_mouseX = curspos.x;
 		_mouseY = curspos.y;
- 		_mouseWheelData += _mouseState.lZ;
+		_mouseWheelData += _mouseState.lZ;
 
 		/////////////////////////////////////////////////////////////////
 		//////////	  스크린 밖으로 안나가게 클램프 거는 부분	   //////////
@@ -346,7 +346,7 @@ namespace KunrealEngine
 	////////////////////////////////////////////////////////////////////////////////////////
 
 	bool InputSystem::MBUp(int button)
-{
+	{
 		if (KEYUP(_mouseState.rgbButtons, button) && KEYDOWN(_prevrgbButtons, button))
 		{
 			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
@@ -366,7 +366,7 @@ namespace KunrealEngine
 	}
 
 	bool InputSystem::MBDown(int button)
-{
+	{
 		if (KEYDOWN(_mouseState.rgbButtons, button) && KEYUP(_prevrgbButtons, button))
 		{
 			_prevrgbButtons[button] = _mouseState.rgbButtons[button];
@@ -385,7 +385,7 @@ namespace KunrealEngine
 		}
 	}
 
-//////////////////////////////////////////////////////////////////////////////////////////////////
+	//////////////////////////////////////////////////////////////////////////////////////////////////
 
 	bool InputSystem::KUp(KEY keycode)
 	{

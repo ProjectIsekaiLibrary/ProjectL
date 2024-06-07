@@ -237,3 +237,8 @@ DirectX::XMFLOAT3 KunrealEngine::Particle::GetDirection()
 	return this->_direction;
 }
 
+DirectX::XMFLOAT3 KunrealEngine::Particle::GetRotation()
+{
+	return this->_rotation;
+}
+

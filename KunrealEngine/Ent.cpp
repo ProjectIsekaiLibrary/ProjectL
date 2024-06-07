@@ -15,7 +15,7 @@ KunrealEngine::Ent::Ent()
 {
 	BossBasicInfo info;
 
-	info.SetHp(100).SetPhase(3).SetArmor(10).SetDamage(100).SetMoveSpeed(15.0f).SetsStaggeredGauge(100.0f);
+	info.SetHp(100).SetPhase(3).SetArmor(10).SetDamage(100).SetMoveSpeed(30.0f).SetsStaggeredGauge(100.0f);
 	info.SetAttackRange(5.0f);
 
 	SetInfo(info);
@@ -219,7 +219,7 @@ void KunrealEngine::Ent::CreateSubObject()
 	_eyeLight->GetComponent<Particle>()->SetTransform(_boss, "jaw");
 	_eyeLight->GetComponent<Particle>()->SetParticleRotation(210.0f, _bossTransform->GetRotation().y, 0.0f);  // 여기서 동적으로
 	_eyeLight->GetComponent<Particle>()->SetParticleSize(1.5f, 1.5f);
-	_eyeLight->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 2.5f);
+	_eyeLight->GetComponent<Particle>()->AddParticleColor(7.0f, 0.0f, 0.0f);
 	_eyeLight->GetComponent<Particle>()->SetOffSet(0.0f, 1.3f, 0.0f);
 	_eyeLight->GetComponent<Particle>()->SetActive(false);
 	//_eyeLight->SetActive(false);
@@ -285,8 +285,8 @@ void KunrealEngine::Ent::CreateLeftRootShot()
 	pattern->SetPatternName("Left_Root_Shot");
 	pattern->SetAnimName("Anim_Leg_Attack_L");
 	pattern->SetDamage(100.0f);
-	pattern->SetSpeed(50.0f);
-	pattern->SetRange(60.0f);
+	pattern->SetSpeed(60.0f);
+	pattern->SetRange(40.0f);
 	pattern->SetAfterDelay(0.5f);
 	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
 	pattern->SetIsWarning("LRootShot");
@@ -363,8 +363,8 @@ void KunrealEngine::Ent::CreateRightRootShot()
 	pattern->SetPatternName("Right_Root_Shot");
 	pattern->SetAnimName("Anim_Leg_Attack_R");
 	pattern->SetDamage(100.0f);
-	pattern->SetSpeed(50.0f);
-	pattern->SetRange(60.0f);
+	pattern->SetSpeed(60.0f);
+	pattern->SetRange(40.0f);
 	pattern->SetAfterDelay(0.5f);
 	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
 	pattern->SetIsWarning("RRootShot");
@@ -390,7 +390,7 @@ void KunrealEngine::Ent::CreateRightRootShot()
 					// 콜라이더 키기
 					_rightRoot->GetComponent<BoxCollider>()->SetActive(true);
 					// 메쉬 키기
-
+					_rightRoot->GetComponent<MeshRenderer>()->SetActive(true);
 				}
 
 				// 보스가 바라보는 방향 가져옴
@@ -404,7 +404,7 @@ void KunrealEngine::Ent::CreateRightRootShot()
 				if (distance < pattern->_range)
 				{
 					_callMoveDistance += (pattern->_speed * 3) * TimeManager::GetInstance().GetDeltaTime();
-					_rightRoot->GetComponent<MeshRenderer>()->SetActive(true);
+					
 				}
 				else
 				{
@@ -543,7 +543,8 @@ void KunrealEngine::Ent::CreateJumpAttack()
 	std::function logic = [this]()
 		{
 			Startcoroutine(JumpAttackCo);
-			return _jumpend;
+			return true;
+			return _jumpAttack_end;
 		};
 
 	pattern->SetLogic(logic);

@@ -27,7 +27,7 @@ void EpicTool::ExportObj::ExportToObj(const std::string& fileName)
 
 	std::string folderPath = std::filesystem::current_path().string();
 
-	std::string filePath = folderPath + "/Resources/MapObj/" + fileName;
+	std::string filePath = folderPath + "/Resources/MapObj/" + fileName + ".obj";
 	
 	std::ofstream file(filePath);
 

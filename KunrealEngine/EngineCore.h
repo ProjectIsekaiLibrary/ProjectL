@@ -54,6 +54,7 @@ namespace KunrealEngine
 		void CheckMousePosition();
 		void MakeObstacle();
 		void RemoveObstacle();
+		void ParticleTest();
 
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	
