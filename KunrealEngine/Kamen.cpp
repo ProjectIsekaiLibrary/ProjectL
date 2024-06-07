@@ -12,14 +12,14 @@ KunrealEngine::Kamen::Kamen()
 	_turnClockWise(nullptr), _turnAntiClockWise(nullptr),
 	_emergence9Lich(nullptr), _targetIndex(0),
 	_call2PrevStep(1), _lazerCollider(nullptr),
-	_insideAttack(nullptr), _insideWarning(nullptr), _outsideSafe(nullptr), _insideWarningTimer(0.0f),
-	_basicSwordAttack(nullptr), _freeSword(nullptr), _freeSwordCollider(nullptr), _swordDissolveTimer(0.0f), _swordHide(nullptr),
+	_insideAttack(nullptr), _insideWarning(nullptr), _outsideSafe(nullptr),
+	_basicSwordAttack(nullptr), _freeSword(nullptr), _freeSwordCollider(nullptr), _swordHide(nullptr),
 	_swordTurnClockWise(nullptr), _swordTurnAntiClockWise(nullptr), _swordRotateAngle(0.0f),
-	_swordStartPos(), _swordOriginPos(), _circleWarningRadius(0.0f), _swordEmmergence(nullptr),
+	_swordStartPos(), _swordOriginPos(), _circleWarningSize(0.0f), _swordEmmergence(nullptr),
 	_insideSafe(nullptr), _outsideWarning(nullptr), _swordLinearAtack(nullptr), _swordLinearDistance(0.0f),
 	_swordLinearReady(nullptr), _swordLookPlayer(nullptr), _swordDirection(), _timer(0.0f), _swordPath(nullptr),
 	_swordChopAttack(nullptr), _donutSafe(nullptr), _donutWarning1(nullptr), _donutWarning2(nullptr), _donutWarning3(nullptr),
-	_swordRotation(), _swordChopSpeed(0.0f)
+	_swordRotation(), _swordChopSpeed(0.0f), _warningMaxTimer(0.0f)
 {
 	BossBasicInfo info;
 
@@ -520,10 +520,10 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			_insideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_insideWarning->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
 			_insideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
-			_insideWarningTimer = 0.0f;
+			_timer = 0.0f;
 
-			_insideWarning->GetComponent<Transform>()->SetScale(_circleWarningRadius, _circleWarningRadius, _circleWarningRadius);
-			_insideAttack->GetComponent<BoxCollider>()->SetBoxSize(_circleWarningRadius, _circleWarningRadius, _circleWarningRadius);
+			_insideWarning->GetComponent<Transform>()->SetScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
+			_insideAttack->GetComponent<BoxCollider>()->SetBoxSize(_circleWarningSize, _circleWarningSize, _circleWarningSize);
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -537,16 +537,16 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			if (isPlayed)
 			{
 				// n초동안 콜라이더 실행
-				_insideWarningTimer += TimeManager::GetInstance().GetDeltaTime();
+				_timer += TimeManager::GetInstance().GetDeltaTime();
 				_insideAttack->GetComponent<BoxCollider>()->SetActive(true);
 				_insideAttack->GetComponent<Particle>()->SetActive(true);
 
-				auto particleScaleUp = (_circleWarningRadius) / 100.0f;
+				auto particleScaleUp = (_circleWarningSize) / 100.0f;
 				particleScaleUp += 1.0f;
 
 				_insideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
-				if (_insideWarningTimer >= 2.0f)
+				if (_timer >= 2.0f)
 				{
 					return false;
 				}
@@ -586,7 +586,7 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
-			_outsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _circleWarningRadius);
+			_outsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _circleWarningSize);
 			_outsideWarning->GetComponent<TransparentMesh>()->Reset();
 			_outsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_outsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
@@ -666,12 +666,12 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 			_donutWarning2->GetComponent<TransparentMesh>()->Reset();
 			_donutWarning2->GetComponent<TransparentMesh>()->SetActive(true);
 			_donutWarning2->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
-			_donutWarning2->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, 40.0f);
+			_donutWarning2->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _circleWarningSize);
 
 			_donutWarning3->GetComponent<TransparentMesh>()->Reset();
 			_donutWarning3->GetComponent<TransparentMesh>()->SetActive(true);
 			_donutWarning3->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
-			_donutWarning3->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, 80.0f);
+			_donutWarning3->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _circleWarningSize*2);
 
 			_timer = 0.0f;
 		};
@@ -1037,10 +1037,10 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 				}
 			}
 
-			if (_swordDissolveTimer < 0.5f)
+			if (_timer < 0.5f)
 			{
-				_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
-				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+				_timer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
+				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 			}
 
 			if (isAnimationPlaying == false)
@@ -1070,8 +1070,8 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-			_swordDissolveTimer = 0.0f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+			_timer = 0.0f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 
 		};
 
@@ -1102,8 +1102,8 @@ void KunrealEngine::Kamen::CreateSwordEmergence()
 		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-		_swordDissolveTimer = 0.0f;
-		_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+		_timer = 0.0f;
+		_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 
 		_freeSword->GetComponent<BoxCollider>()->SetActive(false);
 
@@ -1114,10 +1114,10 @@ void KunrealEngine::Kamen::CreateSwordEmergence()
 
 	auto emmergenceLogic = [pattern, this]()
 	{
-		if (_swordDissolveTimer < 0.5f)
+		if (_timer < 0.5f)
 		{
-			_swordDissolveTimer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+			_timer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 		}
 		else
 		{
@@ -1148,8 +1148,8 @@ void KunrealEngine::Kamen::CreateSwordHide()
 			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-			_swordDissolveTimer = 0.5f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+			_timer = 0.5f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 
 			_freeSword->GetComponent<BoxCollider>()->SetActive(false);
 		};
@@ -1158,10 +1158,10 @@ void KunrealEngine::Kamen::CreateSwordHide()
 
 	auto hideLogic = [pattern, this]()
 		{
-			if (_swordDissolveTimer > 0)
+			if (_timer > 0)
 			{
-				_swordDissolveTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
-				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordDissolveTimer);
+				_timer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 			}
 			else
 			{
@@ -1183,7 +1183,7 @@ void KunrealEngine::Kamen::CraeteSwordTurnClockWise()
 
 	pattern->SetPatternName("SwordTurnClockWise");
 
-	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetAnimName("Idle").SetSpeed(3.0f);
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
@@ -1209,23 +1209,16 @@ void KunrealEngine::Kamen::CraeteSwordTurnClockWise()
 
 	auto swordTurnLogic = [pattern, this]()
 		{
-			auto rotationSpeed = 3.0f;
+			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
 
-			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * rotationSpeed;
-
-			float x = _swordOriginPos.x - _circleWarningRadius * cos(_swordRotateAngle);
-			float z = _swordOriginPos.z + _circleWarningRadius * sin(_swordRotateAngle);
+			float x = _swordOriginPos.x - _circleWarningSize * cos(_swordRotateAngle);
+			float z = _swordOriginPos.z + _circleWarningSize * sin(_swordRotateAngle);
 
 			_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
 
 			auto goalAngle = ToolBox::GetAngleWithDirection(_swordOriginPos, _freeSword->GetComponent<Transform>()->GetPosition(), 0.0f) - 90.0f;
 
 			_freeSword->GetComponent<Transform>()->SetRotation(_swordRotation.x, _swordRotation.y + goalAngle, _swordRotation.z);
-
-			if (goalAngle > 1.0f)
-			{
-				int b = 5;
-			}
 
 			if (_swordRotateAngle >= 2 * DirectX::XM_PI)
 			{
@@ -1248,7 +1241,7 @@ void KunrealEngine::Kamen::CreateSwordTurnAntiClock()
 
 	pattern->SetPatternName("SwordTurnClockWise");
 
-	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetAnimName("Idle").SetSpeed(3.0f);
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
@@ -1274,12 +1267,10 @@ void KunrealEngine::Kamen::CreateSwordTurnAntiClock()
 
 	auto swordTurnLogic = [pattern, this]()
 		{
-			auto rotationSpeed = 3.0f;
+			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
 
-			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * rotationSpeed;
-
-			float x = _swordOriginPos.x -_circleWarningRadius * cos(_swordRotateAngle);
-			float z = _swordOriginPos.z -_circleWarningRadius * sin(_swordRotateAngle);
+			float x = _swordOriginPos.x -_circleWarningSize * cos(_swordRotateAngle);
+			float z = _swordOriginPos.z -_circleWarningSize * sin(_swordRotateAngle);
 
 			_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
 
@@ -1308,7 +1299,7 @@ void KunrealEngine::Kamen::CreateSwordLinearReady()
 
 	pattern->SetPatternName("SwordLinearReady");
 
-	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetAnimName("Idle").SetSpeed(5.0f);
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
@@ -1329,10 +1320,9 @@ void KunrealEngine::Kamen::CreateSwordLinearReady()
 
 	auto swordLinearReadyLogic = [pattern, this]()
 	{
-		auto rotationSpeed = 25.0f;
-		auto translationSpeed = TimeManager::GetInstance().GetDeltaTime() * 5.0f;
+		auto translationSpeed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
 
-		_swordRotateAngle -= TimeManager::GetInstance().GetDeltaTime() * rotationSpeed;
+		_swordRotateAngle -= TimeManager::GetInstance().GetDeltaTime() * pattern->_speed * 5;
 
 		auto position = _freeSword->GetComponent<Transform>()->GetPosition();
 		auto rotation = _freeSword->GetComponent<Transform>()->GetRotation();
@@ -1362,7 +1352,7 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 	pattern->SetPatternName("SwordLinearAttack");
 
-	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetAnimName("Idle").SetSpeed(30.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 
@@ -1392,7 +1382,7 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 	auto swordLinearAttackLogic = [pattern, this]()
 	{
-		float moveSpeed = 30.0f * TimeManager::GetInstance().GetDeltaTime();
+		float moveSpeed = pattern->_speed * TimeManager::GetInstance().GetDeltaTime();
 
 		auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
 
@@ -1469,7 +1459,7 @@ void KunrealEngine::Kamen::CreateSwordLookPlayer()
 
 	pattern->SetPatternName("SwordLookPlayer");
 
-	pattern->SetAnimName("Idle").SetSpeed(15.0f);
+	pattern->SetAnimName("Idle").SetSpeed(20.0f);
 	pattern->SetMaxColliderCount(0);
 
 	_swordPath = _boss->GetObjectScene()->CreateObject("swordPath");
@@ -1514,19 +1504,17 @@ void KunrealEngine::Kamen::CreateSwordLookPlayer()
 
 		auto goalAngle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f) - 90.0f;
 
-		auto rotationSpeed = 20.0f;
-		
 		auto swordTransform = _freeSword->GetComponent<Transform>();
 		auto rotation = swordTransform->GetRotation();
 
 		auto swordPathTransform = _swordPath->GetComponent<Transform>();
 		// 회전 속도
-		float speed = TimeManager::GetInstance().GetDeltaTime() * rotationSpeed;
+		float speed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
 
 		_timer += TimeManager::GetInstance().GetDeltaTime();
 
 		// 현재 각도가 목표로 하는 각도보다 작을 경우
-		if (_timer < 4.0f)
+		if (_timer < _warningMaxTimer)
 		{
 			auto errorRange = std::abs(goalAngle) - std::abs(rotation.y);
 			errorRange = std::abs(errorRange);
@@ -1548,7 +1536,7 @@ void KunrealEngine::Kamen::CreateSwordLookPlayer()
 			}
 		}
 
-		if (_timer > 5.0f)
+		if (_timer > _warningMaxTimer + 1.0f)
 		{
 			// 회전이 완료되었다고 반환
 			pattern->DeleteSubObject(_freeSword);
@@ -1742,19 +1730,21 @@ void KunrealEngine::Kamen::SwordTurnClockPattern()
 
 	auto swordInitLogic = [swordTurnClockPattern, this]()
 		{
-			_circleWarningRadius = 30.0f;
+			_circleWarningSize = 30.0f;
 
 			auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 			auto ranZ = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 
 			_swordOriginPos = DirectX::XMFLOAT3{ ranX, _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, ranZ };
 
-			float x = _swordOriginPos.x - _circleWarningRadius * cos(0.0f);
-			float z = _swordOriginPos.z - _circleWarningRadius * sin(0.0f);
+			float x = _swordOriginPos.x - _circleWarningSize * cos(0.0f);
+			float z = _swordOriginPos.z - _circleWarningSize * sin(0.0f);
 
 			_swordStartPos = DirectX::XMFLOAT3{ x , _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, z };
 
 			_swordChopSpeed = 20.0f;
+
+			_warningMaxTimer = 0.5f;
 		};
 
 	swordTurnClockPattern->SetInitializeLogic(swordInitLogic);
@@ -1784,19 +1774,21 @@ void KunrealEngine::Kamen::SwordTurnAntiClockPattern()
 
 	auto swordInitLogic = [swordTurnAntiClockPattern, this]()
 		{
-			_circleWarningRadius = 40.0f;
+			_circleWarningSize = 40.0f;
 
 			auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 			auto ranZ = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 
 			_swordOriginPos = DirectX::XMFLOAT3{ ranX, _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, ranZ };
 
-			float x = _swordOriginPos.x - _circleWarningRadius * cos(0.0f);
-			float z = _swordOriginPos.z - _circleWarningRadius * sin(0.0f);
+			float x = _swordOriginPos.x - _circleWarningSize * cos(0.0f);
+			float z = _swordOriginPos.z - _circleWarningSize * sin(0.0f);
 
 			_swordStartPos = DirectX::XMFLOAT3{ x , _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, z };
 
 			_swordChopSpeed = 20.0f;
+
+			_warningMaxTimer = 0.5f;
 		};
 
 	swordTurnAntiClockPattern->SetInitializeLogic(swordInitLogic);
@@ -1846,6 +1838,8 @@ void KunrealEngine::Kamen::SwordLinearAttackPattern()
 		auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
 
 		swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
+
+		_warningMaxTimer = 4.0f;
 	};
 
 	swordLinearAttack->SetInitializeLogic(swordLinearAttackInitLogic);
@@ -1872,15 +1866,15 @@ void KunrealEngine::Kamen::SwordChopPattern()
 
 	auto swordChopAttackInitLogic = [swordChopAttack, this]()
 		{
-			_circleWarningRadius = 40.0f;
+			_circleWarningSize = 40.0f;
 
 			auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 			auto ranZ = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 
 			_swordOriginPos = DirectX::XMFLOAT3{ ranX, 0.0f, ranZ };
 
-			float x = _swordOriginPos.x - _circleWarningRadius * cos(0.0f);
-			float z = _swordOriginPos.z - _circleWarningRadius * sin(0.0f);
+			float x = _swordOriginPos.x - _circleWarningSize * cos(0.0f);
+			float z = _swordOriginPos.z - _circleWarningSize * sin(0.0f);
 
 			_swordStartPos = DirectX::XMFLOAT3{ x , 30.0f + 70.0f, z };
 
@@ -1891,6 +1885,8 @@ void KunrealEngine::Kamen::SwordChopPattern()
 			swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
 
 			_swordChopSpeed = 40.0f;
+
+			_warningMaxTimer = 1.0f;
 		};
 
 	swordChopAttack->SetInitializeLogic(swordChopAttackInitLogic);
