@@ -877,7 +877,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle22 = sceneInstance.GetCurrentScene()->CreateObject("Particle22");
 	particle22->GetComponent<Transform>()->SetPosition(10, 0, 70.f);
 	particle22->AddComponent<Particle>();
-	particle22->GetComponent<Particle>()->SetParticleEffect("EnergyBolt1", "Resources/Textures/Particles/fx_EnergyBolt1.dds", 1000);
+	particle22->GetComponent<Particle>()->SetParticleEffect("EnergyBolt9", "Resources/Textures/Particles/fx_EnergyBolt9.dds", 1000);
 	particle22->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle22->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle22->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -1100,7 +1100,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	// Æ÷Å» ÀÓ½Ã
 
-	GameObject* arch = sceneInstance.GetCurrentScene()->CreateObject("arch");;
+	GameObject* arch = sceneInstance.GetCurrentScene()->CreateObject("arch");
 	arch->GetComponent<Transform>()->SetPosition(68.8f, -2.4f, 48.7f);
 	arch->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	arch->GetComponent<Transform>()->SetRotation(0, 59, 0);
@@ -1222,6 +1222,17 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossShot2->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 	particleBossShot2->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
 	particleBossShot2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
+
+	// Ä«¸à ¼Òµå
+
+	GameObject* sword = sceneInstance.GetCurrentScene()->CreateObject("sword");
+	sword->AddComponent<MeshRenderer>();
+	sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "KamenSword/KamenSword_BaseColor.png");
+	sword->GetComponent<MeshRenderer>()->SetNormalTexture(0, "KamenSword/KamenSword_Normal.png");
+	sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(0, "KamenSword/KamenSword_Emissive.png");
+
+	sword->GetComponent<Transform>()->SetPosition(-84.3, 0, -35.f);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
