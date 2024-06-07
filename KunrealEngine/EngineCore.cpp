@@ -145,8 +145,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	//navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
-	navigationInstance.HandleBuild(0, "testObj");
+	navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
+	//navigationInstance.HandleBuild(0, "testObj");
 	navigationInstance.HandleBuild(1, "testObj");
 
 	//// cube map test
