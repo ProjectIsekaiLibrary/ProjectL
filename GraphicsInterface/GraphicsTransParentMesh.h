@@ -40,5 +40,7 @@ namespace GInterface
 
 		// 도넛을 위한 레인지 설정
 		virtual void SetExceptRange(const DirectX::XMFLOAT3& center, float range) abstract;
+
+		virtual void SetStartFlag(bool tf) abstract;
 	};
 }
