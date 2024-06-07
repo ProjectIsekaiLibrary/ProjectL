@@ -129,6 +129,8 @@ namespace KunrealEngine
 		void GetAgent(int index, float& agentHeight, float& agentMaxSlope, float& agentRadius, float& agentMaxClimb);
 		// 현재 네비매쉬 폴더 내 저장되어 있는 네비매쉬들을 가져옴
 		std::vector<std::string> GetNavimeshPathList();
+
+		std::vector<std::string> GetMapObjPathList();
 	
 	private:	// 이거는 private라고!!!!! 가져다 쓰다가 소문자로 시작하는 함수 보이면 쓰지 말라고!!!
 

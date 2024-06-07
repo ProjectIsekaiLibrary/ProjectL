@@ -102,7 +102,7 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* imagebackground;
 
 		pauseuibox = scene.GetCurrentScene()->CreateObject("pauseuibox");
-		pauseuibox->GetComponent<Transform>()->SetPosition(100.0f, 100.0f, 0.0f);
+		pauseuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 
 		imagebackground = scene.GetCurrentScene()->CreateObject("imagebackground");
 		imagebackground->AddComponent<ImageRenderer>();
@@ -142,5 +142,184 @@ namespace KunrealEngine
 		pauseuibox->SetActive(false);
 
 		return pauseuibox;
+	}
+
+	static GameObject* MakeOptionUIPack()
+	{
+		KunrealEngine::SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
+		KunrealEngine::GameObject* optionuibox;
+		KunrealEngine::GameObject* imagebackground;
+
+		KunrealEngine::GameObject* bgm_text;
+		KunrealEngine::GameObject* button_bgm1;
+		KunrealEngine::GameObject* button_bgm2;
+		KunrealEngine::GameObject* button_bgm3;
+		KunrealEngine::GameObject* button_bgm4;
+		KunrealEngine::GameObject* button_bgm5;
+		KunrealEngine::GameObject* button_bgm6;
+
+		KunrealEngine::GameObject* sfx_text;
+		KunrealEngine::GameObject* button_sfx1;
+		KunrealEngine::GameObject* button_sfx2;
+		KunrealEngine::GameObject* button_sfx3;
+		KunrealEngine::GameObject* button_sfx4;
+		KunrealEngine::GameObject* button_sfx5;
+		KunrealEngine::GameObject* button_sfx6;
+
+		KunrealEngine::GameObject* button_check1;
+		KunrealEngine::GameObject* button_check2;
+		KunrealEngine::GameObject* fullscreen_text;
+		KunrealEngine::GameObject* windowed_text;
+
+		optionuibox = scene.GetCurrentScene()->CreateObject("menuuibox");
+		optionuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+
+		imagebackground = scene.GetCurrentScene()->CreateObject("imagebackground");
+		imagebackground->AddComponent<ImageRenderer>();
+		imagebackground->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		imagebackground->GetComponent<ImageRenderer>()->SetPosition(480.f, 0.f);
+		imagebackground->GetComponent<Transform>()->SetScale(5.0f, 10.0f, 1.0f);
+		imagebackground->SetParent(optionuibox);
+
+		/////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////
+		//BGM 사운드 조절
+
+		button_bgm1 = scene.GetCurrentScene()->CreateObject("button_bgm1");
+		button_bgm1->SetParent(optionuibox);
+		button_bgm1->AddComponent<ImageRenderer>();
+		button_bgm1->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_bgm1->GetComponent<ImageRenderer>()->SetPosition(790.0f, 339.0f);
+		button_bgm1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 1.0f);
+
+		button_bgm2 = scene.GetCurrentScene()->CreateObject("button_bgm2");
+		button_bgm2->SetParent(optionuibox);
+		button_bgm2->AddComponent<ImageRenderer>();
+		button_bgm2->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_bgm2->GetComponent<ImageRenderer>()->SetPosition(808.0f, 319.0f);
+		button_bgm2->GetComponent<Transform>()->SetScale(0.1f, 0.3f, 1.0f);
+
+		button_bgm3 = scene.GetCurrentScene()->CreateObject("button_bgm3");
+		button_bgm3->SetParent(optionuibox);
+		button_bgm3->AddComponent<ImageRenderer>();
+		button_bgm3->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_bgm3->GetComponent<ImageRenderer>()->SetPosition(826.0f, 297.0f);
+		button_bgm3->GetComponent<Transform>()->SetScale(0.1f, 0.5f, 1.0f);
+
+		button_bgm4 = scene.GetCurrentScene()->CreateObject("button_bgm4");
+		button_bgm4->SetParent(optionuibox);
+		button_bgm4->AddComponent<ImageRenderer>();
+		button_bgm4->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_bgm4->GetComponent<ImageRenderer>()->SetPosition(844.0f, 276.0f);
+		button_bgm4->GetComponent<Transform>()->SetScale(0.1f, 0.7f, 1.0f);
+
+		button_bgm5 = scene.GetCurrentScene()->CreateObject("button_bgm5");
+		button_bgm5->SetParent(optionuibox);
+		button_bgm5->AddComponent<ImageRenderer>();
+		button_bgm5->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_bgm5->GetComponent<ImageRenderer>()->SetPosition(862.0f, 254.0f);
+		button_bgm5->GetComponent<Transform>()->SetScale(0.1f, 0.9f, 1.0f);
+
+		button_bgm6 = scene.GetCurrentScene()->CreateObject("button_bgm6");
+		button_bgm6->SetParent(optionuibox);
+		button_bgm6->AddComponent<ImageRenderer>();
+		button_bgm6->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_bgm6->GetComponent<ImageRenderer>()->SetPosition(880.0f, 222.0f);
+		button_bgm6->GetComponent<Transform>()->SetScale(0.1f, 1.2f, 1.0f); 
+
+		bgm_text = scene.GetCurrentScene()->CreateObject("button_bgmtext");
+		bgm_text->SetParent(optionuibox);
+		bgm_text->AddComponent<ImageRenderer>();
+		bgm_text->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		bgm_text->GetComponent<ImageRenderer>()->SetPosition(560.0f, 200.0f);
+		bgm_text->GetComponent<Transform>()->SetScale(1.0f, 1.4f, 1.0f);
+
+		/////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////
+		//SFX 사운드 조절
+
+		button_sfx1 = scene.GetCurrentScene()->CreateObject("button_sfx1");
+		button_sfx1->SetParent(optionuibox);
+		button_sfx1->AddComponent<ImageRenderer>();
+		button_sfx1->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_sfx1->GetComponent<ImageRenderer>()->SetPosition(1200.0f, 339.0f);
+		button_sfx1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 1.0f);
+			   
+		button_sfx2 = scene.GetCurrentScene()->CreateObject("button_sfx2");
+		button_sfx2->SetParent(optionuibox);
+		button_sfx2->AddComponent<ImageRenderer>();
+		button_sfx2->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_sfx2->GetComponent<ImageRenderer>()->SetPosition(1218.0f, 319.0f);
+		button_sfx2->GetComponent<Transform>()->SetScale(0.1f, 0.3f, 1.0f);
+			   
+		button_sfx3 = scene.GetCurrentScene()->CreateObject("button_sfx3");
+		button_sfx3->SetParent(optionuibox);
+		button_sfx3->AddComponent<ImageRenderer>();
+		button_sfx3->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_sfx3->GetComponent<ImageRenderer>()->SetPosition(1236.0f, 297.0f);
+		button_sfx3->GetComponent<Transform>()->SetScale(0.1f, 0.5f, 1.0f);
+			   
+		button_sfx4 = scene.GetCurrentScene()->CreateObject("button_sfx4");
+		button_sfx4->SetParent(optionuibox);
+		button_sfx4->AddComponent<ImageRenderer>();
+		button_sfx4->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_sfx4->GetComponent<ImageRenderer>()->SetPosition(1254.0f, 276.0f);
+		button_sfx4->GetComponent<Transform>()->SetScale(0.1f, 0.7f, 1.0f);
+			   
+		button_sfx5 = scene.GetCurrentScene()->CreateObject("button_sfx5");
+		button_sfx5->SetParent(optionuibox);
+		button_sfx5->AddComponent<ImageRenderer>();
+		button_sfx5->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_sfx5->GetComponent<ImageRenderer>()->SetPosition(1272.0f, 254.0f);
+		button_sfx5->GetComponent<Transform>()->SetScale(0.1f, 0.9f, 1.0f);
+			   
+		button_sfx6 = scene.GetCurrentScene()->CreateObject("button_sfx6");
+		button_sfx6->SetParent(optionuibox);
+		button_sfx6->AddComponent<ImageRenderer>();
+		button_sfx6->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_sfx6->GetComponent<ImageRenderer>()->SetPosition(1290.0f, 222.0f);
+		button_sfx6->GetComponent<Transform>()->SetScale(0.1f, 1.2f, 1.0f);
+			   
+		sfx_text = scene.GetCurrentScene()->CreateObject("button_sfxtext");
+		sfx_text->SetParent(optionuibox);
+		sfx_text->AddComponent<ImageRenderer>();
+		sfx_text->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		sfx_text->GetComponent<ImageRenderer>()->SetPosition(970.0f, 200.0f);
+		sfx_text->GetComponent<Transform>()->SetScale(1.0f, 1.4f, 1.0f);
+
+		/////////////////////////////////////////////////////////////////////////////////
+		/////////////////////////////////////////////////////////////////////////////////
+
+		button_check1 = scene.GetCurrentScene()->CreateObject("button_check1");
+		button_check1->SetParent(optionuibox);
+		button_check1->AddComponent<ImageRenderer>();
+		button_check1->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_check1->GetComponent<ImageRenderer>()->SetPosition(820.0f, 680.0f);
+		button_check1->GetComponent<Transform>()->SetScale(0.3f, 0.1f, 1.0f);
+
+		button_check2 = scene.GetCurrentScene()->CreateObject("button_check2");
+		button_check2->SetParent(optionuibox);
+		button_check2->AddComponent<ImageRenderer>();
+		button_check2->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_check2->GetComponent<ImageRenderer>()->SetPosition(1240.0f, 680.0f);
+		button_check2->GetComponent<Transform>()->SetScale(0.3f, 0.1f, 1.0f);
+
+		fullscreen_text = scene.GetCurrentScene()->CreateObject("fullscreen_text");
+		fullscreen_text->SetParent(optionuibox);
+		fullscreen_text->AddComponent<ImageRenderer>();
+		fullscreen_text->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		fullscreen_text->GetComponent<ImageRenderer>()->SetPosition(560.0f, 640.0f);
+		fullscreen_text->GetComponent<Transform>()->SetScale(1.0f, 1.4f, 1.0f);
+
+		windowed_text = scene.GetCurrentScene()->CreateObject("windowed_text");
+		windowed_text->SetParent(optionuibox);
+		windowed_text->AddComponent<ImageRenderer>();
+		windowed_text->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		windowed_text->GetComponent<ImageRenderer>()->SetPosition(970.0f, 640.0f);
+		windowed_text->GetComponent<Transform>()->SetScale(1.0f, 1.4f, 1.0f);
+
+		optionuibox->SetActive(false);
+
+		return optionuibox;
 	}
 }

@@ -37,6 +37,7 @@ KunrealEngine::GameObject* tree4;
 
 KunrealEngine::GameObject* Title_ui_box;	// 타이틀UI
 KunrealEngine::GameObject* pause_ui_box;	// 일시정지
+KunrealEngine::GameObject* option_ui_box;	// 일시정지
 KunrealEngine::GameObject* battle_ui_box;	// 전투UI
 
 KunrealEngine::GameObject* particle;
@@ -394,6 +395,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	// UI의 부모가 될 0,0pos객체
 	battle_ui_box = MakeBattleUIPack();
 	pause_ui_box = MakeMenuUIPack();
+	option_ui_box = MakeOptionUIPack();
 	//Title_ui_box = 
 
 	//// cube map test

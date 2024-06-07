@@ -93,7 +93,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 		if (_navmeshpolys[_naviIndex] != nullptr)
 		{
 			GRAPHICS->DeleteDebugObject(_navmeshpolys[_naviIndex]);
-			_navmeshpolys[_naviIndex] = nullptr;
+			_navmeshpolys[_naviIndex] = nullptr;        
 		}
 
 		std::string name = "navmesh";
