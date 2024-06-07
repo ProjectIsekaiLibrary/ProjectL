@@ -17,6 +17,7 @@
 
 /// 꼭 지워야해 내 수학라이브러리와 동일한 결과가 나오는지 체크용
 #include <DirectXMath.h>
+#include "ToolBox.h"
 /// 
 
 KunrealEngine::SceneManager& sceneInstance = KunrealEngine::SceneManager::GetInstance();
@@ -105,6 +106,11 @@ KunrealEngine::GameObject* particleBossPillar3;
 KunrealEngine::GameObject* particleBossShot1;
 KunrealEngine::GameObject* particleBossShot2;
 
+KunrealEngine::GameObject* particleBossSword1;
+KunrealEngine::GameObject* particleBossSword2;
+KunrealEngine::GameObject* particleBossSword3;
+KunrealEngine::GameObject* particleBossSword4;
+
 KunrealEngine::GameObject* testCamera;
 
 
@@ -179,6 +185,7 @@ bool moveTo = true;
 
 void KunrealEngine::EngineCore::Update()
 {
+	//particleBossSword3->GetComponent<Particle>()->SetParticleSize(5.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 5.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
 	CheckMousePosition();
 	inputInstance->Update(GetDeltaTime());
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
@@ -1223,7 +1230,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	// 보스 평타 불덩이
 
-	particleBossShot1 = sceneInstance.GetCurrentScene()->CreateObject("Particle15");
+	particleBossShot1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossShot1");
 	particleBossShot1->GetComponent<Transform>()->SetPosition(-84.3, 0, 35.f);
 	particleBossShot1->AddComponent<Particle>();
 	particleBossShot1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
@@ -1233,7 +1240,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossShot1->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 	particleBossShot1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
 
-	particleBossShot2 = sceneInstance.GetCurrentScene()->CreateObject("Particle16");
+	particleBossShot2 = sceneInstance.GetCurrentScene()->CreateObject("particleBossShot2");
 	particleBossShot2->GetComponent<Transform>()->SetPosition(-84.3, 0, 35.f);
 	particleBossShot2->AddComponent<Particle>();
 	particleBossShot2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
@@ -1253,6 +1260,49 @@ void KunrealEngine::EngineCore::ParticleTest()
 	sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(0, "KamenSword/KamenSword_Emissive.png");
 
 	sword->GetComponent<Transform>()->SetPosition(-84.3, 0, -35.f);
+	sword->GetComponent<Transform>()->SetRotation(0, 135, 0);
+
+	particleBossSword1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword1");
+	particleBossSword1->GetComponent<Transform>()->SetPosition(-82.6, 6.65, -31.9f);
+	particleBossSword1->AddComponent<Particle>();
+	particleBossSword1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+	particleBossSword1->GetComponent<Particle>()->SetParticleDuration(1.1f, 2.3f);
+	particleBossSword1->GetComponent<Particle>()->SetParticleVelocity(0.6f, true);
+	particleBossSword1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	particleBossSword1->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.0f);
+	particleBossSword1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+
+	particleBossSword2 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2");
+	particleBossSword2->GetComponent<Transform>()->SetPosition(-84.3, 10.8, -33.7f);
+	particleBossSword2->AddComponent<Particle>();
+	particleBossSword2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	particleBossSword2->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+	particleBossSword2->GetComponent<Particle>()->SetParticleVelocity(0.2f, true);
+	particleBossSword2->GetComponent<Particle>()->SetParticleSize(8.4f, 7.0f);
+	particleBossSword2->GetComponent<Particle>()->AddParticleColor(1.0f, 7.5f, 0.0f);
+	particleBossSword2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+
+	particleBossSword3 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword3");
+	particleBossSword3->GetComponent<Transform>()->SetPosition(-83.4f, 21.3f, -32.8f);
+	particleBossSword3->AddComponent<Particle>();
+	particleBossSword3->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+	particleBossSword3->GetComponent<Particle>()->SetParticleDuration(2.f, 0.6f);
+	particleBossSword3->GetComponent<Particle>()->SetParticleVelocity(9.6f, true);
+	particleBossSword3->GetComponent<Particle>()->SetParticleSize(2.0f, 2.0f);
+	particleBossSword3->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0);
+	particleBossSword3->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.0f, 0.0f);
+
+	particleBossSword4 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword4");
+	particleBossSword4->GetComponent<Transform>()->SetPosition(-82.7, 13.8, -32.2f);
+	particleBossSword4->AddComponent<Particle>();
+	particleBossSword4->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+	particleBossSword4->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.6f);
+	particleBossSword4->GetComponent<Particle>()->SetParticleVelocity(12.2f, true);
+	particleBossSword4->GetComponent<Particle>()->SetParticleSize(2.0f, 2.0f);
+	particleBossSword4->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.f);
+	particleBossSword4->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.0f, 0.0f);
+
+
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()

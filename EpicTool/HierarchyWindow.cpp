@@ -48,6 +48,14 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 		}
 	}
 
+
+	if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
+	{
+		ImGui::CloseCurrentPopup();
+		_show_Context_Menu = true;					// 서브를 불러서 팝업에서 팝업을 부름 => 삭제
+		ImGui::OpenPopup("Context");
+	}
+
 	CopyObject(selectedObjectIndex); // 복사기능
 	
 	if (_show_Context_Menu)
@@ -86,7 +94,7 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 					DeleteObject(_gameObjectlist, selectedObjectIndex);
 					_gameObjectlist = KunrealEngine::GetCurrentScene()->GetObjectList();
 					_isListUpdateDel = true;
-
+					_show_Context_Menu = false;
 				}
 			}
 
@@ -154,10 +162,10 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 			ImVec2 clickPos = ImGui::GetMousePos();
 			ImVec2 windowPos = ImGui::GetWindowPos();
 			ImVec2 windowSize = ImGui::GetWindowSize();
-			if (!(clickPos.x < windowPos.x || clickPos.y < windowPos.y || clickPos.x > windowPos.x + windowSize.x || clickPos.y > windowPos.y + windowSize.y))
-			{
-				selectedObjectIndex = -1;
-			}
+			//if (!(clickPos.x < windowPos.x || clickPos.y < windowPos.y || clickPos.x > windowPos.x + windowSize.x || clickPos.y > windowPos.y + windowSize.y))
+			//{
+			//	selectedObjectIndex = -1;
+			//}
 		}
 
 		ImGui::PopStyleColor();
@@ -175,17 +183,11 @@ void EpicTool::HierarchyWindow::ShowWindow(int& selectedObjectIndex)
 
     }
 
-        if (ImGui::IsMouseReleased(1) && ImGui::IsWindowHovered(ImGuiHoveredFlags_RootAndChildWindows))
-        {
-            ImGui::CloseCurrentPopup();
-            _show_Context_Menu = true;					// 서브를 불러서 팝업에서 팝업을 부름 => 삭제
-            ImGui::OpenPopup("Context");
-        }
 
-        // "Hierarchy" 윈도우 내에서 컨텍스트 메뉴 호출
-        
-		_isListUpdatePlus = false;
-		_isListUpdateDel = false;
+	// "Hierarchy" 윈도우 내에서 컨텍스트 메뉴 호출
+
+	_isListUpdatePlus = false;
+	_isListUpdateDel = false;
 
 		
 }
