@@ -51,8 +51,11 @@ namespace EpicTool
 		std::string _filePath;
 		std::string _fileNameStr;
 
-		std::string _selectedfileName;
+		std::string _selectedFileName;
+		std::string _selectedObjName;
 
 		std::vector<std::string> _fileNameList;
+
+		std::vector<std::string> _objList;
 	};
 }
