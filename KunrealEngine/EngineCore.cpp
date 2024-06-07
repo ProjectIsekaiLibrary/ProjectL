@@ -161,8 +161,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	sceneInstance.CreateScene("ParticleTest");
 
-	ChangeScene("ParticleTest");
-	ParticleTest();
+	//ChangeScene("ParticleTest");
+	//ParticleTest();
 	/// 니들 맘대로 해
 	//PlayGround();
 }
