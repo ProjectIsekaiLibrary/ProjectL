@@ -101,6 +101,9 @@ KunrealEngine::GameObject* particleBossPillar1;
 KunrealEngine::GameObject* particleBossPillar2;
 KunrealEngine::GameObject* particleBossPillar3;
 
+KunrealEngine::GameObject* particleBossShot1;
+KunrealEngine::GameObject* particleBossShot2;
+
 KunrealEngine::GameObject* testCamera;
 
 
@@ -151,10 +154,10 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	sceneInstance.CreateScene("ParticleTest");
 
-	//ChangeScene("ParticleTest");
-	//ParticleTest();
+	ChangeScene("ParticleTest");
+	ParticleTest();
 	/// 니들 맘대로 해
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -1197,6 +1200,28 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossPillar3->GetComponent<Particle>()->SetParticleSize(13.f, 10.0f);
 	particleBossPillar3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
 	particleBossPillar3->GetComponent<Particle>()->SetParticleDirection(0.0f, 80.0f, 0.0f);
+
+	// 보스 평타 불덩이
+
+	particleBossShot1 = sceneInstance.GetCurrentScene()->CreateObject("Particle15");
+	particleBossShot1->GetComponent<Transform>()->SetPosition(-84.3, 0, 35.f);
+	particleBossShot1->AddComponent<Particle>();
+	particleBossShot1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	particleBossShot1->GetComponent<Particle>()->SetParticleDuration(1.0f, 4.0f);
+	particleBossShot1->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+	particleBossShot1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	particleBossShot1->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	particleBossShot1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
+
+	particleBossShot2 = sceneInstance.GetCurrentScene()->CreateObject("Particle16");
+	particleBossShot2->GetComponent<Transform>()->SetPosition(-84.3, 0, 35.f);
+	particleBossShot2->AddComponent<Particle>();
+	particleBossShot2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	particleBossShot2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.7f);
+	particleBossShot2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	particleBossShot2->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
+	particleBossShot2->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
+	particleBossShot2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
