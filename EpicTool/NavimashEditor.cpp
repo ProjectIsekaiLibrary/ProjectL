@@ -22,6 +22,7 @@ void EpicTool::NavimashEditor::Initialize()
 	_filePath = "Resources/Navimesh/";
 
 	_fileNameList = _navimashEditor->GetNavimeshPathList();
+	_objList = _navimashEditor->GetMapObjPathList();
 }
 
 void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height)
@@ -85,10 +86,23 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	ImGui::SliderFloat("Max Slope", &_agentMaxSlope, 0.0f, 90.0f);
 
+	if (ImGui::Combo("ObjList", &selectedItem, [](void* data, int idx, const char** out_text)
+		{
+			auto& items = *static_cast<std::vector<std::string>*>(data);
+			if (idx < 0 || idx >= static_cast<int>(items.size()))
+				return false;
+			*out_text = items[idx].c_str();
+			return true;
+		},
+		static_cast<void*>(&_objList), static_cast<int>(_objList.size())))
+	{
+		_selectedObjName = _objList[selectedItem];
+	}
+
 	if (ImGui::Button("Build"))
 	{
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
-		_navimashEditor->HandleBuild(_naviIndex, "testObj");
+		_navimashEditor->HandleBuild(_naviIndex, _selectedObjName);
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
 		{
@@ -140,24 +154,24 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 
 	if (ImGui::Combo("LoadList", &selectedItem, [](void* data, int idx, const char** out_text)
-	{
+		{
 			auto& items = *static_cast<std::vector<std::string>*>(data);
 			if (idx < 0 || idx >= static_cast<int>(items.size()))
 				return false;
 			*out_text = items[idx].c_str();
 			return true;
-	},
-	static_cast<void*>(&_fileNameList), static_cast<int>(_fileNameList.size())))
+		},
+		static_cast<void*>(&_fileNameList), static_cast<int>(_fileNameList.size())))
 	{
-		_selectedfileName = _fileNameList[selectedItem];
+		_selectedFileName = _fileNameList[selectedItem];
 	}
 
 	ImGui::SameLine();
 
 	if (ImGui::Button("Load"))
 	{
-		_selectedfileName = _filePath + _selectedfileName;
-		_navimashEditor->LoadAll(_selectedfileName.c_str(), _naviIndex);
+		_selectedFileName = _filePath + _selectedFileName;
+		_navimashEditor->LoadAll(_selectedFileName.c_str(), _naviIndex);
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
 		{

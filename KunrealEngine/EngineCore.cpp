@@ -102,6 +102,9 @@ KunrealEngine::GameObject* particleBossPillar1;
 KunrealEngine::GameObject* particleBossPillar2;
 KunrealEngine::GameObject* particleBossPillar3;
 
+KunrealEngine::GameObject* particleBossShot1;
+KunrealEngine::GameObject* particleBossShot2;
+
 KunrealEngine::GameObject* testCamera;
 
 
@@ -152,10 +155,10 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	sceneInstance.CreateScene("ParticleTest");
 
-	//ChangeScene("ParticleTest");
-	//ParticleTest();
+	ChangeScene("ParticleTest");
+	ParticleTest();
 	/// ´Ïµé ¸¾´ë·Î ÇØ
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -876,7 +879,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle22 = sceneInstance.GetCurrentScene()->CreateObject("Particle22");
 	particle22->GetComponent<Transform>()->SetPosition(10, 0, 70.f);
 	particle22->AddComponent<Particle>();
-	particle22->GetComponent<Particle>()->SetParticleEffect("EnergyBolt1", "Resources/Textures/Particles/fx_EnergyBolt1.dds", 1000);
+	particle22->GetComponent<Particle>()->SetParticleEffect("EnergyBolt9", "Resources/Textures/Particles/fx_EnergyBolt9.dds", 1000);
 	particle22->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle22->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle22->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -1099,7 +1102,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	// Æ÷Å» ÀÓ½Ã
 
-	GameObject* arch = sceneInstance.GetCurrentScene()->CreateObject("arch");;
+	GameObject* arch = sceneInstance.GetCurrentScene()->CreateObject("arch");
 	arch->GetComponent<Transform>()->SetPosition(68.8f, -2.4f, 48.7f);
 	arch->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	arch->GetComponent<Transform>()->SetRotation(0, 59, 0);
@@ -1199,6 +1202,39 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossPillar3->GetComponent<Particle>()->SetParticleSize(13.f, 10.0f);
 	particleBossPillar3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
 	particleBossPillar3->GetComponent<Particle>()->SetParticleDirection(0.0f, 80.0f, 0.0f);
+
+	// º¸½º ÆòÅ¸ ºÒµ¢ÀÌ
+
+	particleBossShot1 = sceneInstance.GetCurrentScene()->CreateObject("Particle15");
+	particleBossShot1->GetComponent<Transform>()->SetPosition(-84.3, 0, 35.f);
+	particleBossShot1->AddComponent<Particle>();
+	particleBossShot1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	particleBossShot1->GetComponent<Particle>()->SetParticleDuration(1.0f, 4.0f);
+	particleBossShot1->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+	particleBossShot1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	particleBossShot1->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	particleBossShot1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
+
+	particleBossShot2 = sceneInstance.GetCurrentScene()->CreateObject("Particle16");
+	particleBossShot2->GetComponent<Transform>()->SetPosition(-84.3, 0, 35.f);
+	particleBossShot2->AddComponent<Particle>();
+	particleBossShot2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	particleBossShot2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.7f);
+	particleBossShot2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	particleBossShot2->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
+	particleBossShot2->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
+	particleBossShot2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
+
+	// Ä«¸à ¼Òµå
+
+	GameObject* sword = sceneInstance.GetCurrentScene()->CreateObject("sword");
+	sword->AddComponent<MeshRenderer>();
+	sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "KamenSword/KamenSword_BaseColor.png");
+	sword->GetComponent<MeshRenderer>()->SetNormalTexture(0, "KamenSword/KamenSword_Normal.png");
+	sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(0, "KamenSword/KamenSword_Emissive.png");
+
+	sword->GetComponent<Transform>()->SetPosition(-84.3, 0, -35.f);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
