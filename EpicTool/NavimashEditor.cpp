@@ -88,7 +88,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 	if (ImGui::Button("Build"))
 	{
 		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
-		_navimashEditor->HandleBuild(_naviIndex);
+		_navimashEditor->HandleBuild(_naviIndex, "testObj");
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
 		{

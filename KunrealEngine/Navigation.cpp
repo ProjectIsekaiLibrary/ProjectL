@@ -230,10 +230,12 @@ namespace KunrealEngine
 		fclose(fp);
 	}
 
-	bool Navigation::HandleBuild(int index)
+	bool Navigation::HandleBuild(int index, std::string path)
 	{
+		path = "Resources/MapObj/" + path + ".obj";
+
 		dtStatus status;
-		_geom->load(_ctx, "Resources/MapObj/testObj.obj");
+		_geom->load(_ctx, path);
 
 		if (!_geom || !_geom->getMesh())
 		{
