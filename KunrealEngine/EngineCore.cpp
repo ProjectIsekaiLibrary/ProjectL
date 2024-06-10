@@ -1284,7 +1284,25 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossSword4->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.f);
 	particleBossSword4->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.0f, 0.0f);
 
+	GameObject* sword2 = sceneInstance.GetCurrentScene()->CreateObject("sword");
+	sword2->AddComponent<MeshRenderer>();
+	sword2->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	sword2->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "KamenSword/KamenSword_BaseColor.png");
+	sword2->GetComponent<MeshRenderer>()->SetNormalTexture(0, "KamenSword/KamenSword_Normal.png");
+	sword2->GetComponent<MeshRenderer>()->SetEmissiveTexture(0, "KamenSword/KamenSword_Emissive.png");
 
+	sword2->GetComponent<Transform>()->SetPosition(-84.3, 0, -55.f);
+	sword2->GetComponent<Transform>()->SetRotation(0, 135, 0);
+
+	GameObject* sword3 = sceneInstance.GetCurrentScene()->CreateObject("sword");
+	sword3->AddComponent<MeshRenderer>();
+	sword3->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	sword3->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "KamenSword/KamenSword_BaseColor.png");
+	sword3->GetComponent<MeshRenderer>()->SetNormalTexture(0, "KamenSword/KamenSword_Normal.png");
+	sword3->GetComponent<MeshRenderer>()->SetEmissiveTexture(0, "KamenSword/KamenSword_Emissive.png");
+
+	sword3->GetComponent<Transform>()->SetPosition(-84.3, 0, -75.f);
+	sword3->GetComponent<Transform>()->SetRotation(0, 135, 0);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
