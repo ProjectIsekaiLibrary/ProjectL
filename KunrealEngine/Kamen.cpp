@@ -20,7 +20,7 @@ KunrealEngine::Kamen::Kamen()
 	_swordLinearReady(nullptr), _swordLookPlayer(nullptr), _swordDirection(), _timer(0.0f), _swordPath(nullptr),
 	_swordChopAttack(nullptr), _donutSafe(nullptr), _donutWarning1(nullptr), _donutWarning2(nullptr), _donutWarning3(nullptr),
 	_swordRotation(), _swordChopSpeed(0.0f), _warningMaxTimer(0.0f),
-	_leftHandBone(nullptr), _rightFireAttack(nullptr), _rightHandBone(nullptr)
+	_leftHandBone(nullptr), _rightFireAttack(nullptr), _rightHandBone(nullptr), _leftFireAttack(nullptr)
 {
 	BossBasicInfo info;
 
@@ -1964,7 +1964,7 @@ void KunrealEngine::Kamen::SwordTurnClockPattern()
 
 	swordTurnClockPattern->SetInitializeLogic(swordInitLogic);
 
-	_speicalPattern.emplace_back(swordTurnClockPattern);
+	_specialPattern.emplace_back(swordTurnClockPattern);
 }
 
 void KunrealEngine::Kamen::SwordTurnAntiClockPattern()
@@ -2008,7 +2008,7 @@ void KunrealEngine::Kamen::SwordTurnAntiClockPattern()
 
 	swordTurnAntiClockPattern->SetInitializeLogic(swordInitLogic);
 
-	_speicalPattern.emplace_back(swordTurnAntiClockPattern);
+	_specialPattern.emplace_back(swordTurnAntiClockPattern);
 }
 
 
@@ -2059,7 +2059,7 @@ void KunrealEngine::Kamen::SwordLinearAttackPattern()
 
 	swordLinearAttack->SetInitializeLogic(swordLinearAttackInitLogic);
 
-	_speicalPattern.emplace_back(swordLinearAttack);
+	_specialPattern.emplace_back(swordLinearAttack);
 }
 
 
@@ -2106,7 +2106,7 @@ void KunrealEngine::Kamen::SwordChopPattern()
 
 	swordChopAttack->SetInitializeLogic(swordChopAttackInitLogic);
 
-	_speicalPattern.emplace_back(swordChopAttack);
+	_specialPattern.emplace_back(swordChopAttack);
 }
 
 void KunrealEngine::Kamen::BasicSwordAttackPattern()
