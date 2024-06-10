@@ -130,7 +130,10 @@ namespace KunrealEngine
 		void SetAlpha(float alpha);
 		float GetAlpha();
 
+		// 부모 본과 내 월드에 영향을 합친 트랜스폼을 반환
 		DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName);
+		// 부모 본 자체의 트랜스폼을 반환
+		DirectX::XMFLOAT4X4 GetParentBoneOriginalTransform(const std::string& boneName);
 
 	public:
 		void SetDissolve(float value);

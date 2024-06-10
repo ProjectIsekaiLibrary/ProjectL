@@ -183,6 +183,11 @@ namespace ArkEngine
 			void FinalRender();
 			void EndRender();
 
+		private:
+			void BeginTransparentSet();
+
+			void EndTransparentSet();
+
 			void TransparentRender();
 
 		private:

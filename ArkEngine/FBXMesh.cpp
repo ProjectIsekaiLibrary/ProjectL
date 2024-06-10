@@ -663,6 +663,19 @@ unsigned int ArkEngine::ArkDX11::FBXMesh::GetParentBoneIndex()
 	return _parentBoneIndex;
 }
 
+DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXMesh::GetParentBoneOriginalTransform(const std::string& boneName)
+{
+	auto parentOriginWorld = GetParentBoneTransform();
+	auto parentBoneAnim = _parentMesh->GetAnimator()->GetBoneAnimation(_parentBoneIndex);
+	auto transform = DirectX::XMMatrixMultiply(parentOriginWorld, DirectX::XMLoadFloat4x4(&parentBoneAnim));
+	auto world = _parentMesh->GetWorldTransform();
+	transform = DirectX::XMMatrixMultiply(transform, world);
+
+	DirectX::XMFLOAT4X4 result;
+	DirectX::XMStoreFloat4x4(&result, transform);
+
+	return result;
+}
 
 DirectX::XMMATRIX ArkEngine::ArkDX11::FBXMesh::GetParentBoneTransform()
 {

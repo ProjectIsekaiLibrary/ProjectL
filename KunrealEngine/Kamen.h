@@ -42,6 +42,7 @@ namespace KunrealEngine
 		void BasicPattern();
 
 	private:
+		// 기본 패턴
 		void LeftRightPattern();
 		void RightLeftPattern();
 		void BackStepCallPattern();
@@ -63,7 +64,9 @@ namespace KunrealEngine
 		// 기본 패턴 조각들
 	private:
 		void CreateLeftAttack();
+		void CreateLeftAttackThrowingFire();
 		void CreateRightAttack();
+		void CreateRightAttackThrowingFire();
 		void CreateSpellAttack();
 		void CreateCallAttack();
 		void CreateCall2Attack();
@@ -115,6 +118,9 @@ namespace KunrealEngine
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
 
+		BossPattern* _leftFireAttack;
+		BossPattern* _rightFireAttack;
+
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
 		BossPattern* _outsideSafe;
@@ -157,7 +163,12 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _fakeBoss;
 
-		std::vector<GameObject*> _callVec;
+		std::vector<GameObject*> _handFire;
+		std::vector<bool> _handFireReady;
+		std::vector<DirectX::XMFLOAT3> _handFireDir;
+
+		GameObject* _leftHandBone;
+		GameObject* _rightHandBone;
 
 	private:
 		// Call 거리 체크용

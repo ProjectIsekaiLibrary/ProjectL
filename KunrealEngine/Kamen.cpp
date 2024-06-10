@@ -19,7 +19,8 @@ KunrealEngine::Kamen::Kamen()
 	_insideSafe(nullptr), _outsideWarning(nullptr), _swordLinearAtack(nullptr), _swordLinearDistance(0.0f),
 	_swordLinearReady(nullptr), _swordLookPlayer(nullptr), _swordDirection(), _timer(0.0f), _swordPath(nullptr),
 	_swordChopAttack(nullptr), _donutSafe(nullptr), _donutWarning1(nullptr), _donutWarning2(nullptr), _donutWarning3(nullptr),
-	_swordRotation(), _swordChopSpeed(0.0f), _warningMaxTimer(0.0f)
+	_swordRotation(), _swordChopSpeed(0.0f), _warningMaxTimer(0.0f),
+	_leftHandBone(nullptr), _rightFireAttack(nullptr), _rightHandBone(nullptr)
 {
 	BossBasicInfo info;
 
@@ -128,6 +129,8 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateRightAttack();
 	CreateTurn180();
 	CreateSpellAttack();
+	CreateLeftAttackThrowingFire();
+	CreateRightAttackThrowingFire();
 
 	CreateSwordAttack();
 
@@ -164,12 +167,12 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	BasicPattern();						// 기본 spell, call
-	
-	LeftRightPattern();					// 전방 좌, 우 어택
-	RightLeftPattern();					// 전방 좌, 후방 우 어택
-	BackStepCallPattern();				// 백스탭 뒤 콜 어택
-	TeleportSpellPattern();				// 텔포 후 spell	
+	//BasicPattern();						// 기본 spell, call
+	//
+	//LeftRightPattern();					// 전방 좌, 우 어택
+	//RightLeftPattern();					// 전방 좌, 후방 우 어택
+	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	//TeleportSpellPattern();				// 텔포 후 spell	
 	
 	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
@@ -179,6 +182,9 @@ void KunrealEngine::Kamen::GamePattern()
 	//BasicSwordAttackPattern();
 
 	//CoreEmmergencePattern();
+
+	_basicPattern.emplace_back(_rightFireAttack);
+	_basicPattern.emplace_back(_leftFireAttack);
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
@@ -255,6 +261,114 @@ void KunrealEngine::Kamen::CreateLeftAttack()
 	_leftAttack = pattern;
 }
 
+
+void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Left_Attack_Fire");
+	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
+	pattern->SetIsWarning(false).SetWarningName("");
+	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	_leftHandBone = _boss->GetObjectScene()->CreateObject("leftHandBone");
+	_leftHandBone->AddComponent<MeshRenderer>();
+	_leftHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_leftHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_L");
+	_leftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_leftHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+
+
+	for (int i = 0; i < 5; i++)
+	{
+		std::string index = "LeftHandFire" + std::to_string(i + 1);
+		auto handFire = _boss->GetObjectScene()->CreateObject(index);
+		handFire->AddComponent<MeshRenderer>();
+		handFire->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+		handFire->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+
+		//handFire->AddComponent<Particle>();
+		//handFire->GetComponent<MeshRenderer>()->SetTransform(_boss, "MiddleFinger1_L");
+
+		_handFire.emplace_back(handFire);
+
+		_handFireReady.emplace_back(true);
+
+		_handFireDir.emplace_back();
+
+		pattern->SetSubObject(handFire);
+	}
+
+	auto initLogic = [pattern, this]()
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			_handFireReady[i] = true;
+		}
+	};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		for (int i = 0; i < 5; i++)
+		{
+			if (animator->GetCurrentFrame() >= 14 + i)
+			{
+				if (_handFireReady[i] == true)
+				{
+					_handFireReady[i] = false;
+
+					auto mat = _leftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
+					auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+					auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+
+					auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+
+					_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+					_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+				}
+				else
+				{
+					auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
+					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+				}
+			}
+		}
+
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+
+		if (pattern->_colliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
+			{
+
+			}
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(attackLogic);
+
+	_leftFireAttack = pattern;
+}
+
 void KunrealEngine::Kamen::CreateRightAttack()
 {
 	// 오른손
@@ -280,6 +394,107 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	_rightAttack = pattern;
 }
 
+
+void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("Right_Attack_Fire");
+	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
+	pattern->SetIsWarning(false).SetWarningName("");
+	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+
+	_rightHandBone = _boss->GetObjectScene()->CreateObject("RightHandBone");
+	_rightHandBone->AddComponent<MeshRenderer>();
+	_rightHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_rightHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_R");
+	_rightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_rightHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+
+
+	for (int i = 0; i < 5; i++)
+	{
+		pattern->SetSubObject(_handFire[i]);
+	}
+
+	auto initLogic = [pattern, this]()
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			_handFireReady[i] = true;
+		}
+	};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		for (int i = 0; i < 5; i++)
+		{
+			int index = i;
+			if (i == 3)
+			{
+				index++;
+			}
+			else if (i == 4)
+			{
+				index += 2;
+			}
+			if (animator->GetCurrentFrame() >= 24 + index)
+			{
+				if (_handFireReady[i] == true)
+				{
+					_handFireReady[i] = false;
+
+					auto mat = _rightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
+					auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+					auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+
+					auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+
+					_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+					_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+				}
+				else
+				{
+					auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
+					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+				}
+			}
+		}
+
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+
+		if (pattern->_colliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
+			{
+
+			}
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
+
+	pattern->SetLogic(attackLogic);
+
+	_rightFireAttack = pattern;
+}
 
 void KunrealEngine::Kamen::CreateTurn180()
 {
