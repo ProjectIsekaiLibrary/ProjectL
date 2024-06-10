@@ -175,6 +175,7 @@ namespace KunrealEngine
 
 	protected:
 		BossStatus _status;
+
 		BossBasicInfo _info;
 
 		GameObject* _boss;
