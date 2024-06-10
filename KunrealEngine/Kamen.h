@@ -172,11 +172,6 @@ namespace KunrealEngine
 	private:
 		unsigned int _targetIndex;
 
-	private:
-		float _insideWarningTimer;
-
-	private:
-		float _swordDissolveTimer;
 	// logic
 	private:
 		std::function<void()> _callInitLogic;
@@ -190,7 +185,7 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _swordStartPos;
 		DirectX::XMFLOAT3 _swordOriginPos;
 
-		float _circleWarningRadius;
+		float _circleWarningSize;
 
 		float _swordLinearDistance;
 
@@ -200,5 +195,7 @@ namespace KunrealEngine
 		float _swordChopSpeed;
 
 		float _timer;
+
+		float _warningMaxTimer;
 	};
 }
