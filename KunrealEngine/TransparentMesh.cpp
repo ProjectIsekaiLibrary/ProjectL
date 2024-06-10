@@ -123,6 +123,8 @@ void KunrealEngine::TransparentMesh::SetRenderType(unsigned int index)
 	// 2번 : 아래 -> 위로 그림 
 	// 3번 중앙 -> 외곽으로 그림
 	// 4번 중앙 -> 외곽선은 남긴채로 채워줌 (circle일때만 제대로 동작)
+	// 5번 도넛 (전체중에 그 부분만 지워짐)
+	// 6번 도넛 (원 중에 내부의 원만큼 지워줌)
 
 	if (this->_tMesh != nullptr)
 	{
@@ -147,6 +149,8 @@ void KunrealEngine::TransparentMesh::Reset()
 
 bool KunrealEngine::TransparentMesh::PlayOnce()
 {
+	this->_tMesh->SetStartFlag(true);
+
 	// 실행되지 않았다면
 	if (! _isPlayed)
 	{

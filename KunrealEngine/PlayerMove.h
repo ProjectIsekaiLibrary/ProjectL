@@ -72,6 +72,9 @@ namespace KunrealEngine
 		void NavigationDash(float speed);
 		std::vector<std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3>> _stopover;
 
+		// 움직일 수 없는 공간을 클릭했을 때 가까운 지점으로 노드 재생성
+		void RecalculateNavigation();
+
 		/// 디버깅을 위한 함수
 		void ShowPlayerInfo();
 	};

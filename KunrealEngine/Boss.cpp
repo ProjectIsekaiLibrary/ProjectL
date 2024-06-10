@@ -27,7 +27,8 @@ KunrealEngine::Boss::Boss()
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
-	_rotAngle(0.0f), _sumRot(0.0f), _prevRot()
+	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
+	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false)
 {
 
 }
@@ -183,6 +184,8 @@ void KunrealEngine::Boss::Update()
 		_status = BossStatus::STAGGERED;
 	}
 
+	SpecialAttack();
+
 	switch (_status)
 	{
 		case BossStatus::ENTER:
@@ -280,6 +283,8 @@ void KunrealEngine::Boss::Enter()
 			// IDLE로 상태 변경
 			_status = BossStatus::IDLE;
 		}
+
+		_canPlaySpecialPattern = true;
 	}
 }
 
@@ -506,6 +511,8 @@ void KunrealEngine::Boss::Dead()
 {
 	// 보스가 죽을때 애니메이션 실행
 	_boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
+
+	_canPlaySpecialPattern = false;
 }
 
 
@@ -574,6 +581,41 @@ void KunrealEngine::Boss::CoreAttack()
 	{
 		_boss->GetComponent<Animator>()->Stop();
 		_status = BossStatus::PATTERN_END;
+	}
+}
+
+
+void KunrealEngine::Boss::SpecialAttack()
+{
+	if (!_canPlaySpecialPattern)
+	{
+		return;
+	}
+
+	if (!_isSpecialPatternPlaying)
+	{
+		_specialPatternIndex = ToolBox::GetRandomNum(_speicalPattern.size()-1);
+
+		_isSpecialPatternPlaying = true;
+
+		_speicalPattern[_specialPatternIndex]->Initialize();
+
+	}
+
+	auto isPlaying = _speicalPattern[_specialPatternIndex]->SpecialPatternPlay();
+
+	// 패턴 실행이 끝났다면
+	if (isPlaying == false)
+	{
+		_specialPatternTimer += TimeManager::GetInstance().GetDeltaTime();
+
+		if (_specialPatternTimer >= 5.0f)
+		{
+			_isSpecialPatternPlaying = false;
+			
+			_specialPatternIndex = -1;
+			_specialPatternTimer = 0.0f;
+		}
 	}
 }
 

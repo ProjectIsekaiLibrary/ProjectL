@@ -49,6 +49,8 @@ namespace ArkEngine
 			// 도넛을 위한 레인지 설정
 			virtual void SetExceptRange(const DirectX::XMFLOAT3& center, float range) override;
 
+			virtual void SetStartFlag(bool tf) override;
+
 			virtual void Delete() override;
 
 		public:
@@ -107,6 +109,8 @@ namespace ArkEngine
 			float _renderTime;
 
 			bool _isRenderFinsh;
+
+			bool _isRenderStart;
 
 			DirectX::XMFLOAT3 _donutCenter;
 

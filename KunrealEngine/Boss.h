@@ -71,6 +71,7 @@ namespace KunrealEngine
 		virtual void PatternReady();
 		virtual void BasicAttack();
 		virtual void CoreAttack();
+		virtual void SpecialAttack();
 		virtual void PatternEnd();
 
 	public:
@@ -182,6 +183,10 @@ namespace KunrealEngine
 
 		std::vector<BossPattern*> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
+		
+		// 보스의 움직임과 무관하게 일정 주기마다 실행
+		std::vector<BossPattern*> _speicalPattern;
+
 		BossPattern* _nowTitlePattern;
 
 		BossPattern* _nowPlayingPattern;
@@ -227,6 +232,12 @@ namespace KunrealEngine
 		bool _backStepReady;
 
 		bool _isHideFinish;
+
+	private:
+		float _specialPatternTimer;
+		int _specialPatternIndex;
+		bool _isSpecialPatternPlaying;
+		bool _canPlaySpecialPattern;
 
 	private:
 		Coroutine_Func(patternEnd)

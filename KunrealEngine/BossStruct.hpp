@@ -156,6 +156,58 @@ struct BossPattern
 		return true;
 	}
 
+	bool SpecialPatternPlay()
+	{
+		// 로직 플레이
+		if (_index >= _patternList.size())
+		{
+			return false;
+		}
+
+		bool isLogicPlaying = true;
+		if (_patternList[_index]->_logic != nullptr)
+		{
+			isLogicPlaying = _patternList[_index]->_logic();
+		}
+		else
+		{
+			isLogicPlaying = false;
+		}
+
+		// 로직이 끝난다면
+		if (isLogicPlaying == false)
+		{
+			// 패턴이 지닌 하위 오브젝트들을 모두 끔
+			for (const auto& object : _patternList[_index]->_subObject)
+			{
+				// 모든 컴포넌트는 끔
+				object->SetTotalComponentState(false);
+			}
+
+			// 다음 패턴 로직을 실행
+			_index++;
+
+			if (_index > _patternList.size() - 1)
+			{
+				return false;
+			}
+
+			// 패턴이 지닌 하위 오브젝트들을 모두 켬
+			for (const auto& object : _patternList[_index]->_subObject)
+			{
+				// 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
+				object->SetActive(true);
+			}
+
+			// 각 패턴의 초기화 로직 실행
+			_patternList[_index]->Initialize();
+		}
+
+		// 모든 패턴 실행이 끝나면 true 반환
+		return true;
+	}
+
+
 	void Initialize() { if (_initializeLogic != nullptr) _initializeLogic(); _colliderOnCount = _maxColliderOnCount;  _index = 0; }
 	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };

@@ -145,8 +145,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	//navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
-	navigationInstance.HandleBuild(0, "testObj");
+	navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
+	//navigationInstance.HandleBuild(0, "testObj");
 	navigationInstance.HandleBuild(1, "testObj");
 
 	//// cube map test
@@ -161,8 +161,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	sceneInstance.CreateScene("ParticleTest");
 
-	ChangeScene("ParticleTest");
-	ParticleTest();
+	//ChangeScene("ParticleTest");
+	//ParticleTest();
 	/// 니들 맘대로 해
 	//PlayGround();
 }
@@ -269,7 +269,7 @@ void KunrealEngine::EngineCore::Update()
 			}
 		}
 	}
-
+	
 		if (GetCurrentScene()->GetGameObject("RuneStoneKamen") != nullptr)
 	{
 		if (GetCurrentScene()->GetGameObject("RuneStoneKamen")->GetComponent<BoxCollider>()->IsCollided() == true)
@@ -294,6 +294,24 @@ void KunrealEngine::EngineCore::Update()
 			}
 		}
 	}
+
+		if (InputSystem::GetInstance()->KeyUp(KEY::H))
+		{
+			KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
+			KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
+			//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
+			KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
+			ChangeScene("mapTest4.json");
+
+			navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
+
+			navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
+
+			std::vector<DirectX::XMFLOAT3> vertices;
+			std::vector<unsigned int> indices;
+			navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+			GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
+		}
 
 	if (GetCurrentScene()->GetGameObject("RuneStoneArachne") != nullptr)
 	{

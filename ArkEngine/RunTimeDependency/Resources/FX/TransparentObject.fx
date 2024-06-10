@@ -192,6 +192,28 @@ PSOut PsDonut(VertexOut pin)
     return output;
 }
 
+PSOut PsDonutInsideEmpty(VertexOut pin)
+{
+    PSOut output;
+       
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    float distance = length(float2(newPos.x, newPos.z) - float2(gDonutCenter.x, gDonutCenter.z));
+            
+    output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
+    
+    if (distance < gDonutRange)
+    {
+        output.Diffuse.a = 0.0f;
+    }
+    else
+    {
+        float alpha = saturate(gTime);
+    
+        output.Diffuse.a = alpha * gTransParency;
+    }
+    return output;
+}
+
 technique11 Tech
 {
     pass P0
@@ -234,5 +256,12 @@ technique11 Tech
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PsDonut()));
+    }
+
+    pass P6
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PsDonutInsideEmpty()));
     }
 }
