@@ -46,10 +46,14 @@ namespace KunrealEngine
 		void RightLeftPattern();
 		void BackStepCallPattern();
 		void TeleportSpellPattern();
+
+		// 검 단독 패턴
 		void SwordTurnClockPattern();
 		void SwordTurnAntiClockPattern();
 		void SwordLinearAttackPattern();
+		void SwordChopPattern();
 
+		// 검 WITH 카멘
 		void BasicSwordAttackPattern();
 
 		// 코어 패턴
@@ -64,21 +68,27 @@ namespace KunrealEngine
 		void CreateCallAttack();
 		void CreateCall2Attack();
 
-		// 검 패턴
+		// 검 with 카멘 패턴
 	private:
 		void CreateSwordAttack();
+
+		// 검 단독 패턴
+	private:
 		void CreateSwordEmergence();
 		void CreateSwordHide();
+
 		void CraeteSwordTurnClockWise();
 		void CreateSwordTurnAntiClock();
+		void CreateOutsideSafe();
+		void CreateInsideSafe();
+		void CreateDonutSafe();
+
+		void CreateSwordLookPlayer();
 
 		void CreateSwordLinearReady();
 		void CreateSwordLinearAttack();
 
-		void CreateSwordLookPlayer();
-
-		void CreateOutsideSafe();
-		void CreateInsideSafe();
+		void CreateSwordChopAttack();
 
 		// 카멘 이동 관련
 	private:
@@ -109,6 +119,7 @@ namespace KunrealEngine
 		BossPattern* _turnAntiClockWise;
 		BossPattern* _outsideSafe;
 		BossPattern* _insideSafe;
+		BossPattern* _donutSafe;
 
 		BossPattern* _basicSwordAttack;
 		BossPattern* _swordEmmergence;
@@ -118,7 +129,7 @@ namespace KunrealEngine
 		BossPattern* _swordLinearAtack;
 		BossPattern* _swordLinearReady;
 		BossPattern* _swordLookPlayer;
-
+		BossPattern* _swordChopAttack;
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -135,9 +146,14 @@ namespace KunrealEngine
 		GameObject* _insideWarning;
 		GameObject* _insideAttack;
 		GameObject* _outsideWarning;
+		GameObject* _donutWarning1;
+		GameObject* _donutWarning2;
+		GameObject* _donutWarning3;
 
 
-		GameObject* _sword;
+		GameObject* _freeSword;
+		GameObject* _freeSwordCollider;
+		GameObject* _swordPath;
 
 		std::vector<GameObject*> _fakeBoss;
 
@@ -156,11 +172,6 @@ namespace KunrealEngine
 	private:
 		unsigned int _targetIndex;
 
-	private:
-		float _insideWarningTimer;
-
-	private:
-		float _swordDissolveTimer;
 	// logic
 	private:
 		std::function<void()> _callInitLogic;
@@ -174,8 +185,17 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _swordStartPos;
 		DirectX::XMFLOAT3 _swordOriginPos;
 
-		float _circleWarningRadius;
+		float _circleWarningSize;
 
 		float _swordLinearDistance;
+
+		DirectX::XMFLOAT3 _swordDirection;
+		DirectX::XMFLOAT3 _swordRotation;
+
+		float _swordChopSpeed;
+
+		float _timer;
+
+		float _warningMaxTimer;
 	};
 }

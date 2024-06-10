@@ -17,7 +17,7 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_tech(nullptr), _fxWorld(nullptr), _fxWorldViewProj(nullptr), _world(), _view(), _proj(),
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
-	_renderTime(0.0f), _isRenderFinsh(true),
+	_renderTime(0.0f), _isRenderFinsh(true), _isRenderStart(false),
 	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f)
 {
 	Initialize();
@@ -56,7 +56,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 
 void ArkEngine::ArkDX11::TransparentMesh::Render()
 {
-	if (!_isRenderFinsh)
+	if (!_isRenderFinsh && _isRenderStart)
 	{
 		auto deviceContext = _arkDevice->GetDeviceContext();
 
@@ -87,7 +87,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Render()
 
 		_fxTime->SetFloat(_renderTime);
 
-		if (_renderType == 5)
+		if (_renderType >= 5)
 		{
 			_fxDonutCenter->SetFloatVector(reinterpret_cast<float*>(&_donutCenter));
 			_fxDonutRange->SetFloat(_donutRange);
@@ -100,6 +100,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Render()
 
 void ArkEngine::ArkDX11::TransparentMesh::Reset()
 {
+	_isRenderStart = false;
 	_timer = 0.0f;
 	_renderTime = 0.0f;
 	_isRenderFinsh = false;
@@ -157,6 +158,12 @@ void ArkEngine::ArkDX11::TransparentMesh::SetExceptRange(const DirectX::XMFLOAT3
 {
 	_donutCenter = center;
 	_donutRange = range;
+}
+
+
+void ArkEngine::ArkDX11::TransparentMesh::SetStartFlag(bool tf)
+{
+	_isRenderStart = tf;
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::Delete()

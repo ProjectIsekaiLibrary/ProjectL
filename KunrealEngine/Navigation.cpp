@@ -482,6 +482,24 @@ namespace KunrealEngine
 		return fileNames;
 	}
 
+	std::vector<std::string> KunrealEngine::Navigation::GetMapObjPathList()
+	{
+		namespace fs = std::filesystem;
+		std::string directory = "Resources/MapObj";
+		std::vector<std::string> fileNames;
+
+		// Iterate over the files in the directory
+		for (const auto& entry : fs::directory_iterator(directory)) {
+			// Check if it's a regular file
+			if (fs::is_regular_file(entry)) {
+				// Get the filename from the path and add it to the vector
+				fileNames.push_back(entry.path().filename().string());
+			}
+		}
+
+		return fileNames;
+	}
+
 	int Navigation::rasterizeTileLayers(const int tx, const int ty, const rcConfig& cfg, TileCacheData* tiles, const int maxTiles)
 	{
 		if (!_geom || !_geom->getMesh() || !_geom->getChunkyMesh())

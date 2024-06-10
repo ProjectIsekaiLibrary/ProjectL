@@ -130,7 +130,7 @@ void KunrealEngine::PlayerMove::UpdateTargetPosition()
 }
 
 void KunrealEngine::PlayerMove::UpdateMoveNode()
-{ 
+{
 	// 네비게이션으로부터 이동목표 노드들을 받아옴
 	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
 		_targetPos.x, _transform->GetPosition().y, _targetPos.z);
@@ -471,6 +471,28 @@ void KunrealEngine::PlayerMove::SetPlayerY(float y)
 float KunrealEngine::PlayerMove::GetPlayerY()
 {
 	return this->_posY;
+}
+
+
+void KunrealEngine::PlayerMove::RecalculateNavigation()
+{
+	/// 미완성
+	// 반환 된 노드가 없으면 == 움직일 수 없는 공간을 클릭했으면
+	if (_stopover.size() == 0)
+	{
+		// 플레이어 위치에서 마우스 위치로의 방향벡터
+		DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
+		DirectX::XMVECTOR currentVec = DirectX::XMLoadFloat3(&currentPoint);
+		DirectX::XMFLOAT3 targetPoint = _targetPos;
+		DirectX::XMFLOAT3 targetWithY = { targetPoint.x, targetPoint.y + _posY, targetPoint.z };
+
+		DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetWithY);
+		_playerComp->_directionVector = direction;
+
+		// 플레이어 위치에서 방향벡터 방향으로 대시 거리만큼의 좌표
+		direction = DirectX::XMVectorScale(direction, _playerComp->GetPlayerData()._dashRange);
+		DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(currentVec, direction);
+	}
 }
 
 void KunrealEngine::PlayerMove::ShowPlayerInfo()
