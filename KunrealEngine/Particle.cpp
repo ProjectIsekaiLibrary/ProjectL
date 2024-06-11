@@ -2,12 +2,14 @@
 #include "Transform.h"
 #include "MeshRenderer.h"
 #include "GraphicsSystem.h"
+#include "ToolBox.h"
 
 KunrealEngine::Particle::Particle()
 	:_particle(nullptr), _transform(nullptr),
 	_velocity(0.0f), _random(false), _fadeoutTime(0.0f), _lifeTime(0.0f),
 	_size({ 0.0f, 0.0f }), _color({ 0.0f, 0.0f, 0.0f }), _direction({ 0.0f, 0.0f, 0.0f }), _rotation({0.0f, 0.0f, 0.0f}),
-	_parentObject(nullptr), _parentBoneName(), _offset({0.0f, 0.0f, 0.0f})
+	_parentObject(nullptr), _parentBoneName(), _offset({ 0.0f, 0.0f, 0.0f }),
+	_decomposedPos({ 0.0f, 0.0f, 0.0f }), _decomposedRot({ 0.0f, 0.0f, 0.0f }), _decomposedScale({ 0.0f, 0.0f, 0.0f })
 {
 
 }
@@ -34,6 +36,7 @@ void KunrealEngine::Particle::FixedUpdate()
 
 void KunrealEngine::Particle::Update()
 {
+	// 종속 된 bone이 있으면
 	if (_transform->_haveParentBone)
 	{
 		if (_parentObject != nullptr)
@@ -57,7 +60,27 @@ void KunrealEngine::Particle::Update()
 	}
 	else
 	{
-		SetParticlePos(this->_transform->GetPosition().x + _offset.x, this->_transform->GetPosition().y + _offset.y, this->_transform->GetPosition().z + _offset.z);
+		// 부모가 있으면
+		if (this->GetOwner()->GetParent() != nullptr)
+		{
+			DirectX::XMFLOAT4X4 worldTM = this->GetOwner()->GetComponent<Transform>()->GetWorldTM();
+			DirectX::XMMATRIX worldMat = DirectX::XMLoadFloat4x4(&worldTM);
+
+			DirectX::XMVECTOR scale, quaternion, translation;
+
+			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, worldMat);
+			DirectX::XMStoreFloat3(&_decomposedPos, translation);
+			_decomposedRot = ToolBox::QuaternionToEulerAngles(quaternion);
+			DirectX::XMStoreFloat3(&_decomposedScale, scale);
+
+			SetParticlePos(this->_decomposedPos.x + _offset.x, this->_decomposedPos.y + _offset.y, this->_decomposedPos.z + _offset.z);
+
+		}
+		// 없으면
+		else
+		{
+			SetParticlePos(this->_transform->GetPosition().x + _offset.x, this->_transform->GetPosition().y + _offset.y, this->_transform->GetPosition().z + _offset.z);
+		}
 	}
 }
 

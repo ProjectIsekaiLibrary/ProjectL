@@ -50,6 +50,10 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _rotation;	// 회전 각도
 		DirectX::XMFLOAT3 _offset;		// 위치 여백
 
+		DirectX::XMFLOAT3 _decomposedPos;
+		DirectX::XMFLOAT3 _decomposedRot;
+		DirectX::XMFLOAT3 _decomposedScale;
+
 	public:
 		// 어떤 파티클을 출력할 것인가		// 처음에 반드시 해줘야함
 		void SetParticleEffect(std::string name, std::string fileName, unsigned int maxParticle);
