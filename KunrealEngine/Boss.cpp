@@ -186,6 +186,8 @@ void KunrealEngine::Boss::Update()
 
 	SpecialAttack();
 
+	SpecialAttack2();
+
 	switch (_status)
 	{
 		case BossStatus::ENTER:
@@ -617,6 +619,12 @@ void KunrealEngine::Boss::SpecialAttack()
 			_specialPatternTimer = 0.0f;
 		}
 	}
+}
+
+
+void KunrealEngine::Boss::SpecialAttack2()
+{
+
 }
 
 void KunrealEngine::Boss::PatternEnd()

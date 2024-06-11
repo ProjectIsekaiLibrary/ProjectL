@@ -72,6 +72,7 @@ namespace KunrealEngine
 		virtual void BasicAttack();
 		virtual void CoreAttack();
 		virtual void SpecialAttack();
+		virtual void SpecialAttack2();
 		virtual void PatternEnd();
 
 	public:
@@ -200,11 +201,10 @@ namespace KunrealEngine
 		Transform* _bossTransform;
 		Transform* _playerTransform;
 
-	private:
-		float _startTime;
+		bool _isCorePattern;
 
 	private:
-		bool _isCorePattern;
+		float _startTime;
 
 	private:
 		bool _isStart;

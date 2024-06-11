@@ -20,7 +20,10 @@ KunrealEngine::Kamen::Kamen()
 	_swordLinearReady(nullptr), _swordLookPlayer(nullptr), _swordDirection(), _timer(0.0f), _swordPath(nullptr),
 	_swordChopAttack(nullptr), _donutSafe(nullptr), _donutWarning1(nullptr), _donutWarning2(nullptr), _donutWarning3(nullptr),
 	_swordRotation(), _swordChopSpeed(0.0f), _warningMaxTimer(0.0f),
-	_leftHandBone(nullptr), _rightFireAttack(nullptr), _rightHandBone(nullptr), _leftFireAttack(nullptr)
+	_leftHandBone(nullptr), _rightFireAttack(nullptr), _rightHandBone(nullptr), _leftFireAttack(nullptr),
+	_alterEgo(nullptr), _egoEmergence(nullptr), _isSpecial2Ready(false),
+	_isSpecial2Playing(false), _egoTimer(0.0f), _isEgoAppearInit(false), _isEgoAppearFinish(false),
+	_isEgoAttack(false)
 {
 	BossBasicInfo info;
 
@@ -132,6 +135,8 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateLeftAttackThrowingFire();
 	CreateRightAttackThrowingFire();
 
+	CreateEgoEmergence();
+
 	CreateSwordAttack();
 
 	CreateCallAttack();
@@ -165,15 +170,204 @@ void KunrealEngine::Kamen::CreatePattern()
 }
 
 
+void KunrealEngine::Kamen::Idle()
+{
+	_boss->GetComponent<Animator>()->Play("Idle", _info._baseAnimSpeed, true);
+
+	// 핵심 패턴이 구현되어있다면
+	if (!(_corePattern).empty())
+	{
+		// 핵심 패턴은 back에서부터 hp가 높은 순서로 되어있기에
+		// 보스의 체력이 핵심 패턴의 발동 체력 이하가 된다면
+		if (_info._hp <= (_corePattern).back()->_triggerHp)
+		{
+			// 코어패턴인지 여부 확인
+			_isCorePattern = true;
+
+			_nowTitlePattern = _corePattern.back();
+
+			// 패턴 준비 상태로 변경
+			_status = BossStatus::PATTERN_READY;
+
+			// 함수 종료
+			return;
+		}
+	}
+
+	// 핵심 패턴이 아닌 기본 공격일 경우에 다음 기본 패턴을 정함
+	if (_patternIndex == -1 && !_isCorePattern)
+	{
+		// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
+		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+
+		if (_basicPattern.size() > 1)
+		{
+			while (_patternIndex == _exPatternIndex)
+			{
+				// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+			}
+
+			// 가져온 랜덤 패턴이 활성화되어있지 않다면
+			while ((_basicPattern)[_patternIndex]->_isActive == false)
+			{
+				// 가져온 랜덤 패턴이 활성화 되어 있을때까지 다시 랜덤 인덱스를 추출
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+			}
+		}
+
+		// 여기서 patternindex가 1,2,3,4,5라면 분신을 소환
+		if (_isSpecial2Ready && _patternIndex < 5)
+		{
+			_isSpecial2Playing = true;
+
+			_boss->GetComponent<Animator>()->Stop();
+		}
+		else
+		{
+			_isSpecial2Playing = false;
+		}
+	}
+
+	_nowTitlePattern = _basicPattern[_patternIndex];
+
+	// Chase로 상태 변환
+	if (!_isSpecial2Playing)
+	{
+		_status = BossStatus::CHASE;
+	}
+	else
+	{
+		if (_isEgoAppearFinish)
+		{
+			_status = BossStatus::CHASE;
+		}
+	}
+
+	if (_nowTitlePattern->_skipChase)
+	{
+		_status = BossStatus::PATTERN_READY;
+	}
+}
+
+void KunrealEngine::Kamen::SpecialAttack2()
+{
+	if (!_isSpecial2Playing)
+	{
+		_egoTimer += TimeManager::GetInstance().GetDeltaTime();
+
+		if (_egoTimer >= 5.0f)
+		{
+			_isSpecial2Ready = true;
+		}
+	}
+
+	else
+	{
+		if (!_isEgoAppearInit)
+		{
+ 			_alterEgo->SetActive(true);
+			_alterEgo->GetComponent<MeshRenderer>()->SetActive(true);
+
+			auto egoTransform = _alterEgo->GetComponent<Transform>();
+
+			auto angle = ToolBox::GetAngleWithDirection(egoTransform->GetPosition(), _playerTransform->GetPosition(), egoTransform->GetRotation().y);
+
+			egoTransform->SetRotation(egoTransform->GetRotation().x, angle, egoTransform->GetRotation().z);
+
+			_isEgoAppearInit = true;
+		}
+
+		if (_isEgoAppearInit && !_isEgoAppearFinish)
+		{
+			auto isPlaying = _alterEgo->GetComponent<Animator>()->Play("Emergence", 30.0f);
+
+			if (isPlaying == false)
+			{
+				_alterEgo->GetComponent<Animator>()->Stop();
+
+				_isEgoAppearFinish = true;
+			}
+		}
+
+		if (_isEgoAppearFinish && _status == BossStatus::CHASE)
+		{
+			_alterEgo->GetComponent<Animator>()->Play("Idle", 20.0f);
+
+			auto egoTransform = _alterEgo->GetComponent<Transform>();
+			auto goalAngle = ToolBox::GetAngleWithDirection(egoTransform->GetPosition(), _playerTransform->GetPosition(), 0.0f);
+
+			auto rotation = egoTransform->GetRotation();
+
+			// 회전 속도
+			float speed = TimeManager::GetInstance().GetDeltaTime() * 50.0f;
+
+			// 현재 각도가 목표로 하는 각도보다 작을 경우
+
+			auto errorRange = std::abs(goalAngle) - std::abs(egoTransform->GetRotation().y);
+
+			errorRange = std::abs(errorRange);
+
+			if (errorRange > 1.0f)
+			{
+				if (goalAngle < rotation.y)
+				{
+					// 회전 속도만큼 회전
+					egoTransform->SetRotation(egoTransform->GetRotation().x, egoTransform->GetRotation().y - speed, egoTransform->GetRotation().z);
+				}
+				else
+				{
+					// 회전 속도만큼 회전
+					egoTransform->SetRotation(egoTransform->GetRotation().x, egoTransform->GetRotation().y + speed, egoTransform->GetRotation().z);
+				}
+			}
+		}
+
+		if (_isEgoAppearFinish && _status == BossStatus::BASIC_ATTACK)
+		{
+			if (!_isEgoAttack)
+			{
+				_alterEgo->GetComponent<Animator>()->Stop();
+				_isEgoAttack = true;
+			}
+		}
+
+		if (_isEgoAttack && _status == BossStatus::PATTERN_END)
+		{
+			_alterEgo->GetComponent<MeshRenderer>()->SetActive(false);
+			_alterEgo->SetActive(false);
+
+			_isSpecial2Ready = false;
+			_isSpecial2Playing = false;
+			_isEgoAppearInit = false;
+			_isEgoAppearFinish = false;
+			_isEgoAttack = false;
+			_egoTimer = false;
+
+			auto egoTransform = _alterEgo->GetComponent<Transform>();
+
+			egoTransform->SetRotation(egoTransform->GetRotation().x, 0.0f, egoTransform->GetRotation().z);
+
+			_alterEgo->GetComponent<Animator>()->Stop();
+		}
+	}
+
+	//test
+	if (_isEgoAttack)
+	{
+		_alterEgo->GetComponent<Animator>()->Play(_nowPlayingPattern->_animName, _nowPlayingPattern->_speed);
+	}
+}
+
 void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();						// 기본 spell, call
 	//
-	//LeftRightPattern();					// 전방 좌, 우 어택
+	LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
-	
+
 	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	SwordLinearAttackPattern();
@@ -183,13 +377,222 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//CoreEmmergencePattern();
 
-	_basicPattern.emplace_back(_rightFireAttack);
-	_basicPattern.emplace_back(_leftFireAttack);
+	//_basicPattern.emplace_back(_rightFireAttack);
+	//_basicPattern.emplace_back(_leftFireAttack);
+
+	//_basicPattern.emplace_back(_egoEmergence);
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
 {
+	// 왼손
+	_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
+	_leftHand->AddComponent<BoxCollider>();
+	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
+	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
 
+	// 왼손 불 위치 체크용 메쉬
+	_leftHandBone = _boss->GetObjectScene()->CreateObject("leftHandBone");
+	_leftHandBone->AddComponent<MeshRenderer>();
+	_leftHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_leftHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_L");
+	_leftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_leftHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+
+	// 오른손
+	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
+	_rightHand->AddComponent<BoxCollider>();
+	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
+	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
+	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
+
+	// 오른손 불 위치 체크용 메쉬
+	_rightHandBone = _boss->GetObjectScene()->CreateObject("RightHandBone");
+	_rightHandBone->AddComponent<MeshRenderer>();
+	_rightHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_rightHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_R");
+	_rightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_rightHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+
+	// 5개 불 
+	for (int i = 0; i < 5; i++)
+	{
+		std::string index = "HandFire" + std::to_string(i + 1);
+		auto handFire = _boss->GetObjectScene()->CreateObject(index);
+		handFire->AddComponent<MeshRenderer>();
+		handFire->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+		handFire->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+		_handFire.emplace_back(handFire);
+	}
+
+	// 내부 장판
+	_insideWarning = _boss->GetObjectScene()->CreateObject("OutsideSafe");
+	_insideWarning->AddComponent<TransparentMesh>();
+	_insideWarning->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
+	_insideWarning->GetComponent<Transform>()->SetScale(30.0f, 30.0f, 30.0f);
+	_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z);
+	_insideWarning->GetComponent<TransparentMesh>()->SetRenderType(3);
+	_insideWarning->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+
+	// 내부 장판 공격
+	_insideAttack = _boss->GetObjectScene()->CreateObject("InsideAttack");
+	_insideAttack->AddComponent<BoxCollider>();
+	_insideAttack->GetComponent<BoxCollider>()->SetBoxSize(30.0f, 30.0f, 30.0f);
+	_insideAttack->GetComponent<BoxCollider>()->SetActive(false);
+	_insideAttack->AddComponent<Particle>();
+	_insideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
+	_insideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
+	_insideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
+	_insideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+
+	// 외부 장판
+	_outsideWarning = _boss->GetObjectScene()->CreateObject("InsideSafe");
+	_outsideWarning->AddComponent<TransparentMesh>();
+	_outsideWarning->GetComponent<TransparentMesh>()->CreateTMesh("InsideSafe", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
+	_outsideWarning->GetComponent<Transform>()->SetScale(200.0f, 200.0f, 200.0f);
+	_outsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
+	_outsideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
+	_outsideWarning->GetComponent<TransparentMesh>()->SetRenderType(5);
+	_outsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 30.0f);
+
+	// 도넛 장판 1번
+	_donutWarning1 = _boss->GetObjectScene()->CreateObject("donutSafe1");
+	_donutWarning1->AddComponent<TransparentMesh>();
+	_donutWarning1->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe1", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
+	_donutWarning1->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
+	_donutWarning1->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+
+	// 도넛 장판 2번
+	_donutWarning2 = _boss->GetObjectScene()->CreateObject("donutSafe2");
+	_donutWarning2->AddComponent<TransparentMesh>();
+	_donutWarning2->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe2", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
+	_donutWarning2->GetComponent<Transform>()->SetScale(60.0f, 60.0f, 60.0f);
+	_donutWarning2->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+	_donutWarning2->GetComponent<TransparentMesh>()->SetRenderType(6);
+
+	// 도넛 장판 3번
+	_donutWarning3 = _boss->GetObjectScene()->CreateObject("donutSafe3");
+	_donutWarning3->AddComponent<TransparentMesh>();
+	_donutWarning3->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe3", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
+	_donutWarning3->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
+	_donutWarning3->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+	_donutWarning3->GetComponent<TransparentMesh>()->SetRenderType(6);
+
+	// 레이저 
+	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
+	_lazer->AddComponent<Particle>();
+	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
+	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+	_lazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
+	_lazer->GetComponent<Particle>()->SetActive(false);
+
+	// 레이저 콜라이더
+	_lazerCollider = _boss->GetObjectScene()->CreateObject("lazerCollider");
+	_lazerCollider->AddComponent<BoxCollider>();
+	_lazerCollider->GetComponent<BoxCollider>()->SetBoxSize(140.0f, 10.0f, 10.0f);
+
+	// call 투사체
+	_call = _boss->GetObjectScene()->CreateObject("call");
+	_call->AddComponent<BoxCollider>();
+	_call->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
+	_call->GetComponent<BoxCollider>()->SetActive(false);
+	_call->AddComponent<Particle>();
+	_call->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_call->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
+	_call->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
+	_call->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
+	_call->GetComponent<Particle>()->SetParticleDirection(0.0f, 7.0f, 0.0f);
+	_call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_call->GetComponent<Particle>()->SetActive(false);
+	DirectX::XMFLOAT4 diffuse = { 0.0f, 0.6f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 ambient = { 0.0f, 0.15f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
+	_call->AddComponent<Light>();
+	_call->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+
+	// call2 투사체
+	_call2 = _boss->GetObjectScene()->CreateObject("call2");
+	_call2->AddComponent<BoxCollider>();
+	_call2->GetComponent<BoxCollider>()->SetBoxSize(15.0f, 30.0f, 15.0f);
+	_call2->GetComponent<BoxCollider>()->SetActive(false);
+	_call2->AddComponent<Particle>();
+	_call2->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_call2->GetComponent<Particle>()->SetParticleDuration(2.7f, 3.1f);
+	_call2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
+	_call2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	_call2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.5f, 0.0f);
+	_call2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_call2->GetComponent<Particle>()->SetActive(false);
+	_call2->AddComponent<Light>();
+	_call2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+
+	// 따로 패턴하는 검
+	_freeSword = _boss->GetObjectScene()->CreateObject("KamenSword");
+	_freeSword->AddComponent<MeshRenderer>();
+	_freeSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	_freeSword->AddComponent<BoxCollider>();
+	_freeSword->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 20.0f, 5.0f);
+	auto texSize = _freeSword->GetComponent<MeshRenderer>()->GetTextures().size();
+	for (int i = 0; i < texSize; i++)
+	{
+		_freeSword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+		_freeSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+		_freeSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+	}
+
+	// 검 경로 장판
+	_swordPath = _boss->GetObjectScene()->CreateObject("swordPath");
+	_swordPath->AddComponent<TransparentMesh>();
+	_swordPath->GetComponent<TransparentMesh>()->CreateTMesh("SwordPath", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
+	_swordPath->GetComponent<Transform>()->SetScale(100.0f, 10.0f, 10.0f);
+	_swordPath->GetComponent<TransparentMesh>()->SetTimer(4.5f);
+
+	// 핵심패턴 9마리 보스
+	for (int i = 0; i < 9; i++)
+	{
+		std::string index = "fake" + std::to_string(i + 1);
+		auto boss = _boss->GetObjectScene()->CreateObject(index);
+
+		boss->AddComponent<MeshRenderer>();
+		boss->GetComponent<MeshRenderer>()->SetMeshObject("FakeLich/FakeLich");
+
+		auto texSize = boss->GetComponent<MeshRenderer>()->GetTextures().size();
+		for (int i = 0; i < texSize; i++)
+		{
+			boss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+			boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+			boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+		}
+
+		boss->AddComponent<BoxCollider>();
+		boss->GetComponent<BoxCollider>()->SetTransform(boss, "Spine1_M");
+		boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
+		boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
+
+		boss->SetTotalComponentState(false);
+		boss->SetActive(false);
+
+		_fakeBoss.emplace_back(boss);
+	}
+
+	// 분신 소환
+	_alterEgo = _boss->GetObjectScene()->CreateObject("Ego");
+
+	_alterEgo->AddComponent<MeshRenderer>();
+	_alterEgo->GetComponent<MeshRenderer>()->SetMeshObject("FakeLich/FakeLich");
+
+	auto egoTexSize = _alterEgo->GetComponent<MeshRenderer>()->GetTextures().size();
+	for (int i = 0; i < egoTexSize; i++)
+	{
+		_alterEgo->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+		_alterEgo->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+		_alterEgo->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+	}
+
+	_alterEgo->SetActive(false);
 }
 
 
@@ -239,13 +642,6 @@ void KunrealEngine::Kamen::BasicPattern()
 
 void KunrealEngine::Kamen::CreateLeftAttack()
 {
-	// 왼손
-	_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
-	_leftHand->AddComponent<BoxCollider>();
-	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
-	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
-	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Once");
@@ -271,98 +667,79 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
-	_leftHandBone = _boss->GetObjectScene()->CreateObject("leftHandBone");
-	_leftHandBone->AddComponent<MeshRenderer>();
-	_leftHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-	_leftHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_L");
-	_leftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
-	_leftHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
-
-
 	for (int i = 0; i < 5; i++)
 	{
-		std::string index = "LeftHandFire" + std::to_string(i + 1);
-		auto handFire = _boss->GetObjectScene()->CreateObject(index);
-		handFire->AddComponent<MeshRenderer>();
-		handFire->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-		handFire->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
-
-		//handFire->AddComponent<Particle>();
-		//handFire->GetComponent<MeshRenderer>()->SetTransform(_boss, "MiddleFinger1_L");
-
-		_handFire.emplace_back(handFire);
-
 		_handFireReady.emplace_back(true);
 
 		_handFireDir.emplace_back();
 
-		pattern->SetSubObject(handFire);
+		pattern->SetSubObject(_handFire[i]);
 	}
 
 	auto initLogic = [pattern, this]()
-	{
-		for (int i = 0; i < 5; i++)
 		{
-			_handFireReady[i] = true;
-		}
-	};
+			for (int i = 0; i < 5; i++)
+			{
+				_handFireReady[i] = true;
+			}
+		};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-		for (int i = 0; i < 5; i++)
 		{
-			if (animator->GetCurrentFrame() >= 14 + i)
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			for (int i = 0; i < 5; i++)
 			{
-				if (_handFireReady[i] == true)
+				if (animator->GetCurrentFrame() >= 14 + i)
 				{
-					_handFireReady[i] = false;
+					if (_handFireReady[i] == true)
+					{
+						_handFireReady[i] = false;
 
-					auto mat = _leftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
-					auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+						auto mat = _leftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
+						auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
 
-					auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+						auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
 
-					auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+						auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
 
-					_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+						_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
 
-					_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-					_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
-				}
-				else
-				{
-					auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
-					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+						_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+					}
+					else
+					{
+						auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
 
-					_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+					}
 				}
 			}
-		}
 
 
-		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 
-		if (pattern->_colliderOnCount > 0)
-		{
-			if (animator->GetCurrentFrame() >= 10)
+			if (pattern->_colliderOnCount > 0)
 			{
+				if (animator->GetCurrentFrame() >= 10)
+				{
 
+				}
 			}
-		}
 
-		if (isAnimationPlaying == false)
-		{
-			return false;
-		}
+			if (isAnimationPlaying == false)
+			{
+				return false;
+			}
 
-		return true;
-	};
+			return true;
+		};
 
 	pattern->SetLogic(attackLogic);
 
@@ -371,13 +748,6 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 void KunrealEngine::Kamen::CreateRightAttack()
 {
-	// 오른손
-	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
-	_rightHand->AddComponent<BoxCollider>();
-	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
-	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
-	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Right_Attack_Once");
@@ -404,92 +774,84 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
-	_rightHandBone = _boss->GetObjectScene()->CreateObject("RightHandBone");
-	_rightHandBone->AddComponent<MeshRenderer>();
-	_rightHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-	_rightHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_R");
-	_rightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
-	_rightHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
-
-
 	for (int i = 0; i < 5; i++)
 	{
 		pattern->SetSubObject(_handFire[i]);
 	}
 
 	auto initLogic = [pattern, this]()
-	{
-		for (int i = 0; i < 5; i++)
 		{
-			_handFireReady[i] = true;
-		}
-	};
+			for (int i = 0; i < 5; i++)
+			{
+				_handFireReady[i] = true;
+			}
+		};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
-	{
-		auto animator = _boss->GetComponent<Animator>();
-		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-		for (int i = 0; i < 5; i++)
 		{
-			int index = i;
-			if (i == 3)
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			for (int i = 0; i < 5; i++)
 			{
-				index++;
-			}
-			else if (i == 4)
-			{
-				index += 2;
-			}
-			if (animator->GetCurrentFrame() >= 24 + index)
-			{
-				if (_handFireReady[i] == true)
+				int index = i;
+				if (i == 3)
 				{
-					_handFireReady[i] = false;
-
-					auto mat = _rightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
-					auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
-
-					auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
-
-					auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
-
-					_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
-
-					_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
-
-					_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+					index++;
 				}
-				else
+				else if (i == 4)
 				{
-					auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
-					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+					index += 2;
+				}
+				if (animator->GetCurrentFrame() >= 24 + index)
+				{
+					if (_handFireReady[i] == true)
+					{
+						_handFireReady[i] = false;
 
-					_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+						auto mat = _rightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
+						auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+						auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+
+						auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+
+						_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+						_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+					}
+					else
+					{
+						auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+
+						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+					}
 				}
 			}
-		}
 
 
-		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 
-		if (pattern->_colliderOnCount > 0)
-		{
-			if (animator->GetCurrentFrame() >= 10)
+			if (pattern->_colliderOnCount > 0)
 			{
+				if (animator->GetCurrentFrame() >= 10)
+				{
 
+				}
 			}
-		}
 
-		if (isAnimationPlaying == false)
-		{
-			return false;
-		}
+			if (isAnimationPlaying == false)
+			{
+				return false;
+			}
 
-		return true;
-	};
+			return true;
+		};
 
 	pattern->SetLogic(attackLogic);
 
@@ -705,26 +1067,7 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
-	_insideWarning = _boss->GetObjectScene()->CreateObject("OutsideSafe");
-	_insideWarning->AddComponent<TransparentMesh>();
-	_insideWarning->GetComponent<TransparentMesh>()->CreateTMesh("OutsideSafe", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
-	_insideWarning->GetComponent<Transform>()->SetScale(30.0f, 30.0f, 30.0f);
-	_insideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z);
-	_insideWarning->GetComponent<TransparentMesh>()->SetRenderType(3);
-	_insideWarning->GetComponent<TransparentMesh>()->SetTimer(1.0f);
-
 	pattern->SetSubObject(_insideWarning);
-
-	_insideAttack = _boss->GetObjectScene()->CreateObject("InsideAttack");
-	_insideAttack->AddComponent<BoxCollider>();
-	_insideAttack->GetComponent<BoxCollider>()->SetBoxSize(30.0f, 30.0f, 30.0f);
-	_insideAttack->GetComponent<BoxCollider>()->SetActive(false);
-
-	_insideAttack->AddComponent<Particle>();
-	_insideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
-	_insideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
-	_insideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
-	_insideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 
 	pattern->SetSubObject(_insideAttack);
 
@@ -786,16 +1129,6 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
-	_outsideWarning = _boss->GetObjectScene()->CreateObject("InsideSafe");
-	_outsideWarning->AddComponent<TransparentMesh>();
-	_outsideWarning->GetComponent<TransparentMesh>()->CreateTMesh("InsideSafe", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
-	_outsideWarning->GetComponent<Transform>()->SetScale(200.0f, 200.0f, 200.0f);
-	_outsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
-
-	_outsideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
-	_outsideWarning->GetComponent<TransparentMesh>()->SetRenderType(5);
-	_outsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 30.0f);
-
 	pattern->SetSubObject(_outsideWarning);
 
 	// 패턴 시작전에 초기화, 장판 켜줌
@@ -805,7 +1138,7 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 			_outsideWarning->GetComponent<TransparentMesh>()->Reset();
 			_outsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_outsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
-	
+
 			_outsideWarning->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
 		};
 
@@ -844,26 +1177,6 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
-	_donutWarning1 = _boss->GetObjectScene()->CreateObject("donutSafe1");
-	_donutWarning1->AddComponent<TransparentMesh>();
-	_donutWarning1->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe1", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
-	_donutWarning1->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
-	_donutWarning1->GetComponent<TransparentMesh>()->SetTimer(1.0f);
-
-	_donutWarning2 = _boss->GetObjectScene()->CreateObject("donutSafe2");
-	_donutWarning2->AddComponent<TransparentMesh>();
-	_donutWarning2->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe2", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
-	_donutWarning2->GetComponent<Transform>()->SetScale(60.0f, 60.0f, 60.0f);
-	_donutWarning2->GetComponent<TransparentMesh>()->SetTimer(1.0f);
-	_donutWarning2->GetComponent<TransparentMesh>()->SetRenderType(6);
-
-	_donutWarning3 = _boss->GetObjectScene()->CreateObject("donutSafe3");
-	_donutWarning3->AddComponent<TransparentMesh>();
-	_donutWarning3->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe3", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
-	_donutWarning3->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
-	_donutWarning3->GetComponent<TransparentMesh>()->SetTimer(1.0f);
-	_donutWarning3->GetComponent<TransparentMesh>()->SetRenderType(6);
-
 	pattern->SetSubObject(_donutWarning1);
 	pattern->SetSubObject(_donutWarning2);
 	pattern->SetSubObject(_donutWarning3);
@@ -886,7 +1199,7 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 			_donutWarning3->GetComponent<TransparentMesh>()->Reset();
 			_donutWarning3->GetComponent<TransparentMesh>()->SetActive(true);
 			_donutWarning3->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
-			_donutWarning3->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _circleWarningSize*2);
+			_donutWarning3->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _circleWarningSize * 2);
 
 			_timer = 0.0f;
 		};
@@ -898,7 +1211,7 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 			_timer += TimeManager::GetInstance().GetDeltaTime();
 
 			bool isPlayed = false;
-	
+
 			// 장판 실행
 			_donutWarning1->GetComponent<TransparentMesh>()->PlayOnce();
 
@@ -932,19 +1245,6 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 
 void KunrealEngine::Kamen::CreateSpellAttack()
 {
-	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
-	_lazer->AddComponent<Particle>();
-	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
-	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
-	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
-	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-	_lazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
-	_lazer->GetComponent<Particle>()->SetActive(false);
-
-	_lazerCollider = _boss->GetObjectScene()->CreateObject("lazerCollider");
-	_lazerCollider->AddComponent<BoxCollider>();
-	_lazerCollider->GetComponent<BoxCollider>()->SetBoxSize(140.0f, 10.0f, 10.0f);
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Spell");
@@ -1022,27 +1322,6 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 void KunrealEngine::Kamen::CreateCallAttack()
 {
-	// call 투사체
-	_call = _boss->GetObjectScene()->CreateObject("call");
-	_call->AddComponent<BoxCollider>();
-	_call->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
-	_call->GetComponent<BoxCollider>()->SetActive(false);
-	_call->AddComponent<Particle>();
-	_call->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	_call->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
-	_call->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
-	_call->GetComponent<Particle>()->SetParticleSize(10.f, 30.0f);
-	_call->GetComponent<Particle>()->SetParticleDirection(0.0f, 7.0f, 0.0f);
-	_call->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	_call->GetComponent<Particle>()->SetActive(false);
-
-	DirectX::XMFLOAT4 diffuse = { 0.0f, 0.6f, 0.0f, 1.0f };
-	DirectX::XMFLOAT4 ambient = { 0.0f, 0.15f, 0.0f, 1.0f };
-	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
-
-	_call->AddComponent<Light>();
-	_call->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Call");
@@ -1122,26 +1401,6 @@ void KunrealEngine::Kamen::CreateCallAttack()
 
 void KunrealEngine::Kamen::CreateCall2Attack()
 {
-	_call2 = _boss->GetObjectScene()->CreateObject("call2");
-	_call2->AddComponent<BoxCollider>();
-	_call2->GetComponent<BoxCollider>()->SetBoxSize(15.0f, 30.0f, 15.0f);
-	_call2->GetComponent<BoxCollider>()->SetActive(false);
-	_call2->AddComponent<Particle>();
-	_call2->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	_call2->GetComponent<Particle>()->SetParticleDuration(2.7f, 3.1f);
-	_call2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
-	_call2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-	_call2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.5f, 0.0f);
-	_call2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	_call2->GetComponent<Particle>()->SetActive(false);
-
-	DirectX::XMFLOAT4 diffuse = { 0.0f, 0.6f, 0.0f, 1.0f };
-	DirectX::XMFLOAT4 ambient = { 0.0f, 0.15f, 0.0f, 1.0f };
-	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
-
-	_call2->AddComponent<Light>();
-	_call2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Call2");
@@ -1207,23 +1466,44 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 }
 
 
+void KunrealEngine::Kamen::CreateEgoEmergence()
+{
+	BossPattern* pattern = new BossPattern();
+	pattern->SetPatternName("Ego_Emergence").SetAnimName("Emergence");
+	pattern->SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
+	pattern->SetSubObject(_alterEgo);
+
+	auto initLogic = [pattern, this]()
+		{
+			// 디졸브 이펙트 키기
+			_alterEgo->GetComponent<MeshRenderer>()->SetActive(true);
+		};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto emergenceLogic = [pattern, this]()
+		{
+			_boss->GetComponent<Animator>()->Play("Idle", 20.0f, false);
+
+			auto isPlaying = _alterEgo->GetComponent<Animator>()->Play(pattern->_animName, 20.0f);
+
+			if (isPlaying == false)
+			{
+				_alterEgo->GetComponent<Animator>()->Stop();
+
+				return false;
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(emergenceLogic);
+
+	_egoEmergence = pattern;
+}
+
 void KunrealEngine::Kamen::CreateSwordAttack()
 {
-	_freeSword = _boss->GetObjectScene()->CreateObject("KamenSword");
-	_freeSword->AddComponent<MeshRenderer>();
-	_freeSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
-	_freeSword->AddComponent<BoxCollider>();
-	_freeSword->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 20.0f, 5.0f);
-
-	auto texSize = _freeSword->GetComponent<MeshRenderer>()->GetTextures().size();
-
-	for (int i = 0; i < texSize; i++)
-	{
-		_freeSword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
-		_freeSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
-		_freeSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
-	}
-
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Sword_Attack");
@@ -1307,41 +1587,39 @@ void KunrealEngine::Kamen::CreateSwordEmergence()
 	pattern->SetSubObject(_freeSword);
 
 	auto swordInitLogic = [pattern, this]()
-	{
-		pattern->SetSubObject(_freeSword);
-		
-		auto swordTransform = _freeSword->GetComponent<Transform>();
-		swordTransform->SetPosition(_swordStartPos.x, _swordStartPos.y, _swordStartPos.z);
+		{
+			auto swordTransform = _freeSword->GetComponent<Transform>();
+			swordTransform->SetPosition(_swordStartPos.x, _swordStartPos.y, _swordStartPos.z);
 
-		// 디졸브 이펙트 키기
-		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
-		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+			// 디졸브 이펙트 키기
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-		_timer = 0.0f;
-		_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
+			_timer = 0.0f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
 
-		_freeSword->GetComponent<BoxCollider>()->SetActive(false);
+			_freeSword->GetComponent<BoxCollider>()->SetActive(false);
 
-		_freeSword->GetComponent<Transform>()->SetRotation(180.0f, _freeSword->GetComponent<Transform>()->GetRotation().y, 0.0f);
-	};
+			_freeSword->GetComponent<Transform>()->SetRotation(180.0f, _freeSword->GetComponent<Transform>()->GetRotation().y, 0.0f);
+		};
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	auto emmergenceLogic = [pattern, this]()
-	{
-		if (_timer < 0.5f)
 		{
-			_timer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
-		}
-		else
-		{
-			pattern->DeleteSubObject(_freeSword);
-			return false;
-		}
+			if (_timer < 0.5f)
+			{
+				_timer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_timer);
+			}
+			else
+			{
+				pattern->DeleteSubObject(_freeSword);
+				return false;
+			}
 
-		return true;
-	};
+			return true;
+		};
 
 	pattern->SetLogic(emmergenceLogic);
 
@@ -1465,13 +1743,13 @@ void KunrealEngine::Kamen::CreateSwordTurnAntiClock()
 
 			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true); 
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
 			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
 			_freeSword->GetComponent<BoxCollider>()->SetActive(false);
 
-			_freeSword->GetComponent<Transform>()->SetPosition(_swordStartPos.x, _freeSword->GetComponent<Transform>()->GetPosition().y, _swordStartPos.z );
+			_freeSword->GetComponent<Transform>()->SetPosition(_swordStartPos.x, _freeSword->GetComponent<Transform>()->GetPosition().y, _swordStartPos.z);
 
 			_swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
 
@@ -1484,8 +1762,8 @@ void KunrealEngine::Kamen::CreateSwordTurnAntiClock()
 		{
 			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
 
-			float x = _swordOriginPos.x -_circleWarningSize * cos(_swordRotateAngle);
-			float z = _swordOriginPos.z -_circleWarningSize * sin(_swordRotateAngle);
+			float x = _swordOriginPos.x - _circleWarningSize * cos(_swordRotateAngle);
+			float z = _swordOriginPos.z - _circleWarningSize * sin(_swordRotateAngle);
 
 			_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
 
@@ -1518,41 +1796,41 @@ void KunrealEngine::Kamen::CreateSwordLinearReady()
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-	{
-		pattern->SetSubObject(_freeSword);
+		{
+			pattern->SetSubObject(_freeSword);
 
-		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-		// 테스트용
-		_freeSword->GetComponent<BoxCollider>()->SetActive(true);
+			// 테스트용
+			_freeSword->GetComponent<BoxCollider>()->SetActive(true);
 
-		_swordRotateAngle = 0.0f;
-	};
+			_swordRotateAngle = 0.0f;
+		};
 
 	auto swordLinearReadyLogic = [pattern, this]()
-	{
-		auto translationSpeed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
-
-		_swordRotateAngle -= TimeManager::GetInstance().GetDeltaTime() * pattern->_speed * 5;
-
-		auto position = _freeSword->GetComponent<Transform>()->GetPosition();
-		auto rotation = _freeSword->GetComponent<Transform>()->GetRotation();
-
-		_freeSword->GetComponent<Transform>()->SetPosition(position.x, position.y - translationSpeed, position.z);
-		_freeSword->GetComponent<Transform>()->SetRotation(rotation.x, rotation.y, _swordRotateAngle);
-
-		if (_swordRotateAngle <= -90.0f)
 		{
-			pattern->DeleteSubObject(_freeSword);
-			return false;
-		}
+			auto translationSpeed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
 
-		return true;
-	};
+			_swordRotateAngle -= TimeManager::GetInstance().GetDeltaTime() * pattern->_speed * 5;
+
+			auto position = _freeSword->GetComponent<Transform>()->GetPosition();
+			auto rotation = _freeSword->GetComponent<Transform>()->GetRotation();
+
+			_freeSword->GetComponent<Transform>()->SetPosition(position.x, position.y - translationSpeed, position.z);
+			_freeSword->GetComponent<Transform>()->SetRotation(rotation.x, rotation.y, _swordRotateAngle);
+
+			if (_swordRotateAngle <= -90.0f)
+			{
+				pattern->DeleteSubObject(_freeSword);
+				return false;
+			}
+
+			return true;
+		};
 
 	pattern->SetLogic(swordLinearReadyLogic);
 
@@ -1572,49 +1850,49 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 	pattern->SetMaxColliderCount(1);
 
 	auto lenearAttackInitLogic = [pattern, this]()
-	{
-		pattern->SetSubObject(_freeSword);
+		{
+			pattern->SetSubObject(_freeSword);
 
-		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-		_freeSword->GetComponent<BoxCollider>()->SetActive(true);
+			_freeSword->GetComponent<BoxCollider>()->SetActive(true);
 
-		_swordLinearDistance = 0.0f;
+			_swordLinearDistance = 0.0f;
 
-		_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-		_swordDirection = ToolBox::RotateVector(_swordDirection, _freeSword->GetComponent<Transform>()->GetRotation().y);
+			_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+			_swordDirection = ToolBox::RotateVector(_swordDirection, _freeSword->GetComponent<Transform>()->GetRotation().y);
 
-		auto direction = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&_swordDirection));
+			auto direction = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&_swordDirection));
 
-		DirectX::XMStoreFloat3(&_swordDirection, direction);
-	};
+			DirectX::XMStoreFloat3(&_swordDirection, direction);
+		};
 
 	pattern->SetInitializeLogic(lenearAttackInitLogic);
 
 	auto swordLinearAttackLogic = [pattern, this]()
-	{
-		float moveSpeed = pattern->_speed * TimeManager::GetInstance().GetDeltaTime();
-
-		auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
-
-		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
-		
-		_swordLinearDistance += moveSpeed;
-
-		_freeSword->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-
-		if (_swordLinearDistance > 100.0f)
 		{
-			pattern->DeleteSubObject(_freeSword);
-			return false;
-		}
+			float moveSpeed = pattern->_speed * TimeManager::GetInstance().GetDeltaTime();
 
-		return true;
-	};
+			auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
+
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
+
+			_swordLinearDistance += moveSpeed;
+
+			_freeSword->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+
+			if (_swordLinearDistance > 100.0f)
+			{
+				pattern->DeleteSubObject(_freeSword);
+				return false;
+			}
+
+			return true;
+		};
 
 	pattern->SetLogic(swordLinearAttackLogic);
 
@@ -1677,91 +1955,83 @@ void KunrealEngine::Kamen::CreateSwordLookPlayer()
 	pattern->SetAnimName("Idle").SetSpeed(20.0f);
 	pattern->SetMaxColliderCount(0);
 
-	_swordPath = _boss->GetObjectScene()->CreateObject("swordPath");
-
-	_swordPath->AddComponent<TransparentMesh>();
-
-	_swordPath->GetComponent<TransparentMesh>()->CreateTMesh("SwordPath", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
-	_swordPath->GetComponent<Transform>()->SetScale(100.0f, 10.0f, 10.0f);
-	_swordPath->GetComponent<TransparentMesh>()->SetTimer(4.5f);
-
 	auto swordLookInitLogic = [pattern, this]()
-	{
-		pattern->SetSubObject(_freeSword);
-		pattern->SetSubObject(_swordPath);
+		{
+			pattern->SetSubObject(_freeSword);
+			pattern->SetSubObject(_swordPath);
 
-		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-		_swordPath->GetComponent<TransparentMesh>()->SetActive(true);
+			_swordPath->GetComponent<TransparentMesh>()->SetActive(true);
 
-		_swordPath->GetComponent<TransparentMesh>()->Reset();
+			_swordPath->GetComponent<TransparentMesh>()->Reset();
 
-		auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
-		_swordPath->GetComponent<Transform>()->SetPosition(swordTransform.x, _bossTransform->GetPosition().y, swordTransform.z);
+			auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
+			_swordPath->GetComponent<Transform>()->SetPosition(swordTransform.x, _bossTransform->GetPosition().y, swordTransform.z);
 
-		auto swordPathTransform = _swordPath->GetComponent<Transform>();
-		swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
+			auto swordPathTransform = _swordPath->GetComponent<Transform>();
+			swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
 
-		_timer = 0.0f;
-	};
+			_timer = 0.0f;
+		};
 
 	pattern->SetInitializeLogic(swordLookInitLogic);
 
 	auto swordLookPlayerLogic = [pattern, this]()
-	{
-		_swordPath->GetComponent<TransparentMesh>()->PlayOnce();
-
-		// 일정 시간 까지 플레이어 따라다니다가 헤드 고정시킬 예정
-
-		auto goalAngle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f) - 90.0f;
-
-		auto swordTransform = _freeSword->GetComponent<Transform>();
-		auto rotation = swordTransform->GetRotation();
-
-		auto swordPathTransform = _swordPath->GetComponent<Transform>();
-		// 회전 속도
-		float speed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
-
-		_timer += TimeManager::GetInstance().GetDeltaTime();
-
-		// 현재 각도가 목표로 하는 각도보다 작을 경우
-		if (_timer < _warningMaxTimer)
 		{
-			auto errorRange = std::abs(goalAngle) - std::abs(rotation.y);
-			errorRange = std::abs(errorRange);
-			if (errorRange > 1.0f)
-			{
-				if (goalAngle < rotation.y)
-				{
-					// 회전 속도만큼 회전
-					swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y - speed, swordTransform->GetRotation().z);
-					swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, swordTransform->GetRotation().y, swordPathTransform->GetRotation().z);
+			_swordPath->GetComponent<TransparentMesh>()->PlayOnce();
 
-				}
-				else
+			// 일정 시간 까지 플레이어 따라다니다가 헤드 고정시킬 예정
+
+			auto goalAngle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f) - 90.0f;
+
+			auto swordTransform = _freeSword->GetComponent<Transform>();
+			auto rotation = swordTransform->GetRotation();
+
+			auto swordPathTransform = _swordPath->GetComponent<Transform>();
+			// 회전 속도
+			float speed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+
+			_timer += TimeManager::GetInstance().GetDeltaTime();
+
+			// 현재 각도가 목표로 하는 각도보다 작을 경우
+			if (_timer < _warningMaxTimer)
+			{
+				auto errorRange = std::abs(goalAngle) - std::abs(rotation.y);
+				errorRange = std::abs(errorRange);
+				if (errorRange > 1.0f)
 				{
-					// 회전 속도만큼 회전
-					swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y + speed, swordTransform->GetRotation().z);
-					swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, swordTransform->GetRotation().y, swordPathTransform->GetRotation().z);
+					if (goalAngle < rotation.y)
+					{
+						// 회전 속도만큼 회전
+						swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y - speed, swordTransform->GetRotation().z);
+						swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, swordTransform->GetRotation().y, swordPathTransform->GetRotation().z);
+
+					}
+					else
+					{
+						// 회전 속도만큼 회전
+						swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y + speed, swordTransform->GetRotation().z);
+						swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, swordTransform->GetRotation().y, swordPathTransform->GetRotation().z);
+					}
 				}
 			}
-		}
 
-		if (_timer > _warningMaxTimer + 1.0f)
-		{
-			// 회전이 완료되었다고 반환
-			pattern->DeleteSubObject(_freeSword);
-			return false;
-		}
-		else
-		{
-			return true;
-		}
-	};
+			if (_timer > _warningMaxTimer + 1.0f)
+			{
+				// 회전이 완료되었다고 반환
+				pattern->DeleteSubObject(_freeSword);
+				return false;
+			}
+			else
+			{
+				return true;
+			}
+		};
 
 	pattern->SetLogic(swordLookPlayerLogic);
 
@@ -1779,30 +2049,7 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 
 	for (int i = 0; i < 9; i++)
 	{
-		std::string index = "fake" + std::to_string(i + 1);
-		auto boss = _boss->GetObjectScene()->CreateObject(index);
-		_fakeBoss.emplace_back(boss);
-
-		boss->AddComponent<MeshRenderer>();
-		boss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
-
-		auto texSize = _boss->GetComponent<MeshRenderer>()->GetTextures().size();
-		for (int i = 0; i < texSize; i++)
-		{
-			boss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
-			boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
-			boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
-		}
-
-		boss->AddComponent<BoxCollider>();
-		boss->GetComponent<BoxCollider>()->SetTransform(boss, "Spine1_M");
-		boss->GetComponent<BoxCollider>()->SetBoxSize(6.0f, 18.0f, 10.0f);
-		boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
-
-		boss->SetTotalComponentState(false);
-		boss->SetActive(false);
-
-		pattern->SetSubObject(boss);
+		pattern->SetSubObject(_fakeBoss[i]);
 	}
 
 	int index = 0;
@@ -2031,31 +2278,31 @@ void KunrealEngine::Kamen::SwordLinearAttackPattern()
 	swordLinearAttack->SetPattern(_swordHide);
 
 	auto swordLinearAttackInitLogic = [swordLinearAttack, this]()
-	{
-		auto random = ToolBox::GetRandomNum(3);
-
-		switch (random)
 		{
-			case 0 : _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, 50.0f };
-				   break;
-			case 1: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, -50.0f };
-				  break;
-			case 2: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, 50.0f };
-				  break;
-			case 3: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, -50.0f };
-				  break;
-			default:
-				break;
-		}
+			auto random = ToolBox::GetRandomNum(3);
 
-		auto swordTransform = _freeSword->GetComponent<Transform>();
+			switch (random)
+			{
+				case 0: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, 50.0f };
+					  break;
+				case 1: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, -50.0f };
+					  break;
+				case 2: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, 50.0f };
+					  break;
+				case 3: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, -50.0f };
+					  break;
+				default:
+					break;
+			}
 
-		auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
+			auto swordTransform = _freeSword->GetComponent<Transform>();
 
-		swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
+			auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
 
-		_warningMaxTimer = 4.0f;
-	};
+			swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
+
+			_warningMaxTimer = 4.0f;
+		};
 
 	swordLinearAttack->SetInitializeLogic(swordLinearAttackInitLogic);
 

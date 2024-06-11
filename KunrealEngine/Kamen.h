@@ -32,6 +32,10 @@ namespace KunrealEngine
 	public:
 		virtual void CreatePattern() override;
 
+		virtual void Idle() override;
+
+		virtual void SpecialAttack2() override;
+
 	public:
 		void GamePattern();
 
@@ -70,6 +74,9 @@ namespace KunrealEngine
 		void CreateSpellAttack();
 		void CreateCallAttack();
 		void CreateCall2Attack();
+
+		// 분신 패턴
+		void CreateEgoEmergence();
 
 		// 검 with 카멘 패턴
 	private:
@@ -112,6 +119,8 @@ namespace KunrealEngine
 		BossPattern* _spellAttack;
 		BossPattern* _callAttack;
 		BossPattern* _call2Attack;
+
+		BossPattern* _egoEmergence;
 
 		BossPattern* _backStep;
 		BossPattern* _turn180;
@@ -156,19 +165,18 @@ namespace KunrealEngine
 		GameObject* _donutWarning2;
 		GameObject* _donutWarning3;
 
-
 		GameObject* _freeSword;
 		GameObject* _freeSwordCollider;
 		GameObject* _swordPath;
 
-		std::vector<GameObject*> _fakeBoss;
-
 		std::vector<GameObject*> _handFire;
-		std::vector<bool> _handFireReady;
-		std::vector<DirectX::XMFLOAT3> _handFireDir;
 
 		GameObject* _leftHandBone;
 		GameObject* _rightHandBone;
+
+		GameObject* _alterEgo;
+
+		std::vector<GameObject*> _fakeBoss;
 
 	private:
 		// Call 거리 체크용
@@ -177,13 +185,16 @@ namespace KunrealEngine
 		bool _isRotateFinish;
 
 	private:
+		std::vector<bool> _handFireReady;
+		std::vector<DirectX::XMFLOAT3> _handFireDir;
+
+	private:
 		bool _isCoreStart;
 		bool _isRandomStart;
 
 	private:
 		unsigned int _targetIndex;
 
-	// logic
 	private:
 		std::function<void()> _callInitLogic;
 
@@ -208,5 +219,13 @@ namespace KunrealEngine
 		float _timer;
 
 		float _warningMaxTimer;
+
+	private:
+		bool _isSpecial2Ready;
+		bool _isSpecial2Playing;
+		bool _isEgoAppearInit;
+		bool _isEgoAppearFinish;
+		bool _isEgoAttack;
+		float _egoTimer;
 	};
 }
