@@ -67,7 +67,7 @@ void ArkEngine::MeshRenderer::Render()
 {
 	_renderList.clear();
 
-	for (const auto& index : _meshList)
+ 	for (const auto& index : _meshList)
 	{
 		if (index->GetInsideFrustumState())
 		{
