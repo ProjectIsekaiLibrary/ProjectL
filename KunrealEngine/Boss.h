@@ -175,6 +175,7 @@ namespace KunrealEngine
 
 	protected:
 		BossStatus _status;
+
 		BossBasicInfo _info;
 
 		GameObject* _boss;
@@ -185,7 +186,7 @@ namespace KunrealEngine
 		std::vector<BossPattern*> _corePattern;
 		
 		// 보스의 움직임과 무관하게 일정 주기마다 실행
-		std::vector<BossPattern*> _speicalPattern;
+		std::vector<BossPattern*> _specialPattern;
 
 		BossPattern* _nowTitlePattern;
 

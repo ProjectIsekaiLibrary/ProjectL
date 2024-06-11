@@ -271,6 +271,9 @@ void KunrealEngine::MeshRenderer::SetParentBone(GameObject* model, const std::st
 	this->_mesh->SetParentBone(model->GetComponent<MeshRenderer>()->_mesh, boneName);
 
 	this->GetOwner()->SetParent(model);
+
+	this->GetOwner()->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+	this->GetOwner()->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
 }
 
 void KunrealEngine::MeshRenderer::DeleteParentBone()
@@ -317,6 +320,11 @@ float KunrealEngine::MeshRenderer::GetAlpha()
 DirectX::XMFLOAT4X4 KunrealEngine::MeshRenderer::GetBoneTransform(const std::string& boneName)
 {
 	return _mesh->GetBoneTransform(boneName);
+}
+
+DirectX::XMFLOAT4X4 KunrealEngine::MeshRenderer::GetParentBoneOriginalTransform(const std::string& boneName)
+{
+	return _mesh->GetParentBoneOriginalTransform(boneName);
 }
 
 void KunrealEngine::MeshRenderer::SetDissolve(float value)

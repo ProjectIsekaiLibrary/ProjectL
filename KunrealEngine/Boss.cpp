@@ -594,15 +594,15 @@ void KunrealEngine::Boss::SpecialAttack()
 
 	if (!_isSpecialPatternPlaying)
 	{
-		_specialPatternIndex = ToolBox::GetRandomNum(_speicalPattern.size()-1);
+		_specialPatternIndex = ToolBox::GetRandomNum(_specialPattern.size()-1);
 
 		_isSpecialPatternPlaying = true;
 
-		_speicalPattern[_specialPatternIndex]->Initialize();
+		_specialPattern[_specialPatternIndex]->Initialize();
 
 	}
 
-	auto isPlaying = _speicalPattern[_specialPatternIndex]->SpecialPatternPlay();
+	auto isPlaying = _specialPattern[_specialPatternIndex]->SpecialPatternPlay();
 
 	// 패턴 실행이 끝났다면
 	if (isPlaying == false)

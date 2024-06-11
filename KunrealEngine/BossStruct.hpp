@@ -203,7 +203,7 @@ struct BossPattern
 			_patternList[_index]->Initialize();
 		}
 
-		// 모든 패턴 실행이 끝나면 true 반환
+		// 모든 패턴 실행이 끝나면 true 반환해줌
 		return true;
 	}
 

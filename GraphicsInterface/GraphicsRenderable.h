@@ -94,6 +94,8 @@ namespace GInterface
 		virtual DirectX::XMFLOAT4X4 GetTransformEffectedByBone() abstract;
 		// 부모 본의 입장에서 transform 행렬 넘겨줌
 		virtual DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName) abstract;
+		// 부모 본의 단독의 transform 행렬 넘겨줌
+		virtual DirectX::XMFLOAT4X4 GetParentBoneOriginalTransform(const std::string& boneName) abstract;
 
 	public:
 		// 그림자를 가질 것인지 여부 설정 (기본 설정은 true)

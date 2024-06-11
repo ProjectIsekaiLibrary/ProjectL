@@ -221,7 +221,17 @@ const DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXAnimator::GetBoneTransform(cons
 
 const DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXAnimator::GetBoneAnimation(int boneIndex)
 {
-	return _boneTransformMatrix[boneIndex];
+	if (_boneTransformMatrix.size() > boneIndex)
+	{
+		return _boneTransformMatrix[boneIndex];
+	}
+	else
+	{
+		DirectX::XMFLOAT4X4 mat;
+		DirectX::XMStoreFloat4x4(&mat, DirectX::XMMatrixIdentity());
+
+		return mat;
+	}
 }
 
 const DirectX::XMFLOAT4X4 ArkEngine::ArkDX11::FBXAnimator::GetBoneTransform(int boneIndex)
