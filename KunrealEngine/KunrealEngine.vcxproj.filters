@@ -160,6 +160,9 @@
     <Filter Include="Source Files\Component\UImanager\OptionManager">
       <UniqueIdentifier>{ae382eae-8efe-4bd6-bac6-202dec9be205}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Component\UImanager\BattleManager">
+      <UniqueIdentifier>{f4adf107-849f-4cfe-87a5-29c3e31db137}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -312,6 +315,12 @@
     <ClInclude Include="OptionUIManager.h">
       <Filter>Source Files\Component\UImanager\OptionManager</Filter>
     </ClInclude>
+    <ClInclude Include="UIPackageFuntion.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="BattleUIManager.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -454,6 +463,9 @@
     </ClCompile>
     <ClCompile Include="OptionUIManager.cpp">
       <Filter>Source Files\Component\UImanager\OptionManager</Filter>
+    </ClCompile>
+    <ClCompile Include="BattleUIManager.cpp">
+      <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

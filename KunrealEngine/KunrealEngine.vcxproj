@@ -181,6 +181,7 @@
     <ClInclude Include="Ability.h" />
     <ClInclude Include="Animator.h" />
     <ClInclude Include="Aracne.h" />
+    <ClInclude Include="BattleUIManager.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossStruct.hpp" />
     <ClInclude Include="BoxCollider.h" />
@@ -232,6 +233,7 @@
     <ClInclude Include="ToolBox.h" />
     <ClInclude Include="Transform.h" />
     <ClInclude Include="TransparentMesh.h" />
+    <ClInclude Include="UIPackageFuntion.hpp" />
     <ClInclude Include="Zeolight.h" />
   </ItemGroup>
   <ItemGroup>
@@ -239,6 +241,7 @@
     <ClCompile Include="Ability.cpp" />
     <ClCompile Include="Animator.cpp" />
     <ClCompile Include="Aracne.cpp" />
+    <ClCompile Include="BattleUIManager.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="ButtonSystem.cpp" />

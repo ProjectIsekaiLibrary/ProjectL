@@ -32,11 +32,11 @@ namespace KunrealEngine
 			return _instance;
 		}
 
-	private:
+	public:
 		GameObject* _player;
 		GameObject* _boss;
 
-	private:
+	public:
 		Player* _playerComp;
 		Kamen* _bossComp;
 

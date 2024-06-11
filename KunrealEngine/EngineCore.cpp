@@ -414,15 +414,16 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	player->AddComponent<Player>();
 
-	//kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	//kamen->AddComponent<Kamen>();
+	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	kamen->AddComponent<Kamen>();
 	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
 	
 // 	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
 // 	spider->AddComponent<Aracne>();
 
 	// UI의 부모가 될 0,0pos객체
-	battle_ui_box = MakeBattleUIPack();
+	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	battle_ui_box->AddComponent<BattleUIManager>();
 	pause_ui_box = MakeMenuUIPack();
 	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
 	option_ui_box->AddComponent<OptionUIManager>();
