@@ -68,14 +68,18 @@ namespace KunrealEngine
 	private: // 파티클 테스트
 		void ParticleTest();
 		Point3D Bezier(Point3D startPoint, Point3D p1, Point3D p2, Point3D endPoint, float t);
-		void BezierSetting(GameObject* bezierObject);
+		std::vector<Point3D> BezierSetting(GameObject* bezierObject);
 
 	private:
 		std::vector<GameObject*> _bezierObjectList;
 		std::vector<std::vector<Point3D>> _bezierPointsList;
+		std::vector<std::vector<Point3D>> _bezierSwordSoulPointsList;
 		std::vector<Point3D> _particlePointList;
+		std::vector<Point3D> _particleSwordSoulPointList;
+		std::vector<float> _timeCountList;
+
 		float _timeCount;
-		bool _checkReverse;
+		bool _isSettingTimer;
 		bool _isBezierStartSetting;
 			// 여기까지
 	private:
