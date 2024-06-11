@@ -188,8 +188,6 @@ namespace ArkEngine
 
 			void EndTransparentSet();
 
-			void TransparentRender();
-
 		private:
 			void CreateDevice();			// ID3D11Device 인터페이스와 DeviceContext 인터페이스를 생성
 			void CheckQualification();	// 하드웨어가 4X MSAA를 위한 품질 수준을 지원하는지 점검

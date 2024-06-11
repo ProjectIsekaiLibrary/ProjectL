@@ -134,15 +134,15 @@ int KunrealEngine::SoundPlayer::CreateSoundInfo(std::string soundFile, bool is3D
 	return returnValue;
 }
 
-void KunrealEngine::SoundPlayer::CreateSound(int soundindex)
+void KunrealEngine::SoundPlayer::CreateSound(int soundindex, int sound_type = 1)
 {
 	if (_soundList[soundindex]._is3DSound)
 	{
-		_soundList[soundindex]._soundIndex = SoundSystem::GetInstance().Add3DSound(_soundList[soundindex]._soundPath, _soundList[soundindex]._volume);
+		_soundList[soundindex]._soundIndex = SoundSystem::GetInstance().Add3DSound(_soundList[soundindex]._soundPath, _soundList[soundindex]._volume, (SOUNDTYPE)sound_type);
 	}
 	else
 	{
-		_soundList[soundindex]._soundIndex = SoundSystem::GetInstance().AddSound(_soundList[soundindex]._soundPath, _soundList[soundindex]._volume);
+		_soundList[soundindex]._soundIndex = SoundSystem::GetInstance().AddSound(_soundList[soundindex]._soundPath, _soundList[soundindex]._volume, (SOUNDTYPE)sound_type);
 	}
 }
 

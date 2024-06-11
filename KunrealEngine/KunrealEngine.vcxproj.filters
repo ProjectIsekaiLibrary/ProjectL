@@ -154,6 +154,12 @@
     <Filter Include="Source Files\Component\TransparentMesh">
       <UniqueIdentifier>{5a0136ad-ff1f-4534-b373-347127e45302}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Component\UImanager">
+      <UniqueIdentifier>{3fa7e1da-f6ac-4be7-b4c4-177647770780}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\UImanager\OptionManager">
+      <UniqueIdentifier>{ae382eae-8efe-4bd6-bac6-202dec9be205}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -303,6 +309,9 @@
     <ClInclude Include="TransparentMesh.h">
       <Filter>Source Files\Component\TransparentMesh</Filter>
     </ClInclude>
+    <ClInclude Include="OptionUIManager.h">
+      <Filter>Source Files\Component\UImanager\OptionManager</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -442,6 +451,9 @@
     </ClCompile>
     <ClCompile Include="TransparentMesh.cpp">
       <Filter>Source Files\Component\TransparentMesh</Filter>
+    </ClCompile>
+    <ClCompile Include="OptionUIManager.cpp">
+      <Filter>Source Files\Component\UImanager\OptionManager</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -305,7 +305,7 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 							int sound_Volume = jsonItem["POD"]["sound_Volume"][i];
 
 							int  listIndex = object->GetComponent<KunrealEngine::SoundPlayer>()->CreateSoundInfo(sound_Name, sound_Is3D, sound_IsLoop, sound_Volume);
-							object->GetComponent<KunrealEngine::SoundPlayer>()->CreateSound(listIndex);
+							object->GetComponent<KunrealEngine::SoundPlayer>()->CreateSound(listIndex, 1);
 						}
 
 					}

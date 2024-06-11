@@ -75,7 +75,7 @@ namespace KunrealEngine
 
 		// 사운드인포를 만든다. 실제로 사운드를 만드는게 아니고.
 		int CreateSoundInfo(std::string soundFile, bool is3D = false, bool isLoop = true, int volume = 100);
-		void CreateSound(int soundindex);
+		void CreateSound(int soundindex, int sound_type);
 
 		// 사운드를 여러개 들고 있을 때는 index를 정해줘야한다
 		// 하나만 있을 경우 볼륨만 매개변수로

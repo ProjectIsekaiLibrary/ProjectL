@@ -232,7 +232,7 @@ namespace KunrealEngine
 
 	bool Navigation::HandleBuild(int index, std::string path)
 	{
-		path = "Resources/MapObj/" + path + ".obj";
+		path = "Resources/MapObj/" + path;
 
 		dtStatus status;
 		_geom->load(_ctx, path);

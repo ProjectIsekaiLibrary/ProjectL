@@ -110,7 +110,7 @@ namespace KunrealEngine
 	/////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////
 
-	int SoundSystem::AddSound(std::string filename, int volume, int index)
+	int SoundSystem::AddSound(std::string filename, int volume, SOUNDTYPE type, int index /*= -1*/)
 	{
 		int soundvolume = 0;
 		if (volume > 100 || volume < 0)
@@ -129,6 +129,7 @@ namespace KunrealEngine
 		soundstruct->fileName = filename;
 		soundstruct->soundBuffer = tempsound;
 		soundstruct->volume = volume;
+		soundstruct->type = type;
 
 		if (FAILED(tempsound->SetCurrentPosition(0)))
 		{
@@ -153,7 +154,7 @@ namespace KunrealEngine
 		}
 	}
 
-	int SoundSystem::Add3DSound(std::string filename, int volume, int index, int xpos, int ypos, int zpos)
+	int SoundSystem::Add3DSound(std::string filename, int volume, SOUNDTYPE type, int index /*= -1 */, int xpos /*= 0*/, int ypos /*= 0*/, int zpos /*= 0*/)
 	{
 		int soundvolume = 0;
 		if (volume > 100 || volume < 0)
@@ -174,6 +175,7 @@ namespace KunrealEngine
 		soundstruct->soundBuffer = tempsound;
 		soundstruct->sound3DBuffer = temp3DSound;
 		soundstruct->volume = volume;
+		soundstruct->type = type; 
 
 		if (FAILED(tempsound->SetCurrentPosition(0)))
 		{
@@ -236,6 +238,20 @@ namespace KunrealEngine
 		}
 	}
 
+	void SoundSystem::SetvolumeGroup(SOUNDTYPE type, int volume)
+	{
+		volume = (100 - (volume*10)) * -100;
+
+		for (auto sound : _soundBuffer)
+		{
+			if (sound->type == type)
+			{
+				sound->soundBuffer->SetVolume(volume);
+				sound->volume = volume;
+			}
+		}
+	}
+
 	int SoundSystem::Change3DorMono(int index)
 	{
 		if (_soundBuffer[index]->sound3DBuffer != nullptr)	// sound3DBuffer가 비어있지 않다 = 3D사운드다
@@ -243,8 +259,9 @@ namespace KunrealEngine
 			int result = 0;
 			std::string filename = _soundBuffer[index]->fileName;
 			int volume = _soundBuffer[index]->volume;
+			SOUNDTYPE type = _soundBuffer[index]->type;
 			RemoveSound(index);
-			result = AddSound(filename, volume, index);
+			result = AddSound(filename, volume, type, index);
 			return result;
 		}
 
@@ -253,8 +270,9 @@ namespace KunrealEngine
 			int result = 0;
 			std::string filename = _soundBuffer[index]->fileName;
 			int volume = _soundBuffer[index]->volume;
+			SOUNDTYPE type = _soundBuffer[index]->type;
 			RemoveSound(index);
-			result = Add3DSound(filename, volume, index);
+			result = Add3DSound(filename, volume, type, index);
 			return result;
 		}
 	}

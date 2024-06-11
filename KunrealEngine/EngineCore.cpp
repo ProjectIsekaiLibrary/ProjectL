@@ -145,9 +145,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.LoadAll("Resources/Navimesh/0_p.bin", 0);
-	//navigationInstance.HandleBuild(0, "testObj");
-	navigationInstance.HandleBuild(1, "testObj");
+	navigationInstance.HandleBuild(0, "testObj.obj");
+	navigationInstance.HandleBuild(1, "testObj.obj");
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "Texture6.dds", true);
@@ -164,7 +163,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	//PlayGround();
+	PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -216,6 +215,11 @@ void KunrealEngine::EngineCore::Update()
 		//MakeObstacle();
 	}
 
+	// UI 실행,종료
+	if (inputInstance->KeyDown(KEY::ESCAPE))
+	{
+		pause_ui_box->SetActive(true);
+	}
 
 	if (inputInstance->KeyUp(KEY::CAPSLOCK))
 	{
@@ -420,7 +424,8 @@ void KunrealEngine::EngineCore::PlayGround()
 	// UI의 부모가 될 0,0pos객체
 	battle_ui_box = MakeBattleUIPack();
 	pause_ui_box = MakeMenuUIPack();
-	option_ui_box = MakeOptionUIPack();
+	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
+	option_ui_box->AddComponent<OptionUIManager>();
 	//Title_ui_box = 
 
 	//// cube map test
