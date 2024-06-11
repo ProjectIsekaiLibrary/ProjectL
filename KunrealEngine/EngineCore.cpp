@@ -18,6 +18,7 @@
 /// 꼭 지워야해 내 수학라이브러리와 동일한 결과가 나오는지 체크용
 #include <DirectXMath.h>
 #include "ToolBox.h"
+#include "TimeManager.h"
 /// 
 
 KunrealEngine::SceneManager& sceneInstance = KunrealEngine::SceneManager::GetInstance();
@@ -111,11 +112,30 @@ KunrealEngine::GameObject* particleBossSword2;
 KunrealEngine::GameObject* particleBossSword3;
 KunrealEngine::GameObject* particleBossSword4;
 
+KunrealEngine::GameObject* particleBossSword2_1;
+KunrealEngine::GameObject* particleBossSword2_2;
+KunrealEngine::GameObject* particleBossSword2_3;
+KunrealEngine::GameObject* particleBossSword2_4;
+
+KunrealEngine::GameObject* particleBossSwordDonut1;
+KunrealEngine::GameObject* particleBossSwordDonut2;
+KunrealEngine::GameObject* particleBossSwordDonut3;
+KunrealEngine::GameObject* particleBossSwordDonut4;
+
+KunrealEngine::GameObject* particleBezierTest1;
+KunrealEngine::GameObject* particleBezierTest2;
+KunrealEngine::GameObject* particleBezierTest3;
+
+
 KunrealEngine::GameObject* testCamera;
 
 
 
 DirectX::XMFLOAT3 targetPos;
+KunrealEngine::Point3D p0 = { 0, 0, 0 };
+KunrealEngine::Point3D p1 = { 0, 0, 0 };
+KunrealEngine::Point3D p2 = { 0, 0, 0 };
+KunrealEngine::Point3D p3 = { 0, 0, 0 };
 
 KunrealEngine::EngineCore::EngineCore()
 	:_gInterface(nullptr), _isEditor(true)
@@ -161,6 +181,12 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	sceneInstance.CreateScene("ParticleTest");
 
+
+
+	_timeCount = 0.0f;
+	_checkReverse = false;
+	_isBezierStartSetting = false;
+
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
@@ -183,9 +209,55 @@ void KunrealEngine::EngineCore::FixedUpdate()
 
 bool moveTo = true;
 
+
 void KunrealEngine::EngineCore::Update()
 {
 	//particleBossSword3->GetComponent<Particle>()->SetParticleSize(5.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 5.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+	
+	//POINT particlePoint = {10,0};
+	//POINT particlePoint2 = {10,0};
+		
+	
+	// z 는 조절하지 않는다
+	// x값을 신경쓰고 y는 튀어오르는 높이  시작지점이 다르면 y를 -로 줘서 아래로 포물선을 그릴수 있음
+	//if (_isBezierStartSetting == false)
+	//{
+	//	for (auto bezierObject : _bezierObjectList) // 베지어 곡선 초기 설정
+	//	{
+	//		BezierSetting(bezierObject);
+	//	}
+	//	_isBezierStartSetting = true;
+	//}
+
+
+	//for (auto bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
+	//{	
+	//	Point3D particlePoint;
+	//	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], p3, _timeCount);
+	//	_particlePointList.push_back(particlePoint);
+	//}
+
+	//for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
+	//{
+	//	_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
+	//}
+
+	//_timeCount += TimeManager::GetInstance().GetDeltaTime()/2;
+	//
+	//if (_timeCount > 1.0f)
+	//{
+	//	_timeCount = 0.0f;
+	//	_bezierPointsList.clear();
+	//	for (auto bezierObject : _bezierObjectList)
+	//	{
+	//		bezierObject->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f), ToolBox::GetRandomFloat(-62.0f, 62.0f));
+
+	//		BezierSetting(bezierObject);
+	//	}
+	//}
+
+	//_particlePointList.clear(); // 파티클 포인트 초기화
+
 	CheckMousePosition();
 	inputInstance->Update(GetDeltaTime());
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
@@ -295,23 +367,23 @@ void KunrealEngine::EngineCore::Update()
 		}
 	}
 
-		if (InputSystem::GetInstance()->KeyUp(KEY::H))
-		{
-			KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
-			KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
-			//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
-			KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
-			ChangeScene("mapTest4.json");
+		//if (InputSystem::GetInstance()->KeyUp(KEY::H))
+		//{
+		//	KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
+		//	KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
+		//	//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
+		//	KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
+		//	ChangeScene("mapTest4.json");
 
-			navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
+		//	navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
 
-			navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
+		//	navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
 
-			std::vector<DirectX::XMFLOAT3> vertices;
-			std::vector<unsigned int> indices;
-			navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
-			GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
-		}
+		//	std::vector<DirectX::XMFLOAT3> vertices;
+		//	std::vector<unsigned int> indices;
+		//	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
+		//	GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
+		//}
 
 	if (GetCurrentScene()->GetGameObject("RuneStoneArachne") != nullptr)
 	{
@@ -659,7 +731,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	testCamera->GetComponent<Camera>()->SetMainCamera();
 
 	//testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
-	testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, 32.f);
+	testCamera->GetComponent<Transform>()->SetPosition(-98.f, 26.f, -90.f);
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 60.f);
 
 	// Plane 
@@ -1312,6 +1384,46 @@ void KunrealEngine::EngineCore::ParticleTest()
 	sword2->GetComponent<Transform>()->SetPosition(-84.3, 0, -55.f);
 	sword2->GetComponent<Transform>()->SetRotation(0, 135, 0);
 
+	particleBossSword2_1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_1");
+	particleBossSword2_1->GetComponent<Transform>()->SetPosition(-85.9, 4.8, -54.4);
+	particleBossSword2_1->AddComponent<Particle>();
+	particleBossSword2_1->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	particleBossSword2_1->GetComponent<Particle>()->SetParticleDuration(0.3f, 0.7f);
+	particleBossSword2_1->GetComponent<Particle>()->SetParticleVelocity(4.0f, true);
+	particleBossSword2_1->GetComponent<Particle>()->SetParticleSize(3.f, 3.0f);
+	particleBossSword2_1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.2f, 0.1f);
+	particleBossSword2_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	particleBossSword2_2 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_2");	
+	particleBossSword2_2->GetComponent<Transform>()->SetPosition(-85.1, 4.8, -55.2);
+	particleBossSword2_2->AddComponent<Particle>();
+	particleBossSword2_2->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	particleBossSword2_2->GetComponent<Particle>()->SetParticleDuration(0.3f, 0.7f);
+	particleBossSword2_2->GetComponent<Particle>()->SetParticleVelocity(4.0f, true);
+	particleBossSword2_2->GetComponent<Particle>()->SetParticleSize(3.f, 3.0f);
+	particleBossSword2_2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.2f, 0.1f);
+	particleBossSword2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	particleBossSword2_3 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_3");
+	particleBossSword2_3->GetComponent<Transform>()->SetPosition(-82.5, 8.6, -52);
+	particleBossSword2_3->AddComponent<Particle>();
+	particleBossSword2_3->GetComponent<Particle>()->SetParticleEffect("EnergyBolt9", "Resources/Textures/Particl   es/fx_EnergyBolt9.dds", 1000);
+	particleBossSword2_3->GetComponent<Particle>()->SetParticleDuration(1.2f, 2.0f);
+	particleBossSword2_3->GetComponent<Particle>()->SetParticleVelocity(0.1f, true);
+	particleBossSword2_3->GetComponent<Particle>()->SetParticleSize(17.0f, 15.0f);
+	particleBossSword2_3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.5f, 0.1f);
+	particleBossSword2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+
+	particleBossSword2_4 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_4");
+	particleBossSword2_4->GetComponent<Transform>()->SetPosition(-85.8f, 4.8f, -74.1f);
+	particleBossSword2_4->AddComponent<Particle>();
+	particleBossSword2_4->GetComponent<Particle>()->SetParticleEffect("LightFlash2", "Resources/Textures/Particles/fx_LightFlash2.dds", 1000);
+	particleBossSword2_4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
+	particleBossSword2_4->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	particleBossSword2_4->GetComponent<Particle>()->SetParticleSize(2.f, 2.0f);
+	particleBossSword2_4->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 1.0f);
+	particleBossSword2_4->GetComponent<Particle>()->SetParticleDirection(0.0f, -15.0f, 30.0f);
+
 	GameObject* sword3 = sceneInstance.GetCurrentScene()->CreateObject("sword");
 	sword3->AddComponent<MeshRenderer>();
 	sword3->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
@@ -1321,6 +1433,123 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	sword3->GetComponent<Transform>()->SetPosition(-84.3, 0, -75.f);
 	sword3->GetComponent<Transform>()->SetRotation(0, 135, 0);
+
+
+	//GameObject* testPlayer = sceneInstance.GetCurrentScene()->CreateObject("Player");
+	//testPlayer->AddComponent<Player>();
+	//
+	//GameObject* testKamen = sceneInstance.GetCurrentScene()->CreateObject("Kamen");
+	//testKamen->AddComponent<Kamen>();
+
+	// 도넛 패턴에 배치할 파이클 테스트
+
+	particleBossSwordDonut1 = sceneInstance.GetCurrentScene()->CreateObject("Particle17");
+	particleBossSwordDonut1->GetComponent<Transform>()->SetPosition(-100, 0, 105.f);
+	particleBossSwordDonut1->AddComponent<Particle>();
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleSize(7.0f, 7.0f);
+	particleBossSwordDonut1->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 1.0f);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+
+	particleBossSwordDonut2 = sceneInstance.GetCurrentScene()->CreateObject("Particle27");
+	particleBossSwordDonut2->GetComponent<Transform>()->SetPosition(-100, 0, 105.f);
+	particleBossSwordDonut2->AddComponent<Particle>();
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDuration(13.0f, 0.6f);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	particleBossSwordDonut2->GetComponent<Particle>()->AddParticleColor(0.3f, 5.0f, 0.3f);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDirection(0.0f, 200.0f, 0.0f);
+
+	for (int i = 0; i < 16; ++i)
+	{
+		GameObject* particleBezierTest;
+		particleBezierTest = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
+		particleBezierTest->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f) , ToolBox::GetRandomFloat(-62.0f, 62.0f));
+		particleBezierTest->AddComponent<Particle>();
+		particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+		particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+		particleBezierTest->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+		particleBezierTest->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 2.0f);
+		particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+		_bezierObjectList.push_back(particleBezierTest);
+	}
+
+	/*particleBezierTest1 = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
+	particleBezierTest1->GetComponent<Transform>()->SetPosition(-10, 0, -62.f);
+	particleBezierTest1->AddComponent<Particle>();
+	particleBezierTest1->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+	particleBezierTest1->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+	particleBezierTest1->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
+	particleBezierTest1->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+	particleBezierTest1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 2.0f);
+	particleBezierTest1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	bezierObjectList.push_back(particleBezierTest1);
+
+	particleBezierTest2 = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
+	particleBezierTest2->GetComponent<Transform>()->SetPosition(-60, 0, -62.f);
+	particleBezierTest2->AddComponent<Particle>();
+	particleBezierTest2->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+	particleBezierTest2->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+	particleBezierTest2->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
+	particleBezierTest2->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+	particleBezierTest2->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 2.0f);
+	particleBezierTest2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	bezierObjectList.push_back(particleBezierTest2);*/
+}
+
+KunrealEngine::Point3D KunrealEngine::EngineCore::Bezier(Point3D startPoint, Point3D p1, Point3D p2, Point3D endPoint, float t)
+{
+	float u = 1.0f - t;
+	float tt = t * t;
+	float ttt = tt * t;
+	float uu = u * u;
+	float uuu = uu * u;
+
+	Point3D p =
+	{
+		uuu * startPoint.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * endPoint.x,
+		uuu * startPoint.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * endPoint.y,
+		uuu * startPoint.z + 3 * uu * t * p1.z + 3 * u * tt * p2.z + ttt * endPoint.z,
+	};
+
+	return p;
+}
+
+void KunrealEngine::EngineCore::BezierSetting(GameObject* bezierObject)
+{
+	p0.x = bezierObject->GetComponent<Transform>()->GetPosition().x;
+	p0.y = bezierObject->GetComponent<Transform>()->GetPosition().y;
+	p0.z = bezierObject->GetComponent<Transform>()->GetPosition().z;
+
+	if (p0.x > p3.x)
+	{
+		p1.x = p0.x - (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+		p2.x = p0.x - (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(1.0f, 2.0f));
+	}
+	else
+	{
+		p1.x = p0.x + (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+		p2.x = p0.x + (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(1.0f, 2.0f));
+	}
+
+	p1.y = p0.y + (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(-1.0f, 1.0f));
+	p2.y = p0.y + (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(-1.0f, 1.0f));
+
+	p1.z = p0.z + (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(-1.0f, 1.0f));
+	p2.z = p0.z + (ToolBox::GetRandomFloat(20.0f, 30.0f) * ToolBox::GetRandomFloat(-1.0f, 1.0f));
+
+	std::vector<Point3D> bezierPosintList;
+	bezierPosintList.push_back(p0);
+	bezierPosintList.push_back(p1);
+	bezierPosintList.push_back(p2);
+	_bezierPointsList.push_back(bezierPosintList);
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
