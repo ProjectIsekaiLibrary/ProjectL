@@ -167,8 +167,6 @@ namespace KunrealEngine
 
 		void UpdateMoveNode(DirectX::XMFLOAT3& targetPos);
 
-		void CalculateDirection();
-
 		bool MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 
 		// πÈΩ∫≈« ¿Ãµø
