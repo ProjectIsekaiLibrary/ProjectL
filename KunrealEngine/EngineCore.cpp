@@ -122,6 +122,8 @@ KunrealEngine::GameObject* particleBossSwordDonut2;
 KunrealEngine::GameObject* particleBossSwordDonut3;
 KunrealEngine::GameObject* particleBossSwordDonut4;
 
+std::vector<KunrealEngine::GameObject*> ParticleSwordSoulList;
+
 KunrealEngine::GameObject* particleBezierTest1;
 KunrealEngine::GameObject* particleBezierTest2;
 KunrealEngine::GameObject* particleBezierTest3;
@@ -183,7 +185,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 
 	_timeCount = 0.0f;
-	_checkReverse = false;
+	_isSettingTimer = false;
 	_isBezierStartSetting = false;
 
 	//ChangeScene("ParticleTest");
@@ -212,50 +214,114 @@ bool moveTo = true;
 void KunrealEngine::EngineCore::Update()
 {
 	//particleBossSword3->GetComponent<Particle>()->SetParticleSize(5.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 5.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
-	
+	//
 	//POINT particlePoint = {10,0};
 	//POINT particlePoint2 = {10,0};
-		
-	
-	// z 는 조절하지 않는다
-	// x값을 신경쓰고 y는 튀어오르는 높이  시작지점이 다르면 y를 -로 줘서 아래로 포물선을 그릴수 있음
+	//GameObject* sword = sceneInstance.GetCurrentScene()->GetGameObject("sword2");
+	//
+	// //z 는 조절하지 않는다
+	// //x값을 신경쓰고 y는 튀어오르는 높이  시작지점이 다르면 y를 -로 줘서 아래로 포물선을 그릴수 있음
 	//if (_isBezierStartSetting == false)
 	//{
-	//	for (auto bezierObject : _bezierObjectList) // 베지어 곡선 초기 설정
+	//	//for (auto& bezierObject : _bezierObjectList) // 베지어 곡선 초기 설정
+	//	//{
+	//	//	_bezierPointsList.push_back(BezierSetting(bezierObject));
+	//	//}
+
+	//	for (auto& ParticleSwordSoul : ParticleSwordSoulList)
 	//	{
-	//		BezierSetting(bezierObject);
+	//		_bezierSwordSoulPointsList.push_back(BezierSetting(ParticleSwordSoul));
 	//	}
 	//	_isBezierStartSetting = true;
 	//}
 
 
-	//for (auto bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
-	//{	
+	////for (auto& bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
+	////{	
+	////	Point3D particlePoint;
+	////	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], p3, _timeCount);
+	////	_particlePointList.push_back(particlePoint);
+	////}
+
+	//int bezierPointIndex = 0;
+
+	//for (auto& bezierPoint : _bezierSwordSoulPointsList) // 각 점을 통한 베지어 곡선을 구함
+	//{		
 	//	Point3D particlePoint;
-	//	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], p3, _timeCount);
-	//	_particlePointList.push_back(particlePoint);
-	//}
+	//	Point3D endPoint;
 
-	//for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
-	//{
-	//	_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
-	//}
-
-	//_timeCount += TimeManager::GetInstance().GetDeltaTime()/2;
-	//
-	//if (_timeCount > 1.0f)
-	//{
-	//	_timeCount = 0.0f;
-	//	_bezierPointsList.clear();
-	//	for (auto bezierObject : _bezierObjectList)
+	//	endPoint = { sword->GetComponent<Transform>()->GetPosition().x, sword->GetComponent<Transform>()->GetPosition().y + 20.f, sword->GetComponent<Transform>()->GetPosition().z };
+	//	
+	//	if (_isSettingTimer == false)
 	//	{
-	//		bezierObject->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f), ToolBox::GetRandomFloat(-62.0f, 62.0f));
+	//		_timeCount = ToolBox::GetRandomFloat(0.1f, 0.8f);
 
-	//		BezierSetting(bezierObject);
+	//		_timeCountList.push_back(_timeCount);
 	//	}
+	//	
+	//	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], endPoint, _timeCountList[bezierPointIndex]);
+	//	_particleSwordSoulPointList.push_back(particlePoint);
+	//	++bezierPointIndex;
+	//}
+	//_isSettingTimer = true;
+
+	////for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
+	////{
+	////	_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
+	////}
+
+	//for (int i = 0; i < ParticleSwordSoulList.size(); ++i) // 곡선을 따라 이동
+	//{
+	//	ParticleSwordSoulList[i]->GetComponent<Transform>()->SetPosition(_particleSwordSoulPointList[i].x, _particleSwordSoulPointList[i].y, _particleSwordSoulPointList[i].z);
+	//}
+	//
+	////if (_timeCount > 0.7f)
+	////{
+	//	//_timeCount += TimeManager::GetInstance().GetDeltaTime()/ 2;
+	////}
+	////else
+	////{
+	//	for (auto& timeCount : _timeCountList)
+	//	{
+	//		timeCount += TimeManager::GetInstance().GetDeltaTime() / 4;
+	//	}
+	////}
+	//
+	//int timeCountIndex = 0;
+
+	//for (auto& timeCount : _timeCountList)
+	//{
+	//	if (timeCount > 1.0f)
+	//	{
+	//		_bezierSwordSoulPointsList.erase(_bezierSwordSoulPointsList.begin() + timeCountIndex);
+	//		timeCount = 0.0f;
+	//		//_isSettingTimer = false;
+
+	//	ParticleSwordSoulList[timeCountIndex]->GetComponent<Transform>()->SetPosition(sword->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-50.0f, 50.0f),
+	//		sword->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), sword->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-62.0f, 62.0f));
+
+	//	_bezierSwordSoulPointsList.insert(_bezierSwordSoulPointsList.begin() + timeCountIndex ,BezierSetting(ParticleSwordSoulList[timeCountIndex]));
+	//	}
+	//	++timeCountIndex;
 	//}
 
+	////if (_timeCount > 1.0f)
+	////{
+	////	_bezierPointsList.clear();
+	////	
+	////	for (auto bezierObject : _bezierObjectList)
+	////	{
+	////		bezierObject->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f), ToolBox::GetRandomFloat(-62.0f, 62.0f));
+
+	////		_bezierPointsList.push_back(BezierSetting(bezierObject));
+	////	}
+
+	////
+	////}
+
+	//
 	//_particlePointList.clear(); // 파티클 포인트 초기화
+	//_particleSwordSoulPointList.clear();
 
 	CheckMousePosition();
 	inputInstance->Update(GetDeltaTime());
@@ -1380,7 +1446,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossSword4->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.f);
 	particleBossSword4->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.0f, 0.0f);
 
-	GameObject* sword2 = sceneInstance.GetCurrentScene()->CreateObject("sword");
+	GameObject* sword2 = sceneInstance.GetCurrentScene()->CreateObject("sword2");
 	sword2->AddComponent<MeshRenderer>();
 	sword2->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
 	sword2->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "KamenSword/KamenSword_BaseColor.png");
@@ -1397,7 +1463,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossSword2_1->GetComponent<Particle>()->SetParticleDuration(0.3f, 0.7f);
 	particleBossSword2_1->GetComponent<Particle>()->SetParticleVelocity(4.0f, true);
 	particleBossSword2_1->GetComponent<Particle>()->SetParticleSize(3.f, 3.0f);
-	particleBossSword2_1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.2f, 0.1f);
+	particleBossSword2_1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.2f, 0.0f);
 	particleBossSword2_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particleBossSword2_2 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_2");	
@@ -1407,7 +1473,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossSword2_2->GetComponent<Particle>()->SetParticleDuration(0.3f, 0.7f);
 	particleBossSword2_2->GetComponent<Particle>()->SetParticleVelocity(4.0f, true);
 	particleBossSword2_2->GetComponent<Particle>()->SetParticleSize(3.f, 3.0f);
-	particleBossSword2_2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.2f, 0.1f);
+	particleBossSword2_2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.2f, 0.0f);
 	particleBossSword2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particleBossSword2_3 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_3");
@@ -1417,7 +1483,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossSword2_3->GetComponent<Particle>()->SetParticleDuration(1.2f, 2.0f);
 	particleBossSword2_3->GetComponent<Particle>()->SetParticleVelocity(0.1f, true);
 	particleBossSword2_3->GetComponent<Particle>()->SetParticleSize(17.0f, 15.0f);
-	particleBossSword2_3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.5f, 0.1f);
+	particleBossSword2_3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.5f, 0.0f);
 	particleBossSword2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 
 	particleBossSword2_4 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword2_4");
@@ -1469,7 +1535,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossSwordDonut2->GetComponent<Particle>()->AddParticleColor(0.3f, 5.0f, 0.3f);
 	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDirection(0.0f, 200.0f, 0.0f);
 
-	for (int i = 0; i < 16; ++i)
+	/*for (int i = 0; i < 16; ++i)
 	{
 		GameObject* particleBezierTest;
 		particleBezierTest = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
@@ -1479,10 +1545,27 @@ void KunrealEngine::EngineCore::ParticleTest()
 		particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
 		particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
 		particleBezierTest->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
-		particleBezierTest->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 2.0f);
+		particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 1.0f);
 		particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 		_bezierObjectList.push_back(particleBezierTest);
+	}*/
+
+	for (int i = 0; i < 16; ++i)
+	{
+		GameObject* particleBezierTest;
+		particleBezierTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleSwordSoul");
+		particleBezierTest->GetComponent<Transform>()->SetPosition(sword2->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-50.0f, 50.0f),
+			sword2->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), sword2->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-62.0f, 62.0f));
+		particleBezierTest->AddComponent<Particle>();
+		particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+		particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+		particleBezierTest->GetComponent<Particle>()->SetParticleSize(2.0f, 2.0f);
+		particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 0.0f);
+		particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+		ParticleSwordSoulList.push_back(particleBezierTest);
 	}
 
 	/*particleBezierTest1 = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
@@ -1528,7 +1611,7 @@ KunrealEngine::Point3D KunrealEngine::EngineCore::Bezier(Point3D startPoint, Poi
 	return p;
 }
 
-void KunrealEngine::EngineCore::BezierSetting(GameObject* bezierObject)
+std::vector<KunrealEngine::Point3D> KunrealEngine::EngineCore::BezierSetting(GameObject* bezierObject)
 {
 	p0.x = bezierObject->GetComponent<Transform>()->GetPosition().x;
 	p0.y = bezierObject->GetComponent<Transform>()->GetPosition().y;
@@ -1555,7 +1638,11 @@ void KunrealEngine::EngineCore::BezierSetting(GameObject* bezierObject)
 	bezierPosintList.push_back(p0);
 	bezierPosintList.push_back(p1);
 	bezierPosintList.push_back(p2);
-	_bezierPointsList.push_back(bezierPosintList);
+
+	//std::vector<std::vector<Point3D>> bezierPointsListSetting;
+	//bezierPointsListSetting.push_back(bezierPosintList);
+
+	return bezierPosintList;
 }
 
 float KunrealEngine::EngineCore::GetDeltaTime()
