@@ -105,6 +105,7 @@ namespace KunrealEngine
 		void CreateTeleportToCenterWithLook();
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
+		void CreateReverseEmergence();
 
 		// «ŸΩ… ±‚πÕ ∆–≈œ
 	private:
@@ -126,6 +127,7 @@ namespace KunrealEngine
 		BossPattern* _turn180;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
+		BossPattern* _reverseEmergence;
 
 		BossPattern* _leftFireAttack;
 		BossPattern* _rightFireAttack;

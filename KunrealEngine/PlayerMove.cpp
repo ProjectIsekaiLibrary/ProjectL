@@ -12,7 +12,7 @@
 #include "ToolBox.h"
 
 KunrealEngine::PlayerMove::PlayerMove()
-	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false)
+	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
 	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(4.0f)
 {
 	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x - 0;
@@ -63,12 +63,15 @@ void KunrealEngine::PlayerMove::Update()
 	}
 
 	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함
-	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
+	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE) && this->_isDashReady)
 	{
 		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
 			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
 			)
 		{
+			this->_isDashReady = false;
+			Startcoroutine(dashReady);
+
 			// 이동 상태 해제
 			_isMoving = false;
 			_movedRange = 0.0f;
@@ -136,6 +139,39 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 		_targetPos.x, _transform->GetPosition().y, _targetPos.z);
 
 	_stopover = Navigation::GetInstance().FindStraightPath(0);
+
+	// 반환 된 노드가 없으면 == 움직일 수 없는 공간을 클릭했으면
+	while (_stopover.size() == 0)
+	{
+		// 플레이어 위치에서 마우스 위치로의 방향벡터
+		DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
+		DirectX::XMVECTOR currentVec = DirectX::XMLoadFloat3(&currentPoint);
+		DirectX::XMFLOAT3 targetPoint = _targetPos;
+		DirectX::XMFLOAT3 targetWithY = { targetPoint.x, targetPoint.y + _posY, targetPoint.z };
+		DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&targetWithY);
+
+		// 목표지점으로부터 플레이어 위치로의 방향벡터
+		DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(targetWithY, currentPoint);
+
+		// 플레이어 방향으로 조금씩 이동
+		direction = DirectX::XMVectorScale(direction, 1.0f);
+		DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(targetPosVec, direction);
+
+		// 구한 값을 목표지점에
+		DirectX::XMStoreFloat3(&_targetPos, targetVector);
+
+		Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
+			_targetPos.x, _transform->GetPosition().y, _targetPos.z);
+
+		_stopover = Navigation::GetInstance().FindStraightPath(0);
+
+		// 안전장치
+		//if (_stopover.size() > 0)
+		//{
+		//	break;
+		//}
+	}
+	
 	_nodeCount = 0;
 }
 
@@ -476,7 +512,6 @@ float KunrealEngine::PlayerMove::GetPlayerY()
 
 void KunrealEngine::PlayerMove::RecalculateNavigation()
 {
-	/// 미완성
 	// 반환 된 노드가 없으면 == 움직일 수 없는 공간을 클릭했으면
 	if (_stopover.size() == 0)
 	{
@@ -485,13 +520,21 @@ void KunrealEngine::PlayerMove::RecalculateNavigation()
 		DirectX::XMVECTOR currentVec = DirectX::XMLoadFloat3(&currentPoint);
 		DirectX::XMFLOAT3 targetPoint = _targetPos;
 		DirectX::XMFLOAT3 targetWithY = { targetPoint.x, targetPoint.y + _posY, targetPoint.z };
+		DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&targetWithY);
 
-		DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetWithY);
-		_playerComp->_directionVector = direction;
+		// 목표지점으로부터 플레이어 위치로의 방향벡터
+		DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(targetWithY, currentPoint);
 
-		// 플레이어 위치에서 방향벡터 방향으로 대시 거리만큼의 좌표
-		direction = DirectX::XMVectorScale(direction, _playerComp->GetPlayerData()._dashRange);
-		DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(currentVec, direction);
+		// 플레이어 방향으로 조금씩 이동
+		direction = DirectX::XMVectorScale(direction, 1.0f);
+		DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(targetPosVec, direction);
+
+		// 구한 값을 목표지점에
+		DirectX::XMStoreFloat3(&_targetPos, targetVector);
+	}
+	else
+	{
+		return;
 	}
 }
 

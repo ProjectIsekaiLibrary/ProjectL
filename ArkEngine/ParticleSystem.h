@@ -69,6 +69,8 @@ namespace ArkEngine
 		virtual void SetParticleDirection(const DirectX::XMFLOAT3& particleRotaion) override;
 		virtual void SetParticleRotation(const DirectX::XMFLOAT3& rotation) override;
 
+		virtual void SetParticleAngle(float angle) override;
+
 		float GetRandomFloat(float minNum, float maxNum);
 		void SetEyePos(const DirectX::XMFLOAT3& eyePosW);
 	private:
@@ -133,6 +135,7 @@ namespace ArkEngine
 		ID3DX11EffectVectorVariable* _particleDirectionEffect;
 		ID3DX11EffectVectorVariable* _particleRotationEffect;
 
+		ID3DX11EffectScalarVariable* _particleRotateAngle;
 
 		ID3DX11EffectShaderResourceVariable* _texArray;
 		ID3DX11EffectShaderResourceVariable* _randomTex;
@@ -168,6 +171,9 @@ namespace ArkEngine
 		void SetParticleDirectionW(const DirectX::XMFLOAT3& v);
 
 		void SetParticleRotationW(const DirectX::XMFLOAT3& v);
+
+		void SetParticleRotateAnlgle(float angle);
+		float _rotateAngle;
 
 	private:
 		void SetParticleState(bool isStart);
