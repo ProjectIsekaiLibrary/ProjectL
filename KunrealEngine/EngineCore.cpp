@@ -128,8 +128,13 @@ KunrealEngine::GameObject* particleBezierTest1;
 KunrealEngine::GameObject* particleBezierTest2;
 KunrealEngine::GameObject* particleBezierTest3;
 
+KunrealEngine::GameObject* playerE1;
+KunrealEngine::GameObject* playerE2;
+KunrealEngine::GameObject* playerE3;
+KunrealEngine::GameObject* playerE4;
 
 KunrealEngine::GameObject* testCamera;
+KunrealEngine::GameObject* particleCamera;
 
 
 
@@ -278,7 +283,16 @@ void KunrealEngine::EngineCore::Update()
 	//
 	////if (_timeCount > 0.7f)
 	////{
-	//	//_timeCount += TimeManager::GetInstance().GetDeltaTime()/ 2;
+	//	_timeCount += TimeManager::GetInstance().GetDeltaTime()/ 2;
+
+	//	GameObject* test = sceneInstance.GetCurrentScene()->GetGameObject("Particle16");
+
+	//	test->GetComponent<Particle>()->SetParticleSize(100 * _timeCount, 100 * _timeCount);
+	//	//test->GetComponent<Transform>()->SetRotation(90.0f, 0, 0);
+	//	test->GetComponent<Particle>()->SetParticleRotation(90.0f, 0.0f, 0.0f);
+
+	//	GameObject* test2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE1");
+	//	test2->GetComponent<Particle>()->SetParticleSize(100 * _timeCount, 100 * _timeCount);
 	////}
 	////else
 	////{
@@ -306,7 +320,10 @@ void KunrealEngine::EngineCore::Update()
 	//	++timeCountIndex;
 	//}
 
-	////if (_timeCount > 1.0f)
+	//if (_timeCount > 1.0f)
+	//{
+	//	_timeCount = 0.0f;
+	//}
 	////{
 	////	_bezierPointsList.clear();
 	////	
@@ -800,6 +817,14 @@ void KunrealEngine::EngineCore::ParticleTest()
 	testCamera->GetComponent<Transform>()->SetPosition(-98.f, 26.f, -90.f);
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 60.f);
 
+	// Camera
+	KunrealEngine::KunrealMath::Float3 pcameraPos = { 0.0f, 120.0f, 0.0f };
+
+	particleCamera = sceneInstance.GetCurrentScene()->CreateObject("particleCamera");
+	particleCamera->AddComponent<Camera>();
+	particleCamera->GetComponent<Camera>()->SetCameraPosition(pcameraPos.x, pcameraPos.y, pcameraPos.z);
+	particleCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, -1.0f);
+
 	// Plane 
 	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
 	plane->AddComponent<MeshRenderer>();
@@ -984,10 +1009,11 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle16->AddComponent<Particle>();
 	particle16->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	particle16->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
-	particle16->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
+	particle16->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
 	particle16->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 	particle16->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 2.0f);
-	particle16->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
+	particle16->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//particle16->GetComponent<Particle>()->SetParticleRotation(90.0f, 0.0f, 0.0f);
 
 	particle17 = sceneInstance.GetCurrentScene()->CreateObject("Particle17");
 	particle17->GetComponent<Transform>()->SetPosition(10, 0, 35.f);
@@ -1072,7 +1098,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle25 = sceneInstance.GetCurrentScene()->CreateObject("Particle25");
 	particle25->GetComponent<Transform>()->SetPosition(-10, 0, 105.f);
 	particle25->AddComponent<Particle>();
-	particle25->GetComponent<Particle>()->SetParticleEffect("EnergyBolt7", "Resources/Textures/Particles/fx_EnergyBolt7.dds", 1000);
+	particle25->GetComponent<Particle>()->SetParticleEffect("EnergyBolt7", "Resources/Textures/Particles/fx_Thrust1.dds", 1000);
 	particle25->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle25->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle25->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -1082,7 +1108,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle26 = sceneInstance.GetCurrentScene()->CreateObject("Particle26");
 	particle26->GetComponent<Transform>()->SetPosition(0, 0, 105.f);
 	particle26->AddComponent<Particle>();
-	particle26->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
+	particle26->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Thrust2.dds", 1000);
 	particle26->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle26->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle26->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -1090,9 +1116,9 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle26->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle27 = sceneInstance.GetCurrentScene()->CreateObject("Particle27");
-	particle27->GetComponent<Transform>()->SetPosition(10, 0, 105.f);
+	particle27->GetComponent<Transform>()->SetPosition(-60, 0, -30.f);
 	particle27->AddComponent<Particle>();
-	particle27->GetComponent<Particle>()->SetParticleEffect("Fire3", "Resources/Textures/Particles/fx_Fire3.dds", 1000);
+	particle27->GetComponent<Particle>()->SetParticleEffect("Fire3", "Resources/Textures/Particles/fx_Thrust3.dds", 1000);
 	particle27->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle27->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle27->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -1100,9 +1126,9 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle27->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle28 = sceneInstance.GetCurrentScene()->CreateObject("Particle28");
-	particle28->GetComponent<Transform>()->SetPosition(20, 0, 105.f);
+	particle28->GetComponent<Transform>()->SetPosition(-45, 0, -30.f);
 	particle28->AddComponent<Particle>();
-	particle28->GetComponent<Particle>()->SetParticleEffect("Fireball1", "Resources/Textures/Particles/fx_Fireball1.dds", 1000);
+	particle28->GetComponent<Particle>()->SetParticleEffect("Fireball1", "Resources/Textures/Particles/fx_Twister1.dds", 1000);
 	particle28->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle28->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle28->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -1110,9 +1136,9 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle28->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle29 = sceneInstance.GetCurrentScene()->CreateObject("Particle29");
-	particle29->GetComponent<Transform>()->SetPosition(30, 0, 105.f);
+	particle29->GetComponent<Transform>()->SetPosition(-45, 0, -30.f);
 	particle29->AddComponent<Particle>();
-	particle29->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Flare5.dds", 1000);
+	particle29->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
 	particle29->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle29->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle29->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -1120,9 +1146,9 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle29->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle30 = sceneInstance.GetCurrentScene()->CreateObject("Particle30");
-	particle30->GetComponent<Transform>()->SetPosition(-10, 0, 135.f);
+	particle30->GetComponent<Transform>()->SetPosition(-30, 0, -30.f);
 	particle30->AddComponent<Particle>();
-	particle30->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources / Textures / Particles / fx_Flare6.dds", 1000);
+	particle30->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 	particle30->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle30->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle30->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -1140,7 +1166,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particlePlayerQ1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
 	particlePlayerQ1->GetComponent<Particle>()->SetParticleDuration(0.7f, 4.0f);
 	particlePlayerQ1->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-	particlePlayerQ1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	particlePlayerQ1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);     
 	particlePlayerQ1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 1.0f);
 	particlePlayerQ1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
@@ -1585,6 +1611,26 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBezierTest2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	bezierObjectList.push_back(particleBezierTest2);*/
+
+	playerE1 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE1");
+	playerE1->GetComponent<Transform>()->SetPosition(-20, 0, 25.f);
+	playerE1->AddComponent<Particle>();
+	playerE1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+	playerE1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.0f);
+	playerE1->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	playerE1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+	playerE1->GetComponent<Particle>()->AddParticleColor(2.0f, 1.3f, 0.7f);
+	playerE1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	
+	playerE2 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE2");
+	playerE2->GetComponent<Transform>()->SetPosition(-20, 0, 0);
+	playerE2->AddComponent<Particle>();
+	playerE2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+	playerE2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
+	playerE2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	playerE2->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+	playerE2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	playerE2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 }
 
 KunrealEngine::Point3D KunrealEngine::EngineCore::Bezier(Point3D startPoint, Point3D p1, Point3D p2, Point3D endPoint, float t)
