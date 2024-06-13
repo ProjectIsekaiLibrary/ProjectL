@@ -97,6 +97,9 @@ namespace KunrealEngine
 		// offset 설정
 		void SetOffSet(float x, float y, float z);
 
+		// 평면 장판 위해 각도 설정
+		void SetParticleAngle(float angle);
+
 	public:
 		// 파티클 정보 전달용
 		DirectX::XMFLOAT2 GetSize();
