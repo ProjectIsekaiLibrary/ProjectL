@@ -47,9 +47,11 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* _dash;			// 대쉬(회피?)
 
 		KunrealEngine::GameObject* _playerhp_bar;		// 플레이어 체력바
+		KunrealEngine::GameObject* _playerhp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
 		KunrealEngine::GameObject* _bosshp_bar;			// 보스 체력바
 		KunrealEngine::GameObject* _bosshp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
 		float booshp_targetscale;
+		float playerhp_targetscale;
 
 	private:
 		EventManager* _eventmanager;

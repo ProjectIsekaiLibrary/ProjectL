@@ -104,13 +104,20 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_dash->GetComponent<ImageRenderer>()->SetPosition(1200.f, 940.f);
 	_dash->GetComponent<Transform>()->SetScale(0.5f, 0.9f, 1.0f);
 
+
+	_playerhp_bar_downGauge = scene.GetCurrentScene()->CreateObject("playerhp_bar");
+	_playerhp_bar_downGauge->SetParent(_battleuibox);
+	_playerhp_bar_downGauge->AddComponent<ImageRenderer>();
+	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("volume-in.png");
+	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(500.f, 850.f);
+	_playerhp_bar_downGauge->GetComponent<Transform>()->SetScale(_playerhpsize, 0.3f, 1.0f);
+
 	_playerhp_bar = scene.GetCurrentScene()->CreateObject("playerhp_bar");
 	_playerhp_bar->SetParent(_battleuibox);
 	_playerhp_bar->AddComponent<ImageRenderer>();
 	_playerhp_bar->GetComponent<ImageRenderer>()->SetImage("backposition.png");
 	_playerhp_bar->GetComponent<ImageRenderer>()->SetPosition(500.f, 850.f);
 	_playerhp_bar->GetComponent<Transform>()->SetScale(_playerhpsize, 0.3f, 1.0f);
-
 
 	_bosshp_bar_downGauge = scene.GetCurrentScene()->CreateObject("_bosshp_bar_downGauge");
 	_bosshp_bar_downGauge->SetParent(_battleuibox);
@@ -153,8 +160,24 @@ void KunrealEngine::BattleUIManager::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
 	{
-		int currenthp = _eventmanager->_bossComp->GetBossInfo()._hp -= 10;
+		int currenthp = _eventmanager->_playerComp->GetPlayerData()._hp -= 10;
+		if (_eventmanager->_bossComp->GetBossInfo()._hp <= 0)
+		{
+			currenthp = _eventmanager->_bossComp->GetBossInfo()._hp = 1;
+		}
 		SetBossHpbar();
+	}
+
+	if (InputSystem::GetInstance()->KeyDown(KEY::PGUP))
+	{
+		_eventmanager->_playerComp->GetPlayerData()._hp += 10;
+		SetPlayerHpBar();
+	}
+
+	if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
+	{
+		_eventmanager->_playerComp->GetPlayerData()._hp -= 10;
+		SetPlayerHpBar();
 	}
 
 	if (abill->_isShotDetected)
@@ -243,11 +266,32 @@ void KunrealEngine::BattleUIManager::SetBossHpbar()
 
 void KunrealEngine::BattleUIManager::SetPlayerHpBar()
 {
-	int currenthp = _eventmanager->_playerComp->GetPlayerData()._hp;
-	//int maxhp = _eventmanager->_playerComp->GetPlayerInfo()._Maxhp;
-	//int minhp = 0;
-	//int minhpbar = 0;
-	//float hpsize = (currenthp - minhp) / (maxhp - minhp) * (_bosshpsize - minhpbar);
+	float currenthp = _eventmanager->_playerComp->GetPlayerData()._hp;
+	//float maxhp = _eventmanager->_playerComp->GetPlayerInfo()._Maxhp;
+	float maxhp = 500;
+	float minhp = 0;
+	float minhpbar = 0;
+
+	playerhp_targetscale = ((currenthp - minhp) / (maxhp - minhp)) * (_bosshpsize - minhpbar) + minhpbar;
+	_playerhp_bar->GetComponent<Transform>()->SetScale(playerhp_targetscale, 0.3f, 1.0f);
+	_CoroutineIs(bossdowngauge)
+	{
+		auto  hpbarcontrol = this;
+		auto  downGauge = _playerhp_bar_downGauge;	//GameObject
+		float scale = downGauge->GetComponent<Transform>()->GetScale().x;
+		float& targetscale = playerhp_targetscale;
+		float speed = 0.5f;
+
+		while (targetscale - TimeManager::GetInstance().GetDeltaTime() * speed < scale)
+		{
+			downGauge->GetComponent<Transform>()->SetScale(scale, 0.3f, 1.0f);
+			scale -= TimeManager::GetInstance().GetDeltaTime() * speed;
+			Return_null;
+		}
+		targetscale = 0;
+	};
+
+	Startcoroutine(bossdowngauge);
 }
 
 /// 1¹ø ½ºÅ³

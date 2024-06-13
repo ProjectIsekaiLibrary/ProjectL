@@ -36,7 +36,7 @@ namespace KunrealEngine
 		button_option->GetComponent<ButtonSystem>()->SetImage(button_option->GetComponent<ImageRenderer>());
 		button_option->GetComponent<ButtonSystem>()->SetButtonFunc([pauseuibox]()
 			{
-				KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetGameObject("optionuibox")->SetActive(true);
+				KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Option")->SetActive(true);
 				pauseuibox->SetActive(false);
 			});
 
