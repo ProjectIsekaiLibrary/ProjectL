@@ -75,9 +75,6 @@ namespace KunrealEngine
 		void CreateCallAttack();
 		void CreateCall2Attack();
 
-		// 분신 패턴
-		void CreateEgoEmergence();
-
 		// 검 with 카멘 패턴
 	private:
 		void CreateSwordAttack();
@@ -113,14 +110,17 @@ namespace KunrealEngine
 	private:
 		void CreateEmergenceAttack();
 
+
+		// 분신용 편의성 함수
+	private:
+		DirectX::XMVECTOR GetEgoDirection();
+
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
 		BossPattern* _spellAttack;
 		BossPattern* _callAttack;
 		BossPattern* _call2Attack;
-
-		BossPattern* _egoEmergence;
 
 		BossPattern* _backStep;
 		BossPattern* _turn180;
@@ -176,6 +176,16 @@ namespace KunrealEngine
 
 		GameObject* _alterEgo;
 
+		std::vector<GameObject*> _egoHandFire;
+
+		GameObject* _egoCall2;
+
+		GameObject* _egoLazer;
+		GameObject* _egoLazerCollider;
+
+		GameObject* _egoLeftHandBone;
+		GameObject* _egoRightHandBone;
+
 		std::vector<GameObject*> _fakeBoss;
 
 	private:
@@ -184,9 +194,16 @@ namespace KunrealEngine
 		unsigned int _call2PrevStep;
 		bool _isRotateFinish;
 
+		unsigned int _egoCall2PrevStep;
+
+
 	private:
 		std::vector<bool> _handFireReady;
 		std::vector<DirectX::XMFLOAT3> _handFireDir;
+
+	private:
+		std::vector<bool> _egoHandFireReady;
+		std::vector<DirectX::XMFLOAT3> _egoHandFireDir;
 
 	private:
 		bool _isCoreStart;
@@ -225,6 +242,7 @@ namespace KunrealEngine
 		bool _isSpecial2Playing;
 		bool _isEgoAppearInit;
 		bool _isEgoAppearFinish;
+		bool _isEgoAttackReady;
 		bool _isEgoAttack;
 		float _egoTimer;
 	};

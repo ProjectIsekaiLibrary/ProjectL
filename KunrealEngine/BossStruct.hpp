@@ -81,7 +81,7 @@ struct BossPattern
 		_coolDown(0.0f), _rangeOffset(5.0f),
 		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(1), _subObject(),
 		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true), _skipChase(false), _skipMove(false),
-		_index(0)
+		_index(0), _withEgo(false)
 	{
 		_patternList.emplace_back(this);
 	}
@@ -231,6 +231,7 @@ struct BossPattern
 	BossPattern& SetSkipMove(bool tf) { _skipMove = tf; return *this; };
 	BossPattern& SetSubObject(KunrealEngine::GameObject* object) { for (auto index : _subObject) { if (index == object) return *this; }  _subObject.emplace_back(object);	object->SetTag("BossSub"); object->SetTotalComponentState(false);  return *this; };
 	BossPattern& DeleteSubObject(KunrealEngine::GameObject* object) { auto it = std::find(_subObject.begin(), _subObject.end(), object); if (it != _subObject.end()) { _subObject.erase(it); } return *this; };
+	BossPattern& SetWithEgo(bool tf) { _withEgo = tf; return *this; }
 	
 	std::string _patternName;		// 패턴 이름
 
@@ -281,4 +282,6 @@ struct BossPattern
 	bool _skipChase;
 
 	bool _skipMove;
+	
+	bool _withEgo;
 };
