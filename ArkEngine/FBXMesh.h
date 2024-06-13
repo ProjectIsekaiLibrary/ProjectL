@@ -109,6 +109,7 @@ namespace ArkEngine
 			virtual void DeleteParentBone() override;
 			virtual DirectX::XMFLOAT4X4 GetTransformEffectedByBone() override;
 			virtual DirectX::XMFLOAT4X4 GetBoneTransform(const std::string& boneName) override;
+			virtual DirectX::XMFLOAT4X4 GetParentBoneOriginalTransform(const std::string& boneName) override;
 
 		public:
 			virtual bool GetPickable() override;

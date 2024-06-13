@@ -32,6 +32,10 @@ namespace KunrealEngine
 	public:
 		virtual void CreatePattern() override;
 
+		virtual void Idle() override;
+
+		virtual void SpecialAttack2() override;
+
 	public:
 		void GamePattern();
 
@@ -42,6 +46,7 @@ namespace KunrealEngine
 		void BasicPattern();
 
 	private:
+		// 기본 패턴
 		void LeftRightPattern();
 		void RightLeftPattern();
 		void BackStepCallPattern();
@@ -63,7 +68,9 @@ namespace KunrealEngine
 		// 기본 패턴 조각들
 	private:
 		void CreateLeftAttack();
+		void CreateLeftAttackThrowingFire();
 		void CreateRightAttack();
+		void CreateRightAttackThrowingFire();
 		void CreateSpellAttack();
 		void CreateCallAttack();
 		void CreateCall2Attack();
@@ -103,6 +110,11 @@ namespace KunrealEngine
 	private:
 		void CreateEmergenceAttack();
 
+
+		// 분신용 편의성 함수
+	private:
+		DirectX::XMVECTOR GetEgoDirection();
+
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
@@ -114,6 +126,9 @@ namespace KunrealEngine
 		BossPattern* _turn180;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
+
+		BossPattern* _leftFireAttack;
+		BossPattern* _rightFireAttack;
 
 		BossPattern* _turnClockWise;
 		BossPattern* _turnAntiClockWise;
@@ -150,20 +165,45 @@ namespace KunrealEngine
 		GameObject* _donutWarning2;
 		GameObject* _donutWarning3;
 
-
 		GameObject* _freeSword;
 		GameObject* _freeSwordCollider;
 		GameObject* _swordPath;
 
-		std::vector<GameObject*> _fakeBoss;
+		std::vector<GameObject*> _handFire;
 
-		std::vector<GameObject*> _callVec;
+		GameObject* _leftHandBone;
+		GameObject* _rightHandBone;
+
+		GameObject* _alterEgo;
+
+		std::vector<GameObject*> _egoHandFire;
+
+		GameObject* _egoCall2;
+
+		GameObject* _egoLazer;
+		GameObject* _egoLazerCollider;
+
+		GameObject* _egoLeftHandBone;
+		GameObject* _egoRightHandBone;
+
+		std::vector<GameObject*> _fakeBoss;
 
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
 		unsigned int _call2PrevStep;
 		bool _isRotateFinish;
+
+		unsigned int _egoCall2PrevStep;
+
+
+	private:
+		std::vector<bool> _handFireReady;
+		std::vector<DirectX::XMFLOAT3> _handFireDir;
+
+	private:
+		std::vector<bool> _egoHandFireReady;
+		std::vector<DirectX::XMFLOAT3> _egoHandFireDir;
 
 	private:
 		bool _isCoreStart;
@@ -172,7 +212,6 @@ namespace KunrealEngine
 	private:
 		unsigned int _targetIndex;
 
-	// logic
 	private:
 		std::function<void()> _callInitLogic;
 
@@ -197,5 +236,14 @@ namespace KunrealEngine
 		float _timer;
 
 		float _warningMaxTimer;
+
+	private:
+		bool _isSpecial2Ready;
+		bool _isSpecial2Playing;
+		bool _isEgoAppearInit;
+		bool _isEgoAppearFinish;
+		bool _isEgoAttackReady;
+		bool _isEgoAttack;
+		float _egoTimer;
 	};
 }

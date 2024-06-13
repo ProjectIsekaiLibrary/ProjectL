@@ -186,6 +186,8 @@ void KunrealEngine::Boss::Update()
 
 	SpecialAttack();
 
+	SpecialAttack2();
+
 	switch (_status)
 	{
 		case BossStatus::ENTER:
@@ -524,9 +526,6 @@ void KunrealEngine::Boss::PatternReady()
 	// 현재 실행 중인 Idle 애니메이션을 종료
 	_boss->GetComponent<Animator>()->Stop();
 
-	// 플레이어를 바라보는 백터를 계산
-	CalculateDirection();
-
 	// 패턴 내의 첫 패턴이 지닌 하위 오브젝트들을 모두 켬
 	for (const auto& object : _nowTitlePattern->_subObject)
 	{
@@ -594,15 +593,15 @@ void KunrealEngine::Boss::SpecialAttack()
 
 	if (!_isSpecialPatternPlaying)
 	{
-		_specialPatternIndex = ToolBox::GetRandomNum(_speicalPattern.size()-1);
+		_specialPatternIndex = ToolBox::GetRandomNum(_specialPattern.size()-1);
 
 		_isSpecialPatternPlaying = true;
 
-		_speicalPattern[_specialPatternIndex]->Initialize();
+		_specialPattern[_specialPatternIndex]->Initialize();
 
 	}
 
-	auto isPlaying = _speicalPattern[_specialPatternIndex]->SpecialPatternPlay();
+	auto isPlaying = _specialPattern[_specialPatternIndex]->SpecialPatternPlay();
 
 	// 패턴 실행이 끝났다면
 	if (isPlaying == false)
@@ -617,6 +616,12 @@ void KunrealEngine::Boss::SpecialAttack()
 			_specialPatternTimer = 0.0f;
 		}
 	}
+}
+
+
+void KunrealEngine::Boss::SpecialAttack2()
+{
+
 }
 
 void KunrealEngine::Boss::PatternEnd()
@@ -1238,6 +1243,10 @@ bool KunrealEngine::Boss::BackStep(float speed, float distance)
 	{
 		_backStepPos = _bossTransform->GetPosition();
 
+		auto dir = GetDirection();
+		
+		DirectX::XMStoreFloat3(&_direction, dir);
+
 		_backStepReady = true;
 
 		_isMoving = false;
@@ -1254,9 +1263,11 @@ bool KunrealEngine::Boss::BackStep(float speed, float distance)
 
 const DirectX::XMVECTOR KunrealEngine::Boss::GetDirection()
 {
-	auto direction = DirectX::XMLoadFloat3(&_direction);
+	auto direction = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _bossTransform->GetRotation().y);
 
-	return direction;
+	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&direction);
+
+	return dirVec;
 }
 
 
@@ -1416,24 +1427,7 @@ void KunrealEngine::Boss::UpdateMoveNode()
 		index.second.y = _bossTransform->GetPosition().y;
 	}
 
-
 	_nodeCount = 0;
-}
-
-
-void KunrealEngine::Boss::CalculateDirection()
-{
-	auto bossPosition = _bossTransform->GetPosition();
-
-	DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&bossPosition);
-
-	auto targetPos = _playerTransform->GetPosition();
-
-	DirectX::XMVECTOR direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), currentPosVec);
-
-	direction = DirectX::XMVector3Normalize(direction);
-
-	DirectX::XMStoreFloat3(&_direction, direction);
 }
 
 bool KunrealEngine::Boss::MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)

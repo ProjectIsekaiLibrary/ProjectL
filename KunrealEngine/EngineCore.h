@@ -2,6 +2,10 @@
 #include <windows.h>
 #include "CommonHeader.h"
 
+//
+#include <vector>
+//
+
 /// <summary>
 /// 게임엔진의 코어 부분
 /// 게임엔진 구동에 필요한 전반적인 부분을 초기화 및 구동
@@ -22,6 +26,12 @@ namespace GInterface
 namespace KunrealEngine
 {
 	class SceneManager;
+	class GameObject;
+
+	struct Point3D
+	{
+		float x, y, z;
+	};
 
 	class _DECLSPEC EngineCore
 	{
@@ -54,8 +64,24 @@ namespace KunrealEngine
 		void CheckMousePosition();
 		void MakeObstacle();
 		void RemoveObstacle();
+	
+	private: // 파티클 테스트
 		void ParticleTest();
+		Point3D Bezier(Point3D startPoint, Point3D p1, Point3D p2, Point3D endPoint, float t);
+		std::vector<Point3D> BezierSetting(GameObject* bezierObject);
 
+	private:
+		std::vector<GameObject*> _bezierObjectList;
+		std::vector<std::vector<Point3D>> _bezierPointsList;
+		std::vector<std::vector<Point3D>> _bezierSwordSoulPointsList;
+		std::vector<Point3D> _particlePointList;
+		std::vector<Point3D> _particleSwordSoulPointList;
+		std::vector<float> _timeCountList;
+
+		float _timeCount;
+		bool _isSettingTimer;
+		bool _isBezierStartSetting;
+			// 여기까지
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	
 		GInterface::GraphicsInterface* _gInterface;

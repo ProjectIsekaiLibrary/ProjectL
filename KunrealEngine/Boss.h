@@ -72,6 +72,7 @@ namespace KunrealEngine
 		virtual void BasicAttack();
 		virtual void CoreAttack();
 		virtual void SpecialAttack();
+		virtual void SpecialAttack2();
 		virtual void PatternEnd();
 
 	public:
@@ -166,8 +167,6 @@ namespace KunrealEngine
 
 		void UpdateMoveNode(DirectX::XMFLOAT3& targetPos);
 
-		void CalculateDirection();
-
 		bool MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed);
 
 		// 백스탭 이동
@@ -175,6 +174,7 @@ namespace KunrealEngine
 
 	protected:
 		BossStatus _status;
+
 		BossBasicInfo _info;
 
 		GameObject* _boss;
@@ -185,7 +185,7 @@ namespace KunrealEngine
 		std::vector<BossPattern*> _corePattern;
 		
 		// 보스의 움직임과 무관하게 일정 주기마다 실행
-		std::vector<BossPattern*> _speicalPattern;
+		std::vector<BossPattern*> _specialPattern;
 
 		BossPattern* _nowTitlePattern;
 
@@ -199,11 +199,10 @@ namespace KunrealEngine
 		Transform* _bossTransform;
 		Transform* _playerTransform;
 
-	private:
-		float _startTime;
+		bool _isCorePattern;
 
 	private:
-		bool _isCorePattern;
+		float _startTime;
 
 	private:
 		bool _isStart;

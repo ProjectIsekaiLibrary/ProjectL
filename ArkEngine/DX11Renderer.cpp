@@ -276,6 +276,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 디퍼드 버퍼에 기존 카메라 시점에서의 오브젝트들을 렌더링 하기 위한 준비
 	BeginRender();
 
+	BeginTransparentSet();
+
 	for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
 	{
 		index->SetMainCamera(_mainCamera);
@@ -286,6 +288,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	{
 		index->Render();
 	}
+
+	EndTransparentSet();
 
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
@@ -299,11 +303,15 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		}
 	}
 
+	BeginTransparentSet();
+
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
 
 	// 디퍼드 버퍼를 조합하여 빈 Texture2D에 완성된 화면을 출력함
 	_deferredRenderer->Render();
+
+	EndTransparentSet();
 
 	TransparentRender();
 
@@ -863,6 +871,21 @@ void ArkEngine::ArkDX11::DX11Renderer::EndRender()
 	_swapChain->Present(0, 0);
 }
 
+void ArkEngine::ArkDX11::DX11Renderer::BeginTransparentSet()
+{
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::EndTransparentSet()
+{
+	// 렌더링 컨텍스트에 블렌딩 스테이트 설정
+	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
+	UINT sampleMask = 0xffffffff;
+}
 
 void ArkEngine::ArkDX11::DX11Renderer::TransparentRender()
 {
