@@ -23,6 +23,7 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isAreaReady(true)
 	, _isShotHit(false), _isIceHit(false), _isAreaHit(false), _isMeteorHit(false)
 	, _currentBoss(nullptr), _currentDamage(0.0f)
+	, _isShotDetected(false), _isIceDetected(false), _isAreaDetected(false), _isMeteorDetected(false)
 {
 
 }
@@ -63,6 +64,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady)
 	{
 		ResetShotPos();
+		_isShotDetected = true;
 		_isShotReady = false;
 		_isShotHit = true;
 		Startcoroutine(shotCoolDown);
@@ -77,6 +79,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isIceReady)
 	{
 		ResetIcePos();											// 투사체 위치 리셋
+		_isIceDetected = true;
 		_isIceHit = true;
 		Startcoroutine(iceCoolDown);
 		Startcoroutine(iceStandby);								// 얼음 출현 대기	
@@ -88,6 +91,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isAreaReady)
 	{
 		ResetAreaPos();
+		_isAreaDetected = true;
 		_isAreaHit = true;
 		Startcoroutine(AreaCoolDown);
 		_area->GetComponent<BoxCollider>()->SetActive(true);
@@ -98,6 +102,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady)
 	{
 		ResetMeteorPos();
+		_isMeteorDetected = true;
 		_isMeteorHit = true;
 		_isMeteorReady = false;
 		Startcoroutine(meteorCoolDown);

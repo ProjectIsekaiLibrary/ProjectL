@@ -13,6 +13,8 @@ namespace KunrealEngine
 	{
 		friend class EventManager;
 		friend class PlayerAbility;
+		friend class BattleUIManager;
+
 	public:
 		Ability();
 		~Ability();

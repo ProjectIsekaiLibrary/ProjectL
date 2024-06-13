@@ -11,8 +11,10 @@
 
 #define Waitforsecond(time) co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(time)
 //#define Checkbool(bool_param) co_await KunrealEngine::Coroutine::Coroutine_type::CheckBool(bool_param)
-#define Return_null co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(0.001);
+#define Return_null co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(0.0000001);
 #define Coroutine_Func(coro_func) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func = [this]() ->KunrealEngine::Coroutine::Coroutine_type
+#define _Coroutine(coro_func) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func
+#define _CoroutineIs(coro_func) coro_func = [this]() ->KunrealEngine::Coroutine::Coroutine_type
 #define Startcoroutine(coro_func) Coroutine::StartCoroutine(coro_func)
 #define Updatecoroutine Coroutine::UpdateCoroutines
 
