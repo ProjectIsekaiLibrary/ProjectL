@@ -1,6 +1,7 @@
 #pragma once
 #include "KunrealAPI.h"
 #include "Player.h"
+#include "Coroutine.h"
 
 namespace DirectX
 {
@@ -50,6 +51,7 @@ namespace KunrealEngine
 		// 대시하고 있는 상태인가
 		bool _isDash;
 		bool _isMoving;
+		bool _isDashReady;
 
 		// 이동 때 사용하는 임시 변수들
 		int _tempX;
@@ -77,6 +79,15 @@ namespace KunrealEngine
 
 		/// 디버깅을 위한 함수
 		void ShowPlayerInfo();
+
+	private:
+		// 코루틴
+		Coroutine_Func(dashReady)
+		{
+			auto* dashCooldown = this;
+			Waitforsecond(_playerComp->GetPlayerData()._dashCooldown);
+			dashCooldown->_isDashReady = true;
+		};
 	};
 }
 

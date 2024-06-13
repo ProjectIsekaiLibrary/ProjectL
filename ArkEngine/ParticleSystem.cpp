@@ -20,7 +20,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(5.0f), _particleLifeTime(5.0f),
-	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr)
+	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr), _particleRotateAngle(nullptr), _rotateAngle(0.0f)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -78,6 +78,8 @@ ArkEngine::ParticleSystem::~ParticleSystem()
 	_eyePosWEffect->Release();
 	_emitPosWEffect->Release();
 	_emitDirWEffect->Release();
+
+	_particleRotateAngle->Release();
 
 	_streamOutTech->Release();
 	_drawTech->Release();
@@ -159,6 +161,12 @@ void ArkEngine::ParticleSystem::SetParticleDirection(const DirectX::XMFLOAT3& pa
 void ArkEngine::ParticleSystem::SetParticleRotation(const DirectX::XMFLOAT3& rotation)
 {
 	_particleRotation = rotation;
+}
+
+
+void ArkEngine::ParticleSystem::SetParticleAngle(float angle)
+{
+	_rotateAngle = angle;
 }
 
 void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
@@ -293,6 +301,8 @@ void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 		SetParticleColorW(_particleColor);
 		SetParticleDirectionW(_particleDirection);
 		SetParticleRotationW(_particleRotation);
+
+		SetParticleRotateAnlgle(_rotateAngle);
 
 		// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
 		// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
@@ -689,6 +699,8 @@ void ArkEngine::ParticleSystem::SetEffect()
 	_particleColorEffect = effect->GetVariableByName("gParticleColor")->AsVector();
 	_particleDirectionEffect = effect->GetVariableByName("gAccelW")->AsVector();
 	_particleRotationEffect = effect->GetVariableByName("gRotationAngle")->AsVector();
+
+	_particleRotateAngle = effect->GetVariableByName("gParticleRotateAngle")->AsScalar();
 }
 
 float ArkEngine::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
@@ -770,6 +782,12 @@ void ArkEngine::ParticleSystem::SetParticleDirectionW(const DirectX::XMFLOAT3& v
 void ArkEngine::ParticleSystem::SetParticleRotationW(const DirectX::XMFLOAT3& v)
 {
 	_particleRotationEffect->SetRawValue(&v, 0, sizeof(DirectX::XMFLOAT3));
+}
+
+
+void ArkEngine::ParticleSystem::SetParticleRotateAnlgle(float angle)
+{
+	_particleRotateAngle->SetFloat(angle);
 }
 
 void ArkEngine::ParticleSystem::SetParticleState(bool isStart)

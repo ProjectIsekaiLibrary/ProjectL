@@ -620,9 +620,9 @@ void KunrealEngine::EngineCore::PlayGround()
 	c1->AddComponent<BoxCollider>();
 	c1->GetComponent<BoxCollider>()->SetBoxSize(5.f, 10.f, 10.f);
 	c1->AddComponent<MeshRenderer>();
-	c1->GetComponent<Transform>()->SetPosition(-20.f, 9.f, 0.f);
-	c1->GetComponent<Transform>()->SetScale(0.3f, 0.3f, 0.3f);
-	c1->GetComponent<MeshRenderer>()->SetMeshObject("Sword/Sword", "bricks.dds");
+	c1->GetComponent<Transform>()->SetPosition(-20.f, -30.f, 0.f);
+	c1->GetComponent<Transform>()->SetScale(0.5f, 0.2f, 0.5f);
+	c1->GetComponent<MeshRenderer>()->SetMeshObject("Field2/Field2", "bricks.dds");
 	c1->GetComponent<MeshRenderer>()->SetPickableState(true);
 
 	c2->AddComponent<BoxCollider>();
