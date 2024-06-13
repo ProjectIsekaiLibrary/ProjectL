@@ -1396,7 +1396,6 @@ void KunrealEngine::Boss::SetBossTransform()
 
 }
 
-
 const std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> KunrealEngine::Boss::GetBossPosition()
 {
 	std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos;
