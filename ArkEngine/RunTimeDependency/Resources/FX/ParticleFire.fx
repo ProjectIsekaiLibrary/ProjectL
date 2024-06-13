@@ -30,6 +30,8 @@ cbuffer cbPerFrame
     float3 gRotationAngle;
     float gRotationAngleY;
     float gRotationAngleZ;
+    
+    float gParticleRotateAngle;
 };
 
 cbuffer cbFixed
@@ -304,28 +306,36 @@ struct GeoOut
 [maxvertexcount(4)]
 void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
 {
-    // 방출기 입자는 그리지 않는다
+     // 방출기 입자는 그리지 않는다
     if (gin[0].Type != PT_EMITTER)
     {
-        
-      // 빌보드가 카메라를 향하게 하는 세계 행렬을 계산한다
+        // 빌보드가 카메라를 향하게 하는 세계 행렬을 계산한다
         float3 look = normalize(gEyePosW.xyz - gin[0].PosW);
         float3 right = normalize(cross(float3(0, 1, 0), look));
         float3 up = cross(look, right);
-       
-      // 사각형을 구성하는 삼각형 띠 정점들을 계산한다
+
+        // 각도를 도 단위로 지정하고 라디안으로 변환
+        float angle = gParticleRotateAngle * 3.14159265f / 180.0f;
+        float cosAngle = cos(angle);
+        float sinAngle = sin(angle);
+
+        // 벡터 회전
+        float3 lookRotated = float3(look.x, look.y * cosAngle - look.z * sinAngle, look.y * sinAngle + look.z * cosAngle);
+        float3 upRotated = float3(up.x, up.y * cosAngle - up.z * sinAngle, up.y * sinAngle + up.z * cosAngle);
+
+        // 사각형을 구성하는 삼각형 띠 정점들을 계산한다
         float halfWidth = 0.5f * gin[0].SizeW.x;
         float halfHeight = 0.5f * gin[0].SizeW.y;
       
         float4 v[4];
-        v[0] = float4(gin[0].PosW + halfWidth * right - halfHeight * up, 1.0f);
-        v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
-        v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
-        v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
+        v[0] = float4(gin[0].PosW + halfWidth * right - halfHeight * upRotated, 1.0f);
+        v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * upRotated, 1.0f);
+        v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * upRotated, 1.0f);
+        v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * upRotated, 1.0f);
               
-      // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력한다
+        // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력한다
         GeoOut gout;
-      [unroll]
+        [unroll]
         for (int i = 0; i < 4; ++i)
         {
             gout.PosH = mul(v[i], gViewProj);
@@ -335,7 +345,6 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
             triStream.Append(gout);
         }
     }
-   
 }
 
 float4 DrawPS(GeoOut pin) : SV_TARGET
