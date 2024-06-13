@@ -53,7 +53,10 @@ void KunrealEngine::Camera::Update()
 	}
 
 	///
-	MoveToDebug();
+	if (this->GetOwner() == SceneManager::GetInstance().GetCurrentScene()->GetMainCamera())
+	{
+		MoveToDebug();
+	}
 	///
 }
 
