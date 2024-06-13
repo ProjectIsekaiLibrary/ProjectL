@@ -31,6 +31,9 @@ namespace GInterface
 		// 파티클의 회전 설정
 		virtual void SetParticleRotation(const DirectX::XMFLOAT3& particleRotation) abstract;
 
+		// 파티클 각도에 따라 로테이션 설정 (평면 장판 위함)
+		virtual void SetParticleAngle(float angle) abstract;
+
 		// 파티클을 다시 0부터 시작하게 만든다
 		virtual void Reset() abstract;
 	};

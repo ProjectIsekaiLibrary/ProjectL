@@ -225,6 +225,12 @@ void KunrealEngine::Particle::SetOffSet(float x, float y, float z)
 	this->_offset.z = z;
 }
 
+
+void KunrealEngine::Particle::SetParticleAngle(float angle)
+{
+	_particle->SetParticleAngle(angle);
+}
+
 DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()
 {
 	return this->_size;

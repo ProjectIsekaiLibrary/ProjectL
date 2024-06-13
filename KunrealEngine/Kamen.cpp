@@ -24,7 +24,7 @@ KunrealEngine::Kamen::Kamen()
 	_alterEgo(nullptr), _isSpecial2Ready(false),
 	_isSpecial2Playing(false), _egoTimer(0.0f), _isEgoAppearInit(false), _isEgoAppearFinish(false), _isEgoAttackReady(false),
 	_isEgoAttack(false), _egoLeftHandBone(nullptr), _egoRightHandBone(nullptr),
-	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr)
+	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr), _reverseEmergence(nullptr)
 {
 	BossBasicInfo info;
 
@@ -145,6 +145,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateTeleportToCenterWithLook();
 	CreateTurnClockWise();
 	CreateTurnAntiClockWise();
+	CreateReverseEmergence();
 
 	CreateSwordEmergence();
 	CreateSwordHide();
@@ -174,7 +175,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//
 	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
-	BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 
 	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
@@ -186,8 +187,11 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//CoreEmmergencePattern();
 
-	_basicPattern.emplace_back(_leftFireAttack);
-	_basicPattern.emplace_back(_rightFireAttack);
+	//_basicPattern.emplace_back(_leftFireAttack);
+	//_basicPattern.emplace_back(_rightFireAttack);
+
+
+	_basicPattern.emplace_back(_reverseEmergence);
 }
 
 
@@ -287,7 +291,7 @@ void KunrealEngine::Kamen::SpecialAttack2()
 	{
 		if (!_isEgoAppearInit)
 		{
- 			_alterEgo->SetActive(true);
+			_alterEgo->SetActive(true);
 			_alterEgo->GetComponent<MeshRenderer>()->SetActive(true);
 
 			auto egoTransform = _alterEgo->GetComponent<Transform>();
@@ -699,7 +703,7 @@ void KunrealEngine::Kamen::RightLeftPattern()
 void KunrealEngine::Kamen::BasicPattern()
 {
 	_basicPattern.emplace_back(_spellAttack);
-	_basicPattern.emplace_back(_callAttack);
+	//_basicPattern.emplace_back(_callAttack);
 }
 
 void KunrealEngine::Kamen::CreateLeftAttack()
@@ -817,7 +821,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
 							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 20.0f, egoPosTransform.z);
-							
+
 							auto mat = _egoLeftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
 							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
 
@@ -1235,6 +1239,44 @@ void KunrealEngine::Kamen::CreateTurnAntiClockWise()
 }
 
 
+void KunrealEngine::Kamen::CreateReverseEmergence()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("ReverseEmergence");
+
+	pattern->SetAnimName("ReverseEmergence").SetMaxColliderCount(0).SetSpeed(20.0f);
+
+	auto initializeLogic = [pattern, this]()
+		{
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+		};
+
+	pattern->SetInitializeLogic(initializeLogic);
+
+	auto reverseEmergence = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+
+			auto isPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
+
+			if (isPlaying)
+			{
+				return true;
+			}
+			else
+			{
+				_boss->GetComponent<BoxCollider>()->SetActive(false);
+				_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			}
+		};
+
+	pattern->SetLogic(reverseEmergence);
+
+	_reverseEmergence = pattern;
+}
+
 void KunrealEngine::Kamen::CreateOutsideSafe()
 {
 	BossPattern* pattern = new BossPattern();
@@ -1639,12 +1681,12 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	pattern->SetSubObject(_egoCall2);
 
 	auto initLogic = [pattern, this]()
-	{
-		if (_isEgoAttackReady)
 		{
-			_isEgoAttackReady = false;
-		}
-	};
+			if (_isEgoAttackReady)
+			{
+				_isEgoAttackReady = false;
+			}
+		};
 
 	pattern->SetInitializeLogic(initLogic);
 
@@ -2378,7 +2420,7 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 DirectX::XMVECTOR KunrealEngine::Kamen::GetEgoDirection()
 {
 	auto direction = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _alterEgo->GetComponent<Transform>()->GetRotation().y);
-	
+
 	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&direction);
 
 	return dirVec;
