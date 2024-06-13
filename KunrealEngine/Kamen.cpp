@@ -21,9 +21,10 @@ KunrealEngine::Kamen::Kamen()
 	_swordChopAttack(nullptr), _donutSafe(nullptr), _donutWarning1(nullptr), _donutWarning2(nullptr), _donutWarning3(nullptr),
 	_swordRotation(), _swordChopSpeed(0.0f), _warningMaxTimer(0.0f),
 	_leftHandBone(nullptr), _rightFireAttack(nullptr), _rightHandBone(nullptr), _leftFireAttack(nullptr),
-	_alterEgo(nullptr), _egoEmergence(nullptr), _isSpecial2Ready(false),
-	_isSpecial2Playing(false), _egoTimer(0.0f), _isEgoAppearInit(false), _isEgoAppearFinish(false),
-	_isEgoAttack(false)
+	_alterEgo(nullptr), _isSpecial2Ready(false),
+	_isSpecial2Playing(false), _egoTimer(0.0f), _isEgoAppearInit(false), _isEgoAppearFinish(false), _isEgoAttackReady(false),
+	_isEgoAttack(false), _egoLeftHandBone(nullptr), _egoRightHandBone(nullptr),
+	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr)
 {
 	BossBasicInfo info;
 
@@ -135,8 +136,6 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateLeftAttackThrowingFire();
 	CreateRightAttackThrowingFire();
 
-	CreateEgoEmergence();
-
 	CreateSwordAttack();
 
 	CreateCallAttack();
@@ -167,6 +166,28 @@ void KunrealEngine::Kamen::CreatePattern()
 
 	// 실제 사용중인 패턴들 모아놓음
 	GamePattern();
+}
+
+void KunrealEngine::Kamen::GamePattern()
+{
+	BasicPattern();						// 기본 spell, call
+	//
+	//LeftRightPattern();					// 전방 좌, 우 어택
+	//RightLeftPattern();					// 전방 좌, 후방 우 어택
+	BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	//TeleportSpellPattern();				// 텔포 후 spell	
+
+	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
+	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	SwordLinearAttackPattern();
+	SwordChopPattern();
+
+	//BasicSwordAttackPattern();
+
+	//CoreEmmergencePattern();
+
+	_basicPattern.emplace_back(_leftFireAttack);
+	_basicPattern.emplace_back(_rightFireAttack);
 }
 
 
@@ -217,7 +238,7 @@ void KunrealEngine::Kamen::Idle()
 		}
 
 		// 여기서 patternindex가 1,2,3,4,5라면 분신을 소환
-		if (_isSpecial2Ready && _patternIndex < 5)
+		if (_isSpecial2Ready && (_basicPattern)[_patternIndex]->_withEgo)
 		{
 			_isSpecial2Playing = true;
 
@@ -287,6 +308,8 @@ void KunrealEngine::Kamen::SpecialAttack2()
 				_alterEgo->GetComponent<Animator>()->Stop();
 
 				_isEgoAppearFinish = true;
+
+				_isEgoAttackReady = true;
 			}
 		}
 
@@ -323,7 +346,15 @@ void KunrealEngine::Kamen::SpecialAttack2()
 			}
 		}
 
-		if (_isEgoAppearFinish && _status == BossStatus::BASIC_ATTACK)
+		if (_isEgoAttackReady && _status == BossStatus::BASIC_ATTACK)
+		{
+			_alterEgo->GetComponent<Animator>()->Play("Idle", 20.0f);
+
+			_isEgoAttack = false;
+		}
+
+
+		if (_isEgoAppearFinish && _isEgoAttackReady == false)
 		{
 			if (!_isEgoAttack)
 			{
@@ -332,7 +363,7 @@ void KunrealEngine::Kamen::SpecialAttack2()
 			}
 		}
 
-		if (_isEgoAttack && _status == BossStatus::PATTERN_END)
+		if ((_isEgoAttack || _isEgoAttackReady) && _status == BossStatus::PATTERN_END)
 		{
 			_alterEgo->GetComponent<MeshRenderer>()->SetActive(false);
 			_alterEgo->SetActive(false);
@@ -341,6 +372,7 @@ void KunrealEngine::Kamen::SpecialAttack2()
 			_isSpecial2Playing = false;
 			_isEgoAppearInit = false;
 			_isEgoAppearFinish = false;
+			_isEgoAttackReady = false;
 			_isEgoAttack = false;
 			_egoTimer = false;
 
@@ -351,36 +383,6 @@ void KunrealEngine::Kamen::SpecialAttack2()
 			_alterEgo->GetComponent<Animator>()->Stop();
 		}
 	}
-
-	//test
-	if (_isEgoAttack)
-	{
-		_alterEgo->GetComponent<Animator>()->Play(_nowPlayingPattern->_animName, _nowPlayingPattern->_speed);
-	}
-}
-
-void KunrealEngine::Kamen::GamePattern()
-{
-	//BasicPattern();						// 기본 spell, call
-	//
-	LeftRightPattern();					// 전방 좌, 우 어택
-	//RightLeftPattern();					// 전방 좌, 후방 우 어택
-	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
-	//TeleportSpellPattern();				// 텔포 후 spell	
-
-	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	SwordLinearAttackPattern();
-	SwordChopPattern();
-
-	//BasicSwordAttackPattern();
-
-	//CoreEmmergencePattern();
-
-	//_basicPattern.emplace_back(_rightFireAttack);
-	//_basicPattern.emplace_back(_leftFireAttack);
-
-	//_basicPattern.emplace_back(_egoEmergence);
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
@@ -578,6 +580,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 		_fakeBoss.emplace_back(boss);
 	}
 
+	/// 분신 서브 오브젝트들
+
 	// 분신 소환
 	_alterEgo = _boss->GetObjectScene()->CreateObject("Ego");
 
@@ -593,6 +597,64 @@ void KunrealEngine::Kamen::CreateSubObject()
 	}
 
 	_alterEgo->SetActive(false);
+
+	// 왼손 불 위치 체크용 메쉬
+	_egoLeftHandBone = _boss->GetObjectScene()->CreateObject("EgoLeftHandBone");
+	_egoLeftHandBone->AddComponent<MeshRenderer>();
+	_egoLeftHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_egoLeftHandBone->GetComponent<MeshRenderer>()->SetParentBone(_alterEgo, "MiddleFinger1_L");
+	_egoLeftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_egoLeftHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+
+	// 오른손 불 위치 체크용 메쉬
+	_egoRightHandBone = _boss->GetObjectScene()->CreateObject("EgoRightHandBone");
+	_egoRightHandBone->AddComponent<MeshRenderer>();
+	_egoRightHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+	_egoRightHandBone->GetComponent<MeshRenderer>()->SetParentBone(_alterEgo, "MiddleFinger1_R");
+	_egoRightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_egoRightHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+
+	// 5개 불 
+	for (int i = 0; i < 5; i++)
+	{
+		std::string index = "EgoHandFire" + std::to_string(i + 1);
+		auto handFire = _boss->GetObjectScene()->CreateObject(index);
+		handFire->AddComponent<MeshRenderer>();
+		handFire->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
+		handFire->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+		_egoHandFire.emplace_back(handFire);
+	}
+
+	// call2 투사체
+	_egoCall2 = _boss->GetObjectScene()->CreateObject("EgoCall2");
+	_egoCall2->AddComponent<BoxCollider>();
+	_egoCall2->GetComponent<BoxCollider>()->SetBoxSize(15.0f, 30.0f, 15.0f);
+	_egoCall2->GetComponent<BoxCollider>()->SetActive(false);
+	_egoCall2->AddComponent<Particle>();
+	_egoCall2->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
+	_egoCall2->GetComponent<Particle>()->SetParticleDuration(2.7f, 3.1f);
+	_egoCall2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
+	_egoCall2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	_egoCall2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.5f, 0.0f);
+	_egoCall2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_egoCall2->GetComponent<Particle>()->SetActive(false);
+	_egoCall2->AddComponent<Light>();
+	_egoCall2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+
+	// 레이저 
+	_egoLazer = _boss->GetObjectScene()->CreateObject("EgoLazer");
+	_egoLazer->AddComponent<Particle>();
+	_egoLazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	_egoLazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
+	_egoLazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+	_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+	_egoLazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
+	_egoLazer->GetComponent<Particle>()->SetActive(false);
+
+	// 레이저 콜라이더
+	_egoLazerCollider = _boss->GetObjectScene()->CreateObject("EgoLazerCollider");
+	_egoLazerCollider->AddComponent<BoxCollider>();
+	_egoLazerCollider->GetComponent<BoxCollider>()->SetBoxSize(140.0f, 10.0f, 10.0f);
 }
 
 
@@ -666,6 +728,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+	pattern->SetWithEgo(true);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -674,6 +737,13 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 		_handFireDir.emplace_back();
 
 		pattern->SetSubObject(_handFire[i]);
+
+		//분신용
+		_egoHandFireReady.emplace_back(true);
+
+		_egoHandFireDir.emplace_back();
+
+		pattern->SetSubObject(_egoHandFire[i]);
 	}
 
 	auto initLogic = [pattern, this]()
@@ -681,6 +751,16 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 			for (int i = 0; i < 5; i++)
 			{
 				_handFireReady[i] = true;
+			}
+
+			if (_isEgoAttackReady)
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					_egoHandFireReady[i] = true;
+				}
+
+				_isEgoAttackReady = false;
 			}
 		};
 
@@ -690,6 +770,16 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+			auto fireSpeed = 0.01f;
+
+			// 분신용
+			if (_isEgoAttack)
+			{
+				auto egoAnimator = _alterEgo->GetComponent<Animator>();
+				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+			}
 
 			for (int i = 0; i < 5; i++)
 			{
@@ -702,8 +792,6 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 						auto mat = _leftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
 						auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
 
-						auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
-
 						auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
 
 						_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
@@ -715,13 +803,42 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 					else
 					{
 						auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
-						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 					}
+
+					// 분신용
+					if (_isEgoAttack)
+					{
+						if (_egoHandFireReady[i] == true)
+						{
+							_egoHandFireReady[i] = false;
+
+							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
+							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 20.0f, egoPosTransform.z);
+							
+							auto mat = _egoLeftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
+							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+							auto direction = ToolBox::GetDirectionVec(egoPos, firePos);
+
+							_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+							_egoHandFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+						}
+						else
+						{
+							auto firePos = _egoHandFire[i]->GetComponent<Transform>()->GetPosition();
+							DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
+
+							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+						}
+					}
 				}
 			}
-
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 
@@ -773,10 +890,22 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
+	pattern->SetWithEgo(true);
 
 	for (int i = 0; i < 5; i++)
 	{
+		_handFireReady.emplace_back(true);
+
+		_handFireDir.emplace_back();
+
 		pattern->SetSubObject(_handFire[i]);
+
+		//분신용
+		_egoHandFireReady.emplace_back(true);
+
+		_egoHandFireDir.emplace_back();
+
+		pattern->SetSubObject(_egoHandFire[i]);
 	}
 
 	auto initLogic = [pattern, this]()
@@ -784,6 +913,16 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 			for (int i = 0; i < 5; i++)
 			{
 				_handFireReady[i] = true;
+			}
+
+			if (_isEgoAttackReady)
+			{
+				for (int i = 0; i < 5; i++)
+				{
+					_egoHandFireReady[i] = true;
+				}
+
+				_isEgoAttackReady = false;
 			}
 		};
 
@@ -793,6 +932,16 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+			auto fireSpeed = 0.01f;
+
+			// 분신용
+			if (_isEgoAttack)
+			{
+				auto egoAnimator = _alterEgo->GetComponent<Animator>();
+				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+			}
 
 			for (int i = 0; i < 5; i++)
 			{
@@ -814,8 +963,6 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 						auto mat = _rightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
 						auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
 
-						auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
-
 						auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
 
 						_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
@@ -830,6 +977,36 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+					}
+
+					// 분신용
+					if (_isEgoAttack)
+					{
+						if (_egoHandFireReady[i] == true)
+						{
+							_egoHandFireReady[i] = false;
+
+							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
+							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 20.0f, egoPosTransform.z);
+
+							auto mat = _egoRightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
+							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+							auto direction = ToolBox::GetDirectionVec(egoPos, firePos);
+
+							_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+							_egoHandFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+						}
+						else
+						{
+							auto firePos = _egoHandFire[i]->GetComponent<Transform>()->GetPosition();
+							DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
+
+							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+						}
 					}
 				}
 			}
@@ -1253,26 +1430,49 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 	pattern->SetIsWarning(true).SetWarningName("Spell").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetSubObject(_lazer);
 	pattern->SetSubObject(_lazerCollider);
+	pattern->SetSubObject(_egoLazer);
+	pattern->SetSubObject(_egoLazerCollider);
+	pattern->SetWithEgo(true);
 
 	auto initLogic = [pattern, this]()
 		{
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
 
-			auto playerPos = _playerTransform->GetPosition();
-			auto bossPos = _bossTransform->GetPosition();
-			auto direction = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&playerPos), DirectX::XMLoadFloat3(&bossPos));
-			direction = DirectX::XMVector3Normalize(direction);
-			auto scaleDir = DirectX::XMVectorScale(direction, 15.0f);
-			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir.m128_f32[2]);
+			auto lazerPosOffset = 15.0f;
+			auto lazerScaleOffset = 80.0f;
+
+			auto direction = GetDirection();
+
+			auto lazerScaleDir = DirectX::XMVectorScale(direction, lazerPosOffset);
+			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
 			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 			pattern->SetSpeed(20.0f);
 
-			auto scaleDir2 = DirectX::XMVectorScale(direction, 80.0f);
+			auto lazerColliderScaleDir = DirectX::XMVectorScale(direction, lazerScaleOffset);
 
-			_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + scaleDir2.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + scaleDir2.m128_f32[2]);
+			_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerColliderScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerColliderScaleDir.m128_f32[2]);
 
 			_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
+
+			if (_isEgoAttackReady)
+			{
+				auto egoTransform = _alterEgo->GetComponent<Transform>();
+				auto egoPos = egoTransform->GetPosition();
+				auto egoLazerDirection = GetEgoDirection();
+				auto egoLazerScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerPosOffset);
+
+				_egoLazer->GetComponent<Transform>()->SetPosition(egoPos.x + egoLazerScaleDir.m128_f32[0], 16.0f, egoPos.z + egoLazerScaleDir.m128_f32[2]);
+				_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
+
+				auto egolazerColliderScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerScaleOffset);
+
+				_egoLazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + egolazerColliderScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + egolazerColliderScaleDir.m128_f32[2]);
+
+				_egoLazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
+
+				_isEgoAttackReady = false;
+			}
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -1280,6 +1480,13 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			// 분신
+			if (_isEgoAttack)
+			{
+				auto egoAnimator = _alterEgo->GetComponent<Animator>();
+				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+			}
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 
@@ -1292,6 +1499,16 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					{
 						_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
 					}
+
+					if (_isEgoAttack)
+					{
+						_egoLazer->GetComponent<Particle>()->SetActive(false);
+						//if (pattern->_colliderOnCount > 0)
+						//{
+						//	_egoLazerCollider->GetComponent<BoxCollider>()->SetActive(false);
+						//}
+					}
+
 				}
 				else
 				{
@@ -1301,6 +1518,16 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					if (pattern->_colliderOnCount > 0)
 					{
 						_lazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+					}
+
+					if (_isEgoAttack)
+					{
+						_egoLazer->GetComponent<Particle>()->SetActive(true);
+						_egoLazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+						//if (pattern->_colliderOnCount > 0)
+						//{
+						//	_egoLazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+						//}
 					}
 				}
 			}
@@ -1407,13 +1634,30 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call2").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis);
-
+	pattern->SetWithEgo(true);
 	pattern->SetSubObject(_call2);
+	pattern->SetSubObject(_egoCall2);
+
+	auto initLogic = [pattern, this]()
+	{
+		if (_isEgoAttackReady)
+		{
+			_isEgoAttackReady = false;
+		}
+	};
+
+	pattern->SetInitializeLogic(initLogic);
 
 	auto callLogic = [pattern, this]()
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			if (_isEgoAttack)
+			{
+				auto egoAnimator = _alterEgo->GetComponent<Animator>();
+				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+			}
 
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 			if (animator->GetCurrentFrame() >= 20)
@@ -1450,6 +1694,38 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f * step));
 
 				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
+
+				if (_isEgoAttack)
+				{
+					// 콜라이더 키기
+					_egoCall2->GetComponent<BoxCollider>()->SetActive(true);
+					// 파티클 키기
+					_egoCall2->GetComponent<Particle>()->SetActive(true);
+					// 라이트도 키기
+					_egoCall2->GetComponent<Light>()->SetActive(true);
+
+					// 현재 보스의 포지션
+					auto egoNowPos = _alterEgo->GetComponent<Transform>()->GetPosition();
+					auto playerPos = _playerTransform->GetPosition();
+
+					// 보스가 바라보는 방향 가져옴
+					auto egoDirection = GetEgoDirection();
+
+					auto egoNowPosVec = DirectX::XMLoadFloat3(&egoNowPos);
+
+					//if (step != _egoCall2PrevStep)
+					//{
+					//	pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+					//}
+
+					//_egoCall2PrevStep = step;
+
+
+					// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+					DirectX::XMVECTOR egoNewPosition = DirectX::XMVectorAdd(egoNowPosVec, DirectX::XMVectorScale(egoDirection, 20.0f * step));
+
+					_egoCall2->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], 5.0f, egoNewPosition.m128_f32[2]);
+				}
 			}
 
 			if (isAnimationPlaying == false)
@@ -1463,43 +1739,6 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	pattern->SetLogic(callLogic, false);
 
 	_call2Attack = pattern;
-}
-
-
-void KunrealEngine::Kamen::CreateEgoEmergence()
-{
-	BossPattern* pattern = new BossPattern();
-	pattern->SetPatternName("Ego_Emergence").SetAnimName("Emergence");
-	pattern->SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
-	pattern->SetSubObject(_alterEgo);
-
-	auto initLogic = [pattern, this]()
-		{
-			// 디졸브 이펙트 키기
-			_alterEgo->GetComponent<MeshRenderer>()->SetActive(true);
-		};
-
-	pattern->SetInitializeLogic(initLogic);
-
-	auto emergenceLogic = [pattern, this]()
-		{
-			_boss->GetComponent<Animator>()->Play("Idle", 20.0f, false);
-
-			auto isPlaying = _alterEgo->GetComponent<Animator>()->Play(pattern->_animName, 20.0f);
-
-			if (isPlaying == false)
-			{
-				_alterEgo->GetComponent<Animator>()->Stop();
-
-				return false;
-			}
-
-			return true;
-		};
-
-	pattern->SetLogic(emergenceLogic);
-
-	_egoEmergence = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordAttack()
@@ -2135,6 +2374,16 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 	_emergence9Lich = pattern;
 }
 
+
+DirectX::XMVECTOR KunrealEngine::Kamen::GetEgoDirection()
+{
+	auto direction = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _alterEgo->GetComponent<Transform>()->GetRotation().y);
+	
+	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&direction);
+
+	return dirVec;
+}
+
 void KunrealEngine::Kamen::BackStepCallPattern()
 {
 	BossPattern* backStepCallPattern = new BossPattern();
@@ -2143,7 +2392,7 @@ void KunrealEngine::Kamen::BackStepCallPattern()
 
 	backStepCallPattern->SetNextPatternForcePlay(true);
 
-	backStepCallPattern->SetMaxColliderCount(0);
+	backStepCallPattern->SetMaxColliderCount(0).SetWithEgo(true);
 
 	backStepCallPattern->SetPattern(_backStep);
 
