@@ -260,6 +260,7 @@ namespace EpicTool
 		 float _directionParticle[3];	        // 방출 방향
          float _sizeParticle[2];                // 사이즈
          float _rotationParticle[3];            // 로테이션
+         float _AngleParticle;               // 앵글
 
     };
 }

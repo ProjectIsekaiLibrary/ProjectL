@@ -23,6 +23,11 @@ namespace GInterface
 	class GraphicsImage;
 }
 
+namespace DirectX
+{
+	struct XMFLOAT3;
+}
+
 namespace KunrealEngine
 {
 	class SceneManager;
@@ -67,20 +72,21 @@ namespace KunrealEngine
 	
 	private: // 파티클 테스트
 		void ParticleTest();
-		Point3D Bezier(Point3D startPoint, Point3D p1, Point3D p2, Point3D endPoint, float t);
-		std::vector<Point3D> BezierSetting(GameObject* bezierObject);
+		DirectX::XMFLOAT3 Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t);
+		std::vector<DirectX::XMFLOAT3> BezierSetting(GameObject* bezierObject);
 
 	private:
 		std::vector<GameObject*> _bezierObjectList;
-		std::vector<std::vector<Point3D>> _bezierPointsList;
-		std::vector<std::vector<Point3D>> _bezierSwordSoulPointsList;
-		std::vector<Point3D> _particlePointList;
-		std::vector<Point3D> _particleSwordSoulPointList;
+		std::vector<std::vector<DirectX::XMFLOAT3>> _bezierPointsList;
+		std::vector<std::vector<DirectX::XMFLOAT3>> _bezierSwordSoulPointsList;
+		std::vector<DirectX::XMFLOAT3> _particlePointList;
+		std::vector<DirectX::XMFLOAT3> _particleSwordSoulPointList;
 		std::vector<float> _timeCountList;
 
 		float _timeCount;
 		bool _isSettingTimer;
 		bool _isBezierStartSetting;
+		bool _isBezierBoomSetting;
 			// 여기까지
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	
