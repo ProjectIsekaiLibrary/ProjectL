@@ -313,8 +313,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	EndTransparentSet();
 
-	TransparentRender();
-
 	// 큐브맵 렌더링
 	if (_mainCubeMap != nullptr)
 	{
@@ -885,18 +883,6 @@ void ArkEngine::ArkDX11::DX11Renderer::EndTransparentSet()
 	// 렌더링 컨텍스트에 블렌딩 스테이트 설정
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
-}
-
-void ArkEngine::ArkDX11::DX11Renderer::TransparentRender()
-{
-	// 렌더링 컨텍스트에 블렌딩 스테이트 설정
-	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
-	UINT sampleMask = 0xffffffff;
-
-	//for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	//{
-	//	index->Render();
-	//}
 
 	// 블렌딩 해제
 	_deviceContext->OMSetBlendState(nullptr, blendFactor, sampleMask);

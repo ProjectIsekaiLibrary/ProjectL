@@ -208,7 +208,7 @@ struct BossPattern
 	}
 
 
-	void Initialize() { if (_initializeLogic != nullptr) _initializeLogic(); _colliderOnCount = _maxColliderOnCount;  _index = 0; }
+	void Initialize() { _colliderOnCount = _maxColliderOnCount;  _index = 0;  for (int i = 0; i < _isColliderActive.size(); i++) { _isColliderActive[i] = false; _isColliderHit[i] = false; }   if (_initializeLogic != nullptr) _initializeLogic();}
 	BossPattern& SetPatternName(const std::string& patterName) { _patternName = patterName; return *this; };
 	BossPattern& SetAnimName(const std::string& animName) { _animName = animName; return *this; };
 	BossPattern& SetDamage(float damage) { _damage = damage; return *this; };
@@ -229,9 +229,39 @@ struct BossPattern
 	BossPattern& SetPattern(BossPattern* pattern) { _patternList.emplace_back(pattern); return *this; };
 	BossPattern& SetSkipChase(bool tf) { _skipChase = tf; return *this; };
 	BossPattern& SetSkipMove(bool tf) { _skipMove = tf; return *this; };
-	BossPattern& SetSubObject(KunrealEngine::GameObject* object) { for (auto index : _subObject) { if (index == object) return *this; }  _subObject.emplace_back(object);	object->SetTag("BossSub"); object->SetTotalComponentState(false);  return *this; };
 	BossPattern& DeleteSubObject(KunrealEngine::GameObject* object) { auto it = std::find(_subObject.begin(), _subObject.end(), object); if (it != _subObject.end()) { _subObject.erase(it); } return *this; };
 	BossPattern& SetWithEgo(bool tf) { _withEgo = tf; return *this; }
+	BossPattern& SetSubObject(KunrealEngine::GameObject* object)
+	{
+		for (int i = 0; i < _subObject.size(); i++)
+		{
+			if (_subObject[i] == object)
+			{
+				return *this;
+			}
+		}
+		_subObject.emplace_back(object);	
+		object->SetTag("BossSub");
+		object->SetTotalComponentState(false);  
+
+		_isColliderActive.emplace_back(false);
+		_isColliderHit.emplace_back(false);
+
+		return *this;
+	};
+
+	unsigned int GetSubObjectIndex(KunrealEngine::GameObject* object)
+	{
+		for (int i = 0; i < _subObject.size(); i++)
+		{
+			if (_subObject[i] == object)
+			{
+				return i;
+			}
+		}
+
+		return 181818;
+	};
 	
 	std::string _patternName;		// 패턴 이름
 
@@ -270,6 +300,10 @@ struct BossPattern
 	unsigned int _colliderOnCount; // 패턴 중 콜라이더가 켜지는 횟수를 실제로 조정하는 부분 (기본 1)
 
 	std::vector<KunrealEngine::GameObject*> _subObject;
+
+	std::vector<bool> _isColliderActive;
+
+	std::vector<bool> _isColliderHit;
 
 	bool _isRemainMesh;		// 피격이 끝나도 메쉬가 남아있는가
 

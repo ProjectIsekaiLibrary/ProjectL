@@ -32,11 +32,11 @@ namespace KunrealEngine
 			return _instance;
 		}
 
-	private:
+	public:
 		GameObject* _player;
 		GameObject* _boss;
 
-	private:
+	public:
 		Player* _playerComp;
 		Kamen* _bossComp;
 
@@ -50,6 +50,9 @@ namespace KunrealEngine
 
 		// 보스가 플레이어에게 주는 데미지 계산
 		void CalculateDamageToPlayer();
+
+		// 보스가 플레이어에게 주는 데미지 계산
+		void CalculateDamageToPlayer2();
 
 	private:
 		// 스테이지가 바뀌었을 때 보스가 누구인지 알려주는 함수

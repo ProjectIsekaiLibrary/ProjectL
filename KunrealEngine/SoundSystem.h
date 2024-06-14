@@ -16,6 +16,12 @@
 
 namespace KunrealEngine
 {
+	enum class SOUNDTYPE
+	{
+		BGM = 0,
+		SFX = 1
+	};
+
 	struct _DECLSPEC WaveHeaderType
 	{
 		char chunkId[4];
@@ -40,6 +46,7 @@ namespace KunrealEngine
 		int volume = 0; // 0~100
 		IDirectSoundBuffer8* soundBuffer = nullptr;
 		IDirectSound3DBuffer8* sound3DBuffer = nullptr;
+		SOUNDTYPE type = SOUNDTYPE::SFX;
 	};
 
 	class _DECLSPEC SoundSystem
@@ -53,11 +60,14 @@ namespace KunrealEngine
 		void Release();
 
 		//사운드 관리
-		int AddSound(std::string filename, int volume, int index = -1);					// 이걸로도 3D 사운드 추가 가능. 다만 소리는 0,0,0에 고정
-		int Add3DSound(std::string filename, int volume, int index = -1, int xpos = 0, int ypos = 0, int zpos = 0);	// 위와 동일. 소리의 pos 값 설정 가능
+		// 이걸로도 3D 사운드 추가 가능. 다만 소리는 0,0,0에 고정
+		int AddSound(std::string filename, int volume, SOUNDTYPE type = SOUNDTYPE::SFX, int index = -1);
+		int Add3DSound(std::string filename, int volume, SOUNDTYPE type = SOUNDTYPE::SFX
+			, int index = -1, int xpos = 0, int ypos = 0, int zpos = 0);	// 위와 동일. 소리의 pos 값 설정 가능
 		void RemoveSound(int index);									// index의 소리를 지운다.
 		void ClearAllSound();											// 소리를 전부다 지운다
 		void Setvolume(int index, int volume);
+		void SetvolumeGroup(SOUNDTYPE type, int volume);
 		int Change3DorMono(int index);									// 인덱스의 소리를 3D, 혹은 모노로 바꾼다.
 		int GetSoundListSize();
 

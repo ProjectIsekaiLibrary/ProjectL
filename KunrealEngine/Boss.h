@@ -105,6 +105,8 @@ namespace KunrealEngine
 
 		BossPattern* GetNowPattern();
 
+		BossPattern* GetNowPlayingPattern();
+
 		BossBasicInfo& GetBossInfo();
 
 		bool isDead();

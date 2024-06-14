@@ -40,6 +40,9 @@ namespace KunrealEngine
 		void GamePattern();
 
 	private:
+		void CreateParticleObject();
+
+	private:
 		void CreateSubObject();
 		
 	private:
@@ -51,6 +54,7 @@ namespace KunrealEngine
 		void RightLeftPattern();
 		void BackStepCallPattern();
 		void TeleportSpellPattern();
+		void EmergenceAttackPattern();
 
 		// 검 단독 패턴
 		void SwordTurnClockPattern();
@@ -74,6 +78,7 @@ namespace KunrealEngine
 		void CreateSpellAttack();
 		void CreateCallAttack();
 		void CreateCall2Attack();
+		void CreateBossRandomInsideWarning();
 
 		// 검 with 카멘 패턴
 	private:
@@ -106,6 +111,7 @@ namespace KunrealEngine
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
 		void CreateReverseEmergence();
+		void CreateEmergence();
 
 		// 핵심 기믹 패턴
 	private:
@@ -122,12 +128,14 @@ namespace KunrealEngine
 		BossPattern* _spellAttack;
 		BossPattern* _callAttack;
 		BossPattern* _call2Attack;
+		BossPattern* _bossRandomInsideWarning;
 
 		BossPattern* _backStep;
 		BossPattern* _turn180;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
 		BossPattern* _reverseEmergence;
+		BossPattern* _emergence;
 
 		BossPattern* _leftFireAttack;
 		BossPattern* _rightFireAttack;
@@ -159,13 +167,15 @@ namespace KunrealEngine
 		GameObject* _call2;
 		GameObject* _lazer;
 		GameObject* _lazerCollider;
+		GameObject* _bossInsideWarning;
+		GameObject* _bossInsideAttack;
 
-		GameObject* _insideWarning;
-		GameObject* _insideAttack;
-		GameObject* _outsideWarning;
-		GameObject* _donutWarning1;
-		GameObject* _donutWarning2;
-		GameObject* _donutWarning3;
+		GameObject* _swordInsideWarning;
+		GameObject* _swordInsideAttack;
+		GameObject* _swordOutsideWarning;
+		GameObject* _swordDonutWarning1;
+		GameObject* _swordDonutWarning2;
+		GameObject* _swordDonutWarning3;
 
 		GameObject* _freeSword;
 		GameObject* _freeSwordCollider;
@@ -187,6 +197,9 @@ namespace KunrealEngine
 
 		GameObject* _egoLeftHandBone;
 		GameObject* _egoRightHandBone;
+
+		GameObject* _egoInsideWarning;
+		GameObject* _egoInsideAttack;
 
 		std::vector<GameObject*> _fakeBoss;
 
@@ -221,6 +234,9 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _centerPos;
 
 	private:
+		DirectX::XMFLOAT3 _emergencePos;
+
+	private:
 		float _swordRotateAngle;
 
 		DirectX::XMFLOAT3 _swordStartPos;
@@ -247,5 +263,16 @@ namespace KunrealEngine
 		bool _isEgoAttackReady;
 		bool _isEgoAttack;
 		float _egoTimer;
+
+		// 파티클
+	private:
+		std::vector<GameObject*> _particleBossfire1;
+		std::vector<GameObject*> _particleBossfire2;
+
+		std::vector<GameObject*> _particleEgofire1;
+		std::vector<GameObject*> _particleEgofire2;
+
+		std::vector<GameObject*> _particleCall2;
+		std::vector<GameObject*> _particleEgoCall2;
 	};
 }

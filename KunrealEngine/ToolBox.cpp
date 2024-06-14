@@ -1,5 +1,6 @@
 #include "ToolBox.h"
 #include <random>
+#include "TimeManager.h"
 
 int KunrealEngine::ToolBox::GetRandomNum(int maxNum)
 {
@@ -148,4 +149,22 @@ DirectX::XMFLOAT3 KunrealEngine::ToolBox::RotateVector(const DirectX::XMFLOAT3& 
 	DirectX::XMFLOAT3 rotatedDirection;
 	DirectX::XMStoreFloat3(&rotatedDirection, rotatedVector);
 	return rotatedDirection;
+}
+
+void KunrealEngine::ToolBox::CalculateParabolaPath(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float duration, float gravity, std::vector<DirectX::XMFLOAT3>& path)
+{
+	float t = 0.0f;
+
+	// 중력가속도
+	DirectX::XMFLOAT3 velocity = { (dst.x - src.x), (dst.y - src.y) / duration - 0.5f * gravity * duration, (dst.z - src.z) / duration };
+
+	while (t <= duration)
+	{
+		float x = src.x + velocity.x * t;
+		float y = src.y + velocity.y * t + 0.5f * gravity * t * t;
+		float z = src.z + velocity.z * t;
+
+		path.emplace_back(DirectX::XMFLOAT3{ x, y, z });
+		t += TimeManager::GetInstance().GetDeltaTime();
+	}
 }

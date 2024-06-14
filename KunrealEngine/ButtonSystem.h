@@ -25,7 +25,6 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
-
 		// 버튼 동작시 실행할 함수를 지정
 		void SetButtonFunc(std::function<void()> func);
 		void SetImage(ImageRenderer* image);

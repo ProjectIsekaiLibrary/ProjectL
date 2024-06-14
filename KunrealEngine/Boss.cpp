@@ -30,7 +30,6 @@ KunrealEngine::Boss::Boss()
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false)
 {
-
 }
 
 KunrealEngine::Boss::~Boss()
@@ -642,17 +641,39 @@ void KunrealEngine::Boss::PatternEnd()
 	// 모든 하위 오브젝트를 끔
 	if (_patternIndex == -1)
 	{
-		for (const auto& object : _corePattern.back()->_subObject)
+		for (const auto& pattern : _corePattern.back()->_patternList)
 		{
-			object->SetActive(false);
+			for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+			{
+				pattern->_isColliderHit[i] = false;
+				pattern->_isColliderActive[i] = false;
+			}
+
+			for (const auto& object : pattern->_subObject)
+			{
+				object->SetTotalComponentState(false);
+				
+				object->SetActive(false);
+			}
 		}
 	}
 
 	else
 	{
-		for (const auto& object : _basicPattern[_patternIndex]->_subObject)
+		for (const auto& pattern : _basicPattern[_patternIndex]->_patternList)
 		{
-			object->SetActive(false);
+			for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+			{
+				pattern->_isColliderHit[i] = false;
+				pattern->_isColliderActive[i] = false;
+			}
+
+			for (const auto& object : pattern->_subObject)
+			{
+				object->SetTotalComponentState(false);
+
+				object->SetActive(false);
+			}
 		}
 	}
 
@@ -732,6 +753,11 @@ BossPattern* KunrealEngine::Boss::GetNowPattern()
 	return _nowTitlePattern;
 }
 
+
+BossPattern* KunrealEngine::Boss::GetNowPlayingPattern()
+{
+	return _nowPlayingPattern;
+}
 
 BossBasicInfo& KunrealEngine::Boss::GetBossInfo()
 {
@@ -1286,45 +1312,33 @@ void KunrealEngine::Boss::SetSubObject(bool tf)
 {
 	for (const auto& pattern : _basicPattern)
 	{
-		for (const auto& object : pattern->_subObject)
+		for (const auto& subPattern : pattern->_patternList)
 		{
-			// MeshRenderer 컴포넌트 처음에는 비활성화시키기
-			if (object->GetComponent<MeshRenderer>() != nullptr)
+			for (const auto& object : subPattern->_subObject)
 			{
-				object->GetComponent<MeshRenderer>()->SetActive(false);
-			}
-			// BoxCollider 컴포넌트 처음에는 비활성화시키기
-			if (object->GetComponent<BoxCollider>() != nullptr)
-			{
-				object->GetComponent<BoxCollider>()->SetActive(false);
-			}
+				object->SetTotalComponentState(false);
 
-			// 오브젝트에 대한 비활성화 시키기
-			object->SetActive(tf);
+				// 오브젝트에 대한 비활성화 시키기
+				object->SetActive(tf);
 
-			object->SetTag("BossSub");
+				object->SetTag("BossSub");
+			}
 		}
 	}
 
 	for (const auto& pattern : _corePattern)
 	{
-		for (const auto& object : pattern->_subObject)
+		for (const auto& subPattern : pattern->_patternList)
 		{
-			// MeshRenderer 컴포넌트 처음에는 비활성화시키기
-			if (object->GetComponent<MeshRenderer>() != nullptr)
+			for (const auto& object : subPattern->_subObject)
 			{
-				object->GetComponent<MeshRenderer>()->SetActive(false);
-			}
-			// BoxCollider 컴포넌트 처음에는 비활성화시키기
-			if (object->GetComponent<BoxCollider>() != nullptr)
-			{
-				object->GetComponent<BoxCollider>()->SetActive(false);
-			}
+				object->SetTotalComponentState(false);
 
-			// 오브젝트에 대한 비활성화 시키기
-			object->SetActive(tf);
+				// 오브젝트에 대한 비활성화 시키기
+				object->SetActive(tf);
 
-			object->SetTag("BossSub");
+				object->SetTag("BossSub");
+			}
 		}
 	}
 }
@@ -1395,7 +1409,6 @@ void KunrealEngine::Boss::SetBossTransform()
 {
 
 }
-
 
 const std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> KunrealEngine::Boss::GetBossPosition()
 {

@@ -202,7 +202,6 @@ void ArkEngine::ResourceManager::DeleteUIImage(ArkEngine::IUIImage* image)
 	auto it = std::find(_uiImageList.begin(), _uiImageList.end(), image);
 	if (it != _uiImageList.end())
 	{
-		delete* it;
 		_uiImageList.erase(it);
 	}
 }

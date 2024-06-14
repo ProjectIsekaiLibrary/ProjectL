@@ -303,7 +303,7 @@ void EpicTool::InspectorWindow::SoundCreate()
 
 		int soundInfoval = 0;
 		soundInfoval = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->CreateSoundInfo(_newSoundName, _isNewSound3D, _isNewSoundLoop, _isNewSoundVol);
-		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->CreateSound(soundInfoval);
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::SoundPlayer>()->CreateSound(soundInfoval, 1);
 
 		_isNewSoundPathList = KunrealEngine::SoundSystem::GetInstance().GetSoundPathList();
 		

@@ -17,6 +17,7 @@ namespace KunrealEngine
 	class _DECLSPEC PlayerAbility : public Component
 	{
 		friend class Player;
+		friend class BattleUIManager;
 	public:
 		PlayerAbility();
 		~PlayerAbility();
@@ -58,6 +59,12 @@ namespace KunrealEngine
 
 		bool _isMeteorReady;		// R 쿨타임 조건
 
+		/// BattleUIManager에 넘겨줄 쿨타임 체크 변수들
+		bool _isShotDetected;
+		bool _isIceDetected;
+		bool _isAreaDetected;
+		bool _isMeteorDetected;
+
 	private:
 		Boss* _currentBoss;			// 현재 맵의 보스
 		float _currentDamage;		// 보스에 입힌 데미지
@@ -94,7 +101,7 @@ namespace KunrealEngine
 			ability->_isShotReady = true;
 		};
 
-		// W스킬 쿨타임
+		// W스킬 쿨타임 
 		Coroutine_Func(iceCoolDown)
 		{
 			auto* ability = this;

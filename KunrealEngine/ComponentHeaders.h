@@ -26,3 +26,6 @@
 #include "Ent.h"
 
 #include "Particle.h"
+
+#include "OptionUIManager.h"
+#include "BattleUIManager.h"
