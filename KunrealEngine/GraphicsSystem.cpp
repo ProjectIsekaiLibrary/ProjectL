@@ -69,7 +69,7 @@ void KunrealEngine::GraphicsSystem::SetPickedObject(int mouseX, int mouseY)
 	if (mouseX >= 0 && mouseY >= 0)
 	{
 		// 마우스 왼클릭 시
-		if (InputSystem::GetInstance()->MouseButtonInput(0))
+		if (InputSystem::GetInstance()->MouseButtonDown(0) && mouseX <= 1920 && mouseY <= 1080)
 		{
 			GInterface::GraphicsRenderable* picked = this->_graphics->GetPickedRenderable(mouseX, mouseY);
 

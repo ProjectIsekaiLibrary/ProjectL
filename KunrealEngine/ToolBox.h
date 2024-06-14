@@ -40,6 +40,11 @@ namespace KunrealEngine
 
 		// 백터 일정 각도만큼 회전시키기
 		static DirectX::XMFLOAT3 RotateVector(const DirectX::XMFLOAT3& direction, float angle);
+	
+		/// 반복문에 넣지말고 1번만 호출되도록 해야함
+		// 포물선의 좌표를 vector<XMFLOAT3> 변수에 넣어주는 함수
+											// 출발점						// 도착점					// 지속시간		// 중력가속도		// 넣어줄 경로 변수
+		static void CalculateParabolaPath(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float duration, float gravity, std::vector<DirectX::XMFLOAT3>& path);
 	};
 
 }
