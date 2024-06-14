@@ -201,6 +201,8 @@ namespace KunrealEngine
 
 		bool _isCorePattern;
 
+		std::vector<bool> _isColliderActiveVec;
+
 	private:
 		float _startTime;
 

@@ -264,7 +264,6 @@ namespace KunrealEngine
 		bool _isEgoAttack;
 		float _egoTimer;
 
-
 		// ÆÄÆ¼Å¬
 	private:
 		std::vector<GameObject*> _particleBossfire1;
@@ -272,5 +271,8 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _particleEgofire1;
 		std::vector<GameObject*> _particleEgofire2;
+
+		std::vector<GameObject*> _particleCall2;
+		std::vector<GameObject*> _particleEgoCall2;
 	};
 }

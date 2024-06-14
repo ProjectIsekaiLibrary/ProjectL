@@ -195,7 +195,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//CoreEmmergencePattern();
 
 	_basicPattern.emplace_back(_leftFireAttack);
-	_basicPattern.emplace_back(_rightFireAttack);
+	//_basicPattern.emplace_back(_rightFireAttack);
 }
 
 
@@ -396,42 +396,47 @@ void KunrealEngine::Kamen::SpecialAttack2()
 
 void KunrealEngine::Kamen::CreateParticleObject()
 {
-	for (int i = 0; i < 5; i++)
+	auto mapOffsetY = 5.0f;
+
+	// hand fire1
+	for (int j = 0; j < 2; j++)
 	{
-		// 본체 hand fire1
+		for (int i = 0; i < 5; i++)
 		{
-			std::string index = "ParticleHandFire1_" + std::to_string(i + 1);
-			auto BossHandFire = _boss->GetObjectScene()->CreateObject(index);
-			BossHandFire->GetComponent<Transform>()->SetPosition(0.0f, 5.0f, 0.0f);
-			BossHandFire->AddComponent<Particle>();
-			BossHandFire->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-			BossHandFire->GetComponent<Particle>()->SetParticleDuration(1.0f, 4.0f);
-			BossHandFire->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-			BossHandFire->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
-			BossHandFire->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-			//BossHandFire->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 200.0f);
+			{
+				std::string index;
+				if (j == 0)
+				{
+					index = "ParticleHandFire1_" + std::to_string(i + 1);
+				}
+				else
+				{
+					index = "ParticleEgoHandFire1_" + std::to_string(i + 1);
+				}
+				auto handFire = _boss->GetObjectScene()->CreateObject(index);
+				handFire->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
+				handFire->AddComponent<Particle>();
+				handFire->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+				handFire->GetComponent<Particle>()->SetParticleDuration(1.0f, 4.0f);
+				handFire->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+				handFire->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+				handFire->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+				handFire->GetComponent<Particle>()->SetActive(false);
+				handFire->SetActive(false);
 
-			BossHandFire->SetParent(_handFire[i]);
+				if (j == 0)
+				{
+					handFire->SetParent(_handFire[i]);
 
-			_particleBossfire1.emplace_back(BossHandFire);
-		}
+					_particleBossfire1.emplace_back(handFire);
+				}
+				else
+				{
+					handFire->SetParent(_egoHandFire[i]);
 
-		{
-			// 분신용 hand fire1
-			std::string index = "ParticleEgoHandFire1_" + std::to_string(i + 1);
-			auto EgoHandFire = _boss->GetObjectScene()->CreateObject(index);
-			EgoHandFire->GetComponent<Transform>()->SetPosition(0.0f, 5.0f, 0.0f);
-			EgoHandFire->AddComponent<Particle>();
-			EgoHandFire->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-			EgoHandFire->GetComponent<Particle>()->SetParticleDuration(1.0f, 4.0f);
-			EgoHandFire->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-			EgoHandFire->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
-			EgoHandFire->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-			//BossHandFire->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 200.0f);
-
-			EgoHandFire->SetParent(_egoHandFire[i]);
-
-			_particleEgofire1.emplace_back(EgoHandFire);
+					_particleEgofire2.emplace_back(handFire);
+				}
+			}
 		}
 	}
 
@@ -441,14 +446,15 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		{
 			std::string index = "ParticleHandFire2_" + std::to_string(i + 1);
 			auto BossHandFire = _boss->GetObjectScene()->CreateObject(index);
-			BossHandFire->GetComponent<Transform>()->SetPosition(0.0f, 5.0f, 0.0f);
+			BossHandFire->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
 			BossHandFire->AddComponent<Particle>();
 			BossHandFire->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 			BossHandFire->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.7f);
 			BossHandFire->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 			BossHandFire->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 			BossHandFire->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
-			//BossHandFire->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+			BossHandFire->GetComponent<Particle>()->SetActive(false);
+			BossHandFire->SetActive(false);
 
 			BossHandFire->SetParent(_handFire[i]);
 
@@ -459,18 +465,128 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			// 분신용 hand fire2
 			std::string index = "ParticleEgoHandFire2_" + std::to_string(i + 1);
 			auto EgoHandFire = _boss->GetObjectScene()->CreateObject(index);
-			EgoHandFire->GetComponent<Transform>()->SetPosition(0.0f, 5.0f, 0.0f);
+			EgoHandFire->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
 			EgoHandFire->AddComponent<Particle>();
 			EgoHandFire->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 			EgoHandFire->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.7f);
 			EgoHandFire->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 			EgoHandFire->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 			EgoHandFire->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
-			//BossHandFire->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+			EgoHandFire->GetComponent<Particle>()->SetActive(false);
+			EgoHandFire->SetActive(false);
 
 			EgoHandFire->SetParent(_egoHandFire[i]);
 
-			_particleEgofire1.emplace_back(EgoHandFire);
+			_particleEgofire2.emplace_back(EgoHandFire);
+		}
+	}
+	{
+		for (int i = 0; i < 2; i++)
+		{
+			std::string name;
+			if (i == 0)
+			{
+				name = "ParticleCll2_1";
+			}
+			else
+			{
+				name = "ParticleEgoCll2_1";
+			}
+
+			auto call2_1 = _boss->GetObjectScene()->CreateObject(name);
+			call2_1->GetComponent<Transform>()->SetPosition(0.0f, -2.2f + mapOffsetY, 0.0f);
+			call2_1->AddComponent<Particle>();
+			call2_1->GetComponent<Particle>()->SetParticleEffect("fx_Lightning4", "Resources/Textures/Particles/fx_Lightning4.dds", 1000);
+			call2_1->GetComponent<Particle>()->SetParticleDuration(3.9f, 0.9f);
+			call2_1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			call2_1->GetComponent<Particle>()->SetParticleSize(9.f, 3.0f);
+			call2_1->GetComponent<Particle>()->AddParticleColor(2.0f, 8.6f, 2.0f);
+			call2_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+			call2_1->GetComponent<Particle>()->SetActive(false);
+			call2_1->SetActive(false);
+
+			if (i == 0)
+			{
+				call2_1->SetParent(_call2);
+				_particleCall2.emplace_back(call2_1);
+			}
+			else
+			{
+				call2_1->SetParent(_egoCall2);
+				_particleEgoCall2.emplace_back(call2_1);
+			}
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			std::string name;
+			if (i == 0)
+			{
+				name = "ParticleCll2_2";
+			}
+			else
+			{
+				name = "ParticleEgoCll2_2";
+			}
+
+			auto call2_2 = _boss->GetObjectScene()->CreateObject(name);
+			call2_2->GetComponent<Transform>()->SetPosition(0.0f, 14.5f + mapOffsetY, 0.0f);
+			call2_2->AddComponent<Particle>();
+			call2_2->GetComponent<Particle>()->SetParticleEffect("Blaster2", "Resources/Textures/Particles/fx_Blaster2.dds", 1000);
+			call2_2->GetComponent<Particle>()->SetParticleDuration(0.9f, 0.15f);
+			call2_2->GetComponent<Particle>()->SetParticleVelocity(45.0f, true);
+			call2_2->GetComponent<Particle>()->SetParticleSize(4.f, 20.f);
+			call2_2->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			call2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			call2_2->GetComponent<Particle>()->SetActive(false);
+			call2_2->SetActive(false);
+
+			if (i == 0)
+			{
+				call2_2->SetParent(_call2);
+				_particleCall2.emplace_back(call2_2);
+			}
+			else
+			{
+				call2_2->SetParent(_egoCall2);
+				_particleEgoCall2.emplace_back(call2_2);
+			}
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			std::string name;
+			if (i == 0)
+			{
+				name = "ParticleCll2_3";
+			}
+			else
+			{
+				name = "ParticleEgoCll2_3";
+			}
+
+			auto call2_3 = _boss->GetObjectScene()->CreateObject(name);
+			call2_3->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
+			call2_3->AddComponent<Particle>();
+			call2_3->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
+			call2_3->GetComponent<Particle>()->SetParticleDuration(2.7f, 0.6f);
+			call2_3->GetComponent<Particle>()->SetParticleVelocity(12.4f, true);
+			call2_3->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+			call2_3->GetComponent<Particle>()->AddParticleColor(0.7f, 3.7f, 0.3f);
+			call2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
+			call2_3->GetComponent<Particle>()->SetActive(false);
+			call2_3->SetActive(false);
+
+			if (i == 0)
+			{
+				call2_3->SetParent(_call2);
+				_particleCall2.emplace_back(call2_3);
+			}
+			else
+			{
+				call2_3->SetParent(_egoCall2);
+				_particleEgoCall2.emplace_back(call2_3);
+			}
 		}
 	}
 }
@@ -483,14 +599,18 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_leftHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_L");
 	_leftHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_leftHand->GetComponent<BoxCollider>()->SetActive(false);
+	_leftHand->SetTotalComponentState(false);
+	_leftHand->SetActive(false);
 
 	// 왼손 불 위치 체크용 메쉬
 	_leftHandBone = _boss->GetObjectScene()->CreateObject("leftHandBone");
 	_leftHandBone->AddComponent<MeshRenderer>();
 	_leftHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
 	_leftHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_L");
-	_leftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
 	_leftHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+	_leftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_leftHandBone->SetTotalComponentState(false);
+	_leftHandBone->SetActive(false);
 
 	// 오른손
 	_rightHand = _boss->GetObjectScene()->CreateObject("rightHand");
@@ -498,23 +618,28 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_rightHand->GetComponent<BoxCollider>()->SetTransform(_boss, "MiddleFinger1_R");
 	_rightHand->GetComponent<BoxCollider>()->SetBoxSize(2.0f, 3.0f, 2.0f);
 	_rightHand->GetComponent<BoxCollider>()->SetActive(false);
+	_rightHand->SetTotalComponentState(false);
+	_rightHand->SetActive(false);
 
 	// 오른손 불 위치 체크용 메쉬
 	_rightHandBone = _boss->GetObjectScene()->CreateObject("RightHandBone");
 	_rightHandBone->AddComponent<MeshRenderer>();
 	_rightHandBone->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
 	_rightHandBone->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_R");
-	_rightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
 	_rightHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+	_rightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
+	_rightHandBone->SetTotalComponentState(false);
+	_rightHandBone->SetActive(false);
 
 	// 5개 불 
 	for (int i = 0; i < 5; i++)
 	{
 		std::string index = "HandFire" + std::to_string(i + 1);
 		auto handFire = _boss->GetObjectScene()->CreateObject(index);
-		handFire->AddComponent<MeshRenderer>();
-		handFire->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-		handFire->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+		handFire->AddComponent<BoxCollider>();
+		handFire->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
+		handFire->SetTotalComponentState(false);
+		handFire->SetActive(false);
 		_handFire.emplace_back(handFire);
 	}
 
@@ -525,6 +650,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_bossInsideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z);
 	_bossInsideWarning->GetComponent<TransparentMesh>()->SetRenderType(3);
 	_bossInsideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
+	_bossInsideWarning->GetComponent<TransparentMesh>()->SetActive(false);
+	_bossInsideWarning->SetTotalComponentState(false);
+	_bossInsideWarning->SetActive(false);
+
 
 	// 내부 장판 공격
 	_bossInsideAttack = _boss->GetObjectScene()->CreateObject("BossInsideAttack");
@@ -535,6 +664,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_bossInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 	_bossInsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
 	_bossInsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_bossInsideAttack->SetTotalComponentState(false);
+	_bossInsideAttack->GetComponent<Particle>()->SetActive(false);
 
 
 	// 내부 장판
@@ -545,6 +676,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordInsideWarning->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x, _bossTransform->GetPosition().y, _bossTransform->GetPosition().z);
 	_swordInsideWarning->GetComponent<TransparentMesh>()->SetRenderType(3);
 	_swordInsideWarning->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+	_swordInsideWarning->GetComponent<TransparentMesh>()->SetActive(false);
+	_swordInsideWarning->SetTotalComponentState(false);
+	_swordInsideWarning->SetActive(false);
 
 	// 내부 장판 공격
 	_swordInsideAttack = _boss->GetObjectScene()->CreateObject("InsideAttack");
@@ -556,6 +690,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 	_swordInsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
 	_swordInsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_swordInsideAttack->GetComponent<Particle>()->SetActive(false);
+	_swordInsideAttack->SetTotalComponentState(false);
+	_swordInsideAttack->SetActive(false);
 
 	// 외부 장판
 	_swordOutsideWarning = _boss->GetObjectScene()->CreateObject("InsideSafe");
@@ -566,6 +703,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordOutsideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
 	_swordOutsideWarning->GetComponent<TransparentMesh>()->SetRenderType(5);
 	_swordOutsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f), 30.0f);
+	_swordOutsideWarning->GetComponent<TransparentMesh>()->SetActive(false);
+	_swordOutsideWarning->SetTotalComponentState(false);
+	_swordOutsideWarning->SetActive(false);
 
 	// 도넛 장판 1번
 	_swordDonutWarning1 = _boss->GetObjectScene()->CreateObject("donutSafe1");
@@ -573,6 +713,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordDonutWarning1->GetComponent<TransparentMesh>()->CreateTMesh("DonutSafe1", "Resources/Textures/Warning/Warning.dds", 0.6f, true);
 	_swordDonutWarning1->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
 	_swordDonutWarning1->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+	_swordDonutWarning1->GetComponent<TransparentMesh>()->SetActive(false);
+	_swordDonutWarning1->SetTotalComponentState(false);
+	_swordDonutWarning1->SetActive(false);
 
 	// 도넛 장판 2번
 	_swordDonutWarning2 = _boss->GetObjectScene()->CreateObject("donutSafe2");
@@ -581,6 +724,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordDonutWarning2->GetComponent<Transform>()->SetScale(60.0f, 60.0f, 60.0f);
 	_swordDonutWarning2->GetComponent<TransparentMesh>()->SetTimer(1.0f);
 	_swordDonutWarning2->GetComponent<TransparentMesh>()->SetRenderType(6);
+	_swordDonutWarning2->GetComponent<TransparentMesh>()->SetActive(false);
+	_swordDonutWarning2->SetTotalComponentState(false);
+	_swordDonutWarning2->SetActive(false);
 
 	// 도넛 장판 3번
 	_swordDonutWarning3 = _boss->GetObjectScene()->CreateObject("donutSafe3");
@@ -589,6 +735,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordDonutWarning3->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
 	_swordDonutWarning3->GetComponent<TransparentMesh>()->SetTimer(1.0f);
 	_swordDonutWarning3->GetComponent<TransparentMesh>()->SetRenderType(6);
+	_swordDonutWarning3->GetComponent<TransparentMesh>()->SetActive(false);
+	_swordDonutWarning3->SetTotalComponentState(false);
+	_swordDonutWarning3->SetActive(false);
 
 	// 레이저 
 	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
@@ -599,11 +748,16 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 	_lazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
 	_lazer->GetComponent<Particle>()->SetActive(false);
+	_lazer->SetTotalComponentState(false);
+	_lazer->SetActive(false);
 
 	// 레이저 콜라이더
 	_lazerCollider = _boss->GetObjectScene()->CreateObject("lazerCollider");
 	_lazerCollider->AddComponent<BoxCollider>();
 	_lazerCollider->GetComponent<BoxCollider>()->SetBoxSize(140.0f, 10.0f, 10.0f);
+	_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
+	_lazerCollider->SetTotalComponentState(false);
+	_lazerCollider->SetActive(false);
 
 	// call 투사체
 	_call = _boss->GetObjectScene()->CreateObject("call");
@@ -623,29 +777,29 @@ void KunrealEngine::Kamen::CreateSubObject()
 	DirectX::XMFLOAT4 specular = { 0.0f, 0.15f, 0.0f, 1.0f };
 	_call->AddComponent<Light>();
 	_call->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+	_call->GetComponent<Light>()->SetActive(false);
+	_call->SetTotalComponentState(false);
+	_call->SetActive(false);
 
 	// call2 투사체
 	_call2 = _boss->GetObjectScene()->CreateObject("call2");
 	_call2->AddComponent<BoxCollider>();
 	_call2->GetComponent<BoxCollider>()->SetBoxSize(15.0f, 30.0f, 15.0f);
 	_call2->GetComponent<BoxCollider>()->SetActive(false);
-	_call2->AddComponent<Particle>();
-	_call2->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	_call2->GetComponent<Particle>()->SetParticleDuration(2.7f, 3.1f);
-	_call2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
-	_call2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-	_call2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.5f, 0.0f);
-	_call2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	_call2->GetComponent<Particle>()->SetActive(false);
 	_call2->AddComponent<Light>();
 	_call2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+	_call2->GetComponent<Light>()->SetActive(false);
+	_call2->SetTotalComponentState(false);
+	_call2->SetActive(false);
 
 	// 따로 패턴하는 검
 	_freeSword = _boss->GetObjectScene()->CreateObject("KamenSword");
 	_freeSword->AddComponent<MeshRenderer>();
 	_freeSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	_freeSword->GetComponent<MeshRenderer>()->SetActive(false);
 	_freeSword->AddComponent<BoxCollider>();
 	_freeSword->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 20.0f, 5.0f);
+	_freeSword->GetComponent<BoxCollider>()->SetActive(false);
 	auto texSize = _freeSword->GetComponent<MeshRenderer>()->GetTextures().size();
 	for (int i = 0; i < texSize; i++)
 	{
@@ -653,6 +807,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 		_freeSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
 		_freeSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
 	}
+	_freeSword->SetTotalComponentState(false);
+	_freeSword->SetActive(false);
 
 	// 검 경로 장판
 	_swordPath = _boss->GetObjectScene()->CreateObject("swordPath");
@@ -660,6 +816,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordPath->GetComponent<TransparentMesh>()->CreateTMesh("SwordPath", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
 	_swordPath->GetComponent<Transform>()->SetScale(100.0f, 10.0f, 10.0f);
 	_swordPath->GetComponent<TransparentMesh>()->SetTimer(4.5f);
+	_swordPath->GetComponent<TransparentMesh>()->SetActive(false);
+	_swordPath->SetTotalComponentState(false);
+	_swordPath->SetActive(false);
 
 	// 핵심패턴 9마리 보스
 	for (int i = 0; i < 9; i++)
@@ -705,7 +864,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 		_alterEgo->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
 		_alterEgo->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
 	}
-
+	
+	_alterEgo->SetTotalComponentState(false);
 	_alterEgo->SetActive(false);
 
 	// 왼손 불 위치 체크용 메쉬
@@ -715,6 +875,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoLeftHandBone->GetComponent<MeshRenderer>()->SetParentBone(_alterEgo, "MiddleFinger1_L");
 	_egoLeftHandBone->GetComponent<MeshRenderer>()->SetActive(false);
 	_egoLeftHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+	_egoLeftHandBone->SetTotalComponentState(false);
+	_egoLeftHandBone->SetActive(false);
 
 	// 오른손 불 위치 체크용 메쉬
 	_egoRightHandBone = _boss->GetObjectScene()->CreateObject("EgoRightHandBone");
@@ -723,16 +885,21 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoRightHandBone->GetComponent<MeshRenderer>()->SetParentBone(_alterEgo, "MiddleFinger1_R");
 	_egoRightHandBone->GetComponent<MeshRenderer>()->SetActive(false);
 	_egoRightHandBone->GetComponent<Transform>()->SetScale(10.0f, 10.f, 10.f);
+	_egoRightHandBone->SetTotalComponentState(false);
+	_egoRightHandBone->SetActive(false);
 
 	// 5개 불 
 	for (int i = 0; i < 5; i++)
 	{
 		std::string index = "EgoHandFire" + std::to_string(i + 1);
 		auto handFire = _boss->GetObjectScene()->CreateObject(index);
-		handFire->AddComponent<MeshRenderer>();
-		handFire->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube");
-		handFire->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+		handFire->AddComponent<BoxCollider>();
+		handFire->GetComponent<BoxCollider>()->SetBoxSize(10.0f, 10.0f, 10.0f);
+
 		_egoHandFire.emplace_back(handFire);
+
+		handFire->SetTotalComponentState(false);
+		handFire->SetActive(false);
 	}
 
 	// call2 투사체
@@ -740,16 +907,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoCall2->AddComponent<BoxCollider>();
 	_egoCall2->GetComponent<BoxCollider>()->SetBoxSize(15.0f, 30.0f, 15.0f);
 	_egoCall2->GetComponent<BoxCollider>()->SetActive(false);
-	_egoCall2->AddComponent<Particle>();
-	_egoCall2->GetComponent<Particle>()->SetParticleEffect("Flame", "Resources/Textures/Particles/flare.dds", 1000);
-	_egoCall2->GetComponent<Particle>()->SetParticleDuration(2.7f, 3.1f);
-	_egoCall2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
-	_egoCall2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-	_egoCall2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.5f, 0.0f);
-	_egoCall2->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	_egoCall2->GetComponent<Particle>()->SetActive(false);
 	_egoCall2->AddComponent<Light>();
 	_egoCall2->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 1.0f);
+	_egoCall2->SetTotalComponentState(false);
+	_egoCall2->SetActive(false);
 
 	// 레이저 
 	_egoLazer = _boss->GetObjectScene()->CreateObject("EgoLazer");
@@ -760,11 +921,15 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 	_egoLazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
 	_egoLazer->GetComponent<Particle>()->SetActive(false);
+	_egoLazer->SetTotalComponentState(false);
+	_egoLazer->SetActive(false);
 
 	// 레이저 콜라이더
 	_egoLazerCollider = _boss->GetObjectScene()->CreateObject("EgoLazerCollider");
 	_egoLazerCollider->AddComponent<BoxCollider>();
 	_egoLazerCollider->GetComponent<BoxCollider>()->SetBoxSize(140.0f, 10.0f, 10.0f);
+	_egoLazerCollider->SetTotalComponentState(false);
+	_egoLazerCollider->SetActive(false);
 
 	// 내부 장판
 	_egoInsideWarning = _boss->GetObjectScene()->CreateObject("EgoInsideWarning");
@@ -773,6 +938,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoInsideWarning->GetComponent<Transform>()->SetPosition(_alterEgo->GetComponent<Transform>()->GetPosition().x, _alterEgo->GetComponent<Transform>()->GetPosition().y, _alterEgo->GetComponent<Transform>()->GetPosition().z);
 	_egoInsideWarning->GetComponent<TransparentMesh>()->SetRenderType(3);
 	_egoInsideWarning->GetComponent<TransparentMesh>()->SetTimer(2.0f);
+	_egoInsideWarning->SetTotalComponentState(false);
+	_egoInsideWarning->SetActive(false);
 
 	// 내부 장판 공격
 	_egoInsideAttack = _boss->GetObjectScene()->CreateObject("EgoInsideAttack");
@@ -783,6 +950,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 	_egoInsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
 	_egoInsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	_egoInsideAttack->SetTotalComponentState(false);
+	_egoInsideAttack->SetActive(false);
 }
 
 
@@ -879,13 +1048,6 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 			for (int i = 0; i < 5; i++)
 			{
 				_handFireReady[i] = true;
-
-				auto childs = _handFire[i]->GetChilds();
-
-				for (auto& index : childs)
-				{
-					index->GetComponent<Particle>()->SetActive(false);
-				}
 			}
 
 			if (_isEgoAttackReady)
@@ -893,13 +1055,6 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 				for (int i = 0; i < 5; i++)
 				{
 					_egoHandFireReady[i] = true;
-
-					auto childs = _egoHandFire[i]->GetChilds();
-
-					for (auto& index : childs)
-					{
-						index->GetComponent<Particle>()->SetActive(false);
-					}
 				}
 
 				_isEgoAttackReady = false;
@@ -940,7 +1095,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-						_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+						_handFire[i]->GetComponent<BoxCollider>()->SetActive(true);
 
 						auto childs = _handFire[i]->GetChilds();
 
@@ -977,7 +1132,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-							_egoHandFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
+							_egoHandFire[i]->GetComponent<BoxCollider>()->SetActive(true);
 
 							auto childs = _egoHandFire[i]->GetChilds();
 
@@ -1140,8 +1295,6 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-						_handFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
-
 						auto childs = _handFire[i]->GetChilds();
 
 						for (auto& index : childs)
@@ -1152,7 +1305,7 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 					else
 					{
 						auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
-						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * 0.01f));
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 					}
@@ -1175,8 +1328,6 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 							_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
 
 							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
-
-							_egoHandFire[i]->GetComponent<MeshRenderer>()->SetActive(true);
 
 							auto childs = _egoHandFire[i]->GetChilds();
 
@@ -1961,10 +2112,14 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				{
 					// 콜라이더 키기
 					_call2->GetComponent<BoxCollider>()->SetActive(true);
-					// 파티클 키기
-					_call2->GetComponent<Particle>()->SetActive(true);
 					// 라이트도 키기
 					_call2->GetComponent<Light>()->SetActive(true);
+
+					// 파티클 키기
+					for (auto& index : _call2->GetChilds())
+					{
+						index->GetComponent<Particle>()->SetActive(true);
+					}
 				}
 
 				// 보스가 바라보는 방향 가져옴
@@ -1988,16 +2143,21 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 20.0f * step));
 
-				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
+				auto call2Pos = _call2->GetComponent<Transform>()->GetPosition();
+				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], call2Pos.y, newPosition.m128_f32[2]);
 
 				if (_isEgoAttack)
 				{
 					// 콜라이더 키기
 					_egoCall2->GetComponent<BoxCollider>()->SetActive(true);
-					// 파티클 키기
-					_egoCall2->GetComponent<Particle>()->SetActive(true);
 					// 라이트도 키기
 					_egoCall2->GetComponent<Light>()->SetActive(true);
+
+					// 파티클 키기
+					for (auto& index : _egoCall2->GetChilds())
+					{
+						index->GetComponent<Particle>()->SetActive(true);
+					}
 
 					// 현재 보스의 포지션
 					auto egoNowPos = _alterEgo->GetComponent<Transform>()->GetPosition();
@@ -2019,7 +2179,8 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 					// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
 					DirectX::XMVECTOR egoNewPosition = DirectX::XMVectorAdd(egoNowPosVec, DirectX::XMVectorScale(egoDirection, 20.0f * step));
 
-					_egoCall2->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], 5.0f, egoNewPosition.m128_f32[2]);
+					auto egopCall2Pos = _call2->GetComponent<Transform>()->GetPosition();
+					_egoCall2->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], egopCall2Pos.y, egoNewPosition.m128_f32[2]);
 				}
 			}
 
