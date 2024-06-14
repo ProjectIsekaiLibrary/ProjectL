@@ -42,7 +42,9 @@ void KunrealEngine::EventManager::Update()
 	{
 		CalculateDamageToBoss();
 
-		CalculateDamageToPlayer();
+		//CalculateDamageToPlayer();
+
+		CalculateDamageToPlayer2();
 
 		if (_bossComp->isDead())
 		{
@@ -110,6 +112,58 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 						}
 					}
 				}
+			}
+		}
+	}
+}
+
+
+void KunrealEngine::EventManager::CalculateDamageToPlayer2()
+{
+	auto nowPattern = _bossComp->GetNowPlayingPattern();
+
+	// 보스가 공격중일때만?
+
+	if (nowPattern != nullptr)
+	{
+		auto subObjectList = nowPattern->_subObject;
+
+		for (int i = 0; i < subObjectList.size(); i++)
+		{
+			auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+
+			// 콜라이더가 켜졌지만 맞지 않은 상태
+			if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+			{
+				collider->SetActive(true);
+
+				if (collider->IsCollided() && collider->GetTargetObject() == _player)
+				{
+					auto damage = nowPattern->_damage;
+
+					// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+					_playerComp->GetPlayerData()._hp -= damage;
+					_playerComp->SetHitState(0);
+
+					// 데미지가 들어간 후 메쉬를 꺼야한다면
+					if (!nowPattern->_isRemainMesh && subObjectList[i]->GetComponent<MeshRenderer>() != nullptr)
+					{
+						// 메쉬를 꺼버림
+						subObjectList[i]->GetComponent<MeshRenderer>()->SetActive(false);
+					}
+
+					// 맞았다고 체크
+					nowPattern->_isColliderHit[i] = true;
+				}
+			}
+
+			// 콜라이더가 켜지고 맞은 상태
+			if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+			{
+				// 맞았으니 콜라이더 끄기
+				nowPattern->_isColliderActive[i] = false;
+
+				collider->SetActive(false);
 			}
 		}
 	}

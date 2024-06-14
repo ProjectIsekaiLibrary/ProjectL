@@ -30,11 +30,6 @@ KunrealEngine::Boss::Boss()
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false)
 {
-	// 콜라이더 활성화 체크용 변수 넉넉히 10개
-	for (int i = 0; i < 10; i++)
-	{
-		_isColliderActiveVec.emplace_back(false);
-	}
 }
 
 KunrealEngine::Boss::~Boss()
@@ -555,11 +550,6 @@ void KunrealEngine::Boss::PatternReady()
 		_status = BossStatus::BASIC_ATTACK;
 	}
 
-	for (int i = 0; i < _isColliderActiveVec.size(); i++)
-	{
-		_isColliderActiveVec[i] = false;
-	}
-
 	_isAngleCheck = false;
 }
 
@@ -653,8 +643,16 @@ void KunrealEngine::Boss::PatternEnd()
 	{
 		for (const auto& pattern : _corePattern.back()->_patternList)
 		{
+			for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+			{
+				pattern->_isColliderHit[i] = false;
+				pattern->_isColliderActive[i] = false;
+			}
+
 			for (const auto& object : pattern->_subObject)
 			{
+				object->SetTotalComponentState(false);
+				
 				object->SetActive(false);
 			}
 		}
@@ -664,8 +662,16 @@ void KunrealEngine::Boss::PatternEnd()
 	{
 		for (const auto& pattern : _basicPattern[_patternIndex]->_patternList)
 		{
+			for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+			{
+				pattern->_isColliderHit[i] = false;
+				pattern->_isColliderActive[i] = false;
+			}
+
 			for (const auto& object : pattern->_subObject)
 			{
+				object->SetTotalComponentState(false);
+
 				object->SetActive(false);
 			}
 		}
@@ -747,6 +753,11 @@ BossPattern* KunrealEngine::Boss::GetNowPattern()
 	return _nowTitlePattern;
 }
 
+
+BossPattern* KunrealEngine::Boss::GetNowPlayingPattern()
+{
+	return _nowPlayingPattern;
+}
 
 BossBasicInfo& KunrealEngine::Boss::GetBossInfo()
 {

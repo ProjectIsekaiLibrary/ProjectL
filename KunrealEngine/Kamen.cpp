@@ -180,7 +180,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//
 	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
-	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 
 	//EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
@@ -194,7 +194,7 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//CoreEmmergencePattern();
 
-	_basicPattern.emplace_back(_leftFireAttack);
+	//_basicPattern.emplace_back(_leftFireAttack);
 	//_basicPattern.emplace_back(_rightFireAttack);
 }
 
@@ -1022,7 +1022,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Fire");
-	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
+	pattern->SetAnimName("Left_Attack").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetWithEgo(true);
@@ -1095,8 +1095,6 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-						_handFire[i]->GetComponent<BoxCollider>()->SetActive(true);
-
 						auto childs = _handFire[i]->GetChilds();
 
 						for (auto& index : childs)
@@ -1104,6 +1102,9 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 							index->GetComponent<Particle>()->SetActive(true);
 						}
 
+						// 콜라이더 키기
+						auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
+						pattern->_isColliderActive[objectIndex] = true;
 					}
 					else
 					{
@@ -1132,14 +1133,16 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-							_egoHandFire[i]->GetComponent<BoxCollider>()->SetActive(true);
-
 							auto childs = _egoHandFire[i]->GetChilds();
 
 							for (auto& index : childs)
 							{
 								index->GetComponent<Particle>()->SetActive(true);
 							}
+
+							// 콜라이더 키기
+							auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
+							pattern->_isColliderActive[objectIndex] = true;
 						}
 						else
 						{
@@ -1199,7 +1202,7 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Right_Attack_Fire");
-	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
+	pattern->SetAnimName("Right_Attack").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
 	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetWithEgo(true);
@@ -1301,6 +1304,10 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 						{
 							index->GetComponent<Particle>()->SetActive(true);
 						}
+
+						// 콜라이더 키기
+						auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
+						pattern->_isColliderActive[objectIndex] = true;
 					}
 					else
 					{
@@ -1335,6 +1342,10 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 							{
 								index->GetComponent<Particle>()->SetActive(true);
 							}
+
+							// 콜라이더 키기
+							auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
+							pattern->_isColliderActive[objectIndex] = true;
 						}
 						else
 						{
@@ -2078,7 +2089,7 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 	pattern->SetPatternName("Call2");
 
-	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
+	pattern->SetAnimName("Call").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetIsWarning(true).SetWarningName("Call2").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis);
 	pattern->SetWithEgo(true);
 	pattern->SetSubObject(_call2);
@@ -2110,8 +2121,6 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 			{
 				if (pattern->_colliderOnCount > 0)
 				{
-					// 콜라이더 키기
-					_call2->GetComponent<BoxCollider>()->SetActive(true);
 					// 라이트도 키기
 					_call2->GetComponent<Light>()->SetActive(true);
 
@@ -2120,6 +2129,10 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 					{
 						index->GetComponent<Particle>()->SetActive(true);
 					}
+
+					// 콜라이더 키기
+					auto objectIndex = pattern->GetSubObjectIndex(_call2);
+					pattern->_isColliderActive[objectIndex] = true;
 				}
 
 				// 보스가 바라보는 방향 가져옴
@@ -2148,8 +2161,6 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 				if (_isEgoAttack)
 				{
-					// 콜라이더 키기
-					_egoCall2->GetComponent<BoxCollider>()->SetActive(true);
 					// 라이트도 키기
 					_egoCall2->GetComponent<Light>()->SetActive(true);
 
@@ -2158,6 +2169,10 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 					{
 						index->GetComponent<Particle>()->SetActive(true);
 					}
+
+					// 콜라이더 키기
+					auto objectIndex = pattern->GetSubObjectIndex(_egoCall2);
+					pattern->_isColliderActive[objectIndex] = true;
 
 					// 현재 보스의 포지션
 					auto egoNowPos = _alterEgo->GetComponent<Transform>()->GetPosition();
