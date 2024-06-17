@@ -3,8 +3,6 @@
 #include <unordered_map>
 #include <DirectXMath.h>
 #include "CommonHeader.h"
-#include "../KunrealMath/MathHeaders.h"
-#pragma comment(lib,"../Bin/x64/Debug/KunrealMath.lib")
 
 #pragma warning(disable : 26451 26495 6297 33010)
 #include <physx/PxPhysics.h>

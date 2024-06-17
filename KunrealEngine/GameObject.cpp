@@ -213,6 +213,22 @@ std::vector<KunrealEngine::GameObject*> KunrealEngine::GameObject::GetChilds()
 	return this->_childContainer;
 }
 
+KunrealEngine::GameObject* KunrealEngine::GameObject::GetChild(std::string name)
+{
+	GameObject* result = nullptr;
+
+	for (auto child : _childContainer)
+	{
+		if (child->GetObjectName() == name)
+		{
+			result = child;
+			break;
+		}
+	}
+
+	return result;
+}
+
 KunrealEngine::Scene* KunrealEngine::GameObject::GetObjectScene()
 {
 	return SceneManager::GetInstance().GetScene(_sceneName);

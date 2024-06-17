@@ -15,9 +15,9 @@ KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
 	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(4.0f)
 {
-	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x - 0;
-	_tempY = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().y - 0;
-	_tempZ = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().z - 0;
+	_tempX = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().x;
+	_tempY = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().y;
+	_tempZ = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Transform>()->GetPosition().z;
 
 
 }
@@ -143,6 +143,11 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 	// 반환 된 노드가 없으면 == 움직일 수 없는 공간을 클릭했으면
 	while (_stopover.size() == 0)
 	{
+		if (this->_transform->GetPosition().y > this->_posY)
+		{
+			this->_transform->SetPosition(this->_transform->GetPosition().x, this->_posY, this->_transform->GetPosition().z);
+		}
+
 		// 플레이어 위치에서 마우스 위치로의 방향벡터
 		DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
 		DirectX::XMVECTOR currentVec = DirectX::XMLoadFloat3(&currentPoint);
@@ -164,12 +169,6 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 			_targetPos.x, _transform->GetPosition().y, _targetPos.z);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(0);
-
-		// 안전장치
-		//if (_stopover.size() > 0)
-		//{
-		//	break;
-		//}
 	}
 	
 	_nodeCount = 0;
@@ -185,6 +184,10 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 
 	DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetWithY);
 	_playerComp->_directionVector = direction;
+
+	///
+	//_playerComp->CalculateSweep(direction);
+	///
 
 	// 플레이어 위치에서 방향벡터 방향으로 대시 거리만큼의 좌표
 	direction = DirectX::XMVectorScale(direction, _playerComp->GetPlayerData()._dashRange);

@@ -185,10 +185,10 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
+	//SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	SwordLinearAttackPattern();
-	SwordChopPattern();
+	//SwordLinearAttackPattern();
+	//SwordChopPattern();
 
 	//BasicSwordAttackPattern();
 
@@ -1631,7 +1631,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 	pattern->SetPatternName("Emergence");
 
 	pattern->SetAnimName("Emergence").SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(10.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eCircle);
+	pattern->SetColliderType(BossPattern::eColliderType::eCylinder);
 	pattern->SetSubObject(_bossInsideAttack);
 	pattern->SetSubObject(_egoInsideAttack);
 
@@ -1696,14 +1696,14 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 
 	pattern->SetPatternName("OutSideSafe");
 
-	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(1.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetColliderType(BossPattern::eColliderType::eCylinder);
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
 			pattern->SetSubObject(_swordInsideWarning);
-
 			pattern->SetSubObject(_swordInsideAttack);
 
 			_swordInsideWarning->GetComponent<TransparentMesh>()->Reset();
@@ -1726,9 +1726,12 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			// 장판 실행이 완료되면
 			if (isPlayed)
 			{
+				// 콜라이더 키기
+				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
+				pattern->_isColliderActive[objectIndex] = true;
+
 				// n초동안 콜라이더 실행
 				_timer += TimeManager::GetInstance().GetDeltaTime();
-				_swordInsideAttack->GetComponent<BoxCollider>()->SetActive(true);
 				_swordInsideAttack->GetComponent<Particle>()->SetActive(true);
 
 				auto particleScaleUp = (_circleWarningSize) / 100.0f;
@@ -1758,20 +1761,24 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 	pattern->SetPatternName("InSideSafe");
 
-	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(3.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetColliderType(BossPattern::eColliderType::eCircleSafe);
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
 			pattern->SetSubObject(_swordOutsideWarning);
+			pattern->SetSubObject(_swordInsideAttack);
 
 			_swordOutsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _circleWarningSize);
 			_swordOutsideWarning->GetComponent<TransparentMesh>()->Reset();
 			_swordOutsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_swordOutsideWarning->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
-
 			_swordOutsideWarning->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
+			_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
+
+			_timer = 0.0f;
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -1784,7 +1791,13 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 			// 장판 실행이 완료되면
 			if (isPlayed)
 			{
-				//if (_insideWarningTimer >= 2.0f)
+				// 콜라이더 키기
+				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
+				pattern->_isColliderActive[objectIndex] = true;
+
+				_timer += TimeManager::GetInstance().GetDeltaTime();
+
+				if (_timer >= 2.0f)
 				{
 					return false;
 				}
@@ -2637,6 +2650,7 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 	pattern->SetAnimName("Idle").SetSpeed(30.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
+	pattern->SetColliderType(BossPattern::eColliderType::eBox);
 
 	auto lenearAttackInitLogic = [pattern, this]()
 		{

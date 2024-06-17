@@ -29,7 +29,7 @@ KunrealEngine::Boss::Boss()
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
-	_specialPatternEndLogicPlay(false)
+	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr)
 {
 }
 
@@ -613,6 +613,12 @@ void KunrealEngine::Boss::SpecialAttack()
 
 	auto isPlaying = _specialPattern[_specialPatternIndex]->SpecialPatternPlay();
 
+	if (isPlaying)
+	{
+		auto index = _specialPattern[_specialPatternIndex]->_index;
+		_nowSpecialPattern = _specialPattern[_specialPatternIndex]->_patternList[index];
+	}
+
 	// 패턴 실행이 끝났다면
 	if (isPlaying == false)
 	{
@@ -792,6 +798,12 @@ BossPattern* KunrealEngine::Boss::GetNowPattern()
 BossPattern* KunrealEngine::Boss::GetNowPlayingPattern()
 {
 	return _nowPlayingPattern;
+}
+
+
+BossPattern* KunrealEngine::Boss::GetNowSpecialPattern()
+{
+	return _nowSpecialPattern;
 }
 
 BossBasicInfo& KunrealEngine::Boss::GetBossInfo()

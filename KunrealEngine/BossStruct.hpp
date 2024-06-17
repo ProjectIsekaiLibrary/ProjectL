@@ -80,7 +80,7 @@ struct BossPattern
 		eNone,
 		eBox,		// physx 기반 충돌 처리
 		eCylinder,	// physx 기반 충돌 처리
-		eCircle		// 특정 원의 중점과의 거리가 일정 이내일 경우 충돌 처리
+		eCircleSafe,// 특정 원의 중점과의 거리가 일정 이내일 경우 충돌 처리
 	};
 
 

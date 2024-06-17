@@ -6,7 +6,8 @@
 #include <fstream>
 
 EpicTool::NavimashEditor::NavimashEditor()
-	:_naviIndex(0), _agentHeight(2.0f), _agentRadius(1.2f), _agentMaxClimb(0.9f), _agentMaxSlope(45.0f)
+	: _naviIndex(0), _agentHeight(2.0f), _agentRadius(1.2f), _agentMaxClimb(0.9f), _agentMaxSlope(45.0f)
+	, _navimashEditor(nullptr)
 {
 }
 

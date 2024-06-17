@@ -80,6 +80,8 @@ namespace GInterface
 		virtual void ReplayAnimation() abstract;
 		// 현재 프레임을 반환
 		virtual float GetCurrentFrame() abstract;
+		// 애니메이션을 특정 프레임으로 설정
+		virtual void SetCurrentFrame(int frame) abstract;
 		// 현재 애니메이션의 최대 프레임을 반환
 		virtual float GetMaxFrame() abstract;
 		// 현재 애니메이션을 실행중인지 여부 반환

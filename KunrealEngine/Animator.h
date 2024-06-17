@@ -50,6 +50,9 @@ namespace KunrealEngine
 		// 현재 실행중인 애니메이션이 몇 프레임인지
 		float GetCurrentFrame();
 
+		// 애니메이션을 특정 프레임으로 설정
+		void SetCurrentFrame(int frame);
+
 		// 현재 실행중인 애니메이션의 맥스 프레임 가져오기
 		float GetMaxFrame();
 

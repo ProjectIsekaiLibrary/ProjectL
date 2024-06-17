@@ -405,6 +405,12 @@ float ArkEngine::ArkDX11::FBXMesh::GetCurrentFrame()
 	}
 }
 
+
+void ArkEngine::ArkDX11::FBXMesh::SetCurrentFrame(int frame)
+{
+	return _animator->SetCurrentFrame(frame);
+}
+
 float ArkEngine::ArkDX11::FBXMesh::GetMaxFrame()
 {
 	return _animator->GetMaxFrame();
