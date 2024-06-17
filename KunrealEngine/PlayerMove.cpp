@@ -96,7 +96,7 @@ void KunrealEngine::PlayerMove::Update()
 	//PlayerDash(_targetPos, _playerComp->_playerInfo._dashSpeed * TimeManager::GetInstance().GetDeltaTime());
 
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
-	//NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
+	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 	
 	ShowPlayerInfo();
 }
@@ -186,7 +186,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 	_playerComp->_directionVector = direction;
 
 	///
-	_playerComp->CalculateSweep(direction);
+	//_playerComp->CalculateSweep(direction);
 	///
 
 	// 플레이어 위치에서 방향벡터 방향으로 대시 거리만큼의 좌표
@@ -224,7 +224,7 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 	}
 
 	// 플레이어의 각도를 변경
-	//this->_transform->SetRotation(0.0f, angle, 0.0f);
+	this->_transform->SetRotation(0.0f, angle, 0.0f);
 
 	_nodeCount = 0;
 }
