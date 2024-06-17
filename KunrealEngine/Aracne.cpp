@@ -172,7 +172,6 @@ void KunrealEngine::Aracne::JumpAttack()
 	_jumpAttack->SetPatternName("Jump_Attack");
 
 	_jumpAttack->SetAnimName("Anim_Jump").SetDamage(100.0f).SetSpeed(20.0f).SetRange(0).SetAfterDelay(0.5);
-	_jumpAttack->SetIsWarning(false).SetWarningName("");
 	_jumpAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	std::function logic = [this]()
@@ -192,7 +191,6 @@ void KunrealEngine::Aracne::ChargeAttack()
 	_ChargeAttack->SetPatternName("Charge_Attack");
 
 	_ChargeAttack->SetAnimName("Run").SetDamage(100.0f).SetSpeed(20.0f).SetRange(100.0f).SetAfterDelay(0.5);
-	_ChargeAttack->SetIsWarning(false).SetWarningName("");
 	_ChargeAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	std::function logic = [this]()
@@ -217,7 +215,6 @@ void KunrealEngine::Aracne::LeftAttack()
 	_leftAttack->SetPatternName("Left_Attack_Once");
 
 	_leftAttack->SetAnimName("left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
-	_leftAttack->SetIsWarning(false).SetWarningName("");
 	_leftAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	auto leftHandLogic = CreateBasicAttackLogic(_leftAttack, _colLeftHand, 10);
@@ -233,7 +230,6 @@ void KunrealEngine::Aracne::RightAttack()
 	_righttAttack->SetPatternName("Right_Attack_Once");
 
 	_righttAttack->SetAnimName("Right_attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
-	_righttAttack->SetIsWarning(false).SetWarningName("");
 	_righttAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	auto rightHandLogic = CreateBasicAttackLogic(_righttAttack, _colRightHand, 10);
@@ -249,7 +245,6 @@ void KunrealEngine::Aracne::FrontAttack()
 	_frontAttack->SetPatternName("Front_Attack");
 
 	_frontAttack->SetAnimName("Attak_Take_down").SetDamage(100.0f).SetSpeed(30.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
-	_frontAttack->SetIsWarning(false).SetWarningName("");
 	_frontAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	auto frontAttackLogic = CreateBasicAttackLogic(_frontAttack, _colFrontAttack, 10);
@@ -270,7 +265,6 @@ void KunrealEngine::Aracne::TailAttack()
 	_tailAttack->SetPatternName("tail_Attack");
 
 	_tailAttack->SetAnimName("tail_attack").SetDamage(100.0f).SetSpeed(30.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
-	_tailAttack->SetIsWarning(false).SetWarningName("");
 	_tailAttack->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	auto tailAttackLogic = CreateBasicAttackLogic(_tailAttack, _colTailAttack, 10);
@@ -286,7 +280,6 @@ void KunrealEngine::Aracne::ShootingWeb()
 	_webthrow->SetPatternName("Charge_Attack");
 
 	_webthrow->SetAnimName("Run").SetDamage(100.0f).SetSpeed(20.0f).SetRange(100.0f).SetAfterDelay(0.5);
-	_webthrow->SetIsWarning(false).SetWarningName("");
 	_webthrow->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	auto patternlogic = [this]()
@@ -306,7 +299,6 @@ void KunrealEngine::Aracne::Casting()
 	_magicshow->SetPatternName("Charge_Attack");
 
 	_magicshow->SetAnimName("Run").SetDamage(100.0f).SetSpeed(20.0f).SetRange(100.0f).SetAfterDelay(0.5);
-	_magicshow->SetIsWarning(false).SetWarningName("");
 	_magicshow->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	std::function logic = [this]()

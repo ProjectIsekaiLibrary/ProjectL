@@ -241,7 +241,6 @@ void KunrealEngine::Ent::CreateLeftAttack()
 	pattern->SetRange(_info._attackRange);
 	pattern->SetAfterDelay(0.5f);
 
-	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	pattern->_subObject.emplace_back(_leftHand);
@@ -265,7 +264,6 @@ void KunrealEngine::Ent::CreateRightAttack()
 	pattern->SetRange(_info._attackRange);
 	pattern->SetAfterDelay(0.5f);
 
-	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 
 	pattern->_subObject.emplace_back(_rightHand);
@@ -288,8 +286,6 @@ void KunrealEngine::Ent::CreateLeftRootShot()
 	pattern->SetSpeed(60.0f);
 	pattern->SetRange(40.0f);
 	pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("LRootShot");
 
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
@@ -366,8 +362,6 @@ void KunrealEngine::Ent::CreateRightRootShot()
 	pattern->SetSpeed(60.0f);
 	pattern->SetRange(40.0f);
 	pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("RRootShot");
 
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
@@ -443,8 +437,6 @@ void KunrealEngine::Ent::CreateRandomRootAttack()
 	pattern->SetSpeed(40.0f);	
 	pattern->SetRange(80.0f);
 	//pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("SmallRootShot");
 
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
@@ -535,8 +527,6 @@ void KunrealEngine::Ent::CreateJumpAttack()
 	pattern->SetSpeed(60.0f);
 	pattern->SetRange(100.0f);
 	//pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("SmallRootShot");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 
@@ -561,8 +551,6 @@ void KunrealEngine::Ent::CreateEyeLight()
 	pattern->SetSpeed(40.0f);
 	pattern->SetRange(30.0f);
 	//pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("EyeLight");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 
@@ -635,8 +623,6 @@ void KunrealEngine::Ent::CreateSwiping()
 	pattern->SetSpeed(40.0f);
 	pattern->SetRange(20.f);
 	//pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("Swiping");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 
@@ -696,8 +682,6 @@ void KunrealEngine::Ent::CreateCorePatternFirst()
 	pattern->SetSpeed(10.0f);
 	pattern->SetRange(100.0f);
 	//pattern->SetAfterDelay(0.5f);
-	pattern->SetIsWarning(true);  // 경고표시 해줄 예정임
-	pattern->SetIsWarning("CorePatternFirst");
 
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
