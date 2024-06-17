@@ -164,7 +164,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	PhysicsSystem::GetInstance().Initialize();
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
-	soundInstance.Initialize(hwnd);
+	//soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0, "testObj.obj");
@@ -191,7 +191,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	PlayGround();
+	//PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -342,16 +342,7 @@ void KunrealEngine::EngineCore::Update()
 
 	//std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
 	//navigationInstance.MoveTempObstacle(pos.first, pos.second);
-	
-	// 장애물 설치 테스트
-	if (inputInstance->KeyInput(KEY::LSHIFT) && inputInstance->MouseButtonDown(0))
-	{
-		//RemoveObstacle();
-	}
-	else if (inputInstance->MouseButtonDown(0))
-	{
-		//MakeObstacle();
-	}
+
 
 	// UI 실행,종료
 	if (inputInstance->KeyDown(KEY::ESCAPE))
@@ -507,9 +498,9 @@ void KunrealEngine::EngineCore::SetEditorMousePos(POINT position)
 void KunrealEngine::EngineCore::PlayGround()
 {
 	// Camera
-	KunrealEngine::KunrealMath::Float3 cameraPos = { 0.0f, 30.0f, -55.0f };
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 30.0f, -55.0f };
 	// KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
-	KunrealEngine::KunrealMath::Float3 targetPos = { 0.0f, -15.0f, 0.0f };
+	DirectX::XMFLOAT3 targetPos = { 0.0f, -15.0f, 0.0f };
 	testCamera = sceneInstance.GetCurrentScene()->CreateObject("testCamera");
 	testCamera->AddComponent<Camera>();
 	testCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
@@ -792,9 +783,9 @@ void KunrealEngine::EngineCore::RemoveObstacle()
 void KunrealEngine::EngineCore::ParticleTest()
 {
 	// Camera
-	KunrealEngine::KunrealMath::Float3 cameraPos = { 0.0f, 30.0f, -55.0f };
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 30.0f, -55.0f };
 	// KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
-	KunrealEngine::KunrealMath::Float3 targetPos = { 0.0f, -15.0f, 0.0f };
+	DirectX::XMFLOAT3 targetPos = { 0.0f, -15.0f, 0.0f };
 	testCamera = sceneInstance.GetCurrentScene()->CreateObject("testCamera");
 	testCamera->AddComponent<Camera>();
 	testCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
