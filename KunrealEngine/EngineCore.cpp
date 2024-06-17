@@ -135,8 +135,7 @@ KunrealEngine::GameObject* playerE3;
 KunrealEngine::GameObject* playerE2_1;
 KunrealEngine::GameObject* playerE2_2;
 KunrealEngine::GameObject* playerE2_3;
-
-KunrealEngine::GameObject* playerE3_1;
+KunrealEngine::GameObject* playerE2_4;
 
 KunrealEngine::GameObject* testCamera;
 KunrealEngine::GameObject* particleCamera;
@@ -1594,25 +1593,27 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	// 도넛 패턴에 배치할 파이클 테스트
 
-	particleBossSwordDonut1 = sceneInstance.GetCurrentScene()->CreateObject("Particle17");
-	particleBossSwordDonut1->GetComponent<Transform>()->SetPosition(-100, 0, 105.f);
+	particleBossSwordDonut1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSwordDonut1");
+	particleBossSwordDonut1->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
 	particleBossSwordDonut1->AddComponent<Particle>();
-	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
-	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
-	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
-	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleSize(7.0f, 7.0f);
-	particleBossSwordDonut1->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 1.0f);
-	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleSize(45.f, 45.0f);
+	particleBossSwordDonut1->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	particleBossSwordDonut1->GetComponent<Particle>()->SetParticleAngle(55.f);
 
-	particleBossSwordDonut2 = sceneInstance.GetCurrentScene()->CreateObject("Particle27");
-	particleBossSwordDonut2->GetComponent<Transform>()->SetPosition(-100, 0, 105.f);
+	particleBossSwordDonut2 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSwordDonut2");
+	particleBossSwordDonut2->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
 	particleBossSwordDonut2->AddComponent<Particle>();
-	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
-	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDuration(13.0f, 0.6f);
-	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleVelocity(25.0f, true);
-	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-	particleBossSwordDonut2->GetComponent<Particle>()->AddParticleColor(0.3f, 5.0f, 0.3f);
-	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDirection(0.0f, 200.0f, 0.0f);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleSize(45.f, 45.0f);
+	particleBossSwordDonut2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	particleBossSwordDonut2->GetComponent<Particle>()->SetParticleAngle(55.f);
 
 	/*for (int i = 0; i < 16; ++i)
 	{
@@ -1715,7 +1716,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	playerE2_1->GetComponent<Particle>()->SetParticleAngle(55.0f);
 
 	playerE2_2 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE2_2");
-	playerE2_2->GetComponent<Transform>()->SetPosition(-48, 7.2, -65.f);
+	playerE2_2->GetComponent<Transform>()->SetPosition(-48, 10.2, -65.f);
 	playerE2_2->AddComponent<Particle>();
 	playerE2_2->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
 	playerE2_2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
@@ -1735,15 +1736,15 @@ void KunrealEngine::EngineCore::ParticleTest()
 	playerE2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	playerE2_3->GetComponent<Particle>()->SetParticleAngle(55.0f);
 
-	playerE3_1 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE3_1");
-	playerE3_1->GetComponent<Transform>()->SetPosition(-48, 10.2, -65.f);
-	playerE3_1->AddComponent<Particle>();
-	playerE3_1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	playerE3_1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
-	playerE3_1->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	playerE3_1->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-	playerE3_1->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
-	playerE3_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	playerE2_4 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE3_1");
+	playerE2_4->GetComponent<Transform>()->SetPosition(-48, 10.2, -65.f);
+	playerE2_4->AddComponent<Particle>();
+	playerE2_4->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	playerE2_4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+	playerE2_4->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+	playerE2_4->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	playerE2_4->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+	playerE2_4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	//playerE3_1->GetComponent<Particle>()->SetParticleAngle(60.0f);
 }
 
