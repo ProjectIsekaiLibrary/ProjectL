@@ -21,8 +21,11 @@ namespace KunrealEngine
 
 	PathFindPack::PathFindPack()
 		: _startRef(0), _endRef(0), _startPos(), _endPos(), _filter(), _path(), _pathCount(0), _polyPickExt()
+		, _navMesh(nullptr), _navQuery(nullptr), _tileCache(nullptr), _parent()
 		// Straight-pathfind를 위해 필요한 부분들
 		, _straightPath(), _straightPathFlags(), _straightPathPolys(), _nstraightPath(0)
+		// Raycast-pathFind를 위해 필요한 부분들
+		, _RaycastPathPolys(), _hit(), _hitPos()
 	{
 		_filter.setIncludeFlags(SAMPLE_POLYFLAGS_ALL ^ SAMPLE_POLYFLAGS_DISABLED);
 		_filter.setExcludeFlags(0);
@@ -62,6 +65,9 @@ namespace KunrealEngine
 		, _filterLowHangingObstacles(false), _filterLedgeSpans(false), _filterWalkableLowHeightSpans(false)
 		// Obstacle에서 추가 된 부분
 		, _maxTiles(1024), _maxPolysPerTile(4096)
+		// 그외
+		, _cacheBuildMemUsage(0), _cacheBuildTimeMs(0), _cacheCompressedSize(0), _cacheRawSize(0), _tmproc(nullptr)
+		, _tcomp(nullptr), _talloc(nullptr), _cacheLayerCount(0)
 	{
 
 	}

@@ -81,6 +81,8 @@ namespace KunrealEngine
 		// 자식 오브젝트들이 담겨있는 컨테이너 반환
 		std::vector<GameObject*> GetChilds();
 
+		GameObject* GetChild(std::string name);
+
 		// 현재 소속된 scene 반환
 		Scene* GetObjectScene();
 

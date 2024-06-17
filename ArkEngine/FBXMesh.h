@@ -102,6 +102,7 @@ namespace ArkEngine
 			virtual void PauseAnimation() override;
 			virtual void ReplayAnimation() override;
 			virtual float GetCurrentFrame() override;
+			virtual void SetCurrentFrame(int frame) override;
 			virtual float GetMaxFrame() override;
 			virtual bool GetIsPlaying() override;
 			virtual const std::string& GetNowAnimationName() override;

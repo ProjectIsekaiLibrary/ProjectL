@@ -3,6 +3,7 @@
 #include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
+#include "Coroutine.h"
 
 namespace KunrealEngine
 {
@@ -66,12 +67,23 @@ namespace KunrealEngine
 
 	private:
 		Transform* _transform;					// 플레이어의 transform
+		GameObject* _owner;						// 컴포넌트를 담고 있는 오브젝트
 		Status _playerStatus;					// 플레이어의 상태 이동 기절 등
 		Status _tempStatus;						// 애니메이션 변환하며 Stop 불러줄 용도
 		PlayerInfo _playerInfo;					// 플레이어 기본 정보 스탯 등
 		DirectX::XMVECTOR _directionVector;		// 플레이어가 바라보는 방향 벡터
 
 		int _abilityAnimationIndex;				// 어떤 스킬 애니메이션
+
+		// 피격 후 날아가는 로직 관련
+		bool _isSweep;							// 날아가는 트리거
+		float _sweepRange;						// 얼마나 멀리 날아갈것인가
+		float _movedRange;						// 얼만큼 이동했는가 기록용
+		float _sweepDuration;					// 얼마나 오래 체공할 것인가
+		float _sweepAnimationSpeed;				// 날아가는 애니메이션 속도
+		float _gravity;							// 포물선에 적용할 중력가속도
+		std::vector<DirectX::XMFLOAT3> _sweepNode;	// 날아가는 좌표노드
+		int _nodeCount;							// 노드 체크 보조변수
 
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
@@ -82,6 +94,16 @@ namespace KunrealEngine
 
 		// 피격 이후 처리
 		void AfterHit();
+
+		// 플레이어 상태 이상을 처리할 코루틴 함수
+		Coroutine_Func(afterSweep)
+		{
+			auto* playerComp = this;
+			Waitforsecond(playerComp->_sweepDuration + 1.0f);				// 누운 다음 1초 뒤 기상
+			
+			playerComp->_isSweep = false;
+			playerComp->_playerStatus = Status::IDLE;
+		};
 
 		/// 디버그 모드에서만 사용할 보조 함수
 		void DebugFunc();
@@ -99,6 +121,12 @@ namespace KunrealEngine
 		// 플레이어 피격처리
 		/// 보스쪽에서 타입을 ENUM으로 바꾸면 매개변수도 변경예정
 		void SetHitState(int patternType);
+
+		// 플레이어 피격 후 날아가는 좌표 계산
+		void CalculateSweep(DirectX::XMVECTOR direction);
+		
+		// 플레이어 피격 후 날아가는 로직
+		void PlayerSweep();
 
 		// 플레이어 scene 이동
 		void MoveToScene(std::string sceneName);

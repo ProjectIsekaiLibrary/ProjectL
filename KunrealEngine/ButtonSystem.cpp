@@ -2,6 +2,7 @@
 #include "InputSystem.h"
 
 KunrealEngine::ButtonSystem::ButtonSystem()
+	: _image(nullptr)
 {
 }
 

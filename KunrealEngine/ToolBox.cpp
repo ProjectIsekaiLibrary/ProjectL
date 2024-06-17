@@ -156,7 +156,7 @@ void KunrealEngine::ToolBox::CalculateParabolaPath(const DirectX::XMFLOAT3& src,
 	float t = 0.0f;
 
 	// 중력가속도
-	DirectX::XMFLOAT3 velocity = { (dst.x - src.x), (dst.y - src.y) / duration - 0.5f * gravity * duration, (dst.z - src.z) / duration };
+	DirectX::XMFLOAT3 velocity = { (dst.x - src.x) / duration, (dst.y - src.y) / duration - 0.5f * gravity * duration, (dst.z - src.z) / duration };
 
 	while (t <= duration)
 	{
