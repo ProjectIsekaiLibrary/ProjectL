@@ -200,15 +200,15 @@ struct BossPattern
 				return false;
 			}
 
+			// 각 패턴의 초기화 로직 실행
+			_patternList[_index]->Initialize();
+
 			// 패턴이 지닌 하위 오브젝트들을 모두 켬
 			for (const auto& object : _patternList[_index]->_subObject)
 			{
 				// 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
 				object->SetActive(true);
 			}
-
-			// 각 패턴의 초기화 로직 실행
-			_patternList[_index]->Initialize();
 		}
 
 		// 모든 패턴 실행이 끝나면 true 반환해줌

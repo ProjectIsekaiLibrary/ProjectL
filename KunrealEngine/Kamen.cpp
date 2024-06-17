@@ -1699,13 +1699,13 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
-	pattern->SetSubObject(_swordInsideWarning);
-
-	pattern->SetSubObject(_swordInsideAttack);
-
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
+			pattern->SetSubObject(_swordInsideWarning);
+
+			pattern->SetSubObject(_swordInsideAttack);
+
 			_swordInsideWarning->GetComponent<TransparentMesh>()->Reset();
 			_swordInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_swordInsideWarning->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
@@ -1761,11 +1761,11 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
-	pattern->SetSubObject(_swordOutsideWarning);
-
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
+			pattern->SetSubObject(_swordOutsideWarning);
+
 			_swordOutsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _circleWarningSize);
 			_swordOutsideWarning->GetComponent<TransparentMesh>()->Reset();
 			_swordOutsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
@@ -1809,14 +1809,14 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 
-	pattern->SetSubObject(_swordDonutWarning1);
-	pattern->SetSubObject(_swordDonutWarning2);
-	pattern->SetSubObject(_swordDonutWarning3);
-
-	pattern->SetSubObject(_freeSword);
-
 	auto initializeLogic = [pattern, this]()
 		{
+			pattern->SetSubObject(_swordDonutWarning1);
+			pattern->SetSubObject(_swordDonutWarning2);
+			pattern->SetSubObject(_swordDonutWarning3);
+
+			pattern->SetSubObject(_freeSword);
+
 			auto swordPos = _freeSword->GetComponent<Transform>()->GetPosition();
 
 			_swordDonutWarning1->GetComponent<TransparentMesh>()->Reset();
@@ -2371,10 +2371,11 @@ void KunrealEngine::Kamen::CreateSwordEmergence()
 	pattern->SetPatternName("Sword_Emmergence");
 
 	pattern->SetAnimName("Idle").SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
-	pattern->SetSubObject(_freeSword);
 
 	auto swordInitLogic = [pattern, this]()
 		{
+			pattern->SetSubObject(_freeSword);
+
 			auto swordTransform = _freeSword->GetComponent<Transform>();
 			swordTransform->SetPosition(_swordStartPos.x, _swordStartPos.y, _swordStartPos.z);
 
@@ -2420,10 +2421,11 @@ void KunrealEngine::Kamen::CreateSwordHide()
 	pattern->SetPatternName("Sword_Hide");
 
 	pattern->SetAnimName("Idle").SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
-	pattern->SetSubObject(_freeSword);
 
 	auto swordInitLogic = [pattern, this]()
 		{
+			pattern->SetSubObject(_freeSword);
+
 			// 디졸브 이펙트 키기
 			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);

@@ -239,6 +239,7 @@ namespace KunrealEngine
 		int _specialPatternIndex;
 		bool _isSpecialPatternPlaying;
 		bool _canPlaySpecialPattern;
+		bool _specialPatternEndLogicPlay;
 
 	private:
 		Coroutine_Func(patternEnd)
