@@ -657,8 +657,6 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 내부 장판 공격
 	_bossInsideAttack = _boss->GetObjectScene()->CreateObject("BossInsideAttack");
-	_bossInsideAttack->AddComponent<BoxCollider>();
-	_bossInsideAttack->GetComponent<BoxCollider>()->SetActive(false);
 	_bossInsideAttack->AddComponent<Particle>();
 	_bossInsideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
 	_bossInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
@@ -1006,7 +1004,6 @@ void KunrealEngine::Kamen::CreateLeftAttack()
 	pattern->SetPatternName("Left_Attack_Once");
 
 	pattern->SetAnimName("Left_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5);
-	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_leftHand);
 	auto leftHandLogic = CreateBasicAttackLogic(pattern, _leftHand, 10);
@@ -1023,9 +1020,8 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 	pattern->SetPatternName("Left_Attack_Fire");
 	pattern->SetAnimName("Left_Attack").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
-	pattern->SetIsWarning(false).SetWarningName("");
-	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
-	pattern->SetWithEgo(true);
+	pattern->SetAttackState(BossPattern::eAttackState::eParalysis).SetMaxColliderCount(1);
+	pattern->SetWithEgo(true).SetColliderType(BossPattern::eColliderType::eBox);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -1039,14 +1035,17 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 		_egoHandFireReady.emplace_back(true);
 
 		_egoHandFireDir.emplace_back();
-
-		pattern->SetSubObject(_egoHandFire[i]);
 	}
 
 	auto initLogic = [pattern, this]()
 		{
 			for (int i = 0; i < 5; i++)
 			{
+				for (int i = 0; i < 5; i++)
+				{
+					pattern->DeleteSubObject(_egoHandFire[i]);
+				}
+
 				_handFireReady[i] = true;
 			}
 
@@ -1054,6 +1053,8 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 			{
 				for (int i = 0; i < 5; i++)
 				{
+					pattern->SetSubObject(_egoHandFire[i]);
+
 					_egoHandFireReady[i] = true;
 				}
 
@@ -1185,7 +1186,6 @@ void KunrealEngine::Kamen::CreateRightAttack()
 	pattern->SetPatternName("Right_Attack_Once");
 
 	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange).SetAfterDelay(0.5f);
-	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_rightHand);
 
@@ -1203,9 +1203,8 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 
 	pattern->SetPatternName("Right_Attack_Fire");
 	pattern->SetAnimName("Right_Attack").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(0.5);
-	pattern->SetIsWarning(false).SetWarningName("");
-	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
-	pattern->SetWithEgo(true);
+	pattern->SetAttackState(BossPattern::eAttackState::eParalysis).SetMaxColliderCount(1);
+	pattern->SetWithEgo(true).SetColliderType(BossPattern::eColliderType::eBox);
 
 	for (int i = 0; i < 5; i++)
 	{
@@ -1219,8 +1218,6 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 		_egoHandFireReady.emplace_back(true);
 
 		_egoHandFireDir.emplace_back();
-
-		pattern->SetSubObject(_egoHandFire[i]);
 	}
 
 	auto initLogic = [pattern, this]()
@@ -1235,6 +1232,8 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 				{
 					index->GetComponent<Particle>()->SetActive(false);
 				}
+
+				pattern->DeleteSubObject(_egoHandFire[i]);
 			}
 
 			if (_isEgoAttackReady)
@@ -1249,6 +1248,8 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 					{
 						index->GetComponent<Particle>()->SetActive(false);
 					}
+
+					pattern->SetSubObject(_egoHandFire[i]);
 				}
 
 				_isEgoAttackReady = false;
@@ -1629,8 +1630,8 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 	pattern->SetPatternName("Emergence");
 
-	pattern->SetAnimName("Emergence").SetMaxColliderCount(1).SetSpeed(20.0f);
-
+	pattern->SetAnimName("Emergence").SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(10.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetColliderType(BossPattern::eColliderType::eCircle);
 	pattern->SetSubObject(_bossInsideAttack);
 	pattern->SetSubObject(_egoInsideAttack);
 
@@ -1645,7 +1646,6 @@ void KunrealEngine::Kamen::CreateEmergence()
 			_bossTransform->SetRotation(_bossTransform->GetRotation().x, angle, _bossTransform->GetRotation().z);
 
 			_bossInsideAttack->GetComponent<Transform>()->SetPosition(_emergencePos.x, _bossTransform->GetPosition().y + 1.0f, _emergencePos.z);
-			_bossInsideAttack->GetComponent<BoxCollider>()->SetBoxSize(_circleWarningSize, _circleWarningSize, _circleWarningSize);
 
 			_timer = 0.0f;
 		};
@@ -1660,7 +1660,6 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 			if (_isEgoAttack)
 			{
-				_egoInsideAttack->GetComponent<BoxCollider>()->SetActive(true);
 				_egoInsideAttack->GetComponent<Particle>()->SetActive(true);
 
 				auto particleScaleUp = (_circleWarningSize) / 100.0f;
@@ -1671,7 +1670,6 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 			if (isPlaying)
 			{
-				_bossInsideAttack->GetComponent<BoxCollider>()->SetActive(true);
 				_bossInsideAttack->GetComponent<Particle>()->SetActive(true);
 
 				auto particleScaleUp = (_circleWarningSize) / 100.0f;
@@ -1883,12 +1881,10 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 	pattern->SetPatternName("Spell");
 
-	pattern->SetAnimName("Spell").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 80.0f).SetAfterDelay(2.0f);
-	pattern->SetIsWarning(true).SetWarningName("Spell").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("Spell").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 80.0f).SetAfterDelay(2.0f);
+	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis).SetColliderType(BossPattern::eColliderType::eBox);
 	pattern->SetSubObject(_lazer);
 	pattern->SetSubObject(_lazerCollider);
-	pattern->SetSubObject(_egoLazer);
-	pattern->SetSubObject(_egoLazerCollider);
 	pattern->SetWithEgo(true);
 
 	auto initLogic = [pattern, this]()
@@ -1929,6 +1925,14 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				_egoLazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
 
 				_isEgoAttackReady = false;
+
+				pattern->SetSubObject(_egoLazer);
+				pattern->SetSubObject(_egoLazerCollider);
+			}
+			else
+			{
+				pattern->DeleteSubObject(_egoLazer);
+				pattern->DeleteSubObject(_egoLazerCollider);
 			}
 		};
 
@@ -2011,7 +2015,7 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	pattern->SetPatternName("Call");
 
 	pattern->SetAnimName("Call").SetDamage(100.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
-	pattern->SetIsWarning(true).SetWarningName("Call").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetSubObject(_call);
 
 	auto callLogic = [pattern, this]()
@@ -2090,15 +2094,19 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	pattern->SetPatternName("Call2");
 
 	pattern->SetAnimName("Call").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
-	pattern->SetIsWarning(true).SetWarningName("Call2").SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis);
+	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush).SetColliderType(BossPattern::eColliderType::eBox);
 	pattern->SetWithEgo(true);
 	pattern->SetSubObject(_call2);
-	pattern->SetSubObject(_egoCall2);
 
 	auto initLogic = [pattern, this]()
 		{
-			if (_isEgoAttackReady)
+			if (!_isEgoAttackReady)
 			{
+				pattern->DeleteSubObject(_egoCall2);
+			}
+			else
+			{
+				pattern->SetSubObject(_egoCall2);
 				_isEgoAttackReady = false;
 			}
 		};
@@ -2220,7 +2228,6 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 	pattern->SetPatternName("BossRandomInsideWarning");
 
 	pattern->SetSubObject(_bossInsideWarning);
-	pattern->SetSubObject(_egoInsideWarning);
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
@@ -2248,6 +2255,12 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 				_egoInsideWarning->GetComponent<Transform>()->SetScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
 
 				_isEgoAttackReady = false;
+
+				pattern->SetSubObject(_egoInsideWarning);
+			}
+			else
+			{
+				pattern->DeleteSubObject(_egoInsideWarning);
 			}
 		};
 
@@ -2284,7 +2297,6 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 	pattern->SetPatternName("Sword_Attack");
 
 	pattern->SetAnimName("Right_Attack").SetDamage(100.0f).SetSpeed(15.0f).SetRange(_info._attackRange + 25.0f).SetAfterDelay(1.0f);
-	pattern->SetIsWarning(false).SetWarningName("");
 	pattern->SetAttackState(BossPattern::eAttackState::ePush).SetMaxColliderCount(1);
 	pattern->SetSubObject(_freeSword);
 
