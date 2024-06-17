@@ -107,6 +107,8 @@ namespace KunrealEngine
 
 		BossPattern* GetNowPlayingPattern();
 
+		BossPattern* GetNowSpecialPattern();
+
 		BossBasicInfo& GetBossInfo();
 
 		bool isDead();
@@ -192,6 +194,8 @@ namespace KunrealEngine
 		BossPattern* _nowTitlePattern;
 
 		BossPattern* _nowPlayingPattern;
+
+		BossPattern* _nowSpecialPattern;
 
 		int _patternIndex;
 		int _exPatternIndex;
