@@ -243,6 +243,54 @@ void KunrealEngine::Player::CalculateSweep(DirectX::XMVECTOR direction)
 }
 
 
+void KunrealEngine::Player::CalculateSweep(DirectX::XMFLOAT3 direction)
+{
+	// 노드를 비워준다
+	this->_sweepNode.clear();
+	this->_nodeCount = 0;
+	DirectX::XMVECTOR directionVec = DirectX::XMLoadFloat3(&direction);
+
+	this->_directionVector = DirectX::XMVectorNegate(directionVec);		// 바라보는 방향 반전
+
+	// 플레이어 방향 회전
+	DirectX::XMVECTOR currentForward = DirectX::XMVectorSet(0.0f, _transform->GetRotation().y, -1.0f, 0.0f);
+	DirectX::XMVECTOR dotResult = DirectX::XMVector3Dot(currentForward, this->_directionVector);
+	float dotX = DirectX::XMVectorGetX(dotResult);
+	float angle = acos(dotX);
+	angle = DirectX::XMConvertToDegrees(angle);
+
+	// 플레이어 이동
+	DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
+	DirectX::XMVECTOR currentVector = DirectX::XMLoadFloat3(&currentPoint);
+
+	// 이동 목표 지점
+	DirectX::XMVECTOR targetVector = DirectX::XMVectorAdd(currentVector, DirectX::XMVectorScale(directionVec, this->_sweepRange));
+	DirectX::XMFLOAT3 targetPoint;
+	DirectX::XMStoreFloat3(&targetPoint, targetVector);
+
+	// 각도가 반전되는 경우 처리
+	if (targetVector.m128_f32[0] < currentVector.m128_f32[0])
+	{
+		angle *= -1;
+	}
+	this->_transform->SetRotation(0.0f, angle, 0.0f);
+
+	// 직선으로 이동하니 Navigation을 통해 이동할 수 있는 위치 계산
+	Navigation::GetInstance().SetSEpos(0, _transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z,
+		targetPoint.x, this->_owner->GetComponent<PlayerMove>()->GetPlayerY(), targetPoint.z);
+
+	targetPoint = Navigation::GetInstance().FindRaycastPath(0);
+
+	// 포물선 좌표 계산
+	ToolBox::CalculateParabolaPath(_transform->GetPosition(), targetPoint, _sweepDuration, _gravity, _sweepNode);
+
+	// 맵의 바닥 높이에 맞춰 마지막 노드 y값 재설정
+	_sweepNode.back().y = this->_owner->GetComponent<PlayerMove>()->GetPlayerY();
+
+	// 날아갈 준비 완료
+	this->_isSweep = true;
+}
+
 void KunrealEngine::Player::PlayerSweep()
 {
 	/// 열심히 만들자
@@ -310,10 +358,10 @@ void KunrealEngine::Player::AfterHit()
 	}
 	else if (_playerStatus == Status::SWEEP)
 	{
-		//if (GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
-		//{
-		//	Startcoroutine(afterSweep);
-		//}
+		if (GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+		{
+			Startcoroutine(afterSweep);
+		}
 	}
 }
 

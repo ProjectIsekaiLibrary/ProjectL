@@ -124,6 +124,7 @@ namespace KunrealEngine
 
 		// 플레이어 피격 후 날아가는 좌표 계산
 		void CalculateSweep(DirectX::XMVECTOR direction);
+		void CalculateSweep(DirectX::XMFLOAT3 direction);
 		
 		// 플레이어 피격 후 날아가는 로직
 		void PlayerSweep();
