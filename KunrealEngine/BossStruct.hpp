@@ -75,13 +75,21 @@ struct BossPattern
 		ePush			// 피격
 	};
 
+	enum class eColliderType
+	{
+		eNone,
+		eBox,		// physx 기반 충돌 처리
+		eCylinder,	// physx 기반 충돌 처리
+		eCircle		// 특정 원의 중점과의 거리가 일정 이내일 경우 충돌 처리
+	};
+
 
 	BossPattern()
-		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _effectName(""), _isWarning(false), _warningName("warningName"), _triggerHp(0.0f),
+		: _patternName(""), _animName(""), _damage(0.0f), _speed(0.0f), _range(0.0f), _afterDelay(0.0f), _triggerHp(0.0f),
 		_coolDown(0.0f), _rangeOffset(5.0f),
 		_isActive(true), _maxColliderOnCount(1), _colliderOnCount(1), _subObject(),
 		_logic(), _initializeLogic(nullptr), _attackState(eAttackState::eNone), _isRemainMesh(false), _playNextPattern(true), _skipChase(false), _skipMove(false),
-		_index(0), _withEgo(false)
+		_index(0), _withEgo(false), _colliderType(eColliderType::eNone)
 	{
 		_patternList.emplace_back(this);
 	}
@@ -141,15 +149,15 @@ struct BossPattern
 				return false;
 			}
 
+			// 각 패턴의 초기화 로직 실행
+			_patternList[_index]->Initialize();
+
 			// 패턴이 지닌 하위 오브젝트들을 모두 켬
 			for (const auto& object : _patternList[_index]->_subObject)
 			{
 				// 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
 				object->SetActive(true);
 			}
-
-			// 각 패턴의 초기화 로직 실행
-			_patternList[_index]->Initialize();
 		}
 
 		// 모든 패턴 실행이 끝나면 true 반환
@@ -192,15 +200,15 @@ struct BossPattern
 				return false;
 			}
 
+			// 각 패턴의 초기화 로직 실행
+			_patternList[_index]->Initialize();
+
 			// 패턴이 지닌 하위 오브젝트들을 모두 켬
 			for (const auto& object : _patternList[_index]->_subObject)
 			{
 				// 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
 				object->SetActive(true);
 			}
-
-			// 각 패턴의 초기화 로직 실행
-			_patternList[_index]->Initialize();
 		}
 
 		// 모든 패턴 실행이 끝나면 true 반환해줌
@@ -215,8 +223,6 @@ struct BossPattern
 	BossPattern& SetSpeed(float speed) { _speed = speed; return *this; };
 	BossPattern& SetRange(float range) { _range = range; return *this; };
 	BossPattern& SetAfterDelay(float afterDelay) { _afterDelay = afterDelay; return *this; };
-	BossPattern& SetIsWarning(bool isWarning) { _isWarning = isWarning; return *this; };
-	BossPattern& SetWarningName(const std::string& warningName) { _warningName = warningName; return *this; };
 	BossPattern& SetTriggerHp(float hp) { _triggerHp = hp; return *this; };
 	BossPattern& SetCoolDown(float coolDown) { _triggerHp = coolDown; return *this; };
 	BossPattern& SetRangeOffset(float rangeOffset) { _rangeOffset = rangeOffset; return *this; };
@@ -231,6 +237,7 @@ struct BossPattern
 	BossPattern& SetSkipMove(bool tf) { _skipMove = tf; return *this; };
 	BossPattern& DeleteSubObject(KunrealEngine::GameObject* object) { auto it = std::find(_subObject.begin(), _subObject.end(), object); if (it != _subObject.end()) { _subObject.erase(it); } return *this; };
 	BossPattern& SetWithEgo(bool tf) { _withEgo = tf; return *this; }
+	BossPattern& SetColliderType(eColliderType type) { _colliderType = type; return *this; };
 	BossPattern& SetSubObject(KunrealEngine::GameObject* object)
 	{
 		for (int i = 0; i < _subObject.size(); i++)
@@ -275,11 +282,6 @@ struct BossPattern
 									
 	float _afterDelay;				// 패턴 후 가만히 있는 시간 (초)
 									
-	std::string _effectName;		// 패턴 이펙트 텍스쳐 이름
-									
-	bool _isWarning;				// 스킬 범위의 장판 보여줄 것인가
-	std::string _warningName;		// 장판 텍스쳐 이름
-
 	float _triggerHp;				// 패턴이 발동될 조건의 hp
 
 	float _coolDown;				// 패턴 쿨타임
@@ -318,4 +320,6 @@ struct BossPattern
 	bool _skipMove;
 	
 	bool _withEgo;
+
+	eColliderType _colliderType;
 };

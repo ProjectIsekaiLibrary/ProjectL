@@ -28,7 +28,8 @@ KunrealEngine::Boss::Boss()
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
-	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false)
+	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
+	_specialPatternEndLogicPlay(false)
 {
 }
 
@@ -525,6 +526,9 @@ void KunrealEngine::Boss::PatternReady()
 	// 현재 실행 중인 Idle 애니메이션을 종료
 	_boss->GetComponent<Animator>()->Stop();
 
+	// 패턴내의 첫 패턴 초기화해줘야할 것들 초기화
+	_nowTitlePattern->Initialize();
+
 	// 패턴 내의 첫 패턴이 지닌 하위 오브젝트들을 모두 켬
 	for (const auto& object : _nowTitlePattern->_subObject)
 	{
@@ -534,9 +538,6 @@ void KunrealEngine::Boss::PatternReady()
 		// 모든 컴포넌트는 끔
 		object->SetTotalComponentState(false);
 	}
-
-	// 패턴내의 첫 패턴 초기화해줘야할 것들 초기화
-	_nowTitlePattern->Initialize();
 
 	// 코어 패턴일 경우
 	if (_isCorePattern)
@@ -598,6 +599,16 @@ void KunrealEngine::Boss::SpecialAttack()
 
 		_specialPattern[_specialPatternIndex]->Initialize();
 
+
+		for (auto& object : _specialPattern[_specialPatternIndex]->_subObject)
+		{
+			// 모든 컴포넌트는 꺼져있음, 로직 내부에서 알아서 처리 해야 함
+			object->SetActive(true);
+
+			// 모든 컴포넌트는 끔
+			object->SetTotalComponentState(false);
+		}
+
 	}
 
 	auto isPlaying = _specialPattern[_specialPatternIndex]->SpecialPatternPlay();
@@ -605,6 +616,28 @@ void KunrealEngine::Boss::SpecialAttack()
 	// 패턴 실행이 끝났다면
 	if (isPlaying == false)
 	{
+		if (!_specialPatternEndLogicPlay)
+		{
+			for (const auto& pattern : _specialPattern[_specialPatternIndex]->_patternList)
+			{
+				for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+				{
+					pattern->_isColliderHit[i] = false;
+					pattern->_isColliderActive[i] = false;
+				}
+
+				for (const auto& object : pattern->_subObject)
+				{
+					object->SetTotalComponentState(false);
+				
+					object->SetActive(false);
+				}
+			}
+
+			_specialPatternEndLogicPlay = true;
+		}
+
+
 		_specialPatternTimer += TimeManager::GetInstance().GetDeltaTime();
 
 		if (_specialPatternTimer >= 5.0f)
@@ -613,6 +646,8 @@ void KunrealEngine::Boss::SpecialAttack()
 			
 			_specialPatternIndex = -1;
 			_specialPatternTimer = 0.0f;
+
+			_specialPatternEndLogicPlay = false;
 		}
 	}
 }
