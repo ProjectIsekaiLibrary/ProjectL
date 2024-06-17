@@ -866,12 +866,12 @@ void KunrealEngine::EngineCore::ParticleTest()
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 60.f);
 
 	// Camera
-	KunrealEngine::KunrealMath::Float3 pcameraPos = { 0.0f, 120.0f, 0.0f };
-
-	particleCamera = sceneInstance.GetCurrentScene()->CreateObject("particleCamera");
-	particleCamera->AddComponent<Camera>();
-	particleCamera->GetComponent<Camera>()->SetCameraPosition(pcameraPos.x, pcameraPos.y, pcameraPos.z);
-	particleCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, -1.0f);
+	//KunrealEngine::KunrealMath::Float3 pcameraPos = { 0.0f, 120.0f, 0.0f };
+	//
+	//particleCamera = sceneInstance.GetCurrentScene()->CreateObject("particleCamera");
+	//particleCamera->AddComponent<Camera>();
+	//particleCamera->GetComponent<Camera>()->SetCameraPosition(pcameraPos.x, pcameraPos.y, pcameraPos.z);
+	//particleCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, -1.0f);
 
 	// Plane 
 	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
