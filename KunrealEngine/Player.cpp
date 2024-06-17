@@ -245,6 +245,12 @@ void KunrealEngine::Player::CalculateSweep(DirectX::XMVECTOR direction)
 
 void KunrealEngine::Player::CalculateSweep(DirectX::XMFLOAT3 direction)
 {
+	// 이미 누워있거나 날아가고 있으면 더 안날아가게
+	if (this->_playerStatus == Status::SWEEP)
+	{
+		return;
+	}
+
 	// 노드를 비워준다
 	this->_sweepNode.clear();
 	this->_nodeCount = 0;
