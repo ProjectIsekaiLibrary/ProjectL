@@ -3,9 +3,7 @@
 #include <DirectXMath.h>
 #include "CommonHeader.h"
 #include "Component.h"
-#include "../KunrealMath/MathHeaders.h"
 
-#pragma comment(lib,"../Bin/x64/Debug/KunrealMath.lib")
 #pragma warning (disable: 4251)
 
 namespace KunrealEngine

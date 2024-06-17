@@ -74,7 +74,6 @@ namespace KunrealEngine
 
 	private:
 		// PointLight에 필요한 정보들
-		//KunrealMath::Float3 _positionP;	// 포지션은 따로 관리할 필요가 없음
 		float _rangeP;
 
 	public:

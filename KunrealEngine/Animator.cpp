@@ -91,6 +91,12 @@ float KunrealEngine::Animator::GetCurrentFrame()
 	return _mesh->GetCurrentFrame();
 }
 
+
+void KunrealEngine::Animator::SetCurrentFrame(int frame)
+{
+	return _mesh->SetCurrentFrame(frame);
+}
+
 float KunrealEngine::Animator::GetMaxFrame()
 {
 	return _mesh->GetMaxFrame();
