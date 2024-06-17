@@ -562,7 +562,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	// UI의 부모가 될 0,0pos객체
 	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
 	battle_ui_box->AddComponent<BattleUIManager>();
-	pause_ui_box = MakeMenuUIPack();
+	pause_ui_box = MakeTitleUIPack();
 	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
 	option_ui_box->AddComponent<OptionUIManager>();
 	//Title_ui_box = 
