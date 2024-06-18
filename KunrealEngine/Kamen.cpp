@@ -589,20 +589,21 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		}
 	}
 	{
-		for (int i = 0; i < 4; i++)
+		for (int i = 0; i < 11; i++)
 		{
 			std::string name = "swordCyllinder" + std::to_string(i+1);
 			auto swordCylinder = _boss->GetObjectScene()->CreateObject(name);
 			swordCylinder->SetParent(_swordInsideAttack);
 			swordCylinder->AddComponent<Particle>();
 			swordCylinder->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-			swordCylinder->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
+			swordCylinder->GetComponent<Particle>()->SetParticleDuration(1.5f, 0.1f);
 			swordCylinder->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
 			swordCylinder->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
 			swordCylinder->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			swordCylinder->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 			swordCylinder->GetComponent<Particle>()->SetActive(false);
+
 			if (i == 0)
 			{
 				swordCylinder->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
@@ -612,10 +613,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				swordCylinder->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
 			}
 
-			if (i == 3)
-			{
-				swordCylinder->GetComponent<Particle>()->SetParticleDuration(0.8f, 2.0f);
-			}
 			_particleSwordOutsideAttack.emplace_back(swordCylinder);
 		}
 	}
@@ -1869,11 +1866,14 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 			_timer = 0.0f;
 
-			for (auto& object : _particleSwordOutsideAttack)
-			{
-				object->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
-				object->GetComponent<Particle>()->SetActive(true);
-			}
+			//for (auto& object : _particleSwordOutsideAttack)
+			//{
+			//	object->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+			//	//object->GetComponent<Particle>()->SetActive(true);
+			//}
+
+			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetActive(true);
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -1892,10 +1892,24 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 				_timer += TimeManager::GetInstance().GetDeltaTime();
 
-				for (int i = 1; i < _particleSwordOutsideAttack.size(); i++)
-				{
-					_particleSwordOutsideAttack[i]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 300 *i, 60 + _timer * 300*i);
+				const float delays[] = { 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f };
+
+				for (int i = 0; i < 10; ++i) {
+					if (_timer > delays[i]) 
+					{
+						auto particle = _particleSwordOutsideAttack[i + 1]->GetComponent<Particle>();
+						particle->SetActive(true);
+						float adjustedTime = _timer - delays[i];
+						float newSize = 60.0f + adjustedTime * 600.0f;
+						particle->SetParticleSize(newSize, newSize);
+					}
 				}
+
+
+				//for (int i = 1; i < _particleSwordOutsideAttack.size(); i++)
+				//{
+				//	_particleSwordOutsideAttack[i]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 300 *i, 60 + _timer * 300*i);
+				//}
 
 				if (_timer >= 3.0f)
 				{

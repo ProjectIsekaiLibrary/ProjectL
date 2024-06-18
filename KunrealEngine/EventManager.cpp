@@ -263,19 +263,19 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
-						
+						int a = 5;
 					}
 					else
 					{
 						auto dirVec = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
 						_playerComp->CalculateSweep(DirectX::XMLoadFloat3(&dirVec));
-
+						
 						auto damage = nowPattern->_damage;
-
+						
 						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 						_playerComp->GetPlayerData()._hp -= damage;
 						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
-
+						
 						nowPattern->_isColliderHit[i] = true;
 					}
 				}
