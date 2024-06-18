@@ -178,7 +178,7 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//BasicPattern();						// 기본 spell, call
 	//
-	LeftRightPattern();					// 전방 좌, 우 어택
+	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
@@ -194,7 +194,7 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//CoreEmmergencePattern();
 
-	//_basicPattern.emplace_back(_leftFireAttack);
+	_basicPattern.emplace_back(_leftFireAttack);
 	//_basicPattern.emplace_back(_rightFireAttack);
 }
 
