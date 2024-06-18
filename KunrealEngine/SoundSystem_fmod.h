@@ -16,6 +16,12 @@ using namespace FMOD;
 
 namespace KunrealEngine
 {
+	enum class SOUNDTYPE
+	{
+		BGM = 0,
+		SFX = 1
+	};
+
 	// 사운드 정보 구조체
 	struct _DECLSPEC Sound
 	{
@@ -23,6 +29,7 @@ namespace KunrealEngine
 		std::string fileName;
 		int volume = 0; // 0~100
 		FMOD::Sound* fmodSound;
+		SOUNDTYPE type = SOUNDTYPE::SFX;
 	};
 
 	// SoundSystem 클래스
@@ -44,6 +51,8 @@ namespace KunrealEngine
 		void ClearAllSound();
 
 		void SetVolume(int index, int volume);
+
+		void SetvolumeGroup(SOUNDTYPE type, int volume);
 
 		int Change3DorMono(int index);
 
