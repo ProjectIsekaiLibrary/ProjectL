@@ -157,7 +157,7 @@ void KunrealEngine::SoundPlayer::SetVolume(int vol, int index /*= 0*/)
 		index = 0;
 	}
 
-	SoundSystem::GetInstance().Setvolume(_soundList[index]._soundIndex, vol);
+	SoundSystem::GetInstance().SetVolume(_soundList[index]._soundIndex, vol);
 }
 
 void KunrealEngine::SoundPlayer::Play(int index)

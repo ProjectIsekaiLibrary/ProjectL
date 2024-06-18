@@ -179,7 +179,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	PhysicsSystem::GetInstance().Initialize();
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
-	//soundInstance.Initialize(hwnd);
+	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0, "testObj.obj");
