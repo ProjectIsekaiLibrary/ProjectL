@@ -596,11 +596,12 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			swordCylinder->SetParent(_swordInsideAttack);
 			swordCylinder->AddComponent<Particle>();
 			swordCylinder->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-			swordCylinder->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
+			swordCylinder->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 			swordCylinder->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
 			swordCylinder->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
 			swordCylinder->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-			swordCylinder->GetComponent<Particle>()->SetParticleAngle(55.f);
+			swordCylinder->GetComponent<Particle>()->SetParticleCameraApply(true);
+
 			swordCylinder->GetComponent<Particle>()->SetActive(false);
 			if (i == 0)
 			{
@@ -609,6 +610,11 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			else
 			{
 				swordCylinder->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
+			}
+
+			if (i == 3)
+			{
+				swordCylinder->GetComponent<Particle>()->SetParticleDuration(0.8f, 2.0f);
 			}
 			_particleSwordOutsideAttack.emplace_back(swordCylinder);
 		}
