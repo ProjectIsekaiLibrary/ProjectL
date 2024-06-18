@@ -32,6 +32,7 @@ namespace ArkEngine
 		virtual void UpDown(float deltaTime) abstract;
 
 	public:
+		virtual void SetCameraNewPosition(const DirectX::XMFLOAT3& cameraPos, const DirectX::XMFLOAT3& targetPos) abstract;
 		virtual void SetCameraPos(const DirectX::XMFLOAT3& targetPos, const DirectX::XMFLOAT3& direction, float scaleFactor) abstract;
 
 	public:

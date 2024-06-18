@@ -98,7 +98,14 @@ namespace KunrealEngine
 		void SetOffSet(float x, float y, float z);
 
 		// 평면 장판 위해 각도 설정
+		void SetParticleAngle(DirectX::XMFLOAT3& angle);
+
+		// 평면 장판 위해 각도 설정
 		void SetParticleAngle(float angle);
+		DirectX::XMFLOAT3& GetParticleAngle();
+
+		void SetParticleCameraApply(bool tf);
+		bool GetParticleCameraApply();
 
 	public:
 		// 파티클 정보 전달용

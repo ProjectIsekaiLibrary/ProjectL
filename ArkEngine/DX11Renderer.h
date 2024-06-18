@@ -269,6 +269,7 @@ namespace ArkEngine
 
 			ArkEngine::ICamera* _originMainCamera;
 			ArkEngine::ICamera* _mainCamera;
+			ArkEngine::ICamera* _particleCamera;
 
 
 			ArkEngine::ICubeMap* _mainCubeMap;
