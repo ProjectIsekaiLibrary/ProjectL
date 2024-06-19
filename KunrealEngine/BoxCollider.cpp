@@ -4,11 +4,8 @@
 #include "MeshRenderer.h"
 #include "PhysicsSystem.h"
 
-KunrealEngine::BoxCollider::BoxCollider(bool isCylinder /*=false*/)
-	:_isStatic(false), _boxSize(1.0f, 1.0f, 1.0f), _position(0.0f, 0.0f, 0.0f), _offset(0.0f, 0.0f, 0.0f), _quaternion()
-	, _debugObject(nullptr), _transform(nullptr), _isCollided(false), _targetObj(nullptr),
-	_parentObject(nullptr), _parentBoneName(), _shape(nullptr),
-	_isCylinder(isCylinder)
+KunrealEngine::BoxCollider::BoxCollider()
+	: _debugObject(nullptr), _parentObject(nullptr), _parentBoneName()
 {
 
 }
@@ -20,19 +17,13 @@ KunrealEngine::BoxCollider::~BoxCollider()
 
 void KunrealEngine::BoxCollider::Initialize()
 {
-	_transform = this->GetOwner()->GetComponent<Transform>();
-	_position = this->_transform->GetPosition();
+	this->_ownerObj = this->GetOwner();
+	this->_transform = this->_ownerObj->GetComponent<Transform>();
+	this->_position = this->_transform->GetPosition();
 	
-	if (!_isCylinder)
-	{
-		PhysicsSystem::GetInstance().CreateDynamicBoxCollider(this);		// 기본은 Dynamic으로 
-	}
-	else
-	{
-		PhysicsSystem::GetInstance().CreateCylinderCollider(this);
-	}
+	PhysicsSystem::GetInstance().CreateDynamicBoxCollider(this);
 
-	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), _boxSize.x, _boxSize.y, _boxSize.z);
+	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), this->_scale.x, this->_scale.y, this->_scale.z);
 }
 
 void KunrealEngine::BoxCollider::Release()
@@ -48,7 +39,7 @@ void KunrealEngine::BoxCollider::FixedUpdate()
 void KunrealEngine::BoxCollider::Update()
 {
 	// 메쉬가 존재하지 않고 콜라이더만 존재하는 경우
-	if (_parentObject != nullptr)
+	if (this->_parentObject != nullptr)
 	{
 		CalculateParentBone();
 	}
@@ -59,7 +50,7 @@ void KunrealEngine::BoxCollider::Update()
 		// 부모 오브젝트는 존재하는 경우
 		if (this->GetOwner()->GetParent() != nullptr)
 		{
-			auto transform = _transform->GetWorldTM();
+			auto transform = this->_transform->GetWorldTM();
 			DirectX::XMMATRIX worldTM = DirectX::XMLoadFloat4x4(&transform);
 
 			DirectX::XMVECTOR scale;
@@ -69,31 +60,31 @@ void KunrealEngine::BoxCollider::Update()
 			DirectX::XMMatrixDecompose(&scale, &quat, &translation, worldTM);
 
 			DirectX::XMStoreFloat3(&this->_position, translation);
-			_position.x	+= _offset.x;
-			_position.y	+= _offset.y;
-			_position.z	+= _offset.z;
+			this->_position.x	+= _offset.x;
+			this->_position.y	+= _offset.y;
+			this->_position.z	+= _offset.z;
 
 			DirectX::XMStoreFloat4(&this->_quaternion, quat);
 		}
 		else
 		{
-			_position.x = this->GetOwner()->GetComponent<Transform>()->GetPosition().x + _offset.x;
-			_position.y = this->GetOwner()->GetComponent<Transform>()->GetPosition().y + _offset.y;
-			_position.z = this->GetOwner()->GetComponent<Transform>()->GetPosition().z + _offset.z;
+			this->_position.x = this->GetOwner()->GetComponent<Transform>()->GetPosition().x + this->_offset.x;
+			this->_position.y = this->GetOwner()->GetComponent<Transform>()->GetPosition().y + this->_offset.y;
+			this->_position.z = this->GetOwner()->GetComponent<Transform>()->GetPosition().z + this->_offset.z;
 
-			_quaternion = this->GetOwner()->GetComponent<Transform>()->GetQuaternion();
+			this->_quaternion = this->GetOwner()->GetComponent<Transform>()->GetQuaternion();
 		}
 	}
 
 	// 특정 본을 부모로 받는 경우
 	else
 	{
- 		_position = this->GetOwner()->GetComponent<Transform>()->_posForBone;
-		_position.x += _offset.x;
-		_position.y += _offset.y;
-		_position.z += _offset.z;
+		this->_position = this->GetOwner()->GetComponent<Transform>()->_posForBone;
+		this->_position.x += _offset.x;
+		this->_position.y += _offset.y;
+		this->_position.z += _offset.z;
 
-		_quaternion = this->GetOwner()->GetComponent<Transform>()->_quatForBone;
+		this->_quaternion = this->GetOwner()->GetComponent<Transform>()->_quatForBone;
 	}
 
 	SetDebugMeshData();
@@ -130,67 +121,19 @@ void KunrealEngine::BoxCollider::SetActive(bool active)
 	_debugObject->SetActive(active);
 }
 
-bool KunrealEngine::BoxCollider::IsCollided()
-{
-	return this->_isCollided;
-}
-
-KunrealEngine::GameObject* KunrealEngine::BoxCollider::GetTargetObject()
-{
-	return this->_targetObj;
-}
-
-void KunrealEngine::BoxCollider::SetOffset(float x, float y, float z)
-{
-	_offset.x = x;
-	_offset.y = y;
-	_offset.z = z;
-}
-
-DirectX::XMFLOAT3 KunrealEngine::BoxCollider::GetOffset()
-{
-	return this->_offset;
-}
-
-void KunrealEngine::BoxCollider::SetBoxSize(float x, float y, float z)
-{
-	_boxSize.x = x;
-	_boxSize.y = y;
-	_boxSize.z = z;
-
-	_debugObject->SetScale(x, y, z);
-
-	PhysicsSystem::GetInstance().SetBoxSize(this);
-}
-
-DirectX::XMFLOAT3 KunrealEngine::BoxCollider::GetBoxSize()
-{
-	return this->_boxSize;
-}
-
-DirectX::XMFLOAT3 KunrealEngine::BoxCollider::GetColliderPos()
-{
-	return this->_position;
-}
-
-DirectX::XMFLOAT4 KunrealEngine::BoxCollider::GetColliderQuat()
-{
-	return this->_quaternion;
-}
-
 void KunrealEngine::BoxCollider::SetDebugMeshData()
 {
 	if (!_transform->_haveParentBone)
 	{
 		_debugObject->SetPosition(_position.x, _position.y, _position.z);
-		_debugObject->SetScale(_boxSize.x, _boxSize.y, _boxSize.z);
+		_debugObject->SetScale(this->_scale.x, this->_scale.y, this->_scale.z);
 		_debugObject->SetRotation(_transform->GetRotation().x, _transform->GetRotation().y, _transform->GetRotation().z);
 	}
 	else
 	{
 		DirectX::XMFLOAT4X4 worldToDebug;
 
-		DirectX::XMStoreFloat4x4(&worldToDebug, DirectX::XMMatrixScaling(_boxSize.x, _boxSize.y, _boxSize.z)
+		DirectX::XMStoreFloat4x4(&worldToDebug, DirectX::XMMatrixScaling(this->_scale.x, this->_scale.y, this->_scale.z)
 			* DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->_quaternion))
 			* DirectX::XMMatrixTranslation(_position.x, _position.y, _position.z));
 		
@@ -200,14 +143,24 @@ void KunrealEngine::BoxCollider::SetDebugMeshData()
 	}
 }
 
-void KunrealEngine::BoxCollider::SetStatic()
+
+void KunrealEngine::BoxCollider::SetColliderScale(float x, float y, float z)
 {
-	_isStatic = true;
+	this->_scale.x = x;
+	this->_scale.y = y;
+	this->_scale.z = z;
+
+	this->_debugObject->SetScale(x, y, z);
+	PhysicsSystem::GetInstance().SetBoxSize(this);		// 다른 collider에선 다른 함수 호출
 }
 
-void KunrealEngine::BoxCollider::SetDynamic()
+
+void KunrealEngine::BoxCollider::SetColliderScale(const DirectX::XMFLOAT3& scale)
 {
-	_isStatic = false;
+	this->_scale = scale;
+
+	this->_debugObject->SetScale(scale.x, scale.y, scale.z);
+	PhysicsSystem::GetInstance().SetBoxSize(this);		// 다른 collider에선 다른 함수 호출
 }
 
 void KunrealEngine::BoxCollider::SetTransform(GameObject* renderable, std::string boneName)

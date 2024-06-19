@@ -57,19 +57,17 @@ namespace KunrealEngine
 
 	public:
 		// 움직이는 객체에 부여할 box collider
-		void CreateDynamicBoxCollider(BoxCollider* collider);
-
-		// 움직이지 않는 객체에 부여할 box collider
-		void CreateStaticBoxCollider(BoxCollider* collider);
+		void CreateDynamicBoxCollider(Collider* collider);
 
 		// cylinder collider
-		void CreateCylinderCollider(BoxCollider* collider);
+		void CreateCylinderCollider(Collider* collider);
 
 		// sphere collider
 		void CreateDynamicSphereCollider(SphereCollider* collider);
 
-		// physx 객체의 크기를 BoxCollider의 크기에 맞게
-		void SetBoxSize(BoxCollider* collider);
+		// physx 객체의 크기를 Collider의 크기에 맞게
+		void SetBoxSize(Collider* collider);
+		void SetCylinderSize(Collider* collider);
 
 		// Dynamic actor들 업데이트
 		void UpdateDynamics();
@@ -86,8 +84,8 @@ namespace KunrealEngine
 
 		// 컴포넌트에서 가지고 있는 Transform 정보를 지속적으로 넘겨주기 위해
 		// actor의 userData 기능을 쓰면 될 것 같기도한데.. 일단 테스트중
-		std::unordered_map<BoxCollider*, physx::PxRigidDynamic*> _dynamicMap;
-		std::unordered_map<BoxCollider*, physx::PxRigidStatic*> _staticMap;
+		std::unordered_map<Collider*, physx::PxRigidDynamic*> _dynamicMap;
+		std::unordered_map<Collider*, physx::PxRigidStatic*> _staticMap;
 
 	private:
 		physx::PxDefaultAllocator			_allocator;
@@ -117,10 +115,10 @@ namespace KunrealEngine
 	
 	private:
 		// eventcallback으로부터 받은 actor가 어떤 collider에 대응하는지
-		BoxCollider* GetColliderFromDynamic(const physx::PxRigidDynamic* dynamic);
+		Collider* GetColliderFromDynamic(const physx::PxRigidDynamic* dynamic);
 
 	private:
-		BoxCollider* col1;
-		BoxCollider* col2;
+		Collider* col1;
+		Collider* col2;
 	};
 }

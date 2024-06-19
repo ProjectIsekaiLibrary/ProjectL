@@ -187,10 +187,12 @@
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="ButtonSystem.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentHeaders.h" />
     <ClInclude Include="Coroutine.h" />
+    <ClInclude Include="CylinderCollider.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="Ent.h" />
     <ClInclude Include="EventManager.h" />
@@ -246,8 +248,10 @@
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="ButtonSystem.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Coroutine.cpp" />
+    <ClCompile Include="CylinderCollider.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EngineCore.cpp" />
     <ClCompile Include="Ent.cpp" />
