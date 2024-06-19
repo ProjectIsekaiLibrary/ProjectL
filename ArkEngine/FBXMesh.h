@@ -144,6 +144,8 @@ namespace ArkEngine
 			virtual void SetAlpha(float alpha) override;
 			virtual float GetAlhpa() override;
 
+			virtual const float GetDepth(DirectX::XMFLOAT3& cameraPos) override;
+
 		public:
 			virtual const std::string& GetName() override;
 			virtual const std::string& GetEffectName() override;

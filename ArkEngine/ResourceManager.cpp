@@ -1,4 +1,5 @@
 #include <filesystem>
+#include <algorithm>
 #include "ASEParser.h"
 #include "ArkBuffer.h"
 #include "ParsingStructs.h"
@@ -129,10 +130,9 @@ void ArkEngine::ResourceManager::SortMeshRendererByAlpha()
 	std::vector<MeshRenderer*> transParentList;
 	std::vector<MeshRenderer*> noTransParentList;
 
-	
 	for (auto& index : _meshRendererList)
 	{
-		if (! index->GetAlphaExist())
+		if (!index->GetAlphaExist())
 		{
 			noTransParentList.emplace_back(index);
 		}
@@ -141,6 +141,11 @@ void ArkEngine::ResourceManager::SortMeshRendererByAlpha()
 			transParentList.emplace_back(index);
 		}
 	}
+
+	std::sort(transParentList.begin(), transParentList.end(),
+		[](MeshRenderer* mesh1, MeshRenderer* mesh2) {
+			return mesh1->GetDepth() > mesh2->GetDepth();
+		});
 
 	_meshRendererList.clear();
 

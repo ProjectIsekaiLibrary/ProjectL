@@ -322,6 +322,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 디퍼드 버퍼를 조합하여 빈 Texture2D에 완성된 화면을 출력함
 	_deferredRenderer->Render();
 
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+
 	EndTransparentSet();
 
 	// 큐브맵 렌더링

@@ -116,6 +116,7 @@ namespace ArkEngine
 		void AddMeshRenderer(ArkEngine::MeshRenderer* meshRenderer);
 		void SortMeshRendererByAlpha();
 
+
 	public:
 		// 모든 디버그 오브젝트들은 담아놓은 백터 반환
 		std::vector<ArkEngine::IDebugObject*>& GetDebugObjectList();

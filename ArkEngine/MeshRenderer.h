@@ -56,6 +56,8 @@ namespace ArkEngine
 
 		bool GetAlphaExist();
 
+		const float GetDepth();
+
 	public:
 		const std::string& GetName();
 
