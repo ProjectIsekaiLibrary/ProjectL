@@ -61,6 +61,8 @@ namespace KunrealEngine
 			std::cerr << "FMOD error! (" << result << ") " << FMOD_ErrorString(result) << std::endl;
 			return false;
 		}
+		
+		_fmodSystem->set3DSettings(1.0f, 1.0f, 1.0f);
 
 		return true;
 	}
@@ -108,6 +110,7 @@ namespace KunrealEngine
 		newSound.type = type;
 		FMOD::Sound* fmodSound;
 		FMOD_RESULT result = _fmodSystem->createSound(filename.c_str(), FMOD_3D, 0, &fmodSound);
+		fmodSound->set3DMinMaxDistance(0.0f, 100.0f);
 		if (result != FMOD_OK)
 		{
 			std::cerr << "FMOD error! (" << result << ") " << FMOD_ErrorString(result) << std::endl;
@@ -235,9 +238,9 @@ namespace KunrealEngine
 	{
 		FMOD_VECTOR pos = { x, y, z };
 		FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
-		FMOD_VECTOR forward = { 0.0f, 0.0f, 1.0f };
+		FMOD_VECTOR forward = { 0.0f, 0.0f, -1.0f };
 		FMOD_VECTOR up = { 0.0f, 1.0f, 0.0f };
-		_fmodSystem->set3DListenerAttributes(0, &pos, &vel, &forward, &up);
+		auto result = _fmodSystem->set3DListenerAttributes(0, &pos, &vel, &forward, &up);
 	}
 
 	void SoundSystem::Play(int index)
@@ -250,6 +253,9 @@ namespace KunrealEngine
 			fr = _fmodSystem->playSound(_soundBuffer[index].fmodSound, 0, false, &channel);
 			if (channel)
 			{
+				FMOD_VECTOR pos = { 0.0f, 0.0f, 0.0f };
+				FMOD_VECTOR vel = { 0.0f, 0.0f, 0.0f };
+				channel->set3DAttributes(&pos, &vel);
 				channel->setVolume(_soundBuffer[index].volume / 100.0f);
 				_channels[index] = channel;
 			}

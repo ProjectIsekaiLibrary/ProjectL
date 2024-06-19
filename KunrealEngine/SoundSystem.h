@@ -30,6 +30,9 @@ namespace KunrealEngine
 		int volume = 0; // 0~100
 		FMOD::Sound* fmodSound;
 		SOUNDTYPE type = SOUNDTYPE::SFX;
+		// channel은 따로 저장하지 않음.
+		// Sound의 index = channel의 인덱스
+		// 채널 한계가 512로 되어 있긴 한데 우리겜에 소리 500개 이상 들어갈일이 있을까?
 	};
 
 	// SoundSystem 클래스
