@@ -232,6 +232,12 @@ void KunrealEngine::Particle::SetParticleAngle(DirectX::XMFLOAT3& angle)
 }
 
 
+void KunrealEngine::Particle::SetParticleAngle(float x, float y, float z)
+{
+	DirectX::XMFLOAT3 angle = { x,y,z };
+	_particle->SetParticleAngle(angle);
+}
+
 DirectX::XMFLOAT3& KunrealEngine::Particle::GetParticleAngle()
 {
 	return _particle->GetParticleAngle();
