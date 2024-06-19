@@ -14,8 +14,10 @@
 namespace KunrealEngine
 {
 	class GameObject;
+	class Collider;
 	class BoxCollider;
 	class SphereCollider;
+	class CylinderCollider;
 
 	class _DECLSPEC PhysicsSystem : public physx::PxSimulationEventCallback
 	{

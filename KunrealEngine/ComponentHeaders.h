@@ -12,7 +12,10 @@
 #include "TransparentMesh.h"
 #include "Light.h"
 
+#include "Collider.h"
 #include "BoxCollider.h"
+#include "CylinderCollider.h"
+#include "SphereCollider.h"
 #include "SoundPlayer.h"
 
 #include "Zeolight.h"
@@ -22,8 +25,6 @@
 #include "PlayerAbility.h"
 
 #include "Kamen.h"
-#include "Aracne.h"
-#include "Ent.h"
 
 #include "Particle.h"
 

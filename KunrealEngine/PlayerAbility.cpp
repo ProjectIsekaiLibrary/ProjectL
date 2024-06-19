@@ -12,8 +12,6 @@
 #include "PlayerMove.h"
 #include "Boss.h"
 #include "Kamen.h"
-#include "Ent.h"
-#include "Aracne.h"
 
 #include "SceneManager.h"
 #include "Scene.h"
@@ -294,7 +292,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	// Q 스킬은 메쉬가 안 보이게
 	_shot->GetComponent<MeshRenderer>()->SetAlpha(0.0f);
 
-	shotProj->GetCollider()->SetBoxSize(3.0f, 3.0f, 3.0f);
+	shotProj->GetCollider()->SetColliderScale(3.0f, 3.0f, 3.0f);
 	shotProj->SetDestoryCondition([shot, shotProj, this]()->bool
 		{
 			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject() != this->GetOwner())		
@@ -401,7 +399,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	Projectile* iceProj = _ice->GetComponent<Projectile>();
 	
 	iceProj->SetMeshObject("Ice/Ice", "Ice/Ice.png");
-	iceProj->GetCollider()->SetBoxSize(15.0f, 15.0f, 15.0f);
+	iceProj->GetCollider()->SetColliderScale(15.0f, 15.0f, 15.0f);
 	iceProj->SetDestoryCondition([iceProj, this]()->bool
 		{
 			if (this->_destroyIce)
@@ -457,7 +455,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	// 투사체 컴포넌트 추가
 	_area->AddComponent<BoxCollider>();
 	BoxCollider* areaCollider = _area->GetComponent<BoxCollider>();
-	areaCollider->SetBoxSize(20.0f, 20.0f, 20.0f);
+	areaCollider->SetColliderScale(20.0f, 20.0f, 20.0f);
 	
 	_area->SetActive(false);
 
@@ -537,7 +535,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	Projectile* meteorProj = _meteor->GetComponent<Projectile>();
 
 	meteorProj->SetMeshObject("Meteor/Meteor");
-	meteorProj->GetCollider()->SetBoxSize(5.0f, 20.0f, 20.0f);
+	meteorProj->GetCollider()->SetColliderScale(5.0f, 20.0f, 20.0f);
 
 	// 파티클 추가	// 불타오르게
 	Particle* meteorParticle = _meteor->AddComponent<Particle>();
@@ -601,11 +599,7 @@ void KunrealEngine::PlayerAbility::SetCurrentBossObject()
 	{
 		std::string sceneName = SceneManager::GetInstance().GetCurrentScene()->GetSceneName();
 
-		if (sceneName == "mapTest3.json")
-		{
-			this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS")->GetComponent<Ent>()->GetBoss();
-		}
-		else if (sceneName == "mapTest4.json")
+		if (sceneName == "mapTest4.json")
 		{
 			this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS")->GetComponent<Kamen>()->GetBoss();
 		}

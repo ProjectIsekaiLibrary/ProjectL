@@ -139,12 +139,6 @@
     <Filter Include="Source Files\Component\Particle">
       <UniqueIdentifier>{38cd1510-4be1-4c98-a21d-aec1cdd571e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Component\Script\Boss\Aracne">
-      <UniqueIdentifier>{03bca5f5-ae74-410e-9dab-eed5a1d99212}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Component\Script\Boss\Ent">
-      <UniqueIdentifier>{a3060ac6-263d-451d-a93a-b7f920808937}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Component\TransparentMesh">
       <UniqueIdentifier>{5a0136ad-ff1f-4534-b373-347127e45302}</UniqueIdentifier>
     </Filter>
@@ -309,12 +303,6 @@
     <ClInclude Include="Particle.h">
       <Filter>Source Files\Component\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="Aracne.h">
-      <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
-    </ClInclude>
-    <ClInclude Include="Ent.h">
-      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
-    </ClInclude>
     <ClInclude Include="SphereCollider.h">
       <Filter>Source Files\Component\Collider\SphereCollider</Filter>
     </ClInclude>
@@ -463,12 +451,6 @@
     </ClCompile>
     <ClCompile Include="Particle.cpp">
       <Filter>Source Files\Component\Particle</Filter>
-    </ClCompile>
-    <ClCompile Include="Aracne.cpp">
-      <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
-    </ClCompile>
-    <ClCompile Include="Ent.cpp">
-      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
     </ClCompile>
     <ClCompile Include="SphereCollider.cpp">
       <Filter>Source Files\Component\Collider\SphereCollider</Filter>

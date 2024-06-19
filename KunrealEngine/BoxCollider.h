@@ -6,7 +6,7 @@
 
 namespace KunrealEngine
 {
-	class _DECLSPEC BoxCollider : public Component, Collider
+	class _DECLSPEC BoxCollider : public Component, public Collider
 	{
 		friend class PhysicsSystem;
 		friend class GameObject;
