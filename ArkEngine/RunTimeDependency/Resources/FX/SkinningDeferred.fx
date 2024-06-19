@@ -40,7 +40,7 @@ float gAlpha[100];
 SamplerState samAnisotropic
 {
     Filter = ANISOTROPIC;
-    MaxAnisotropy = 4;
+    MaxAnisotropy = 16;
 
     AddressU = WRAP;
     AddressV = WRAP;

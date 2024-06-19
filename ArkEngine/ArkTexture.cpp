@@ -86,11 +86,19 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTexture(const char* textureName)
 		return;
 	}
 
+	// 밉맵 체인 생성
+	DirectX::ScratchImage mipChain;
+	hr = DirectX::GenerateMipMaps(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, 0, mipChain);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
+	}
+
 	// 텍스처 설명 생성
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Width = metadata.width;
 	textureDesc.Height = metadata.height;
-	textureDesc.MipLevels = 1;
+	textureDesc.MipLevels = static_cast<UINT>(mipChain.GetMetadata().mipLevels);
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = metadata.format;
 	textureDesc.SampleDesc.Count = 1;
@@ -100,8 +108,18 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTexture(const char* textureName)
 	textureDesc.MiscFlags = 0;
 
 	// 텍스처 생성
-	ID3D11Resource* texture;
-	hr = DirectX::CreateTexture(device, scratchImage.GetImages(), scratchImage.GetImageCount(), metadata, &texture);
+	ID3D11Texture2D* texture = nullptr;
+	D3D11_SUBRESOURCE_DATA* initData = new D3D11_SUBRESOURCE_DATA[textureDesc.MipLevels];
+	const DirectX::Image* images = mipChain.GetImages();
+	for (size_t i = 0; i < textureDesc.MipLevels; ++i) {
+		initData[i].pSysMem = images[i].pixels;
+		initData[i].SysMemPitch = static_cast<UINT>(images[i].rowPitch);
+		initData[i].SysMemSlicePitch = static_cast<UINT>(images[i].slicePitch);
+	}
+
+	hr = device->CreateTexture2D(&textureDesc, initData, &texture);
+	delete[] initData;
+
 	if (FAILED(hr)) {
 		// 실패 처리
 		return;
@@ -112,6 +130,7 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTexture(const char* textureName)
 	hr = device->CreateShaderResourceView(texture, nullptr, &srv);
 	if (FAILED(hr)) {
 		// 실패 처리
+		texture->Release();
 		return;
 	}
 
@@ -147,6 +166,14 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTGATexture(const char* textureName)
 		return;
 	}
 
+	// 밉맵 체인 생성
+	DirectX::ScratchImage mipChain;
+	hr = DirectX::GenerateMipMaps(scratchImage.GetImages(), scratchImage.GetImageCount(), scratchImage.GetMetadata(), DirectX::TEX_FILTER_DEFAULT, 0, mipChain);
+	if (FAILED(hr)) {
+		// 실패 처리
+		return;
+	}
+
 	// 텍스처 설명 생성
 	D3D11_TEXTURE2D_DESC textureDesc = {};
 	textureDesc.Width = metadata.width;
@@ -161,8 +188,18 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTGATexture(const char* textureName)
 	textureDesc.MiscFlags = 0;
 
 	// 텍스처 생성
-	ID3D11Resource* texture;
-	hr = DirectX::CreateTexture(device, scratchImage.GetImages(), scratchImage.GetImageCount(), metadata, &texture);
+	ID3D11Texture2D* texture = nullptr;
+	D3D11_SUBRESOURCE_DATA* initData = new D3D11_SUBRESOURCE_DATA[textureDesc.MipLevels];
+	const DirectX::Image* images = mipChain.GetImages();
+	for (size_t i = 0; i < textureDesc.MipLevels; ++i) {
+		initData[i].pSysMem = images[i].pixels;
+		initData[i].SysMemPitch = static_cast<UINT>(images[i].rowPitch);
+		initData[i].SysMemSlicePitch = static_cast<UINT>(images[i].slicePitch);
+	}
+
+	hr = device->CreateTexture2D(&textureDesc, initData, &texture);
+	delete[] initData;
+
 	if (FAILED(hr)) {
 		// 실패 처리
 		return;
@@ -173,6 +210,7 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTGATexture(const char* textureName)
 	hr = device->CreateShaderResourceView(texture, nullptr, &srv);
 	if (FAILED(hr)) {
 		// 실패 처리
+		texture->Release();
 		return;
 	}
 
