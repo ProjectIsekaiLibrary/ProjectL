@@ -60,5 +60,10 @@ namespace KunrealEngine
 	private:
 		// 스테이지가 바뀌었을 때 보스가 누구인지 알려주는 함수
 		void SetBossObject();
+
+		// 일단 여기다가... 위치 고민중
+	private:
+		const DirectX::XMVECTOR& SetWarningAttackDirection(GameObject* subObject);
+		const DirectX::XMVECTOR& SetBossAttackDirection(GameObject* subObject);
 	};
 }

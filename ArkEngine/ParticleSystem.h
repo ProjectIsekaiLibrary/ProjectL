@@ -54,7 +54,7 @@ namespace ArkEngine
 
 	public:
 		void Update(float deltaTime, float gameTime);
-		void Draw(ArkEngine::ICamera* p_Camera);
+		void Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera);
 
 	public:
 		virtual void Start() override;
@@ -69,7 +69,11 @@ namespace ArkEngine
 		virtual void SetParticleDirection(const DirectX::XMFLOAT3& particleRotaion) override;
 		virtual void SetParticleRotation(const DirectX::XMFLOAT3& rotation) override;
 
-		virtual void SetParticleAngle(float angle) override;
+		virtual void SetParticleAngle(DirectX::XMFLOAT3& angle) override;
+		virtual DirectX::XMFLOAT3& GetParticleAngle() override;
+		
+		virtual void SetParticleCameraApply(bool tf) override;
+		virtual bool GetParticleCameraApply() override;
 
 		float GetRandomFloat(float minNum, float maxNum);
 		void SetEyePos(const DirectX::XMFLOAT3& eyePosW);
@@ -135,7 +139,7 @@ namespace ArkEngine
 		ID3DX11EffectVectorVariable* _particleDirectionEffect;
 		ID3DX11EffectVectorVariable* _particleRotationEffect;
 
-		ID3DX11EffectScalarVariable* _particleRotateAngle;
+		ID3DX11EffectVectorVariable* _particleRotateAngle;
 
 		ID3DX11EffectShaderResourceVariable* _texArray;
 		ID3DX11EffectShaderResourceVariable* _randomTex;
@@ -172,8 +176,10 @@ namespace ArkEngine
 
 		void SetParticleRotationW(const DirectX::XMFLOAT3& v);
 
-		void SetParticleRotateAnlgle(float angle);
-		float _rotateAngle;
+		void SetParticleRotateAngle(DirectX::XMFLOAT3& angle);
+
+		DirectX::XMFLOAT3 _rotateAngle;
+		bool _isParticleCameraApply;
 
 	private:
 		void SetParticleState(bool isStart);

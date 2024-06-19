@@ -20,7 +20,8 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(5.0f), _particleLifeTime(5.0f),
-	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr), _particleRotateAngle(nullptr), _rotateAngle(0.0f)
+	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr), _particleRotateAngle(nullptr), _rotateAngle()
+	,_isParticleCameraApply(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -42,7 +43,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_particleSizeEffect(nullptr), _emitVelocityEffect(nullptr), _isRandomEffect(nullptr),
 	_isRandom(false),
 	_particleFadeTime(1.0f), _particleLifeTime(1.0f),
-	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr)
+	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr), _isParticleCameraApply(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -164,9 +165,27 @@ void ArkEngine::ParticleSystem::SetParticleRotation(const DirectX::XMFLOAT3& rot
 }
 
 
-void ArkEngine::ParticleSystem::SetParticleAngle(float angle)
+void ArkEngine::ParticleSystem::SetParticleAngle(DirectX::XMFLOAT3& angle)
 {
 	_rotateAngle = angle;
+}
+
+
+DirectX::XMFLOAT3& ArkEngine::ParticleSystem::GetParticleAngle()
+{
+	return _rotateAngle;
+}
+
+
+void ArkEngine::ParticleSystem::SetParticleCameraApply(bool tf)
+{
+	_isParticleCameraApply = tf;
+}
+
+
+bool ArkEngine::ParticleSystem::GetParticleCameraApply()
+{
+	return _isParticleCameraApply;
 }
 
 void ArkEngine::ParticleSystem::Initialize(const std::vector<std::wstring>& fileNameList, unsigned int maxParticle)
@@ -261,19 +280,18 @@ void ArkEngine::ParticleSystem::Reset()
 
 void ArkEngine::ParticleSystem::Update(float deltaTime, float gameTime)
 {
-
 	_gameTime += gameTime;
 	_timeStep = deltaTime;
 }
 
-void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
+void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera)
 {
 	if (_isStart == true)
 	{
 		auto dc = _arkDevice->GetDeviceContext();
 
-		auto cameraView = p_Camera->GetViewMatrix();
-		auto cameraProj = p_Camera->GetProjMatrix();
+		auto cameraView = mainCamera->GetViewMatrix();
+		auto cameraProj = mainCamera->GetProjMatrix();
 
 		DirectX::XMMATRIX VP = cameraView * cameraProj;
 
@@ -302,7 +320,7 @@ void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 		SetParticleDirectionW(_particleDirection);
 		SetParticleRotationW(_particleRotation);
 
-		SetParticleRotateAnlgle(_rotateAngle);
+		SetParticleRotateAngle(_rotateAngle);
 
 		// 최초 실행이면 초기화용 정점 버퍼를 사용하고, 그러지 않다면
 		// 현재의 입자 목록을 담은 정점 버퍼를 사용한다
@@ -359,7 +377,16 @@ void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* p_Camera)
 			dc->DrawAuto();
 		}
 
-		SetEyePos(p_Camera->GetCameraPos());
+		ResourceManager::GetInstance()->GetCameraList();
+
+		if (_isParticleCameraApply)
+		{
+			SetEyePos(particleCamera->GetCameraPos());
+		}
+		else
+		{
+			SetEyePos(mainCamera->GetCameraPos());
+		}
 
 		float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
@@ -700,7 +727,7 @@ void ArkEngine::ParticleSystem::SetEffect()
 	_particleDirectionEffect = effect->GetVariableByName("gAccelW")->AsVector();
 	_particleRotationEffect = effect->GetVariableByName("gRotationAngle")->AsVector();
 
-	_particleRotateAngle = effect->GetVariableByName("gParticleRotateAngle")->AsScalar();
+	_particleRotateAngle = effect->GetVariableByName("gParticleRotateAngle")->AsVector();
 }
 
 float ArkEngine::ParticleSystem::GetRandomFloat(float minNum, float maxNum)
@@ -785,9 +812,9 @@ void ArkEngine::ParticleSystem::SetParticleRotationW(const DirectX::XMFLOAT3& v)
 }
 
 
-void ArkEngine::ParticleSystem::SetParticleRotateAnlgle(float angle)
+void ArkEngine::ParticleSystem::SetParticleRotateAngle(DirectX::XMFLOAT3& angle)
 {
-	_particleRotateAngle->SetFloat(angle);
+	_particleRotateAngle->SetFloatVector(reinterpret_cast<float*>(&angle));
 }
 
 void ArkEngine::ParticleSystem::SetParticleState(bool isStart)

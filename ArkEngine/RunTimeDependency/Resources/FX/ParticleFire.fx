@@ -31,7 +31,7 @@ cbuffer cbPerFrame
     float gRotationAngleY;
     float gRotationAngleZ;
     
-    float gParticleRotateAngle;
+    float3 gParticleRotateAngle;
 };
 
 cbuffer cbFixed
@@ -306,7 +306,7 @@ struct GeoOut
 [maxvertexcount(4)]
 void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
 {
-     // 방출기 입자는 그리지 않는다
+   // 방출기 입자는 그리지 않는다
     if (gin[0].Type != PT_EMITTER)
     {
         // 빌보드가 카메라를 향하게 하는 세계 행렬을 계산한다
@@ -315,25 +315,52 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
         float3 up = cross(look, right);
 
         // 각도를 도 단위로 지정하고 라디안으로 변환
-        float angle = gParticleRotateAngle * 3.14159265f / 180.0f;
-        float cosAngle = cos(angle);
-        float sinAngle = sin(angle);
+        float angleX = gParticleRotateAngle.x * 3.14159265f / 180.0f;
+        float angleY = gParticleRotateAngle.y * 3.14159265f / 180.0f;
+        float angleZ = gParticleRotateAngle.z * 3.14159265f / 180.0f;
 
-        // 벡터 회전
-        float3 lookRotated = float3(look.x, look.y * cosAngle - look.z * sinAngle, look.y * sinAngle + look.z * cosAngle);
-        float3 upRotated = float3(up.x, up.y * cosAngle - up.z * sinAngle, up.y * sinAngle + up.z * cosAngle);
+        // x 축 주위 회전 행렬
+        float3x3 rotateX = float3x3(
+            1.0f, 0.0f, 0.0f,
+            0.0f, cos(angleX), -sin(angleX),
+            0.0f, sin(angleX), cos(angleX)
+        );
 
-        // 사각형을 구성하는 삼각형 띠 정점들을 계산한다
+        // y 축 주위 회전 행렬
+        float3x3 rotateY = float3x3(
+            cos(angleY), 0.0f, sin(angleY),
+            0.0f, 1.0f, 0.0f,
+            -sin(angleY), 0.0f, cos(angleY)
+        );
+
+        // z 축 주위 회전 행렬
+        float3x3 rotateZ = float3x3(
+            cos(angleZ), -sin(angleZ), 0.0f,
+            sin(angleZ), cos(angleZ), 0.0f,
+            0.0f, 0.0f, 1.0f
+        );
+
+        // 회전 행렬을 이용하여 right, up, look 벡터를 회전시킴
+        right = mul(rotateX, right);
+        up = mul(rotateX, up);
+
+        right = mul(rotateY, right);
+        up = mul(rotateY, up);
+
+        right = mul(rotateZ, right);
+        up = mul(rotateZ, up);
+
+        // 사각형을 구성하는 삼각형 띠 정점들을 계산
         float halfWidth = 0.5f * gin[0].SizeW.x;
         float halfHeight = 0.5f * gin[0].SizeW.y;
-      
+
         float4 v[4];
-        v[0] = float4(gin[0].PosW + halfWidth * right - halfHeight * upRotated, 1.0f);
-        v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * upRotated, 1.0f);
-        v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * upRotated, 1.0f);
-        v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * upRotated, 1.0f);
-              
-        // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력한다
+        v[0] = float4(gin[0].PosW + halfWidth * right - halfHeight * up, 1.0f);
+        v[1] = float4(gin[0].PosW + halfWidth * right + halfHeight * up, 1.0f);
+        v[2] = float4(gin[0].PosW - halfWidth * right - halfHeight * up, 1.0f);
+        v[3] = float4(gin[0].PosW - halfWidth * right + halfHeight * up, 1.0f);
+
+        // 이 정점들을 세계 공간으로 변환하고, 하나의 삼각형 띠로서 출력
         GeoOut gout;
         [unroll]
         for (int i = 0; i < 4; ++i)

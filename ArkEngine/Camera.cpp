@@ -108,6 +108,13 @@ std::vector<DirectX::XMFLOAT4>& ArkEngine::ArkDX11::Camera::GetFrustum()
 	return _frustumPlanes;
 }
 
+
+void ArkEngine::ArkDX11::Camera::SetCameraNewPosition(const DirectX::XMFLOAT3& cameraPos, const DirectX::XMFLOAT3& targetPos)
+{
+	auto worldUp = DirectX::XMFLOAT3{ 0.0f, 1.0f, 0.0f };
+	LookAt(cameraPos, targetPos, worldUp);
+}
+
 DirectX::XMFLOAT3 ArkEngine::ArkDX11::Camera::GetCameraPosition()
 {
 	return _positionVector;

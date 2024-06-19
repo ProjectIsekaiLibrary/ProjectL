@@ -3,6 +3,7 @@
 #include "PlayerAbility.h"
 #include "PlayerMove.h"
 #include "Kamen.h"
+#include "ToolBox.h"
 #include "EventManager.h"
 
 KunrealEngine::EventManager::EventManager()
@@ -150,6 +151,10 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
+						auto colliderDirVec = SetBossAttackDirection(subObjectList[i]);
+
+						_playerComp->CalculateSweep(colliderDirVec);
+
 						auto damage = nowPattern->_damage;
 
 						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
@@ -261,12 +266,16 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 					}
 					else
 					{
-						auto damage = nowPattern->_damage;
+						auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
 
+						_playerComp->CalculateSweep(colliderDirVec);
+						
+						auto damage = nowPattern->_damage;
+						
 						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 						_playerComp->GetPlayerData()._hp -= damage;
 						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
-
+						
 						nowPattern->_isColliderHit[i] = true;
 					}
 				}
@@ -292,4 +301,25 @@ void KunrealEngine::EventManager::SetBossObject()
 	_playerComp = _player->GetComponent<Player>();
 	_playerAbill = _player->GetComponent<PlayerAbility>();
 	_bossComp = _boss->GetComponent<Kamen>();
+}
+
+
+const DirectX::XMVECTOR& KunrealEngine::EventManager::SetWarningAttackDirection(GameObject* subObject)
+{
+	auto colliderPos = subObject->GetComponent<Transform>()->GetPosition();
+	auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+
+	auto colliderDirVec = ToolBox::GetDirectionVec(colliderPos, playerPos);
+
+	return colliderDirVec;
+}
+
+const DirectX::XMVECTOR& KunrealEngine::EventManager::SetBossAttackDirection(GameObject* subObject)
+{
+	auto colliderPos = subObject->GetComponent<Transform>()->GetPosition();
+	auto bossPos = _boss->GetComponent<Transform>()->GetPosition();
+
+	auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, colliderPos);
+
+	return colliderDirVec;
 }

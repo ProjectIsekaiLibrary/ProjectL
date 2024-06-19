@@ -226,9 +226,33 @@ void KunrealEngine::Particle::SetOffSet(float x, float y, float z)
 }
 
 
-void KunrealEngine::Particle::SetParticleAngle(float angle)
+void KunrealEngine::Particle::SetParticleAngle(DirectX::XMFLOAT3& angle)
 {
 	_particle->SetParticleAngle(angle);
+}
+
+
+DirectX::XMFLOAT3& KunrealEngine::Particle::GetParticleAngle()
+{
+	return _particle->GetParticleAngle();
+}
+
+
+void KunrealEngine::Particle::SetParticleCameraApply(bool tf)
+{
+	_particle->SetParticleCameraApply(tf);
+}
+
+
+bool KunrealEngine::Particle::GetParticleCameraApply()
+{
+	return _particle->GetParticleCameraApply();
+}
+
+void KunrealEngine::Particle::SetParticleAngle(float angle)
+{
+	auto rot = DirectX::XMFLOAT3(0.0f, 0.0f, angle);
+	_particle->SetParticleAngle(rot);
 }
 
 DirectX::XMFLOAT2 KunrealEngine::Particle::GetSize()

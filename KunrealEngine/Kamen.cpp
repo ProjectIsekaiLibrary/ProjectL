@@ -180,7 +180,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//
 	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
-	BackStepCallPattern();				// 백스탭 뒤 콜 어택
+	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 
 	//EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
@@ -194,7 +194,7 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//CoreEmmergencePattern();
 
-	//_basicPattern.emplace_back(_leftFireAttack);
+	_basicPattern.emplace_back(_leftFireAttack);
 	//_basicPattern.emplace_back(_rightFireAttack);
 }
 
@@ -589,90 +589,66 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		}
 	}
 	{
-		GameObject* swordCylinder1 = _boss->GetObjectScene()->CreateObject("swordCyllinder1");
-		swordCylinder1->SetParent(_swordOutsideWarning);
-		swordCylinder1->AddComponent<Particle>();
-		swordCylinder1->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordCylinder1->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordCylinder1->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordCylinder1->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-		swordCylinder1->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
-		swordCylinder1->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordCylinder1->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordCylinder1->GetComponent<Particle>()->SetActive(false);
+		for (int i = 0; i < 11; i++)
+		{
+			std::string name = "swordCyllinder" + std::to_string(i+1);
+			auto swordCylinder = _boss->GetObjectScene()->CreateObject(name);
+			swordCylinder->SetParent(_swordInsideAttack);
+			swordCylinder->AddComponent<Particle>();
+			swordCylinder->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+			swordCylinder->GetComponent<Particle>()->SetParticleDuration(1.5f, 0.1f);
+			swordCylinder->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+			swordCylinder->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+			swordCylinder->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+			swordCylinder->GetComponent<Particle>()->SetParticleCameraApply(true);
 
-		GameObject* swordCylinder2 = _boss->GetObjectScene()->CreateObject("swordCyllinder2");
-		swordCylinder2->SetParent(_swordOutsideWarning);
-		swordCylinder2->AddComponent<Particle>();
-		swordCylinder2->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordCylinder2->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordCylinder2->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordCylinder2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-		swordCylinder2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
-		swordCylinder2->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordCylinder2->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordCylinder2->GetComponent<Particle>()->SetActive(false);
+			swordCylinder->GetComponent<Particle>()->SetActive(false);
 
-		GameObject* swordCylinder3 = _boss->GetObjectScene()->CreateObject("swordCyllinder3");
-		swordCylinder3->SetParent(_swordOutsideWarning);
-		swordCylinder3->AddComponent<Particle>();
-		swordCylinder3->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordCylinder3->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordCylinder3->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordCylinder3->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-		swordCylinder3->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
-		swordCylinder3->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordCylinder3->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordCylinder3->GetComponent<Particle>()->SetActive(false);
+			if (i == 0)
+			{
+				swordCylinder->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+			}
+			else
+			{
+				swordCylinder->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
+			}
 
-		GameObject* swordCylinder4 = _boss->GetObjectScene()->CreateObject("swordCyllinder4");
-		swordCylinder4->SetParent(_swordOutsideWarning);
-		swordCylinder4->AddComponent<Particle>();
-		swordCylinder4->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordCylinder4->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordCylinder4->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordCylinder4->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-		swordCylinder4->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
-		swordCylinder4->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordCylinder4->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordCylinder4->GetComponent<Particle>()->SetActive(false);
+			_particleSwordOutsideAttack.emplace_back(swordCylinder);
+		}
 	}
+
 	{
-		GameObject* swordDonutWarningParticle = _boss->GetObjectScene()->CreateObject("donutSafeParticle");
-		swordDonutWarningParticle->SetParent(_swordDonutWarning1);
-		swordDonutWarningParticle->AddComponent<Particle>();
-		swordDonutWarningParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordDonutWarningParticle->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordDonutWarningParticle->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordDonutWarningParticle->GetComponent<Particle>()->SetParticleSize(50.f, 50.0f);
-		swordDonutWarningParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
-		swordDonutWarningParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordDonutWarningParticle->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordDonutWarningParticle->GetComponent<Particle>()->SetActive(false);
+		for (int i = 0; i < 3; i++)
+		{
+			std::string name = "donutParticle" + std::to_string(i + 1);
+			auto donutParticle = _boss->GetObjectScene()->CreateObject(name);
 
-		GameObject* swordDonutWarningParticle1 = _boss->GetObjectScene()->CreateObject("donutSafeParticle");
-		swordDonutWarningParticle1->SetParent(_swordDonutWarning2);
-		swordDonutWarningParticle1->AddComponent<Particle>();
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetParticleSize(130.f, 130.0f);
-		swordDonutWarningParticle1->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordDonutWarningParticle1->GetComponent<Particle>()->SetActive(false);
+			donutParticle->AddComponent<Particle>();
+			donutParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+			donutParticle->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
+			donutParticle->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+			donutParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
+			donutParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+			donutParticle->GetComponent<Particle>()->SetParticleAngle(55.f);
+			donutParticle->GetComponent<Particle>()->SetActive(false);
+			_particleSwordDonutAttack.emplace_back(donutParticle);
 
-		GameObject* swordDonutWarningParticle2 = _boss->GetObjectScene()->CreateObject("donutSafeParticle");
-		swordDonutWarningParticle2->SetParent(_swordDonutWarning3);
-		swordDonutWarningParticle2->AddComponent<Particle>();
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetParticleSize(220.f, 220.0f);
-		swordDonutWarningParticle2->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetParticleAngle(55.f);
-		swordDonutWarningParticle2->GetComponent<Particle>()->SetActive(false);
+			if (i == 0)
+			{
+				donutParticle->SetParent(_swordDonutWarning1);
+				donutParticle->GetComponent<Particle>()->SetParticleSize(50.f, 50.0f);
+			}
+			else if (i == 1)
+			{
+				donutParticle->SetParent(_swordDonutWarning2);
+				donutParticle->GetComponent<Particle>()->SetParticleSize(130.f, 50.0f);
+			}
+			else
+			{
+				donutParticle->SetParent(_swordDonutWarning3);
+				donutParticle->GetComponent<Particle>()->SetParticleSize(220.f, 50.0f);
+			}
+		}
 	}
 }
 
@@ -1889,6 +1865,15 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 			_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
 
 			_timer = 0.0f;
+
+			//for (auto& object : _particleSwordOutsideAttack)
+			//{
+			//	object->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+			//	//object->GetComponent<Particle>()->SetActive(true);
+			//}
+
+			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetActive(true);
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -1897,16 +1882,6 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 		{
 			// 장판 실행
 			auto isPlayed = _swordOutsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
-
-			std::vector<GameObject*> swordCylinderList = _swordOutsideWarning->GetChilds();
-
-			_swordOutsideWarning->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, 0.0f, _swordOriginPos.z);
-
-			for (auto& swordCylinder : swordCylinderList)
-			{
-				swordCylinder->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
-				swordCylinder->GetComponent<Particle>()->SetActive(true);
-			}
 
 			// 장판 실행이 완료되면
 			if (isPlayed)
@@ -1917,10 +1892,24 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 				_timer += TimeManager::GetInstance().GetDeltaTime();
 
-				swordCylinderList[0]->GetComponent<Particle>()->SetParticleSize(60, 60);
-				swordCylinderList[1]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 30, 60 + _timer * 30);
-				swordCylinderList[2]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 60, 60 + _timer * 60);
-				swordCylinderList[3]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 90, 60 + _timer * 90);
+				const float delays[] = { 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f };
+
+				for (int i = 0; i < 10; ++i) {
+					if (_timer > delays[i]) 
+					{
+						auto particle = _particleSwordOutsideAttack[i + 1]->GetComponent<Particle>();
+						particle->SetActive(true);
+						float adjustedTime = _timer - delays[i];
+						float newSize = 60.0f + adjustedTime * 600.0f;
+						particle->SetParticleSize(newSize, newSize);
+					}
+				}
+
+
+				//for (int i = 1; i < _particleSwordOutsideAttack.size(); i++)
+				//{
+				//	_particleSwordOutsideAttack[i]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 300 *i, 60 + _timer * 300*i);
+				//}
 
 				if (_timer >= 3.0f)
 				{
@@ -1980,19 +1969,24 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 		{
 			_timer += TimeManager::GetInstance().GetDeltaTime();
 
-			bool isPlayed3 = false;
+			auto warningInterval = 0.3f;
+			auto playSecondTime = warningInterval;
+			auto playThirdTime = playSecondTime + warningInterval;
 
-			// 장판 실행
+			auto particleInterval = 0.5f;
+
+			// 첫번째 장판 실행
 			auto isPlayed1 = _swordDonutWarning1->GetComponent<TransparentMesh>()->PlayOnce();
 
-			
-
-			if (_timer >= 0.5)
+			// 첫번째 장판 실행 후 0.5초 후에 
+			if (_timer >= particleInterval)
 			{
+				// 첫번째 장판 위치에 파티클 실행
 				_swordDonutWarning1->GetComponent<Particle>()->SetActive(true);
 				GameObject* swordDonutChild1 = _swordDonutWarning1->GetChilds()[0];
 				swordDonutChild1->GetComponent<Particle>()->SetActive(true);
-
+			
+				// 첫번째 장판 실행이 끝난 후
 				if (isPlayed1)
 				{
 					_swordDonutWarning1->GetComponent<Particle>()->SetActive(false);
@@ -2000,16 +1994,20 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 				}
 			}
 
-			if (_timer >= 0.3)
+			if (_timer >= playSecondTime)
 			{
+				// 두번째 장판 실행
 				auto isPlayed2 = _swordDonutWarning2->GetComponent<TransparentMesh>()->PlayOnce();
-				if (_timer > 1)
-				{
 
+				// 두번째 장판 실행 후 0.5초 후에
+				if (_timer > playSecondTime + particleInterval)
+				{
+					// 두번째 장판 위치에 파티클 실행
 					_swordDonutWarning2->GetComponent<Particle>()->SetActive(true);
 					GameObject* swordDonutChild2 = _swordDonutWarning2->GetChilds()[0];
 					swordDonutChild2->GetComponent<Particle>()->SetActive(true);
-
+				
+					// 두번째 장판 실행이 끝난 후
 					if (isPlayed2)
 					{
 						_swordDonutWarning2->GetComponent<Particle>()->SetActive(false);
@@ -2018,23 +2016,23 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 				}
 			}
 
-			if (_timer >= 0.6)
+			if (_timer >= playThirdTime)
 			{
-				isPlayed3 = _swordDonutWarning3->GetComponent<TransparentMesh>()->PlayOnce();
+				auto isPlayed3 = _swordDonutWarning3->GetComponent<TransparentMesh>()->PlayOnce();
 
 				if (_timer >= 1.3)
 				{
 					_swordDonutWarning3->GetComponent<Particle>()->SetActive(true);
 					GameObject* swordDonutChild3 = _swordDonutWarning3->GetChilds()[0];
 					swordDonutChild3->GetComponent<Particle>()->SetActive(true);
-
+				
 					// 장판 실행이 완료되면
-					if (isPlayed3)
+					if (isPlayed3 && _timer > 2.0f)
 					{
 						{
 							_swordDonutWarning3->GetComponent<Particle>()->SetActive(false);
 							swordDonutChild3->GetComponent<Particle>()->SetActive(false);
-
+				
 							pattern->DeleteSubObject(_freeSword);
 							return false;
 						}

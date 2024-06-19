@@ -137,6 +137,12 @@ KunrealEngine::GameObject* playerE2_2;
 KunrealEngine::GameObject* playerE2_3;
 KunrealEngine::GameObject* playerE2_4;
 
+KunrealEngine::GameObject* bossTeleportAttack1;
+KunrealEngine::GameObject* bossTeleportAttack2;
+KunrealEngine::GameObject* bossTeleportAttack3;
+KunrealEngine::GameObject* bossTeleportAttack4;
+KunrealEngine::GameObject* bossTeleportAttack5;
+
 KunrealEngine::GameObject* testCamera;
 KunrealEngine::GameObject* particleCamera;
 
@@ -173,7 +179,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	PhysicsSystem::GetInstance().Initialize();
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
-	//soundInstance.Initialize(hwnd);
+	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0, "testObj.obj");
@@ -197,6 +203,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	_isSettingTimer = false;
 	_isBezierStartSetting = false;
 	_isBezierBoomSetting = false;
+	_isBezierTeleportSetting = false;
 
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
@@ -324,6 +331,25 @@ void KunrealEngine::EngineCore::Update()
 	//	GameObject* PlayerE33= sceneInstance.GetCurrentScene()->GetGameObject("PlayerE3_1");
 	//	PlayerE33->GetComponent<Particle>()->SetParticleSize(60 * _timeCount, 60 * _timeCount);
 
+	//	//if (_isBezierTeleportSetting == false)
+	//	//{
+	//	DirectX::XMFLOAT2 bezierTeleport;
+	//	DirectX::XMFLOAT2 teleportPosition = { 0,0 };
+	//	DirectX::XMFLOAT2 bezierTeleport1 = { 10.0f, 10.0f};  // 두 중간점 사이가 좁을 수록 가파른 곡선
+	//	DirectX::XMFLOAT2 bezierTeleport2 = { 20.0f, 20.0f};
+	//	DirectX::XMFLOAT2 bezierTeleportEnd = { 150.0f, 150.0f};
+
+	//	bezierTeleport = BezierPoint2D(teleportPosition, bezierTeleport1, bezierTeleport2, bezierTeleportEnd, _timeCount);
+
+	//	_particleTelepotyPointList.push_back(bezierTeleport);
+
+	//	//	_isBezierTeleportSetting = true;
+	//	//}
+	//	
+	//	bossTeleportAttack1->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
+	//	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
+	//	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
+	//	bossTeleportAttack4->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
 
 	//	
 	//	//DirectX::XMFLOAT3 testEnd;
@@ -388,8 +414,9 @@ void KunrealEngine::EngineCore::Update()
 	////}
 
 	//
-	//_particlePointList.clear(); // 파티클 포인트 초기화
+	//_particlePointList.clear(); // 파티클 포인트 초기화 반드시 해줘야함
 	//_particleSwordSoulPointList.clear();
+	//_particleTelepotyPointList.clear();
 
 	CheckMousePosition();
 	inputInstance->Update(GetDeltaTime());
@@ -866,12 +893,12 @@ void KunrealEngine::EngineCore::ParticleTest()
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 60.f);
 
 	// Camera
-	//KunrealEngine::KunrealMath::Float3 pcameraPos = { 0.0f, 120.0f, 0.0f };
-	//
-	//particleCamera = sceneInstance.GetCurrentScene()->CreateObject("particleCamera");
-	//particleCamera->AddComponent<Camera>();
-	//particleCamera->GetComponent<Camera>()->SetCameraPosition(pcameraPos.x, pcameraPos.y, pcameraPos.z);
-	//particleCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, -1.0f);
+	DirectX::XMFLOAT3 pcameraPos = { 0.0f, 120.0f, 0.0f };
+
+	particleCamera = sceneInstance.GetCurrentScene()->CreateObject("particleCamera");
+	particleCamera->AddComponent<Camera>();
+	particleCamera->GetComponent<Camera>()->SetCameraPosition(pcameraPos.x, pcameraPos.y, pcameraPos.z);
+	particleCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, -1.0f);
 
 	// Plane 
 	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
@@ -1737,6 +1764,47 @@ void KunrealEngine::EngineCore::ParticleTest()
 	playerE2_4->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
 	playerE2_4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	//playerE3_1->GetComponent<Particle>()->SetParticleAngle(60.0f);
+
+	bossTeleportAttack1 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack1");
+	bossTeleportAttack1->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);
+	bossTeleportAttack1->AddComponent<Particle>();
+	bossTeleportAttack1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+	bossTeleportAttack1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+	bossTeleportAttack1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	bossTeleportAttack1->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	bossTeleportAttack1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	bossTeleportAttack1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//_particleTeleportList
+
+	bossTeleportAttack2 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack2");
+	bossTeleportAttack2->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);
+	bossTeleportAttack2->AddComponent<Particle>();
+	bossTeleportAttack2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	bossTeleportAttack2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+	bossTeleportAttack2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	bossTeleportAttack2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	bossTeleportAttack2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	bossTeleportAttack3 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack3");
+	bossTeleportAttack3->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);
+	bossTeleportAttack3->AddComponent<Particle>();
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	bossTeleportAttack3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	bossTeleportAttack4 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack4");
+	bossTeleportAttack4->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);
+	bossTeleportAttack4->AddComponent<Particle>();
+	bossTeleportAttack4->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+	bossTeleportAttack4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+	bossTeleportAttack4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	bossTeleportAttack4->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	bossTeleportAttack4->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	bossTeleportAttack4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 }
 
 DirectX::XMFLOAT3 KunrealEngine::EngineCore::Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t)
@@ -1752,6 +1820,23 @@ DirectX::XMFLOAT3 KunrealEngine::EngineCore::Bezier(DirectX::XMFLOAT3 startPoint
 		uuu * startPoint.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * endPoint.x,
 		uuu * startPoint.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * endPoint.y,
 		uuu * startPoint.z + 3 * uu * t * p1.z + 3 * u * tt * p2.z + ttt * endPoint.z,
+	};
+
+	return p;
+}
+
+DirectX::XMFLOAT2 KunrealEngine::EngineCore::BezierPoint2D(DirectX::XMFLOAT2 startPoint, DirectX::XMFLOAT2 p1, DirectX::XMFLOAT2 p2, DirectX::XMFLOAT2 endPoint, float t)
+{
+	float u = 1.0f - t;
+	float tt = t * t;
+	float ttt = tt * t;
+	float uu = u * u;
+	float uuu = uu * u;
+
+	DirectX::XMFLOAT2 p =
+	{
+		uuu * startPoint.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * endPoint.x,
+		uuu * startPoint.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * endPoint.y,		
 	};
 
 	return p;

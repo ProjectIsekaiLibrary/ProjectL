@@ -59,7 +59,7 @@ ArkEngine::ArkDX11::DX11Renderer::DX11Renderer()
 	_font(nullptr), _mainCamera(nullptr), _originMainCamera(nullptr), _mainCubeMap(nullptr),
 	_clientWidth(0), _clientHeight(0), _shadowHeight(0), _shadowWidth(0),
 	_isDebugMode(false), _renderingImageView(nullptr), _colorTexture(nullptr),
-	_viewPort(), _shadowViewPort()
+	_viewPort(), _shadowViewPort(), _particleCamera(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -111,6 +111,17 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
 	SetPickingTexture();
+
+	auto particleCameraPos = DirectX::XMFLOAT3{ 0.0f, 5000.0f, -1.0f };
+	auto particleCameraTarget = DirectX::XMFLOAT3{ 0.0f, -15.0f, 0.0f };
+	DirectX::XMFLOAT3 worldUp = { 0.0f, 1.0f, 0.0f };
+
+	ArkEngine::ArkDX11::Camera* newCamera = new ArkEngine::ArkDX11::Camera(particleCameraPos, particleCameraTarget, worldUp);
+	ICamera* iCamera = newCamera;
+
+	iCamera->SetProjectionMatrix(0.25f * DirectX::XM_PI, GetAspectRatio(), 1.0f, 1000.0f, true);
+
+	_particleCamera = iCamera;
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
@@ -365,8 +376,9 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
-		index->Draw(_mainCamera);
+		index->Draw(_mainCamera, _particleCamera);
 	}
+
 	// UI IMAGE ·»´õ¸µ
 	for (const auto& index : ResourceManager::GetInstance()->GetUIImageList())
 	{

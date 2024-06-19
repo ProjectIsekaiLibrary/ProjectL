@@ -57,6 +57,7 @@ namespace ArkEngine
 			virtual std::vector<DirectX::XMFLOAT4>& GetFrustum() override;
 
 		public:
+			virtual void SetCameraNewPosition(const DirectX::XMFLOAT3& cameraPos, const DirectX::XMFLOAT3& targetPos) override;
 			virtual DirectX::XMFLOAT3 GetCameraPosition() override;
 			virtual void SetCameraPosition(const DirectX::XMFLOAT3& position) override;
 			virtual void SetTargetPosition(const DirectX::XMFLOAT3& position) override;
