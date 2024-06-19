@@ -48,9 +48,6 @@ namespace KunrealEngine
 		// 플레이어가 보스에게 주는 데미지 계산
 		void CalculateDamageToBoss();
 
-		// 예전것 없앨 예정
-		void exCalculateDamageToPlayer();
-
 		// 보스가 플레이어에게 주는 데미지 계산
 		void CalculateDamageToPlayer();
 

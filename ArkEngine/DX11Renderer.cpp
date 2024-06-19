@@ -830,7 +830,7 @@ const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::GetMyPosition(const Di
 {
 	DirectX::XMVECTOR myPos = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), DirectX::XMLoadFloat3(&direction));
 
-	float scaleFactor = 200.0f;
+	float scaleFactor = 500.0f;
 
 	auto newVec = DirectX::XMVectorScale(myPos, scaleFactor);
 

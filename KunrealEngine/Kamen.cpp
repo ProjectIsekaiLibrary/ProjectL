@@ -3108,6 +3108,12 @@ DirectX::XMVECTOR KunrealEngine::Kamen::GetEgoDirection()
 	return dirVec;
 }
 
+
+const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetSwordDirection()
+{
+	return _swordDirection;
+}
+
 void KunrealEngine::Kamen::BackStepCallPattern()
 {
 	BossPattern* backStepCallPattern = new BossPattern();
