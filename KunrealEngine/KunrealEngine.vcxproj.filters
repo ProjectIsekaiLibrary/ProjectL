@@ -73,9 +73,6 @@
     <Filter Include="Source Files\System\SoundSystem">
       <UniqueIdentifier>{5b68d58d-3628-435f-a863-fb522f2f8920}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Component\BoxCollider">
-      <UniqueIdentifier>{ba55aa68-8fb3-4230-a869-2f713e98b6ff}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Component\SoundPlayer">
       <UniqueIdentifier>{9e71b6b2-b9a4-4944-b5a0-c69e7f29bc5b}</UniqueIdentifier>
     </Filter>
@@ -142,15 +139,6 @@
     <Filter Include="Source Files\Component\Particle">
       <UniqueIdentifier>{38cd1510-4be1-4c98-a21d-aec1cdd571e9}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Source Files\Component\Script\Boss\Aracne">
-      <UniqueIdentifier>{03bca5f5-ae74-410e-9dab-eed5a1d99212}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Component\Script\Boss\Ent">
-      <UniqueIdentifier>{a3060ac6-263d-451d-a93a-b7f920808937}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Source Files\Component\SphereCollider">
-      <UniqueIdentifier>{ea45bd4c-e2b3-4daf-b119-7f2bc9fa99ed}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Source Files\Component\TransparentMesh">
       <UniqueIdentifier>{5a0136ad-ff1f-4534-b373-347127e45302}</UniqueIdentifier>
     </Filter>
@@ -162,6 +150,21 @@
     </Filter>
     <Filter Include="Source Files\Component\UImanager\BattleManager">
       <UniqueIdentifier>{f4adf107-849f-4cfe-87a5-29c3e31db137}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Collider">
+      <UniqueIdentifier>{991e024d-341b-4074-a405-8cafea076c0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Collider\BoxCollider">
+      <UniqueIdentifier>{ba55aa68-8fb3-4230-a869-2f713e98b6ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Collider\Parent">
+      <UniqueIdentifier>{6b1cc50d-e91d-478d-8cf4-c4642b7cbfa8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Collider\SphereCollider">
+      <UniqueIdentifier>{ea45bd4c-e2b3-4daf-b119-7f2bc9fa99ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Component\Collider\CylinderCollider">
+      <UniqueIdentifier>{42fcbfd2-7535-4c09-8305-fbf8c9797d1e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -226,7 +229,7 @@
       <Filter>Source Files\System\Physics</Filter>
     </ClInclude>
     <ClInclude Include="BoxCollider.h">
-      <Filter>Source Files\Component\BoxCollider</Filter>
+      <Filter>Source Files\Component\Collider\BoxCollider</Filter>
     </ClInclude>
     <ClInclude Include="SoundPlayer.h">
       <Filter>Source Files\Component\SoundPlayer</Filter>
@@ -300,14 +303,8 @@
     <ClInclude Include="Particle.h">
       <Filter>Source Files\Component\Particle</Filter>
     </ClInclude>
-    <ClInclude Include="Aracne.h">
-      <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
-    </ClInclude>
-    <ClInclude Include="Ent.h">
-      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
-    </ClInclude>
     <ClInclude Include="SphereCollider.h">
-      <Filter>Source Files\Component\SphereCollider</Filter>
+      <Filter>Source Files\Component\Collider\SphereCollider</Filter>
     </ClInclude>
     <ClInclude Include="TransparentMesh.h">
       <Filter>Source Files\Component\TransparentMesh</Filter>
@@ -320,6 +317,12 @@
     </ClInclude>
     <ClInclude Include="BattleUIManager.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Collider.h">
+      <Filter>Source Files\Component\Collider\Parent</Filter>
+    </ClInclude>
+    <ClInclude Include="CylinderCollider.h">
+      <Filter>Source Files\Component\Collider\CylinderCollider</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -378,7 +381,7 @@
       <Filter>Source Files\System\Physics</Filter>
     </ClCompile>
     <ClCompile Include="BoxCollider.cpp">
-      <Filter>Source Files\Component\BoxCollider</Filter>
+      <Filter>Source Files\Component\Collider\BoxCollider</Filter>
     </ClCompile>
     <ClCompile Include="SoundPlayer.cpp">
       <Filter>Source Files\Component\SoundPlayer</Filter>
@@ -449,14 +452,8 @@
     <ClCompile Include="Particle.cpp">
       <Filter>Source Files\Component\Particle</Filter>
     </ClCompile>
-    <ClCompile Include="Aracne.cpp">
-      <Filter>Source Files\Component\Script\Boss\Aracne</Filter>
-    </ClCompile>
-    <ClCompile Include="Ent.cpp">
-      <Filter>Source Files\Component\Script\Boss\Ent</Filter>
-    </ClCompile>
     <ClCompile Include="SphereCollider.cpp">
-      <Filter>Source Files\Component\SphereCollider</Filter>
+      <Filter>Source Files\Component\Collider\SphereCollider</Filter>
     </ClCompile>
     <ClCompile Include="TransparentMesh.cpp">
       <Filter>Source Files\Component\TransparentMesh</Filter>
@@ -466,6 +463,12 @@
     </ClCompile>
     <ClCompile Include="BattleUIManager.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Collider.cpp">
+      <Filter>Source Files\Component\Collider\Parent</Filter>
+    </ClCompile>
+    <ClCompile Include="CylinderCollider.cpp">
+      <Filter>Source Files\Component\Collider\CylinderCollider</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

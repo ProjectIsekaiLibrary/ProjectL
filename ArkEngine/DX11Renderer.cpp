@@ -112,7 +112,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	SetPickingTexture();
 
-	auto particleCameraPos = DirectX::XMFLOAT3{ 0.0f, 300.0f, -1.0f };
+	auto particleCameraPos = DirectX::XMFLOAT3{ 0.0f, 5000.0f, -1.0f };
 	auto particleCameraTarget = DirectX::XMFLOAT3{ 0.0f, -15.0f, 0.0f };
 	DirectX::XMFLOAT3 worldUp = { 0.0f, 1.0f, 0.0f };
 

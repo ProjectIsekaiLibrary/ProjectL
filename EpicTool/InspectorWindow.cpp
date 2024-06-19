@@ -923,9 +923,9 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 		_offset[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().y;
 		_offset[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().z;
 
-		_boxSize[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().x;
-		_boxSize[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().y;
-		_boxSize[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().z;
+		_boxSize[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetColliderScale().x;
+		_boxSize[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetColliderScale().y;
+		_boxSize[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->GetColliderScale().z;
 	}
 
 	if(ImGui::DragFloat3("Offset", _offset))
@@ -935,7 +935,7 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::BoxCollider>(Ku
 
 	if(ImGui::DragFloat3("BoxSize", _boxSize))
 	{
-		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->SetBoxSize(_boxSize[0], _boxSize[1], _boxSize[2]);
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>()->SetColliderScale(_boxSize[0], _boxSize[1], _boxSize[2]);
 	}
 
 	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::BoxCollider>());
@@ -1103,48 +1103,6 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Kamen>(KunrealE
 	}
 
 	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Kamen>());
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-}
-
-/// <summary>
-/// Boss[Aracne]을 관리하는 UI
-/// </summary>
-/// <param name="instance"></param>
-template<>
-void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Aracne>(KunrealEngine::Aracne* instance)
-{
-	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Aracne");
-
-	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Aracne>() == NULL) // 깡통 추가
-	{
-		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Aracne>();
-	}
-
-	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Aracne>());
-
-	ImGui::Spacing();
-	ImGui::Separator();
-	ImGui::Spacing();
-}
-
-/// <summary>
-/// Boss[Ent]을 관리하는 UI
-/// </summary>
-/// <param name="instance"></param>
-template<>
-void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Ent>(KunrealEngine::Ent* instance)
-{
-	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Ent");
-
-	if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Ent>() == NULL) // 깡통 추가
-	{
-		_gameObjectlist[_selectedObjectIndex]->AddComponent<KunrealEngine::Ent>();
-	}
-
-	DeleteComponent(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Ent>());
 
 	ImGui::Spacing();
 	ImGui::Separator();
@@ -1349,14 +1307,6 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			{
 				KamenOpen = true;
 			}
-			if (checkComponentName == "Aracne")
-			{
-				AracneOpen = true;
-			}
-			if (checkComponentName == "Ent")
-			{
-				EntOpen = true;
-			}
 			if (checkComponentName == "Particle")
 			{
 				particleOpen = true;
@@ -1409,15 +1359,6 @@ void EpicTool::InspectorWindow::ShowWindow(int& selectedObjectIndex)
 			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Particle>());
 		}
 
-		if (AracneOpen == true)
-		{
-			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Aracne>());
-		}
-
-		if (EntOpen == true)
-		{
-			DrawComponentInfo(_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Ent>());
-		}
 
 		if (ImGui::Button("Add Component"))
 		{

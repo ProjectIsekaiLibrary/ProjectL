@@ -693,7 +693,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	auto c2 = sceneInstance.GetCurrentScene()->CreateObject("Rock");
 
 	c1->AddComponent<BoxCollider>();
-	c1->GetComponent<BoxCollider>()->SetBoxSize(5.f, 10.f, 10.f);
+	c1->GetComponent<BoxCollider>()->SetColliderScale(5.f, 10.f, 10.f);
 	c1->AddComponent<MeshRenderer>();
 	c1->GetComponent<Transform>()->SetPosition(-20.f, -30.f, 0.f);
 	c1->GetComponent<Transform>()->SetScale(0.5f, 0.2f, 0.5f);
@@ -701,7 +701,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	c1->GetComponent<MeshRenderer>()->SetPickableState(true);
 
 	c2->AddComponent<BoxCollider>();
-	c2->GetComponent<BoxCollider>()->SetBoxSize(11.f, 11.f, 11.f);
+	c2->GetComponent<BoxCollider>()->SetColliderScale(11.f, 11.f, 11.f);
 	c2->AddComponent<MeshRenderer>();
 	c2->GetComponent<Transform>()->SetPosition(-40.f, 15.f, 0.f);
 	c2->GetComponent<Transform>()->SetScale(5.f, 5.f, 5.f);
