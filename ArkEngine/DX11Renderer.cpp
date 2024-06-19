@@ -112,7 +112,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 
 	SetPickingTexture();
 
-	auto particleCameraPos = DirectX::XMFLOAT3{ 0.0f, 300.0f, -1.0f };
+	auto particleCameraPos = DirectX::XMFLOAT3{ 0.0f, 5000.0f, -1.0f };
 	auto particleCameraTarget = DirectX::XMFLOAT3{ 0.0f, -15.0f, 0.0f };
 	DirectX::XMFLOAT3 worldUp = { 0.0f, 1.0f, 0.0f };
 
@@ -830,7 +830,7 @@ const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::GetMyPosition(const Di
 {
 	DirectX::XMVECTOR myPos = DirectX::XMVectorSubtract(DirectX::XMLoadFloat3(&targetPos), DirectX::XMLoadFloat3(&direction));
 
-	float scaleFactor = 200.0f;
+	float scaleFactor = 500.0f;
 
 	auto newVec = DirectX::XMVectorScale(myPos, scaleFactor);
 

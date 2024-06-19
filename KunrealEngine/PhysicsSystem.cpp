@@ -2,6 +2,7 @@
 #include "PhysicsSystem.h"
 #include "TimeManager.h"
 #include "GameObject.h"
+#include "Collider.h"
 #include "BoxCollider.h"
 #include "Transform.h"
 
@@ -111,7 +112,7 @@ physx::PxScene* KunrealEngine::PhysicsSystem::GetPxScene()
 	return _pxScene;
 }
 
-void KunrealEngine::PhysicsSystem::CreateDynamicBoxCollider(BoxCollider* collider)
+void KunrealEngine::PhysicsSystem::CreateDynamicBoxCollider(Collider* collider)
 {
 	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
 	physx::PxBoxGeometry geometry(physx::PxVec3(0.5f, 0.5f, 0.5f));
@@ -135,7 +136,7 @@ void KunrealEngine::PhysicsSystem::CreateDynamicBoxCollider(BoxCollider* collide
 	boxActor->setRigidDynamicLockFlags(flag);
 
 	// UserData
-	PhysicsUserData data(collider->GetOwner(), boxShape);
+	PhysicsUserData data(collider->GetOwnerObject(), boxShape);
 	boxActor->userData = &data;
 
 	collider->_shape = boxShape;
@@ -145,23 +146,10 @@ void KunrealEngine::PhysicsSystem::CreateDynamicBoxCollider(BoxCollider* collide
 	_rigidDynamics.push_back(boxActor);
 }
 
-void KunrealEngine::PhysicsSystem::CreateStaticBoxCollider(BoxCollider* collider)
-{
-	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
-	physx::PxRigidStatic* boxActor = _physics->createRigidStatic(trans);
-
-	physx::PxBoxGeometry geometry(physx::PxVec3(1.f, 1.f, 1.f));
-
-	_pxScene->addActor(*boxActor);
-	_staticMap.insert(std::make_pair(collider, boxActor));
-	_rigidStatics.push_back(boxActor);
-}
-
-
-void KunrealEngine::PhysicsSystem::CreateCylinderCollider(BoxCollider* collider)
+void KunrealEngine::PhysicsSystem::CreateCylinderCollider(Collider* collider)
 {
 	physx::PxMeshScale scale(physx::PxVec3(
-		collider->GetBoxSize().x, collider->GetBoxSize().y, collider->GetBoxSize().z), 
+		collider->GetColliderScale().x, collider->GetColliderScale().y, collider->GetColliderScale().z),
 		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
 	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
@@ -181,7 +169,7 @@ void KunrealEngine::PhysicsSystem::CreateCylinderCollider(BoxCollider* collider)
 	customActor->setRigidDynamicLockFlags(flag);
 
 	// UserData
-	PhysicsUserData data(collider->GetOwner(), shape);
+	PhysicsUserData data(collider->GetOwnerObject(), shape);
 	customActor->userData = &data;
 
 	// 다 만들었으면 shape 붙여주고
@@ -208,10 +196,10 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 		physx::PxTransform pxTrans;
 		pxTrans.p = physx::PxVec3(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z);
 
-		pxTrans.q.x = pair.first->GetColliderQuat().x;
-		pxTrans.q.y = pair.first->GetColliderQuat().y;
-		pxTrans.q.z = pair.first->GetColliderQuat().z;
-		pxTrans.q.w = pair.first->GetColliderQuat().w;
+		pxTrans.q.x = pair.first->GetColliderQuaternion().x;
+		pxTrans.q.y = pair.first->GetColliderQuaternion().y;
+		pxTrans.q.z = pair.first->GetColliderQuaternion().z;
+		pxTrans.q.w = pair.first->GetColliderQuaternion().w;
 
 		//pair.second->setGlobalPose(
 		// physx::PxTransform(
@@ -221,7 +209,7 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 		// pair.first->GetColliderPos().z)));
 		pair.second->setGlobalPose(pxTrans, true);
 
-		if (!pair.first->GetActivated())
+		if (!pair.first->GetOwnerObject()->GetActivated())
 		{
 			pair.first->_isCollided = false;
 			pair.first->_targetObj = nullptr;
@@ -238,7 +226,7 @@ void KunrealEngine::PhysicsSystem::UpdateStatics()
 	}
 }
 
-void KunrealEngine::PhysicsSystem::SetBoxSize(BoxCollider* collider)
+void KunrealEngine::PhysicsSystem::SetBoxSize(Collider* collider)
 {
 	/// attach된 shape의 크기를 직접 변경해주는 함수가 없어서 사이즈 변경 함수가 호출될 때마다 삭제/추가를 반복하도록 만들었음
 	// 붙여줬던 shape를 떼주고
@@ -248,25 +236,17 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(BoxCollider* collider)
 	/// detachShape에서 delete까지 해주는 모양이다
 	//static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape->release();
 
-	// 모양에 따라 분기 결정
-	if (!collider->_isCylinder)
-	{
-		// 크기에 맞게 새로운 shape 생성
-		physx::PxShape* boxShape = _physics->createShape(physx::PxBoxGeometry(
-			collider->GetBoxSize().x / 2.f,
-			collider->GetBoxSize().y / 2.f,
-			collider->GetBoxSize().z / 2.f), *_material);
+	// 크기에 맞게 새로운 shape 생성
+	physx::PxShape* boxShape = _physics->createShape(physx::PxBoxGeometry(
+		collider->GetColliderScale().x / 2.f,
+		collider->GetColliderScale().y / 2.f,
+		collider->GetColliderScale().z / 2.f), *_material);
 
-		// 새롭게 만든 shape 추가
-		_dynamicMap.at(collider)->attachShape(*boxShape);
+	// 새롭게 만든 shape 추가
+	_dynamicMap.at(collider)->attachShape(*boxShape);
 
-		// userData 업데이트
-		static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = boxShape;
-	}
-	else
-	{
-
-	}
+	// userData 업데이트
+	static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = boxShape;
 }
 
 void KunrealEngine::PhysicsSystem::TestFunc()
@@ -351,7 +331,7 @@ physx::PxFilterFlags KunrealEngine::PhysicsSystem::TriggerUsingFilterShader(phys
 	return physx::PxFilterFlag::eDEFAULT;
 }
 
-KunrealEngine::BoxCollider* KunrealEngine::PhysicsSystem::GetColliderFromDynamic(const physx::PxRigidDynamic* dynamic)
+KunrealEngine::Collider* KunrealEngine::PhysicsSystem::GetColliderFromDynamic(const physx::PxRigidDynamic* dynamic)
 {
 	for (const auto& pair : _dynamicMap)
 	{
@@ -416,7 +396,7 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	col2 = GetColliderFromDynamic(casted2);
 
 	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
-	if (!col1->GetOwner()->GetActivated() || !col2->GetOwner()->GetActivated())
+	if (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated())
 	{
 		return;
 	}
@@ -424,20 +404,20 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	// 충돌이 발생했을 때
 	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
 		| physx::PxPairFlag::eMODIFY_CONTACTS
-		&& col1->GetActivated() && col2->GetActivated())
+		&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated())
 	{
 		// 충돌 여부를 true로
 		col1->_isCollided = true;
 		col2->_isCollided = true;
 
 		// 상대 오브젝트에 대한 정보를 넘겨줌
-		col1->_targetObj = col2->GetOwner();
-		col2->_targetObj = col1->GetOwner();
+		col1->_targetObj = col2->GetOwnerObject();
+		col2->_targetObj = col1->GetOwnerObject();
 	}
 
 	// 충돌에서 벗어났을 때
 	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		&& col1->GetActivated() && col2->GetActivated() || (!col1->GetActivated() || !col2->GetActivated()))
+		&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated() || (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated()))
 	{
 		// 충돌 여부를 false로
 		col1->_isCollided = false;

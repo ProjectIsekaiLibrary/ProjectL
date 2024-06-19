@@ -54,9 +54,9 @@ namespace KunrealEngine
 		bool _isDashReady;
 
 		// 이동 때 사용하는 임시 변수들
-		int _tempX;
-		int _tempY;
-		int _tempZ;
+		float _tempX;
+		float _tempY;
+		float _tempZ;
 
 	public:
 		// 플레이어 이동

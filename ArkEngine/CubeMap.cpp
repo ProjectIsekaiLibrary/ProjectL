@@ -117,7 +117,7 @@ void ArkEngine::ArkDX11::CubeMap::BuildGeometryBuffers()
 		}
 		else
 		{
-			generator.CreateSphere(_fileName.c_str(), 5000.0f, 30, 30);
+			generator.CreateSphere(_fileName.c_str(), 2000.0f, 30, 30);
 		}
 
 		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>(_fileName);

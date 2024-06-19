@@ -89,16 +89,6 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 				pod.customComponent["Kamen"] = true;
 			}
 
-			if ((gameObject->GetComponent<KunrealEngine::Ent>()) != NULL)
-			{
-				pod.customComponent["Ent"] = true;
-			}
-
-			if ((gameObject->GetComponent<KunrealEngine::Aracne>()) != NULL)
-			{
-				pod.customComponent["Aracne"] = true;
-			}
-
 			if ((gameObject->GetComponent<KunrealEngine::Camera>()) != NULL)  // 그냥 addCompoent만 해주면 되는가?
 			{
 				pod.customComponent["Camera"] = true;
@@ -218,9 +208,9 @@ void EpicTool::Serialize::SaveFile(const std::string& filePath)
 					pod.collider["Offset_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().y;
 					pod.collider["Offset_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetOffset().z;
 
-					pod.collider["BoxSize_x"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().x;
-					pod.collider["BoxSize_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().y;
-					pod.collider["BoxSize_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetBoxSize().z;
+					pod.collider["BoxSize_x"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetColliderScale().x;
+					pod.collider["BoxSize_y"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetColliderScale().y;
+					pod.collider["BoxSize_z"] = gameObject->GetComponent<KunrealEngine::BoxCollider>()->GetColliderScale().z;
 				}
 
 				// 파티클

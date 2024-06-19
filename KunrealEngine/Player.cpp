@@ -53,7 +53,7 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->GetComponent<MeshRenderer>()->SetCartoonState(true);
 	
 	this->_owner->AddComponent<BoxCollider>();
-	this->_owner->GetComponent<BoxCollider>()->SetBoxSize(5.0f, 12.0f, 5.0f);
+	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();

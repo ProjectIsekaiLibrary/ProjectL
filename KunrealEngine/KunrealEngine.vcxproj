@@ -72,18 +72,22 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\</OutDir>
-    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(SolutionDir)Lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(SolutionDir)Lib\$(Platform)\$(Configuration);$(LibraryPath);$(SolutionDir)\Lib\x64\Debug</LibraryPath>
     <LinkIncremental>true</LinkIncremental>
+    <IncludePath>$(SolutionDir)Inc\fmod;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(LibraryPath);$(SolutionDir)\Lib\x64\Debug</LibraryPath>
+    <IncludePath>$(SolutionDir)Inc\fmod;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(LibraryPath);$(SolutionDir)\Lib\x64\Debug;$(SolutionDir)Lib\x64\Release</LibraryPath>
+    <IncludePath>$(SolutionDir)Inc\fmod;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(SolutionDir)Lib\$(Platform)\$(Configuration);$(LibraryPath)</LibraryPath>
+    <LibraryPath>$(SolutionDir)Bin\$(Platform)\$(Configuration)\;$(SolutionDir)Lib\$(Platform)\$(Configuration);$(LibraryPath);$(SolutionDir)\Lib\x64\Debug;$(SolutionDir)Lib\x64\Release</LibraryPath>
     <OutDir>$(SolutionDir)Bin\$(Platform)\$(Configuration)\</OutDir>
+    <IncludePath>$(SolutionDir)Inc\fmod;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -149,7 +153,8 @@
       <AdditionalDependencies>ArkEngine.lib;Recast.lib;Detour.lib;DetourTileCache.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(Projectdir)AfterBuild" "$(targetdir)Resources" /D /E /C /Q /H /R /Y /K</Command>
+      <Command>xcopy "$(Projectdir)AfterBuild" "$(targetdir)Resources" /D /E /C /Q /H /R /Y /K
+xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
@@ -180,19 +185,19 @@
   <ItemGroup>
     <ClInclude Include="Ability.h" />
     <ClInclude Include="Animator.h" />
-    <ClInclude Include="Aracne.h" />
     <ClInclude Include="BattleUIManager.h" />
     <ClInclude Include="Boss.h" />
     <ClInclude Include="BossStruct.hpp" />
     <ClInclude Include="BoxCollider.h" />
     <ClInclude Include="ButtonSystem.h" />
     <ClInclude Include="Camera.h" />
+    <ClInclude Include="Collider.h" />
     <ClInclude Include="CommonHeader.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="ComponentHeaders.h" />
     <ClInclude Include="Coroutine.h" />
+    <ClInclude Include="CylinderCollider.h" />
     <ClInclude Include="EngineCore.h" />
-    <ClInclude Include="Ent.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="framework.h" />
     <ClInclude Include="GameObject.h" />
@@ -240,17 +245,17 @@
     <ClCompile Include="..\Inc\Recast\fastlz.c" />
     <ClCompile Include="Ability.cpp" />
     <ClCompile Include="Animator.cpp" />
-    <ClCompile Include="Aracne.cpp" />
     <ClCompile Include="BattleUIManager.cpp" />
     <ClCompile Include="Boss.cpp" />
     <ClCompile Include="BoxCollider.cpp" />
     <ClCompile Include="ButtonSystem.cpp" />
     <ClCompile Include="Camera.cpp" />
+    <ClCompile Include="Collider.cpp" />
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="Coroutine.cpp" />
+    <ClCompile Include="CylinderCollider.cpp" />
     <ClCompile Include="dllmain.cpp" />
     <ClCompile Include="EngineCore.cpp" />
-    <ClCompile Include="Ent.cpp" />
     <ClCompile Include="EventManager.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GraphicsSystem.cpp" />

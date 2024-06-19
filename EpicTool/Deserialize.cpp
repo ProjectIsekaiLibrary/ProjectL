@@ -88,18 +88,6 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 						object->AddComponent<KunrealEngine::Kamen>();
 						isBoss = true;
 					}
-	
-					if (ent != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Ent"].empty())
-					{
-						object->AddComponent<KunrealEngine::Ent>();
-						isBoss = true;
-					}
-	
-					if (aracne != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Aracne"].empty())
-					{
-						object->AddComponent<KunrealEngine::Aracne>();
-						isBoss = true;
-					}
 
 					if (invisivle != jsonItem["POD"]["customComponent"].end() && !jsonItem["POD"]["customComponent"]["Invisible"].empty())
 					{
@@ -279,7 +267,7 @@ void EpicTool::Deserialize::Initialize(std::string& deserialize)
 							jsonItem["POD"]["collider"]["Offset_y"],
 							jsonItem["POD"]["collider"]["Offset_z"]);
 
-						object->GetComponent<KunrealEngine::BoxCollider>()->SetBoxSize(jsonItem["POD"]["collider"]["BoxSize_x"],
+						object->GetComponent<KunrealEngine::BoxCollider>()->SetColliderScale(jsonItem["POD"]["collider"]["BoxSize_x"],
 							jsonItem["POD"]["collider"]["BoxSize_y"],
 							jsonItem["POD"]["collider"]["BoxSize_z"]);
 

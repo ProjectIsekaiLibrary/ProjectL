@@ -32,7 +32,7 @@ KunrealEngine::GameObject* player;
 KunrealEngine::GameObject* kamen;
 KunrealEngine::GameObject* spider;
 KunrealEngine::GameObject* zeolight;
-KunrealEngine::GameObject* tree1;
+KunrealEngine::GameObject* bossMap;
 KunrealEngine::GameObject* tree2;
 KunrealEngine::GameObject* tree3;
 KunrealEngine::GameObject* tree4;
@@ -179,7 +179,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 
 	PhysicsSystem::GetInstance().Initialize();
 	inputInstance->Initialize(hInstance, hwnd, screenHeight, screenWidth);
-	//soundInstance.Initialize(hwnd);
+	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
 	navigationInstance.HandleBuild(0, "testObj.obj");
@@ -208,7 +208,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	//PlayGround();
+	PlayGround();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -606,51 +606,20 @@ void KunrealEngine::EngineCore::PlayGround()
 	testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
 	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
 
-	// Plane 
-	auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
-	plane->AddComponent<MeshRenderer>();
-	plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
-	plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
-	//plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
-	plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
-	plane->GetComponent<Transform>()->SetPosition(0, -1.0f, 0);
-	plane->GetComponent<MeshRenderer>()->SetShadowState(false);
-	plane->GetComponent<MeshRenderer>()->SetIsDissolve(true);
-	_timeMan -= 0.01f;
-	if (_timeMan <= 0.0f)
-	{
-		_timeMan = 1.0f;
-	}
-	plane->GetComponent<MeshRenderer>()->SetDissolve(0.5f);
-
-
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
-	//player->AddComponent<MeshRenderer>();
-	//player->GetComponent<MeshRenderer>()->SetMeshObject("PlayerWithCloak/PlayerWithCloak");
-	//player->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//player->GetComponent<Transform>()->SetRotation(0.0f, 45.f, 0.0f);
-	//player->GetComponent<MeshRenderer>()->SetActive(true);
-	//player->GetComponent<MeshRenderer>()->SetPickableState(true);
-	//player->AddComponent<BoxCollider>();
-	//player->GetComponent<BoxCollider>()->SetBoxSize(3.0f, 8.0f, 5.0f);
-
-
 	player->AddComponent<Player>();
 
+	// Kamen
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
-	//kamen->DeleteComponent(kamen->GetComponent<Kamen>());
-	
-// 	spider = sceneInstance.GetCurrentScene() -> CreateObject("spider");
-// 	spider->AddComponent<Aracne>();
 
 	// UI의 부모가 될 0,0pos객체
-	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
-	battle_ui_box->AddComponent<BattleUIManager>();
-	pause_ui_box = MakeTitleUIPack();
-	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
-	option_ui_box->AddComponent<OptionUIManager>();
+	//battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	//battle_ui_box->AddComponent<BattleUIManager>();
+	//pause_ui_box = MakeTitleUIPack();
+	//option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
+	//option_ui_box->AddComponent<OptionUIManager>();
 	//Title_ui_box = 
 
 	//// cube map test
@@ -688,145 +657,10 @@ void KunrealEngine::EngineCore::PlayGround()
 	pointLight2->GetComponent<Light>()->SetPointRange(50.f);
 	pointLight2->SetActive(false);
 
-	// 충돌체크
-	auto c1 = sceneInstance.GetCurrentScene()->CreateObject("Knife");
-	auto c2 = sceneInstance.GetCurrentScene()->CreateObject("Rock");
-
-	c1->AddComponent<BoxCollider>();
-	c1->GetComponent<BoxCollider>()->SetBoxSize(5.f, 10.f, 10.f);
-	c1->AddComponent<MeshRenderer>();
-	c1->GetComponent<Transform>()->SetPosition(-20.f, -30.f, 0.f);
-	c1->GetComponent<Transform>()->SetScale(0.5f, 0.2f, 0.5f);
-	c1->GetComponent<MeshRenderer>()->SetMeshObject("Field2/Field2", "bricks.dds");
-	c1->GetComponent<MeshRenderer>()->SetPickableState(true);
-
-	c2->AddComponent<BoxCollider>();
-	c2->GetComponent<BoxCollider>()->SetBoxSize(11.f, 11.f, 11.f);
-	c2->AddComponent<MeshRenderer>();
-	c2->GetComponent<Transform>()->SetPosition(-40.f, 15.f, 0.f);
-	c2->GetComponent<Transform>()->SetScale(5.f, 5.f, 5.f);
-	//c2->GetComponent<MeshRenderer>()->SetMeshObject("Kachujin/Kachujin", "Kachujin/Kachujin_diffuse.png");
-	c2->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", "bricks.dds");
-	c2->GetComponent<MeshRenderer>()->SetPickableState(true);
-
-	targetPos = { 0.0f ,0.0f ,0.0f };
-
-	cursorimage = GRAPHICS->CreateImage("floor.dds");
-	cursorimage->SetPosition(500.0f);
-	cursorimage->SetRenderingState(false);
-
-	// 파티클 testCode
-	//auto asdf2 = GRAPHICS->CreateParticle("fire", "Resources/Textures/Particles/fx_EnergyBolt9.dds", 1000);
-	//asdf2->SetParticleColor(DirectX::XMFLOAT3{ 0.0f, 1.0f, 1.0f });
-	//asdf2->SetEmitVelocity(3.0f, true);
-	//asdf2->SetParticleTime(1.0f, 1.0f);
-	//asdf2->SetParticleSize(DirectX::XMFLOAT2{ 10.f, 10.f });
-	//asdf2->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
-	//asdf2->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 30.0f, 0.0f });
-	//asdf2->Start();
-	//
-	//auto asdf3 = GRAPHICS->CreateParticle("fire2", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-	//asdf3->SetParticleColor(DirectX::XMFLOAT3{ 1.0f, 1.0f, 0.0f });
-	//asdf3->SetEmitVelocity(4.0f, true);
-	//asdf3->SetParticleTime(1.0f, 3.0f);
-	//asdf3->SetParticleSize(DirectX::XMFLOAT2{ 5.f, 5.f });
-	//asdf3->SetEmitPos(DirectX::XMFLOAT3{ 0.0f, 28.0f, 0.0f });
-	//asdf3->SetParticleDirection(DirectX::XMFLOAT3{ 0.0f, 7.0f, 0.0f });
-	//asdf3->Start();
-
-	GRAPHICS->CreateDebugLine(DirectX::XMFLOAT3(0.0f, 1.0f, 0.0f), DirectX::XMFLOAT3(100.0f, 1.0f, 0.0f), DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
-	//GRAPHICS->DeleteAllLine();
-	// Test
-
-	tree1 = sceneInstance.GetCurrentScene()->CreateObject("tree1");
-	tree2 = sceneInstance.GetCurrentScene()->CreateObject("tree2");
-	tree3 = sceneInstance.GetCurrentScene()->CreateObject("tree3");
-	tree4 = sceneInstance.GetCurrentScene()->CreateObject("tree4");
-	tree1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	tree2->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-
-	//for (int i = 0; i < 50; i++)
-	//{
-	//	std::string name = "rightCube" + std::to_string(i);
-	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
-	//	cube1->AddComponent<MeshRenderer>();
-	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_01/SM_tree_large_ancient_01", true);
-	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
-	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture(0, "bricks_nmap.dds");
-	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//	cube1->GetComponent<Transform>()->SetPosition(40.0f, 2.0f, 50.0f - 10.0f * i);
-	//	//cube1->SetParent(tree1);
-	//	if (i % 2 == 0)
-	//	{
-	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
-	//	}
-	//}
-	//
-	//for (int i = 0; i < 50; i++)
-	//{
-	//	std::string name = "leftCube" + std::to_string(i);
-	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
-	//	cube1->AddComponent<MeshRenderer>();
-	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_01/SM_tree_large_ancient_01", true);
-	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
-	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
-	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//	cube1->GetComponent<Transform>()->SetPosition(-40.0f, 2.0f, 50.0f - 10.0f * i);
-	//	//cube1->SetParent(tree2);
-	//	if (i % 2 == 1)
-	//	{
-	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
-	//	}
-	//}
-	//
-	//for (int i = 0; i < 50; i++)
-	//{
-	//	std::string name = "leftCubee" + std::to_string(i);
-	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
-	//	cube1->AddComponent<MeshRenderer>();
-	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_02/SM_tree_large_ancient_02", true);
-	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
-	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
-	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//	cube1->GetComponent<Transform>()->SetPosition(80.0f, 2.0f, 50.0f - 10.0f * i);
-	//	//cube1->SetParent(tree3);
-	//	if (i % 2 == 1)
-	//	{
-	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
-	//	}
-	//}
-	//
-	//for (int i = 0; i < 50; i++)
-	//{
-	//	std::string name = "rightCubee" + std::to_string(i);
-	//	auto cube1 = sceneInstance.GetCurrentScene()->CreateObject(name);
-	//	cube1->AddComponent<MeshRenderer>();
-	//	cube1->GetComponent<MeshRenderer>()->SetMeshObject("SM_tree_large_ancient_02/SM_tree_large_ancient_02", true);
-	//	//cube1->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "bricks.dds");
-	//	//cube1->GetComponent<MeshRenderer>()->SetNormalTexture("bricks_nmap.dds");
-	//	cube1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	//	cube1->GetComponent<Transform>()->SetPosition(-80.0f, 2.0f, 50.0f - 10.0f * i);
-	//	//cube1->SetParent(tree4);
-	//	if (i % 2 == 1)
-	//	{
-	//		cube1->GetComponent<MeshRenderer>()->SetPickableState(true);
-	//	}
-	//}
-
-	
-	GameObject* particleTest = sceneInstance.GetCurrentScene()->CreateObject("ParticleTest");
-	player->AddComponent<Particle>();
-
-	Particle* partpart = player->GetComponent<Particle>();
-
-	partpart->SetParticleEffect("fl", "Resources/Textures/Particles/fx_Thrust2.dds", 1000);
-	partpart->SetParticleSize(4.0f, 4.0f);
-	partpart->SetParticleVelocity(30.0f, true);
-	partpart->SetParticleDuration(1.0f, 3.0f);
-	partpart->AddParticleColor(1.0f, 0.0f, 0.0f);
-	partpart->SetParticleDirection(0.0f, 20.0f, 0.0f);
-	partpart->SetActive(true);
-
+	bossMap = sceneInstance.GetCurrentScene()->CreateObject("bossMap");
+	bossMap->AddComponent<MeshRenderer>();
+	bossMap->GetComponent<MeshRenderer>()->SetMeshObject("MapMesh/MapMesh");
+	bossMap->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()

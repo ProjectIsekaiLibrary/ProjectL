@@ -122,6 +122,9 @@ namespace KunrealEngine
 	private:
 		DirectX::XMVECTOR GetEgoDirection();
 
+	public:
+		const DirectX::XMFLOAT3& GetSwordDirection();
+
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
