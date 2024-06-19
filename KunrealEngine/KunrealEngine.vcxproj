@@ -153,7 +153,8 @@
       <AdditionalDependencies>ArkEngine.lib;Recast.lib;Detour.lib;DetourTileCache.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(Projectdir)AfterBuild" "$(targetdir)Resources" /D /E /C /Q /H /R /Y /K</Command>
+      <Command>xcopy "$(Projectdir)AfterBuild" "$(targetdir)Resources" /D /E /C /Q /H /R /Y /K
+xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
