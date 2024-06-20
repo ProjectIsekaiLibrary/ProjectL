@@ -182,8 +182,8 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.HandleBuild(0, "testObj.obj");
-	navigationInstance.HandleBuild(1, "testObj.obj");
+	navigationInstance.HandleBuild(0, "bossmap.obj");
+	navigationInstance.HandleBuild(1, "bossmap.obj");
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "Texture6.dds", true);
