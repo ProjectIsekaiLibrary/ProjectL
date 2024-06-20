@@ -116,6 +116,8 @@ namespace ArkEngine
 		void AddMeshRenderer(ArkEngine::MeshRenderer* meshRenderer);
 		void SortMeshRendererByAlpha();
 
+		std::vector<ArkEngine::MeshRenderer*>& GetAllTransParentRenderer();
+		std::vector<ArkEngine::MeshRenderer*>& GetAllNoTransParentRenderer();
 
 	public:
 		// 모든 디버그 오브젝트들은 담아놓은 백터 반환
@@ -252,6 +254,9 @@ namespace ArkEngine
 		std::vector<IRenderable*> _renderableList;
 
 		std::vector<MeshRenderer*> _meshRendererList;
+
+		std::vector<MeshRenderer*> _transParentList;
+		std::vector<MeshRenderer*> _noTransParentList;
 
 		std::vector<IDebugObject*> _debugList;
 

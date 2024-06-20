@@ -58,6 +58,8 @@ namespace ArkEngine
 
 		const float GetDepth();
 
+		const std::vector<IRenderable*>& GetMeshList();
+
 	public:
 		const std::string& GetName();
 

@@ -127,33 +127,45 @@ void ArkEngine::ResourceManager::AddMeshRenderer(ArkEngine::MeshRenderer* meshRe
 
 void ArkEngine::ResourceManager::SortMeshRendererByAlpha()
 {
-	std::vector<MeshRenderer*> transParentList;
-	std::vector<MeshRenderer*> noTransParentList;
+	_transParentList.clear();
+	_noTransParentList.clear();
 
 	for (auto& index : _meshRendererList)
 	{
 		if (!index->GetAlphaExist())
 		{
-			noTransParentList.emplace_back(index);
+			_noTransParentList.emplace_back(index);
 		}
 		else
 		{
-			transParentList.emplace_back(index);
+			_transParentList.emplace_back(index);
 		}
 	}
 
-	std::sort(transParentList.begin(), transParentList.end(),
+	std::sort(_transParentList.begin(), _transParentList.end(),
 		[](MeshRenderer* mesh1, MeshRenderer* mesh2) {
 			return mesh1->GetDepth() > mesh2->GetDepth();
 		});
 
 	_meshRendererList.clear();
 
-	_meshRendererList.reserve(noTransParentList.size() + transParentList.size());
+	_meshRendererList.reserve(_noTransParentList.size() + _transParentList.size());
 
-	_meshRendererList.insert(_meshRendererList.end(), noTransParentList.begin(), noTransParentList.end());
+	_meshRendererList.insert(_meshRendererList.end(), _noTransParentList.begin(), _noTransParentList.end());
 
-	_meshRendererList.insert(_meshRendererList.end(), transParentList.begin(), transParentList.end());
+	_meshRendererList.insert(_meshRendererList.end(), _transParentList.begin(), _transParentList.end());
+}
+
+
+std::vector<ArkEngine::MeshRenderer*>& ArkEngine::ResourceManager::GetAllTransParentRenderer()
+{
+	return _transParentList;
+}
+
+
+std::vector<ArkEngine::MeshRenderer*>& ArkEngine::ResourceManager::GetAllNoTransParentRenderer()
+{
+	return _noTransParentList;
 }
 
 std::vector<ArkEngine::IDebugObject*>& ArkEngine::ResourceManager::GetDebugObjectList()
