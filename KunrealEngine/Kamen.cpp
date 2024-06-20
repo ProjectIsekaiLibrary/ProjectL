@@ -176,7 +176,7 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//BasicPattern();						// 기본 spell, call
+	BasicPattern();						// 기본 spell, call
 	//
 	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
@@ -185,8 +185,8 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
-	//SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
+	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	//SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	//SwordLinearAttackPattern();
 	//SwordChopPattern();
 
@@ -498,7 +498,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			call2_1->GetComponent<Particle>()->SetParticleEffect("fx_Halo3", "Resources/Textures/Particles/fx_Halo3.dds", 1000);
 			call2_1->GetComponent<Particle>()->SetParticleDuration(1.2f, 2.0f);
 			call2_1->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
-			call2_1->GetComponent<Particle>()->SetParticleSize(9.f, 3.0f);
+			call2_1->GetComponent<Particle>()->SetParticleSize(15.f, 9.0f);
 			call2_1->GetComponent<Particle>()->AddParticleColor(1.0f, 5.f, 0.0f);
 			call2_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 			call2_1->GetComponent<Particle>()->SetActive(false);
@@ -532,9 +532,9 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			call2_2->GetComponent<Transform>()->SetPosition(0, mapOffsetY, 0.f);
 			call2_2->AddComponent<Particle>();
 			call2_2->GetComponent<Particle>()->SetParticleEffect("fx_Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
-			call2_2->GetComponent<Particle>()->SetParticleDuration(1.3f, 1.0f);
+			call2_2->GetComponent<Particle>()->SetParticleDuration(1.3f, 1.6f);
 			call2_2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-			call2_2->GetComponent<Particle>()->SetParticleSize(8.f, 8.f);
+			call2_2->GetComponent<Particle>()->SetParticleSize(14.f, 14.f);
 			call2_2->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 0.0f);
 			call2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 			call2_2->GetComponent<Particle>()->SetActive(false);
@@ -570,7 +570,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			call2_3->GetComponent<Particle>()->SetParticleEffect("fx_Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
 			call2_3->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.0f);
 			call2_3->GetComponent<Particle>()->SetParticleVelocity(3.f, true);
-			call2_3->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+			call2_3->GetComponent<Particle>()->SetParticleSize(12.f, 12.0f);
 			call2_3->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
 			call2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 			call2_3->GetComponent<Particle>()->SetActive(false);
@@ -629,7 +629,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			donutParticle->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
 			donutParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
 			donutParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-			donutParticle->GetComponent<Particle>()->SetParticleAngle(55.f);
+			//donutParticle->GetComponent<Particle>()->SetParticleAngle(55.f);
+			donutParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			donutParticle->GetComponent<Particle>()->SetActive(false);
 			_particleSwordDonutAttack.emplace_back(donutParticle);
 
@@ -641,14 +642,133 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			else if (i == 1)
 			{
 				donutParticle->SetParent(_swordDonutWarning2);
-				donutParticle->GetComponent<Particle>()->SetParticleSize(130.f, 50.0f);
+				donutParticle->GetComponent<Particle>()->SetParticleSize(130.f, 130.f);
 			}
 			else
 			{
 				donutParticle->SetParent(_swordDonutWarning3);
-				donutParticle->GetComponent<Particle>()->SetParticleSize(220.f, 50.0f);
+				donutParticle->GetComponent<Particle>()->SetParticleSize(220.f, 220.f);
 			}
 		}
+	}
+	{
+		{
+			std::string name = "teleportParticle";
+			auto teleportParticle = _boss->GetObjectScene()->CreateObject(name);
+			teleportParticle->SetParent(_bossInsideAttack);
+
+			teleportParticle->AddComponent<Particle>();
+			teleportParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->SetActive(false);
+			_particleEmergenceAttack.emplace_back(teleportParticle);
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			std::string name = "teleportParticle" + std::to_string(i + 1);
+			auto teleportParticle = _boss->GetObjectScene()->CreateObject(name);
+			teleportParticle->SetParent(_bossInsideAttack);
+
+			teleportParticle->AddComponent<Particle>();
+			teleportParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportParticle->GetComponent<Particle>()->SetActive(false);
+
+			if (i == 0)
+			{
+				teleportParticle->GetComponent<Particle>()->SetParticleAngle(80.0f, 0.0f, 0.0f);
+			}
+			else if (i == 1)
+			{
+				teleportParticle->GetComponent<Particle>()->SetParticleAngle(260.0f, 0.0f, 0.0f);
+			}
+			_particleEmergenceAttack.emplace_back(teleportParticle);
+		}
+		{
+			std::string name = "teleportParticle3";
+			auto teleportParticle = _boss->GetObjectScene()->CreateObject(name);
+			teleportParticle->SetParent(_bossInsideAttack);
+
+			teleportParticle->AddComponent<Particle>();
+			teleportParticle->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->SetActive(false);
+			_particleEmergenceAttack.emplace_back(teleportParticle);
+		}
+	}
+	{
+		{
+			std::string name = "insidePillarBoss";
+			auto particleBossPillar1 = _boss->GetObjectScene()->CreateObject(name);
+			particleBossPillar1->SetParent(_swordInsideAttack);
+
+			particleBossPillar1->AddComponent<Particle>();
+			particleBossPillar1->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+			particleBossPillar1->GetComponent<Particle>()->SetParticleDuration(2.1f, 1.f);
+			particleBossPillar1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			particleBossPillar1->GetComponent<Particle>()->SetParticleSize(80.f, 80.0f);
+			particleBossPillar1->GetComponent<Particle>()->AddParticleColor(0.6f, 0.6f, 0.6f);
+			particleBossPillar1->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
+			particleBossPillar1->GetComponent<Particle>()->SetParticleCameraApply(true);
+			particleBossPillar1->GetComponent<Particle>()->SetActive(false);
+		}
+		{
+			std::string name = "insidePillarBoss";
+			auto particleBossPillar2 = _boss->GetObjectScene()->CreateObject(name);
+			particleBossPillar2->SetParent(_swordInsideAttack);
+
+			particleBossPillar2->AddComponent<Particle>();
+			particleBossPillar2->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
+			particleBossPillar2->GetComponent<Particle>()->SetParticleDuration(2.f, 1.2f);
+			particleBossPillar2->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+			particleBossPillar2->GetComponent<Particle>()->SetParticleSize(120.f, 120.0f);
+			particleBossPillar2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.5f, 0.0f);
+			particleBossPillar2->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
+			particleBossPillar2->GetComponent<Particle>()->SetParticleCameraApply(true);
+			particleBossPillar2->GetComponent<Particle>()->SetActive(false);
+		}
+		{
+			std::string name = "insidePillarBoss";
+			auto particleBossPillar3 = _boss->GetObjectScene()->CreateObject(name);
+			particleBossPillar3->SetParent(_swordInsideAttack);
+
+			particleBossPillar3->AddComponent<Particle>();
+			particleBossPillar3->GetComponent<Particle>()->SetParticleEffect("Blaster2", "Resources/Textures/Particles/fx_Blaster2.dds", 1000);
+			particleBossPillar3->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
+			particleBossPillar3->GetComponent<Particle>()->SetParticleVelocity(0.4f, true);
+			particleBossPillar3->GetComponent<Particle>()->SetParticleSize(52.f, 40.0f);
+			particleBossPillar3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
+			particleBossPillar3->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
+			particleBossPillar3->GetComponent<Particle>()->SetParticleCameraApply(true);
+			particleBossPillar3->GetComponent<Particle>()->SetActive(false);
+		}
+	}
+	{
+		std::string name = "lazerParticle";
+		auto lazerParticle = _boss->GetObjectScene()->CreateObject(name);
+		lazerParticle->SetParent(_lazer);
+
+		lazerParticle->AddComponent<Particle>();
+		lazerParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+		lazerParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
+		lazerParticle->GetComponent<Particle>()->SetParticleVelocity(84.f, true);
+		lazerParticle->GetComponent<Particle>()->SetParticleSize(40.f, 40.0f);
+		lazerParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
+		lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		lazerParticle->GetComponent<Particle>()->SetActive(false);
 	}
 }
 
@@ -718,13 +838,13 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 내부 장판 공격
 	_bossInsideAttack = _boss->GetObjectScene()->CreateObject("BossInsideAttack");
-	_bossInsideAttack->AddComponent<Particle>();
-	_bossInsideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
-	_bossInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
-	_bossInsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
-	_bossInsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
-	_bossInsideAttack->SetTotalComponentState(false);
-	_bossInsideAttack->GetComponent<Particle>()->SetActive(false);
+	//_bossInsideAttack->AddComponent<Particle>();
+	//_bossInsideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
+	//_bossInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
+	//_bossInsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
+	//_bossInsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
+	//_bossInsideAttack->SetTotalComponentState(false);
+	//_bossInsideAttack->GetComponent<Particle>()->SetActive(false);
 
 
 	// 내부 장판
@@ -778,10 +898,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordDonutWarning1->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
 	_swordDonutWarning1->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
 	_swordDonutWarning1->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	_swordDonutWarning1->GetComponent<Particle>()->SetParticleSize(50.0f, 50.0f);
+	_swordDonutWarning1->GetComponent<Particle>()->SetParticleSize(45.0f, 45.0f);
 	_swordDonutWarning1->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
 	_swordDonutWarning1->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-	_swordDonutWarning1->GetComponent<Particle>()->SetParticleAngle(55.f);
+	_swordDonutWarning1->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_swordDonutWarning1->SetTotalComponentState(false);
 	_swordDonutWarning1->SetActive(false);
 
@@ -797,10 +917,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordDonutWarning2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	_swordDonutWarning2->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
 	_swordDonutWarning2->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	_swordDonutWarning2->GetComponent<Particle>()->SetParticleSize(130.f, 130.0f);
+	_swordDonutWarning2->GetComponent<Particle>()->SetParticleSize(120.f, 120.0f);
 	_swordDonutWarning2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
 	_swordDonutWarning2->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-	_swordDonutWarning2->GetComponent<Particle>()->SetParticleAngle(55.f);
+	_swordDonutWarning2->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_swordDonutWarning2->SetTotalComponentState(false);
 	_swordDonutWarning2->SetActive(false);
 
@@ -816,21 +936,23 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_swordDonutWarning3->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	_swordDonutWarning3->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
 	_swordDonutWarning3->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	_swordDonutWarning3->GetComponent<Particle>()->SetParticleSize(220.f, 220.0f);
+	_swordDonutWarning3->GetComponent<Particle>()->SetParticleSize(215.f, 215.0f);
 	_swordDonutWarning3->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
 	_swordDonutWarning3->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-	_swordDonutWarning3->GetComponent<Particle>()->SetParticleAngle(55.f);
+	_swordDonutWarning3->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_swordDonutWarning3->SetTotalComponentState(false);
 	_swordDonutWarning3->SetActive(false);
 
 	// 레이저 
 	_lazer = _boss->GetObjectScene()->CreateObject("lazer");
 	_lazer->AddComponent<Particle>();
-	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	_lazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/fx_LightFlash1.dds", 1000);
+	_lazer->GetComponent<Particle>()->SetParticleSize(15.f, 15.f);
 	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
 	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
 	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-	_lazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
+	_lazer->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+	_lazer->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_lazer->GetComponent<Particle>()->SetActive(false);
 	_lazer->SetTotalComponentState(false);
 	_lazer->SetActive(false);
@@ -1756,17 +1878,44 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 			if (isPlaying)
 			{
-				_bossInsideAttack->GetComponent<Particle>()->SetActive(true);
+				_timer += TimeManager::GetInstance().GetDeltaTime();
+				for (int i = 0; i < _particleEmergenceAttack.size(); i++)
+				{
+					if (_timer < 1.3f)
+					{
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(true);
 
-				auto particleScaleUp = (_circleWarningSize) / 100.0f;
-				particleScaleUp += 1.0f;
+						if (i == 1 || i == 2)
+						{
+							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(20 + 100 * _timer * 1.2f, 20 + 100 * _timer * 1.2f);
+						}
+						else
+						{
+							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 100 * _timer, 10 + 100 * _timer);
+						}
 
-				_bossInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-				return true;
+					}
+					else
+					{
+						if (i == 0 || i == 3)
+						{
+							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);						
+						}
+					}
+				}
+					return true;
+				//_bossInsideAttack->GetComponent<Particle>()->SetActive(true);
+				//
+				//auto particleScaleUp = (_circleWarningSize) / 100.0f;
+				//particleScaleUp += 1.0f;
+				//
+				//_bossInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
+				//
+				//return true;
 			}
 			else
 			{
+				_timer = 0.0f;
 				return false;
 			}
 		};
@@ -1796,6 +1945,12 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			_swordInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 			_swordInsideWarning->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
 			_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y + 1.0f, _swordOriginPos.z);
+			
+			for (auto& pillarParticle : _swordInsideAttack->GetChilds())
+			{
+				pillarParticle->GetComponent<Transform>()->SetPosition(_centerPos.x - 5, _centerPos.y, _centerPos.z + 34.0f);
+			}
+
 			_timer = 0.0f;
 
 			_swordInsideWarning->GetComponent<Transform>()->SetScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
@@ -1818,12 +1973,17 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 
 				// n초동안 콜라이더 실행
 				_timer += TimeManager::GetInstance().GetDeltaTime();
-				_swordInsideAttack->GetComponent<Particle>()->SetActive(true);
+				//_swordInsideAttack->GetComponent<Particle>()->SetActive(true);
 
 				auto particleScaleUp = (_circleWarningSize) / 100.0f;
 				particleScaleUp += 1.0f;
 
-				_swordInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
+				//_swordInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+				for (auto& pillarParticle : _swordInsideAttack->GetChilds())
+				{
+					pillarParticle->GetComponent<Particle>()->SetActive(true);
+				}
 
 				if (_timer >= 2.0f)
 				{
@@ -2073,6 +2233,9 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 			auto lazerScaleDir = DirectX::XMVectorScale(direction, lazerPosOffset);
 			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
 			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+			_lazer->GetChilds()[0]->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
+			_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+
 			pattern->SetSpeed(20.0f);
 
 			auto lazerColliderScaleDir = DirectX::XMVectorScale(direction, lazerScaleOffset);
@@ -2129,6 +2292,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				if (animator->GetCurrentFrame() >= 55.0f)
 				{
 					_lazer->GetComponent<Particle>()->SetActive(false);
+					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
+
 					if (pattern->_colliderOnCount > 0)
 					{
 						_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
@@ -2148,7 +2313,10 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				{
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+					_lazer->GetComponent<Particle>()->SetParticleSize(40.f,40.f);
+					
+					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
+
 					if (pattern->_colliderOnCount > 0)
 					{
 						_lazerCollider->GetComponent<BoxCollider>()->SetActive(true);

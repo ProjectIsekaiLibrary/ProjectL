@@ -280,5 +280,7 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _particleSwordOutsideAttack;
 		std::vector<GameObject*> _particleSwordDonutAttack;
+
+		std::vector<GameObject*> _particleEmergenceAttack;
 	};
 }
