@@ -225,6 +225,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		testdef = 9;
 	}
+
 	if (GetAsyncKeyState('H') & 0x8000)
 	{
 		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
@@ -289,21 +290,23 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	BeginTransparentSet();
 
-	//for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
-	//{
-	//	index->SetMainCamera(_mainCamera);
-	//	index->Render();
-	//}
-	//
-	//for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
-	//{
-	//	index->SetMainCamera(_mainCamera);
-	//	index->Render();
-	//}
-
 	for (const auto& index : ResourceManager::GetInstance()->GetAllNoTransParentRenderer())
 	{
 		index->SetMainCamera(_mainCamera);
+		index->Render();
+	}
+	
+	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	{
+		index->Draw(_mainCamera, _particleCamera);
+	}
+
+	BeginTransparentSet();
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
 		index->Render();
 	}
 
@@ -316,11 +319,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	}
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-
-	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	{
-		index->Render();
-	}
 
 	EndTransparentSet();
 
@@ -340,6 +338,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
+
+	BeginTransparentSet();
 
 	// 디퍼드 버퍼를 조합하여 빈 Texture2D에 완성된 화면을 출력함
 	_deferredRenderer->Render();
@@ -396,11 +396,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 				}
 			}
 		}
-	}
-
-	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-	{
-		index->Draw(_mainCamera, _particleCamera);
 	}
 
 	// UI IMAGE 렌더링
@@ -908,8 +903,6 @@ void ArkEngine::ArkDX11::DX11Renderer::BeginTransparentSet()
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
-
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::EndTransparentSet()
