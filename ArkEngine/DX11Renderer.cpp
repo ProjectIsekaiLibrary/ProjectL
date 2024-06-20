@@ -310,7 +310,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		index->Render();
 	}
 
-	_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
+	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
 
 	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
 	{
