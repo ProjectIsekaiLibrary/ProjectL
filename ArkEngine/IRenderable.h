@@ -50,6 +50,8 @@ namespace ArkEngine
 		virtual void SetAlpha(float alpha) abstract;
 		virtual float GetAlhpa() abstract;
 
+		virtual const float GetDepth(DirectX::XMFLOAT3& cameraPos) abstract;
+
 	public:
 		virtual void SetPosition(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;
 		virtual void SetRotation(float x = 0.0f, float y = 0.0f, float z = 0.0f) abstract;

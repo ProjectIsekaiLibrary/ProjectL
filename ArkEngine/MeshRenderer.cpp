@@ -356,6 +356,25 @@ bool ArkEngine::MeshRenderer::GetAlphaExist()
 	return _isTransparentExist;
 }
 
+
+const float ArkEngine::MeshRenderer::GetDepth()
+{
+	auto cameraPos = _mainCamera->GetCameraPos();
+
+	if (_meshList.empty())
+	{
+		return 0;
+	}
+
+	return _meshList[0]->GetDepth(cameraPos);
+}
+
+
+const std::vector<ArkEngine::IRenderable*>& ArkEngine::MeshRenderer::GetMeshList()
+{
+	return _meshList;
+}
+
 const std::string& ArkEngine::MeshRenderer::GetName()
 {
 	return _fileName;

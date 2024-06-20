@@ -80,14 +80,14 @@ DepthStencilState NoDepthWrites
 BlendState AdditiveBlending
 {
     AlphaToCoverageEnable = FALSE;
-    BlendEnable[0] = TRUE;
+    BlendEnable[1] = TRUE;
     SrcBlend = SRC_ALPHA;
     DestBlend = ONE;
     BlendOp = ADD;
     SrcBlendAlpha = ZERO;
     DestBlendAlpha = ONE;
     BlendOpAlpha = ADD;
-    RenderTargetWriteMask[0] = 0x0F;
+    RenderTargetWriteMask[1] = 0x0F;
 };
 
 // 회전 행렬 계산 함수
@@ -374,7 +374,7 @@ void DrawGS(point VertexOut gin[1], inout TriangleStream<GeoOut> triStream)
     }
 }
 
-float4 DrawPS(GeoOut pin) : SV_TARGET
+float4 DrawPS(GeoOut pin) : SV_Target1
 {
     return gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
 }

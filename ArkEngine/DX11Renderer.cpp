@@ -59,7 +59,7 @@ ArkEngine::ArkDX11::DX11Renderer::DX11Renderer()
 	_font(nullptr), _mainCamera(nullptr), _originMainCamera(nullptr), _mainCubeMap(nullptr),
 	_clientWidth(0), _clientHeight(0), _shadowHeight(0), _shadowWidth(0),
 	_isDebugMode(false), _renderingImageView(nullptr), _colorTexture(nullptr),
-	_viewPort(), _shadowViewPort(), _particleCamera(nullptr)
+	_viewPort(), _shadowViewPort(), _particleCamera(nullptr), _depthStencilStateNoWrite(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -225,6 +225,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	{
 		testdef = 9;
 	}
+
 	if (GetAsyncKeyState('H') & 0x8000)
 	{
 		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
@@ -289,16 +290,35 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	BeginTransparentSet();
 
-	for (const auto& index : ResourceManager::GetInstance()->GetAllMeshRenderer())
+	for (const auto& index : ResourceManager::GetInstance()->GetAllNoTransParentRenderer())
 	{
 		index->SetMainCamera(_mainCamera);
 		index->Render();
 	}
+	
+	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	{
+		index->Draw(_mainCamera, _particleCamera);
+	}
+
+	BeginTransparentSet();
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
 	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
 	{
 		index->Render();
 	}
+
+	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
+
+	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
+	{
+		index->SetMainCamera(_mainCamera);
+		index->Render();
+	}
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
 	EndTransparentSet();
 
@@ -319,8 +339,12 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
 
+	BeginTransparentSet();
+
 	// 디퍼드 버퍼를 조합하여 빈 Texture2D에 완성된 화면을 출력함
 	_deferredRenderer->Render();
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
 	EndTransparentSet();
 
@@ -372,11 +396,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 				}
 			}
 		}
-	}
-
-	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-	{
-		index->Draw(_mainCamera, _particleCamera);
 	}
 
 	// UI IMAGE 렌더링
@@ -857,8 +876,6 @@ void ArkEngine::ArkDX11::DX11Renderer::BeginRender()
 
 	_deviceContext->ClearDepthStencilView(_depthStencilView.Get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, 1.0F, 0);
 
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
@@ -886,8 +903,6 @@ void ArkEngine::ArkDX11::DX11Renderer::BeginTransparentSet()
 	float blendFactor[4] = { 0.0f, 0.0f, 0.0f, 0.0f };
 	UINT sampleMask = 0xffffffff;
 	_deviceContext->OMSetBlendState(_blendState.Get(), blendFactor, sampleMask);
-
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::EndTransparentSet()
@@ -1518,6 +1533,27 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDepthStecilState()
 	equalDesc.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
 	equalDesc.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
 	_device->CreateDepthStencilState(&equalDesc, _depthStencilState.GetAddressOf());
+
+	D3D11_DEPTH_STENCIL_DESC equalDesc3;
+	ZeroMemory(&equalDesc3, sizeof(D3D11_DEPTH_STENCIL_DESC));
+	equalDesc3.DepthEnable = true;
+	equalDesc3.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ZERO; // 깊이 값 기록을 비활성화
+	equalDesc3.DepthFunc = D3D11_COMPARISON_LESS;
+	equalDesc3.StencilEnable = true;
+	equalDesc3.StencilReadMask = 0xFF;
+	equalDesc3.StencilWriteMask = 0xFF;
+	// Stencil operations if pixel is front-facing.
+	equalDesc3.FrontFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	equalDesc3.FrontFace.StencilDepthFailOp = D3D11_STENCIL_OP_INCR;
+	equalDesc3.FrontFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	equalDesc3.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+	// Stencil operations if pixel is back-facing.
+	equalDesc3.BackFace.StencilFailOp = D3D11_STENCIL_OP_KEEP;
+	equalDesc3.BackFace.StencilDepthFailOp = D3D11_STENCIL_OP_DECR;
+	equalDesc3.BackFace.StencilPassOp = D3D11_STENCIL_OP_KEEP;
+	equalDesc3.BackFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
+
+	_device->CreateDepthStencilState(&equalDesc3, _depthStencilStateNoWrite.GetAddressOf());
 
 	D3D11_DEPTH_STENCIL_DESC equalDesc2;
 	ZeroMemory(&equalDesc2, sizeof(D3D11_DEPTH_STENCIL_DESC));
