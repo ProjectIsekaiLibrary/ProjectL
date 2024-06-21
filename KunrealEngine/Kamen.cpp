@@ -183,16 +183,16 @@ void KunrealEngine::Kamen::GamePattern()
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 
-	//EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
-	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	//SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	//SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	//SwordLinearAttackPattern();
-	//SwordChopPattern();
+	SwordChopPattern();
 
 	//BasicSwordAttackPattern();
 
-	//CoreEmmergencePattern();
+	//CoreEmmergencePattern();hjh
 
 	_basicPattern.emplace_back(_leftFireAttack);
 	//_basicPattern.emplace_back(_rightFireAttack);
@@ -629,10 +629,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			donutParticle->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
 			donutParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
 			donutParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
-			//donutParticle->GetComponent<Particle>()->SetParticleAngle(55.f);
 			donutParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			donutParticle->GetComponent<Particle>()->SetActive(false);
-			_particleSwordDonutAttack.emplace_back(donutParticle);
 
 			if (i == 0)
 			{
@@ -648,6 +646,38 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			{
 				donutParticle->SetParent(_swordDonutWarning3);
 				donutParticle->GetComponent<Particle>()->SetParticleSize(220.f, 220.f);
+			}
+		}
+	}
+	{
+		for (int i = 0; i < 3; i++)
+		{
+			std::string name = "donutParticle2" + std::to_string(i + 1);
+			auto donutParticle2 = _boss->GetObjectScene()->CreateObject(name);
+
+			donutParticle2->AddComponent<Particle>();
+			donutParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+			donutParticle2->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
+			donutParticle2->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+			donutParticle2->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
+			donutParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+			donutParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+			donutParticle2->GetComponent<Particle>()->SetActive(false);
+
+			if (i == 0)
+			{
+				donutParticle2->SetParent(_swordDonutWarning1);
+				donutParticle2->GetComponent<Particle>()->SetParticleSize(50.f, 50.0f);
+			}
+			else if (i == 1)
+			{
+				donutParticle2->SetParent(_swordDonutWarning2);
+				donutParticle2->GetComponent<Particle>()->SetParticleSize(100.f, 100.f);
+			}
+			else
+			{
+				donutParticle2->SetParent(_swordDonutWarning3);
+				donutParticle2->GetComponent<Particle>()->SetParticleSize(190.f, 190.f);
 			}
 		}
 	}
@@ -707,6 +737,64 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->SetActive(false);
 			_particleEmergenceAttack.emplace_back(teleportParticle);
+		}
+	}
+	{
+		{
+			std::string name = "teleportEgoParticle";
+			auto teleportEgoParticle = _boss->GetObjectScene()->CreateObject(name);
+			teleportEgoParticle->SetParent(_egoInsideAttack);
+
+			teleportEgoParticle->AddComponent<Particle>();
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
+			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
+		}
+
+		for (int i = 0; i < 2; i++)
+		{
+			std::string name = "teleportEgoParticle" + std::to_string(i + 1);
+			auto teleportEgoParticle = _boss->GetObjectScene()->CreateObject(name);
+			teleportEgoParticle->SetParent(_egoInsideAttack);
+
+			teleportEgoParticle->AddComponent<Particle>();
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
+
+			if (i == 0)
+			{
+				teleportEgoParticle->GetComponent<Particle>()->SetParticleAngle(80.0f, 0.0f, 0.0f);
+			}
+			else if (i == 1)
+			{
+				teleportEgoParticle->GetComponent<Particle>()->SetParticleAngle(260.0f, 0.0f, 0.0f);
+			}
+			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
+		}
+		{
+			std::string name = "teleportEgoParticle3";
+			auto teleportEgoParticle = _boss->GetObjectScene()->CreateObject(name);
+			teleportEgoParticle->SetParent(_egoInsideAttack);
+
+			teleportEgoParticle->AddComponent<Particle>();
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
+			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 	}
 	{
@@ -1165,7 +1253,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 내부 장판 공격
 	_egoInsideAttack = _boss->GetObjectScene()->CreateObject("EgoInsideAttack");
-	_egoInsideAttack->AddComponent<BoxCollider>();
+	/*_egoInsideAttack->AddComponent<BoxCollider>();
 	_egoInsideAttack->GetComponent<BoxCollider>()->SetActive(false);
 	_egoInsideAttack->AddComponent<Particle>();
 	_egoInsideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
@@ -1173,7 +1261,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoInsideAttack->GetComponent<Particle>()->SetParticleVelocity(80.f, false);
 	_egoInsideAttack->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 	_egoInsideAttack->SetTotalComponentState(false);
-	_egoInsideAttack->SetActive(false);
+	_egoInsideAttack->SetActive(false);*/
 }
 
 
@@ -1882,19 +1970,44 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 			auto isPlaying = animator->Play(pattern->_animName, pattern->_speed);
 
+			_timer += TimeManager::GetInstance().GetDeltaTime(); // 어디선가 더해지고있다
+
 			if (_isEgoAttack)
 			{
-				_egoInsideAttack->GetComponent<Particle>()->SetActive(true);
+				/*_egoInsideAttack->GetComponent<Particle>()->SetActive(true);
 
 				auto particleScaleUp = (_circleWarningSize) / 100.0f;
 				particleScaleUp += 1.0f;
 
-				_egoInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
+				_egoInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));*/
+				for (int i = 0; i < _particleEgoEmergenceAttack.size(); i++)
+				{
+					if (_timer < 1.3f)
+					{
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(true);
+
+						if (i == 1 || i == 2)
+						{
+							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(20 + 100 * _timer * 1.2f, 20 + 100 * _timer * 1.2f);
+						}
+						else
+						{
+							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 100 * _timer, 10 + 100 * _timer);
+						}
+
+					}
+					else
+					{
+						if (i == 0 || i == 3)
+						{
+							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
+						}
+					}
+				}						
 			}
 
 			if (isPlaying)
-			{
-				_timer += TimeManager::GetInstance().GetDeltaTime();
+			{		
 				for (int i = 0; i < _particleEmergenceAttack.size(); i++)
 				{
 					if (_timer < 1.3f)
@@ -1902,7 +2015,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(true);
 
 						if (i == 1 || i == 2)
-						{
+						{							
 							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(20 + 100 * _timer * 1.2f, 20 + 100 * _timer * 1.2f);
 						}
 						else
@@ -1931,9 +2044,9 @@ void KunrealEngine::Kamen::CreateEmergence()
 			}
 			else
 			{
-				_timer = 0.0f;
 				return false;
 			}
+
 		};
 
 	pattern->SetLogic(emergence);
@@ -2160,13 +2273,16 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 				// 첫번째 장판 위치에 파티클 실행
 				_swordDonutWarning1->GetComponent<Particle>()->SetActive(true);
 				GameObject* swordDonutChild1 = _swordDonutWarning1->GetChilds()[0];
+				GameObject* swordDonutChild2 = _swordDonutWarning1->GetChilds()[1];
 				swordDonutChild1->GetComponent<Particle>()->SetActive(true);
+				swordDonutChild2->GetComponent<Particle>()->SetActive(true);
 			
 				// 첫번째 장판 실행이 끝난 후
 				if (isPlayed1)
 				{
 					_swordDonutWarning1->GetComponent<Particle>()->SetActive(false);
 					swordDonutChild1->GetComponent<Particle>()->SetActive(false);
+					swordDonutChild2->GetComponent<Particle>()->SetActive(false);
 				}
 			}
 
@@ -2180,13 +2296,16 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 				{
 					// 두번째 장판 위치에 파티클 실행
 					_swordDonutWarning2->GetComponent<Particle>()->SetActive(true);
-					GameObject* swordDonutChild2 = _swordDonutWarning2->GetChilds()[0];
+					GameObject* swordDonutChild1 = _swordDonutWarning2->GetChilds()[0];
+					GameObject* swordDonutChild2 = _swordDonutWarning2->GetChilds()[1];
+					swordDonutChild1->GetComponent<Particle>()->SetActive(true);
 					swordDonutChild2->GetComponent<Particle>()->SetActive(true);
 				
 					// 두번째 장판 실행이 끝난 후
 					if (isPlayed2)
 					{
 						_swordDonutWarning2->GetComponent<Particle>()->SetActive(false);
+						swordDonutChild1->GetComponent<Particle>()->SetActive(false);
 						swordDonutChild2->GetComponent<Particle>()->SetActive(false);
 					}
 				}
@@ -2199,15 +2318,18 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 				if (_timer >= 1.3)
 				{
 					_swordDonutWarning3->GetComponent<Particle>()->SetActive(true);
-					GameObject* swordDonutChild3 = _swordDonutWarning3->GetChilds()[0];
-					swordDonutChild3->GetComponent<Particle>()->SetActive(true);
+					GameObject* swordDonutChild1 = _swordDonutWarning3->GetChilds()[0];
+					GameObject* swordDonutChild2 = _swordDonutWarning3->GetChilds()[1];
+					swordDonutChild1->GetComponent<Particle>()->SetActive(true);
+					swordDonutChild2->GetComponent<Particle>()->SetActive(true);
 				
 					// 장판 실행이 완료되면
 					if (isPlayed3 && _timer > 2.0f)
 					{
 						{
 							_swordDonutWarning3->GetComponent<Particle>()->SetActive(false);
-							swordDonutChild3->GetComponent<Particle>()->SetActive(false);
+							swordDonutChild1->GetComponent<Particle>()->SetActive(false);
+							swordDonutChild2->GetComponent<Particle>()->SetActive(false);
 				
 							pattern->DeleteSubObject(_freeSword);
 							return false;
@@ -2282,7 +2404,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				pattern->SetSubObject(_egoLazerCollider);
 			}
 			else
-			{
+			{				
 				pattern->DeleteSubObject(_egoLazer);
 				pattern->DeleteSubObject(_egoLazerCollider);
 			}
@@ -2318,6 +2440,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					if (_isEgoAttack)
 					{
 						_egoLazer->GetComponent<Particle>()->SetActive(false);
+						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
 						//if (pattern->_colliderOnCount > 0)
 						//{
 						//	_egoLazerCollider->GetComponent<BoxCollider>()->SetActive(false);

@@ -202,7 +202,10 @@ namespace KunrealEngine
 		GameObject* _egoRightHandBone;
 
 		GameObject* _egoInsideWarning;
+
 		GameObject* _egoInsideAttack;
+
+		GameObject* _egoEmAttack;
 
 		std::vector<GameObject*> _fakeBoss;
 
@@ -282,5 +285,6 @@ namespace KunrealEngine
 		std::vector<GameObject*> _particleSwordDonutAttack;
 
 		std::vector<GameObject*> _particleEmergenceAttack;
+		std::vector<GameObject*> _particleEgoEmergenceAttack;
 	};
 }
