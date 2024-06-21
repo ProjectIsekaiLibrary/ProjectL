@@ -762,12 +762,28 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		lazerParticle->SetParent(_lazer);
 
 		lazerParticle->AddComponent<Particle>();
-		lazerParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+		lazerParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 		lazerParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
-		lazerParticle->GetComponent<Particle>()->SetParticleVelocity(84.f, true);
+		lazerParticle->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
 		lazerParticle->GetComponent<Particle>()->SetParticleSize(40.f, 40.0f);
-		lazerParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
-		lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		lazerParticle->GetComponent<Particle>()->AddParticleColor(0.8f, 1.0f, 0.0f);
+		lazerParticle->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		lazerParticle->GetComponent<Particle>()->SetActive(false);
+	}
+	{
+		std::string name = "egoLazerParticle";
+		auto lazerParticle = _boss->GetObjectScene()->CreateObject(name);
+		lazerParticle->SetParent(_egoLazer);
+
+		lazerParticle->AddComponent<Particle>();
+		lazerParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+		lazerParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
+		lazerParticle->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+		lazerParticle->GetComponent<Particle>()->SetParticleSize(40.f, 40.0f);
+		lazerParticle->GetComponent<Particle>()->AddParticleColor(0.8f, 1.0f, 0.0f);
+		lazerParticle->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 		lazerParticle->GetComponent<Particle>()->SetActive(false);
 	}
 }
@@ -951,8 +967,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_lazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
 	_lazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
 	_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-	_lazer->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
-	_lazer->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_lazer->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.5f);
+	//_lazer->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_lazer->GetComponent<Particle>()->SetActive(false);
 	_lazer->SetTotalComponentState(false);
 	_lazer->SetActive(false);
@@ -1121,11 +1137,11 @@ void KunrealEngine::Kamen::CreateSubObject()
 	// ·¹ÀÌÀú 
 	_egoLazer = _boss->GetObjectScene()->CreateObject("EgoLazer");
 	_egoLazer->AddComponent<Particle>();
-	_egoLazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/RailGun_64.dds", 1000);
+	_egoLazer->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/fx_LightFlash1.dds", 1000);
 	_egoLazer->GetComponent<Particle>()->SetParticleDuration(1.7f, 2.0f);
 	_egoLazer->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
 	_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-	_egoLazer->GetComponent<Particle>()->AddParticleColor(0.4f, 1.0f, 0.0f);
+	_egoLazer->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.5f);
 	_egoLazer->GetComponent<Particle>()->SetActive(false);
 	_egoLazer->SetTotalComponentState(false);
 	_egoLazer->SetActive(false);
@@ -2233,7 +2249,6 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 			auto lazerScaleDir = DirectX::XMVectorScale(direction, lazerPosOffset);
 			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
 			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-			_lazer->GetChilds()[0]->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
 			_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 
 			pattern->SetSpeed(20.0f);
@@ -2253,6 +2268,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 				_egoLazer->GetComponent<Transform>()->SetPosition(egoPos.x + egoLazerScaleDir.m128_f32[0], 16.0f, egoPos.z + egoLazerScaleDir.m128_f32[2]);
 				_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
+				_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
 
 				auto egolazerColliderScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerScaleOffset);
 
@@ -2313,9 +2329,11 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				{
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetComponent<Particle>()->SetParticleSize(40.f,40.f);
+					//_lazer->GetComponent<Particle>()->SetParticleSize(40.f,40.f);
+					_lazer->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 60.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
 					
 					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
+					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 					if (pattern->_colliderOnCount > 0)
 					{
@@ -2326,6 +2344,10 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					{
 						_egoLazer->GetComponent<Particle>()->SetActive(true);
 						_egoLazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+						
+						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
+						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+						
 						//if (pattern->_colliderOnCount > 0)
 						//{
 						//	_egoLazerCollider->GetComponent<BoxCollider>()->SetActive(true);
