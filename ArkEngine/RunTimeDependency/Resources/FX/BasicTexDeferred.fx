@@ -38,10 +38,14 @@ float gAlpha[100];
 SamplerState samAnisotropic
 {
     Filter = ANISOTROPIC;
-    MaxAnisotropy = 4;
+    MaxAnisotropy = 16;
 
     AddressU = WRAP;
     AddressV = WRAP;
+
+    MipLODBias = 0.0;
+    MinLOD = 0;
+    MaxLOD = 15;
 };
 
 struct VertexIn

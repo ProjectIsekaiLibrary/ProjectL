@@ -32,15 +32,28 @@ Texture2D gShadowDepthMapTexture;
 
 TextureCube gCubeMap;
 
+//SamplerState samAnisotropic
+//{
+//    Filter = MIN_MAG_MIP_LINEAR;
+//
+//	//MaxAnisotropy = 4;
+//
+//    AddressU = CLAMP;
+//    AddressV = CLAMP;
+//    AddressW = CLAMP;
+//};
+
 SamplerState samAnisotropic
 {
-    Filter = MIN_MAG_MIP_LINEAR;
+    Filter = MIN_MAG_MIP_POINT;
+    MaxAnisotropy = 16;
 
-	//MaxAnisotropy = 4;
+    AddressU = WRAP;
+    AddressV = WRAP;
 
-    AddressU = CLAMP;
-    AddressV = CLAMP;
-    AddressW = CLAMP;
+    MipLODBias = 0.0;
+    MinLOD = 0;
+    MaxLOD = 15;
 };
 
 SamplerComparisonState samShadow

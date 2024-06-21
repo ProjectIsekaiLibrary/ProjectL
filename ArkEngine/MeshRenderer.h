@@ -56,6 +56,10 @@ namespace ArkEngine
 
 		bool GetAlphaExist();
 
+		const float GetDepth();
+
+		const std::vector<IRenderable*>& GetMeshList();
+
 	public:
 		const std::string& GetName();
 

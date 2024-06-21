@@ -388,8 +388,8 @@ void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* mainCamera, ArkEngine::
 			SetEyePos(mainCamera->GetCameraPos());
 		}
 
-		float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
-		_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
+		//float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
+		//_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 	}
 }
 

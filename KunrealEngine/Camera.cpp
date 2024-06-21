@@ -225,34 +225,34 @@ void KunrealEngine::Camera::MoveToDebug()
 
 	if (InputSystem::GetInstance()->KeyInput(KEY::A))
 	{
-		CameraStrafe(-20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraStrafe(-40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::D))
 	{
-		CameraStrafe(20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraStrafe(40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::W))
 	{
-		CameraWalk(20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraWalk(40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::S))
 	{
-		CameraWalk(-20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraWalk(-40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::Q))
 	{
-		CameraUpDown(-20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraUpDown(-40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::E))
 	{
-		CameraUpDown(20.0f * TimeManager::GetInstance().GetDeltaTime());
+		CameraUpDown(40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::R))
 	{
-		GRAPHICS->GetMainCamera()->RotateCamera({ 0, -20.0f * TimeManager::GetInstance().GetDeltaTime() });
+		GRAPHICS->GetMainCamera()->RotateCamera({ 0, -40.0f * TimeManager::GetInstance().GetDeltaTime() });
 	}
 	else if (InputSystem::GetInstance()->KeyInput(KEY::T))
 	{
-		GRAPHICS->GetMainCamera()->RotateCamera({ 0, 20.0f * TimeManager::GetInstance().GetDeltaTime() });
+		GRAPHICS->GetMainCamera()->RotateCamera({ 0, 40.0f * TimeManager::GetInstance().GetDeltaTime() });
 	}
 }

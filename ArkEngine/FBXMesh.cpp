@@ -617,6 +617,18 @@ float ArkEngine::ArkDX11::FBXMesh::GetAlhpa()
 	return _alpha;
 }
 
+
+const float ArkEngine::ArkDX11::FBXMesh::GetDepth(DirectX::XMFLOAT3& cameraPos)
+{
+	DirectX::XMVECTOR source = DirectX::XMLoadFloat3(&cameraPos);
+
+	DirectX::XMVECTOR distance = DirectX::XMVectorSubtract(_meshTransform->GetTransformMatrix().r[3], source);
+
+	float result = DirectX::XMVectorGetX(DirectX::XMVector3Length(distance));
+
+	return result;
+}
+
 const std::string& ArkEngine::ArkDX11::FBXMesh::GetName()
 {
 	return _fileName;

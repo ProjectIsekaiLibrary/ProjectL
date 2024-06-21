@@ -258,6 +258,7 @@ namespace ArkEngine
 			Microsoft::WRL::ComPtr<ID3D11RasterizerState> _shadowRS;
 
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilState;
+			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilStateNoWrite;
 			Microsoft::WRL::ComPtr<ID3D11DepthStencilState> _depthStencilStateDisable;
 
 			Microsoft::WRL::ComPtr<ID3D11BlendState> _blendState;
