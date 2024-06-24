@@ -36,6 +36,10 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	// 머티리얼 생성(임의)	/// 이게 0.5라서?
 	_material = _physics->createMaterial(0.5f, 0.5f, 0.5f);
 
+	// FBX cylinder 모양의 collider mesh 생성
+	CreateCylinderData();
+
+
 	///												// halfHeight가 0이면 sphere가 된다
 	//physx::PxCapsuleGeometry capsuleGeometry(3.0f, 0.0f); // Radius: 1.0, Half Height: 2.0 (total height = 4.0)
 	//physx::PxQuat rotation(physx::PxPi / 2, physx::PxVec3(0.0f, 0.0f, 1.0f));
@@ -175,6 +179,9 @@ void KunrealEngine::PhysicsSystem::CreateCylinderCollider(Collider* collider)
 	// 다 만들었으면 shape 붙여주고
 	customActor->attachShape(*shape);
 
+	// collider 컴포넌트에 shape 전달
+	collider->_shape = shape;
+
 	// scene에 추가
 	_pxScene->addActor(*customActor);
 
@@ -211,7 +218,7 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 
 		if (!pair.first->GetOwnerObject()->GetActivated())
 		{
-			pair.first->_isCollided = false;
+			//pair.first->_isCollided = false;
 			pair.first->_targetObj = nullptr;
 		}
 	}
@@ -230,7 +237,7 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(Collider* collider)
 {
 	/// attach된 shape의 크기를 직접 변경해주는 함수가 없어서 사이즈 변경 함수가 호출될 때마다 삭제/추가를 반복하도록 만들었음
 	// 붙여줬던 shape를 떼주고
-	_dynamicMap.at(collider)->detachShape(*collider->_shape);
+	this->_dynamicMap.at(collider)->detachShape(*collider->_shape);
 
 	// 메모리 해제
 	/// detachShape에서 delete까지 해주는 모양이다
@@ -243,10 +250,44 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(Collider* collider)
 		collider->GetColliderScale().z / 2.f), *_material);
 
 	// 새롭게 만든 shape 추가
-	_dynamicMap.at(collider)->attachShape(*boxShape);
+	this->_dynamicMap.at(collider)->attachShape(*boxShape);
 
 	// userData 업데이트
 	static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = boxShape;
+}
+
+
+void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
+{
+	// 붙여줬던 shape를 떼주고
+	this->_dynamicMap.at(collider)->detachShape(*collider->_shape);
+
+	// 크기에 맞게 새로운 shape 생성
+	physx::PxMeshScale scale(physx::PxVec3(
+		collider->GetColliderScale().x, collider->GetColliderScale().y, collider->GetColliderScale().z),
+		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
+	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
+	physx::PxShape* shape = _physics->createShape(geom, *_material);
+
+	// 만들었던 shape를 다시 붙여준다
+	this->_dynamicMap.at(collider)->attachShape(*shape);
+
+	// userData 업데이트
+	static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = shape;
+
+}
+
+
+void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active)
+{
+	if (active)
+	{
+		this->_dynamicMap.at(collider)->wakeUp();
+	}
+	else
+	{
+		this->_dynamicMap.at(collider)->putToSleep();
+	}
 }
 
 void KunrealEngine::PhysicsSystem::TestFunc()
@@ -394,6 +435,11 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 
 	col1 = GetColliderFromDynamic(casted1);
 	col2 = GetColliderFromDynamic(casted2);
+
+	if (col1->GetOwnerObject()->GetObjectName() == "Player" || col2->GetOwnerObject()->GetObjectName() == "Player")
+	{
+		int a = 10;
+	}
 
 	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
 	if (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated())
