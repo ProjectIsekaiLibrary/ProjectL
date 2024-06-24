@@ -69,6 +69,16 @@ namespace KunrealEngine
 		Boss* _currentBoss;			// 현재 맵의 보스
 		float _currentDamage;		// 보스에 입힌 데미지
 
+	/// 파티클 배치용 멤버변수
+	private:
+		GameObject* _shotParticle2;
+		GameObject* _shotParticle3;
+		GameObject* _shotParticle4;
+
+		GameObject* _meteorParticle2;
+		GameObject* _meteorParticle3;
+		GameObject* _meteorParticle4;
+
 	private:
 		void ResetShotPos();
 		void CreateAbility1();

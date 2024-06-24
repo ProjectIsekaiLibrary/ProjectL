@@ -68,6 +68,9 @@ void KunrealEngine::PlayerAbility::Update()
 		Startcoroutine(shotCoolDown);
 		_shot->SetActive(true);
 		_shot->GetComponent<Projectile>()->SetActive(true);
+		_shotParticle2->GetComponent<Particle>()->SetActive(true);
+		_shotParticle3->GetComponent<Particle>()->SetActive(true);
+		_shotParticle4->GetComponent<Particle>()->SetActive(true);
 		_shot->GetComponent<Projectile>()->ResetCondition();
 
 		_playerComp->_playerStatus = Player::Status::ABILITY;
@@ -129,6 +132,9 @@ void KunrealEngine::PlayerAbility::Update()
 	{
 		_meteor->SetActive(true);
 		_meteor->GetComponent<Particle>()->SetActive(true);
+		_meteorParticle2->GetComponent<Particle>()->SetActive(true);
+		_meteorParticle3->GetComponent<Particle>()->SetActive(true);
+		_meteorParticle4->GetComponent<Particle>()->SetActive(true);
 		_playerComp->_playerStatus = Player::Status::IDLE;
 	}
 
@@ -278,14 +284,50 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 
 	// 파티클 추가	// 번개공
 	Particle* shotParticle = _shot->AddComponent<Particle>();
-	shotParticle->SetParticleEffect("Shot", "Resources/Textures/Particles/fx_Flare6.dds", 1000);
-	shotParticle->SetParticleSize(15.0f, 15.0f);
-	shotParticle->SetParticleVelocity(24.0f, true);
-	shotParticle->SetParticleDuration(1.2f, 0.1f);
-	shotParticle->AddParticleColor(0.0f, 0.3f, 1.0f);
+	shotParticle->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	shotParticle->SetParticleSize(7.f, 7.0f);
+	shotParticle->SetParticleVelocity(3.0f, true);
+	shotParticle->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	shotParticle->AddParticleColor(0.5f, 0.5f, 2.0f);
 	//shotParticle->SetParticleRotation(90.0f, _shot->GetComponent<Transform>()->GetRotation().y, 0.0f);
-	shotParticle->SetParticleDirection(17.1f, 0.0f, 1.0f);
+	shotParticle->SetParticleDuration(0.7f, 0.05f);
 	shotParticle->SetActive(true);
+
+	_shotParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerQ2");
+	_shotParticle2->AddComponent<Particle>();
+	_shotParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	_shotParticle2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
+	_shotParticle2->GetComponent<Particle>()->SetParticleVelocity(7.0f, true);
+	_shotParticle2->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
+	_shotParticle2->GetComponent<Particle>()->AddParticleColor(0.0f, 1.5f, 10.f);
+	_shotParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_shotParticle2->GetComponent<Particle>()->SetActive(true);
+	_shotParticle2->SetActive(true);
+	_shotParticle2->SetParent(_shot);
+
+	_shotParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerQ3");
+	_shotParticle3->AddComponent<Particle>();
+	_shotParticle3->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+	_shotParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
+	_shotParticle3->GetComponent<Particle>()->SetParticleVelocity(200.0f, true);
+	_shotParticle3->GetComponent<Particle>()->SetParticleSize(4.0f, 4.0f);
+	_shotParticle3->GetComponent<Particle>()->AddParticleColor(0.0f, 1.5f, 10.f);
+	_shotParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_shotParticle3->GetComponent<Particle>()->SetActive(true);
+	_shotParticle3->SetActive(true);
+	_shotParticle3->SetParent(_shot);
+
+	_shotParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerQ4");
+	_shotParticle4->AddComponent<Particle>();
+	_shotParticle4->GetComponent<Particle>()->SetParticleEffect("EnergyBolt1", "Resources/Textures/Particles/fx_EnergyBolt1.dds", 1000);
+	_shotParticle4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
+	_shotParticle4->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+	_shotParticle4->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_shotParticle4->GetComponent<Particle>()->AddParticleColor(0.0f, 1.5f, 10.f);
+	_shotParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_shotParticle4->GetComponent<Particle>()->SetActive(true);
+	_shotParticle4->SetActive(true);
+	_shotParticle4->SetParent(_shot);
 
 	shotProj->SetMeshObject("Meteor/Meteor");
 
@@ -323,8 +365,8 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(shotProj->GetDirection(), 50.0f * TimeManager::GetInstance().GetDeltaTime()));
 
 				_shot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
-				_shot->GetComponent<Transform>()->SetRotation(0.0f, _shot->GetComponent<Transform>()->GetRotation().y + 10.0f, 0.0f);
-				_shot->GetComponent<Particle>()->SetParticleRotation(_shot->GetComponent<Transform>()->GetRotation().y, 0.0f, 0.0f);
+				//_shot->GetComponent<Transform>()->SetRotation(0.0f, _shot->GetComponent<Transform>()->GetRotation().y + 10.0f, 0.0f);
+				//_shot->GetComponent<Particle>()->SetParticleRotation(_shot->GetComponent<Transform>()->GetRotation().y, 0.0f, 0.0f);
 				shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec))); 
 
 			}
@@ -481,7 +523,7 @@ void KunrealEngine::PlayerAbility::ResetMeteorPos()
 	_meteor->GetComponent<Transform>()->SetPosition
 	(
 		_meteor->GetComponent<Transform>()->GetPosition().x,
-		_meteor->GetComponent<Transform>()->GetPosition().y + 40.0f,
+		_meteor->GetComponent<Transform>()->GetPosition().y + 80.0f,
 		_meteor->GetComponent<Transform>()->GetPosition().z
 	);
 
@@ -528,7 +570,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteor = meteor->_projectile;
 
 	// 우리 에셋으론 세워야 이쁘다
-	_meteor->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, -90.0f);
+	_meteor->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 90.0f);
 
 	// 투사체 컴포넌트 추가
 	_meteor->AddComponent<Projectile>();
@@ -540,13 +582,46 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	// 파티클 추가	// 불타오르게
 	Particle* meteorParticle = _meteor->AddComponent<Particle>();
 	//Particle* meteorParticle = _meteor->GetComponent<Particle>();
-	meteorParticle->SetParticleEffect("Fire", "Resources/Textures/Particles/flare.dds", 1000);
-	meteorParticle->SetParticleSize(40.0f, 20.0f);
-	meteorParticle->SetParticleVelocity(20.0f, true);
-	meteorParticle->SetParticleDuration(2.0f, 2.0f);
-	//meteorParticle->AddParticleColor(1.0f, 0.0f, 0.0f);
-	meteorParticle->SetParticleDirection(0.0f, 20.0f, 0.0f);
+	meteorParticle->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	meteorParticle->SetParticleSize(17.f, 20.0f);
+	meteorParticle->SetParticleVelocity(3.0f, true);
+	meteorParticle->SetParticleDuration(1.5f, 1.5f);
+	meteorParticle->AddParticleColor(6.0f, 0.2f, 0.1f);
+	meteorParticle->SetParticleDirection(0.0f, 50.0f, 0.0f);
 	meteorParticle->SetActive(true);
+
+	_meteorParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR2");
+	_meteorParticle2->AddComponent<Particle>();
+	_meteorParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	_meteorParticle2->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.4f);
+	_meteorParticle2->GetComponent<Particle>()->SetParticleVelocity(6.5f, true);
+	_meteorParticle2->GetComponent<Particle>()->SetParticleSize(17.f, 20.0f);
+	_meteorParticle2->GetComponent<Particle>()->AddParticleColor(2.0f, 1.0f, 0.0f);
+	_meteorParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+	_meteorParticle2->SetParent(_meteor);
+	
+
+	_meteorParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR3");
+	_meteorParticle3->GetComponent<Transform>()->SetPosition(0, 10.0f, 0);
+	_meteorParticle3->AddComponent<Particle>();
+	_meteorParticle3->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
+	_meteorParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
+	_meteorParticle3->GetComponent<Particle>()->SetParticleVelocity(6.0f, true);
+	_meteorParticle3->GetComponent<Particle>()->SetParticleSize(13.f, 13.0f);
+	_meteorParticle3->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
+	_meteorParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
+	_meteorParticle3->SetParent(_meteor);
+
+	_meteorParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR4");
+	_meteorParticle4->GetComponent<Transform>()->SetPosition(0, 10.f, 0.f);
+	_meteorParticle4->AddComponent<Particle>();
+	_meteorParticle4->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
+	_meteorParticle4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
+	_meteorParticle4->GetComponent<Particle>()->SetParticleVelocity(6.0f, true);
+	_meteorParticle4->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
+	_meteorParticle4->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
+	_meteorParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
+	_meteorParticle4->SetParent(_meteor);
 
 	// 비활성화 조건		// 인게임에서는 소멸처럼
 	meteorProj->SetDestoryCondition([meteorProj, this]()->bool
@@ -578,7 +653,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				_meteor->GetComponent<Transform>()->SetPosition
 				(
 					_meteor->GetComponent<Transform>()->GetPosition().x,
-					_meteor->GetComponent<Transform>()->GetPosition().y - 20.0f * TimeManager::GetInstance().GetDeltaTime(),
+					_meteor->GetComponent<Transform>()->GetPosition().y - 40.0f * TimeManager::GetInstance().GetDeltaTime(),
 					_meteor->GetComponent<Transform>()->GetPosition().z
 				);
 			}
