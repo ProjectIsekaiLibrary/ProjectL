@@ -262,6 +262,7 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetWarningAttackDirection(
 {
 	auto colliderPos = subObject->GetComponent<Transform>()->GetPosition();
 	auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+	colliderPos.y = playerPos.y;
 
 	auto colliderDirVec = ToolBox::GetDirectionVec(colliderPos, playerPos);
 
@@ -272,6 +273,10 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetBossAttackDirection(Gam
 {
 	auto colliderPos = subObject->GetComponent<Transform>()->GetPosition();
 	auto bossPos = _boss->GetComponent<Transform>()->GetPosition();
+	auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+
+	colliderPos.y = playerPos.y;
+	bossPos.y = playerPos.y;
 
 	auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, colliderPos);
 
