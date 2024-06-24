@@ -110,12 +110,14 @@ void KunrealEngine::BoxCollider::OnTriggerExit()
 
 void KunrealEngine::BoxCollider::SetActive(bool active)
 {
+	this->_isActivated = active;
+
 	if (!this->_isActivated)
 	{
 		this->_isCollided = false;
+		this->_targetObj = nullptr;
 	}
 
-	this->_isActivated = active;
 	PhysicsSystem::GetInstance().SetActorState(this, active);
 	_debugObject->SetActive(active);
 }
