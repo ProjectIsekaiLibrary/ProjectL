@@ -71,6 +71,9 @@ namespace KunrealEngine
 		void SetBoxSize(Collider* collider);
 		void SetCylinderSize(Collider* collider);
 
+		// physx 객체 on off
+		void SetActorState(Collider* collider, bool active);
+
 		// Dynamic actor들 업데이트
 		void UpdateDynamics();
 		

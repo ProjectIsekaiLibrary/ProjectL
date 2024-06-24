@@ -99,6 +99,7 @@ namespace KunrealEngine
 
 		// 평면 장판 위해 각도 설정
 		void SetParticleAngle(DirectX::XMFLOAT3& angle);
+		void SetParticleAngle(float x, float y, float z);
 
 		// 평면 장판 위해 각도 설정
 		void SetParticleAngle(float angle);

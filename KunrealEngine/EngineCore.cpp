@@ -347,8 +347,8 @@ void KunrealEngine::EngineCore::Update()
 	//	//}
 	//	
 	//	bossTeleportAttack1->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
-	//	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
-	//	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
+	//	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x + 20, _particleTelepotyPointList[0].y + 20);
+	//	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x + 20, _particleTelepotyPointList[0].y + 20);
 	//	bossTeleportAttack4->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
 
 	//	
@@ -1606,7 +1606,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	bossTeleportAttack1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
 	bossTeleportAttack1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 	bossTeleportAttack1->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-	bossTeleportAttack1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	bossTeleportAttack1->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
 	bossTeleportAttack1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	//_particleTeleportList
 
@@ -1619,16 +1619,18 @@ void KunrealEngine::EngineCore::ParticleTest()
 	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
 	bossTeleportAttack2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
 	bossTeleportAttack2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	bossTeleportAttack2->GetComponent<Particle>()->SetParticleAngle(80.0f, 0.0f, 0.0f);
 
 	bossTeleportAttack3 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack3");
 	bossTeleportAttack3->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);
 	bossTeleportAttack3->AddComponent<Particle>();
-	bossTeleportAttack3->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	bossTeleportAttack3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
 	bossTeleportAttack3->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
 	bossTeleportAttack3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
 	bossTeleportAttack3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	bossTeleportAttack3->GetComponent<Particle>()->SetParticleAngle(260.0f, 0.0f, 0.0f);
 
 	bossTeleportAttack4 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack4");
 	bossTeleportAttack4->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);
@@ -1637,7 +1639,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	bossTeleportAttack4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
 	bossTeleportAttack4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 	bossTeleportAttack4->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-	bossTeleportAttack4->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	bossTeleportAttack4->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
 	bossTeleportAttack4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 }
 

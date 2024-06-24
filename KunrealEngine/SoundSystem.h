@@ -63,6 +63,8 @@ namespace KunrealEngine
 
 		std::vector<std::string> GetSoundPathList();
 
+		void Update();
+
 		void updateSoundPosition(int index, float x, float y, float z);
 
 		void updateListenerPosition(float x, float y, float z);
@@ -85,6 +87,8 @@ namespace KunrealEngine
 		FMOD::System* _fmodSystem;
 		std::vector<Sound> _soundBuffer;
 		std::vector<FMOD::Channel*> _channels;
+
+		const float DISTANCEFACTOR;
 	};
 
 	// Usage example:
