@@ -10,6 +10,8 @@
 #include "Navigation.h"
 #include "ToolBox.h"
 
+#include "CylinderCollider.h"
+
 KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE), _owner(nullptr)
 	, _playerInfo(
@@ -53,10 +55,16 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->GetComponent<MeshRenderer>()->SetCartoonState(true);
 	
 	this->_owner->AddComponent<BoxCollider>();
+	//this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
+
+	
+	// 잘들어가나
+	// this->_owner->AddComponent<CylinderCollider>();
+	//this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(2.0f, 4.0f, 2.0f);
 }
 
 void KunrealEngine::Player::Release()
@@ -77,6 +85,7 @@ void KunrealEngine::Player::Update()
 	PlayerSweep();
 
 	DebugFunc();
+
 }
 
 void KunrealEngine::Player::LateUpdate()
@@ -197,6 +206,12 @@ void KunrealEngine::Player::SetHitState(int patternType)
 
 void KunrealEngine::Player::CalculateSweep(DirectX::XMVECTOR direction)
 {
+	// 이미 누워있거나 날아가고 있으면 더 안날아가게
+	if (this->_playerStatus == Status::SWEEP)
+	{
+		return;
+	}
+
 	// 노드를 비워준다
 	this->_sweepNode.clear();
 	this->_nodeCount = 0;
