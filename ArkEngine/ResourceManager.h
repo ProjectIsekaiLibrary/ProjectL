@@ -243,6 +243,8 @@ namespace ArkEngine
 		void AddTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
 		void DeleteTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
 
+		void SortTransParentMesh();
+
 	public:
 		void ReleaseAll();
 

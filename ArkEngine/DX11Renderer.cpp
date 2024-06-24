@@ -305,7 +305,9 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
-	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	ResourceManager::GetInstance()->SortTransParentMesh();
+	
+	for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
 	{
 		index->Render();
 	}

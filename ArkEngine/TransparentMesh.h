@@ -56,8 +56,11 @@ namespace ArkEngine
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);
-			void Render();
+			void Render(float yOffset = 0.0f);
 			void Finalize();
+
+			float GetTransParency();
+			void UpPosition(float up);
 
 		private:
 			void BuildGeomtryBuffers();

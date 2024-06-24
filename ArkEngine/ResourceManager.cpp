@@ -4,6 +4,7 @@
 #include "ArkBuffer.h"
 #include "ParsingStructs.h"
 #include "MeshRenderer.h"
+#include "TransparentMesh.h"
 #include "ResourceManager.h"
 
 ArkEngine::ResourceManager* ArkEngine::ResourceManager::instance = nullptr;
@@ -554,6 +555,15 @@ void ArkEngine::ResourceManager::DeleteTransParentMesh(ArkEngine::ArkDX11::Trans
 	_transParentMeshList.erase(std::remove(_transParentMeshList.begin(), _transParentMeshList.end(), mesh), _transParentMeshList.end());
 
 	delete mesh;
+}
+
+
+void ArkEngine::ResourceManager::SortTransParentMesh()
+{
+	std::sort(_transParentMeshList.begin(), _transParentMeshList.end(),
+		[](ArkEngine::ArkDX11::TransparentMesh* mesh1, ArkEngine::ArkDX11::TransparentMesh* mesh2) {
+			return mesh1->GetTransParency() < mesh2->GetTransParency();
+		});
 }
 
 void ArkEngine::ResourceManager::SetTextureNameList(std::string name)

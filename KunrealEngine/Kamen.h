@@ -94,6 +94,7 @@ namespace KunrealEngine
 		void CreateOutsideSafe();
 		void CreateInsideSafe();
 		void CreateDonutSafe();
+		void CreateDonutAttack();
 
 		void CreateSwordLookPlayer();
 
@@ -148,6 +149,7 @@ namespace KunrealEngine
 		BossPattern* _outsideSafe;
 		BossPattern* _insideSafe;
 		BossPattern* _donutSafe;
+		BossPattern* _donutAttack;
 
 		BossPattern* _basicSwordAttack;
 		BossPattern* _swordEmmergence;
@@ -179,6 +181,8 @@ namespace KunrealEngine
 		GameObject* _swordDonutWarning1;
 		GameObject* _swordDonutWarning2;
 		GameObject* _swordDonutWarning3;
+
+		std::vector<GameObject*> _swordDonutAttack;
 
 		GameObject* _freeSword;
 		GameObject* _freeSwordCollider;
@@ -234,6 +238,9 @@ namespace KunrealEngine
 		unsigned int _targetIndex;
 
 	private:
+		float _donutSize;
+
+	private:
 		std::function<void()> _callInitLogic;
 
 	private:
@@ -258,6 +265,8 @@ namespace KunrealEngine
 		float _swordChopSpeed;
 
 		float _timer;
+
+		float _swordTimer;
 
 		float _warningMaxTimer;
 
@@ -286,5 +295,9 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _particleEmergenceAttack;
 		std::vector<GameObject*> _particleEgoEmergenceAttack;
+
+		std::vector<GameObject*> _particleSwordDonut1;
+		std::vector<GameObject*> _particleSwordDonut2;
+		std::vector<GameObject*> _particleSwordDonut3;
 	};
 }

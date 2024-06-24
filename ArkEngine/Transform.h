@@ -26,7 +26,7 @@ namespace ArkEngine
 		public:
 			void Initialize();
 
-			const DirectX::XMMATRIX GetTransformMatrix() const;
+			const DirectX::XMMATRIX GetTransformMatrix();
 			void CaculateTransform();
 
 			const DirectX::XMMATRIX GetTranslationMatrix() const;
