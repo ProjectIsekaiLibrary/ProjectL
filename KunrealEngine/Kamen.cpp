@@ -26,7 +26,7 @@ KunrealEngine::Kamen::Kamen()
 	_isEgoAttack(false), _egoLeftHandBone(nullptr), _egoRightHandBone(nullptr),
 	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr), _reverseEmergence(nullptr),
 	_emergence(nullptr), _emergencePos(), _bossInsideWarning(nullptr), _bossInsideAttack(nullptr), _bossRandomInsideWarning(nullptr),
-	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f)
+	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f)
 {
 	BossBasicInfo info;
 
@@ -2814,7 +2814,7 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
 		{
-			_circleWarningSize = 40.0f;
+			_bossCircleWarningSize = 40.0f;
 
 			auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
 			auto ranY = ToolBox::GetRandomFloat(-90.0f, 10.0f);
@@ -2826,7 +2826,7 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 			_bossInsideWarning->GetComponent<Transform>()->SetPosition(_emergencePos.x, _bossTransform->GetPosition().y, _emergencePos.z);
 			_timer = 0.0f;
 
-			_bossInsideWarning->GetComponent<Transform>()->SetScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
+			_bossInsideWarning->GetComponent<Transform>()->SetScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
 
 			if (_isEgoAttackReady)
 			{
@@ -2834,7 +2834,7 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 				_egoInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
 				_egoInsideWarning->GetComponent<Transform>()->SetPosition(_alterEgo->GetComponent<Transform>()->GetPosition().x, _alterEgo->GetComponent<Transform>()->GetPosition().y + 1.0f, _alterEgo->GetComponent<Transform>()->GetPosition().z);
 
-				_egoInsideWarning->GetComponent<Transform>()->SetScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
+				_egoInsideWarning->GetComponent<Transform>()->SetScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
 
 				_isEgoAttackReady = false;
 

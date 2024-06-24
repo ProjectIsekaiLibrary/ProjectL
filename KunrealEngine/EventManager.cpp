@@ -8,7 +8,7 @@
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
-	_eventStart(false)
+	_eventStart(false), _insideSafeCount(0)
 {
 
 }
@@ -271,6 +271,8 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 				if (collider != nullptr && !nowPattern->_isColliderActive[i])
 				{
 					collider->SetActive(false);
+
+					_insideSafeCount = 0;
 				}
 
 				// 콜라이더가 켜졌지만 맞지 않은 상태
@@ -278,24 +280,31 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 				{
 					collider->SetActive(true);
 
+					collider->FixedUpdate();
+
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
-						int a = 5;
+						
 					}
 					else
 					{
-						// 소드와 서브오젝트의 콜라이더
-						auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
-						
-						_playerComp->CalculateSweep(colliderDirVec);
-						
-						auto damage = nowPattern->_damage;
-						
-						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
-						_playerComp->GetPlayerData()._hp -= damage;
-						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
-						
-						nowPattern->_isColliderHit[i] = true;
+						_insideSafeCount++;
+
+						if (_insideSafeCount > 1)
+						{
+							// 소드와 서브오젝트의 콜라이더
+							auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
+
+							_playerComp->CalculateSweep(colliderDirVec);
+
+							auto damage = nowPattern->_damage;
+
+							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+							_playerComp->GetPlayerData()._hp -= damage;
+							_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+							nowPattern->_isColliderHit[i] = true;
+						}
 					}
 				}
 

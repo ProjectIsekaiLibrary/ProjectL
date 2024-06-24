@@ -257,6 +257,9 @@ namespace KunrealEngine
 
 		float _circleWarningSize;
 
+		float _bossCircleWarningSize;
+
+
 		float _swordLinearDistance;
 
 		DirectX::XMFLOAT3 _swordDirection;
