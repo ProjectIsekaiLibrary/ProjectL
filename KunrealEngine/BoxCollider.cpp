@@ -33,11 +33,6 @@ void KunrealEngine::BoxCollider::Release()
 
 void KunrealEngine::BoxCollider::FixedUpdate()
 {
-
-}
-
-void KunrealEngine::BoxCollider::Update()
-{
 	// 메쉬가 존재하지 않고 콜라이더만 존재하는 경우
 	if (this->_parentObject != nullptr)
 	{
@@ -60,9 +55,9 @@ void KunrealEngine::BoxCollider::Update()
 			DirectX::XMMatrixDecompose(&scale, &quat, &translation, worldTM);
 
 			DirectX::XMStoreFloat3(&this->_position, translation);
-			this->_position.x	+= _offset.x;
-			this->_position.y	+= _offset.y;
-			this->_position.z	+= _offset.z;
+			this->_position.x += _offset.x;
+			this->_position.y += _offset.y;
+			this->_position.z += _offset.z;
 
 			DirectX::XMStoreFloat4(&this->_quaternion, quat);
 		}
@@ -86,7 +81,10 @@ void KunrealEngine::BoxCollider::Update()
 
 		this->_quaternion = this->GetOwner()->GetComponent<Transform>()->_quatForBone;
 	}
+}
 
+void KunrealEngine::BoxCollider::Update()
+{
 	SetDebugMeshData();
 }
 
@@ -118,6 +116,7 @@ void KunrealEngine::BoxCollider::SetActive(bool active)
 	}
 
 	this->_isActivated = active;
+	PhysicsSystem::GetInstance().SetActorState(this, active);
 	_debugObject->SetActive(active);
 }
 
@@ -137,9 +136,7 @@ void KunrealEngine::BoxCollider::SetDebugMeshData()
 			* DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->_quaternion))
 			* DirectX::XMMatrixTranslation(_position.x, _position.y, _position.z));
 		
-		_debugObject->SetTransform(worldToDebug);
-		
-		
+		_debugObject->SetTransform(worldToDebug);	
 	}
 }
 
