@@ -2022,6 +2022,10 @@ void KunrealEngine::Kamen::CreateEmergence()
 						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 60 * _timer, 10 + 60 * _timer);
 						
 					}
+					else if (_timer < 2.6f)
+					{
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
+					}
 					else
 					{
 						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);					
@@ -2040,9 +2044,13 @@ void KunrealEngine::Kamen::CreateEmergence()
 						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 60 * _timer, 10 + 60 * _timer);
 						
 					}
+					else if(_timer < 2.6f)
+					{
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - ( 60 * (_timer - 1.3f)), 80 - ( 60 * (_timer - 1.3f)));
+					}
 					else
 					{
-						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);		
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);				
 					}
 				}
 				return true;
@@ -2056,7 +2064,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 				//return true;
 			}
 			else
-			{
+			{			
 				return false;
 			}
 
