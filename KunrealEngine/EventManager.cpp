@@ -214,7 +214,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 			for (int i = 0; i < subObjectList.size(); i++)
 			{
-				auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+				auto collider = subObjectList[i]->GetComponent<CylinderCollider>();
 
 				if (collider != nullptr && !nowPattern->_isColliderActive[i])
 				{
@@ -266,7 +266,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 			for (int i = 0; i < subObjectList.size(); i++)
 			{
-				auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+				auto collider = subObjectList[i]->GetComponent<CylinderCollider>();
 
 				if (collider != nullptr && !nowPattern->_isColliderActive[i])
 				{
@@ -325,7 +325,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 		
 			for (int i = 0; i < subObjectList.size(); i++)
 			{
-				auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+				auto collider = subObjectList[i]->GetComponent<CylinderCollider>();
 
 				if (collider!=nullptr && !nowPattern->_isColliderActive[i])
 				{
@@ -339,6 +339,10 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
+
+						auto a = _bossComp->GetSwordPos();
+
+
 						auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
 						_playerComp->CalculateSweep(colliderDirVec);
 
@@ -356,7 +360,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 						}
 
 						// 맞았다고 체크
-						nowPattern->_isColliderHit[i] = true;
+						//nowPattern->_isColliderHit[i] = true;
 					}
 				}
 
