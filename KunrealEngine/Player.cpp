@@ -427,6 +427,15 @@ void KunrealEngine::Player::DebugFunc()
 	}
 
 	GRAPHICS->DrawDebugText(100, 400, 40, "%.3f", this->_playerInfo._hp);
+
+	if (this->GetOwner()->GetComponent<BoxCollider>()->GetTargetObject() == nullptr)
+	{
+		GRAPHICS->DrawDebugText(100, 600, 40, "NULL");
+	}
+	else
+	{
+		GRAPHICS->DrawDebugText(100, 600, 40, this->GetOwner()->GetComponent<BoxCollider>()->GetTargetObject()->GetObjectName().c_str());
+	}
 	//GRAPHICS->DrawColorText()
 
 }

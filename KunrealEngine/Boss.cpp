@@ -646,7 +646,7 @@ void KunrealEngine::Boss::SpecialAttack()
 
 		_specialPatternTimer += TimeManager::GetInstance().GetDeltaTime();
 
-		if (_specialPatternTimer >= 5.0f)
+		if (_specialPatternTimer >= 2.0f)
 		{
 			_isSpecialPatternPlaying = false;
 			

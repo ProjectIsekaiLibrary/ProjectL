@@ -54,7 +54,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 	}
 }
 
-void ArkEngine::ArkDX11::TransparentMesh::Render()
+void ArkEngine::ArkDX11::TransparentMesh::Render(float yOffset)
 {
 	if (!_isRenderFinsh && _isRenderStart)
 	{
@@ -79,6 +79,9 @@ void ArkEngine::ArkDX11::TransparentMesh::Render()
 		DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
 		DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
 		DirectX::XMMATRIX WorldViewProj = world * view * proj;
+
+		world.r[3].m128_f32[1] += yOffset;
+
 		_fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
 		_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
 		_texture->SetResource(_diffuseMapSRV);
@@ -148,11 +151,29 @@ void ArkEngine::ArkDX11::TransparentMesh::Finalize()
 	_effect = nullptr;
 }
 
+
+float ArkEngine::ArkDX11::TransparentMesh::GetTransParency()
+{
+	return _timer;
+}
+
+
+void ArkEngine::ArkDX11::TransparentMesh::UpPosition(float up)
+{
+	auto transform = _meshTransform->GetTransformMatrix();
+
+	transform.r[3].m128_f32[1] += up;
+
+	DirectX::XMFLOAT4X4 result;
+	DirectX::XMStoreFloat4x4(&result, transform);
+
+	_meshTransform->SetTransformMatrix(result);
+}
+
 void ArkEngine::ArkDX11::TransparentMesh::SetTransform(const DirectX::XMFLOAT4X4& matrix)
 {
 	_meshTransform->SetTransformMatrix(matrix);
 }
-
 
 void ArkEngine::ArkDX11::TransparentMesh::SetExceptRange(const DirectX::XMFLOAT3& center, float range)
 {

@@ -70,6 +70,19 @@ VertexOut VS(VertexIn vin)
 PSOut PSBasic(VertexOut pin)
 {
     PSOut output;
+    
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
    
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
@@ -84,6 +97,19 @@ PSOut PSBasic(VertexOut pin)
 PSOut PSHorizontal(VertexOut pin)
 {
     PSOut output;
+    
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
    
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
@@ -102,6 +128,19 @@ PSOut PSHorizontal(VertexOut pin)
 PSOut PSVertical(VertexOut pin)
 {
     PSOut output;
+    
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
    
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
@@ -120,6 +159,19 @@ PSOut PSVertical(VertexOut pin)
 PSOut PSCenter(VertexOut pin)
 {
     PSOut output;
+    
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
    
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
@@ -142,6 +194,19 @@ PSOut PSCenter(VertexOut pin)
 PSOut PSCenterWithLine(VertexOut pin)
 {
     PSOut output;
+    
+    float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
    
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
@@ -173,8 +238,19 @@ PSOut PsDonut(VertexOut pin)
 {
     PSOut output;
    
-    
     float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.y < -120.0f || newPos.y > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    
     float distance = length(float2(newPos.x, newPos.z) - float2(gDonutCenter.x, gDonutCenter.z));
             
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
@@ -189,6 +265,7 @@ PSOut PsDonut(VertexOut pin)
     
         output.Diffuse.a = alpha * gTransParency;
     }
+    
     return output;
 }
 
@@ -197,6 +274,18 @@ PSOut PsDonutInsideEmpty(VertexOut pin)
     PSOut output;
        
     float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
+    
+    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    {
+        output.Diffuse.a = 0.0f;
+        return output;
+    }
+    
     float distance = length(float2(newPos.x, newPos.z) - float2(gDonutCenter.x, gDonutCenter.z));
             
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);

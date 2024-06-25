@@ -282,11 +282,18 @@ void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active
 {
 	if (active)
 	{
-		this->_dynamicMap.at(collider)->wakeUp();
+		//this->_dynamicMap.at(collider)->wakeUp();
+		
+		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 	}
 	else
 	{
-		this->_dynamicMap.at(collider)->putToSleep();
+		//this->_dynamicMap.at(collider)->putToSleep();
+		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 	}
 }
 
@@ -477,7 +484,18 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 
 void KunrealEngine::PhysicsSystem::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 {
-	
+	for (physx::PxU32 i = 0; i < count; i++)
+	{
+		const physx::PxTriggerPair& pair = pairs[i];
+
+		if (pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND) 
+		{
+			physx::PxActor* triggerActor = pair.triggerActor;
+			physx::PxActor* otherActor = pair.otherActor;
+
+			int a = 10;
+		}
+	}
 }
 
 void KunrealEngine::PhysicsSystem::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)

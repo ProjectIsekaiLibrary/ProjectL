@@ -635,9 +635,9 @@ void KunrealEngine::EngineCore::SetEditorMousePos(POINT position)
 void KunrealEngine::EngineCore::PlayGround()
 {
 	// Camera
-	DirectX::XMFLOAT3 cameraPos = { 0.0f, 30.0f, -55.0f };
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 80.0f, -50.0f };
 	// KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
-	DirectX::XMFLOAT3 targetPos = { 0.0f, -15.0f, 0.0f };
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 1.0f };
 	testCamera = sceneInstance.GetCurrentScene()->CreateObject("testCamera");
 	testCamera->AddComponent<Camera>();
 	testCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
@@ -645,8 +645,8 @@ void KunrealEngine::EngineCore::PlayGround()
 	//testCamera->GetComponent<Camera>()->RotateCamera(5.f, 0.f);
 	testCamera->GetComponent<Camera>()->SetMainCamera();
 	
-	testCamera->GetComponent<Transform>()->SetPosition(-32.f, 45.f, -32.f);
-	testCamera->GetComponent<Transform>()->SetRotation(0.f, 45.f, 0.f);
+	testCamera->GetComponent<Transform>()->SetPosition({ 0.0f, 90.0f, -62.5f });
+	testCamera->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");

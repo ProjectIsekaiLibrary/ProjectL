@@ -45,6 +45,9 @@ namespace KunrealEngine
 		bool _eventStart;
 
 	private:
+		unsigned int _insideSafeCount;
+
+	private:
 		// 플레이어가 보스에게 주는 데미지 계산
 		void CalculateDamageToBoss();
 
