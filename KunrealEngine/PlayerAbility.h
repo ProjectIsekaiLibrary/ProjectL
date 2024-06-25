@@ -75,10 +75,29 @@ namespace KunrealEngine
 		GameObject* _shotParticle3;
 		GameObject* _shotParticle4;
 
+		GameObject* _shotParticleHit1;
+		GameObject* _shotParticleHit2;
+		GameObject* _shotParticleHit3;
+
 		GameObject* _meteorParticle2;
 		GameObject* _meteorParticle3;
 		GameObject* _meteorParticle4;
 
+		GameObject* _meteorParticleHit1;
+		GameObject* _meteorParticleHit2;
+		GameObject* _meteorParticleHit3;
+		GameObject* _meteorParticleHit4;
+
+	private:
+		// q 스킬 체크용 변수
+		bool _isShotEnded;
+		float _shotParticleTimer;
+
+		// r 스킬 체크용 변수
+		bool _isMeteorEnded;
+		float _meteorParticleTimer;
+		 
+		// 비활성화 되었을 경우
 	private:
 		void ResetShotPos();
 		void CreateAbility1();
