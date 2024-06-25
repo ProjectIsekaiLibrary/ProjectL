@@ -29,7 +29,7 @@ namespace EpicTool
     class GraphicWindow;
     class GameWindow;
     class Deserialize;
-    class NavimashEditor;
+    class NavimeshEditor;
 
     class IWindow;
 
@@ -80,7 +80,7 @@ namespace EpicTool
         GameWindow* _gameWindow;
         ShowWindowManager* _windowManager;
         Deserialize* _deserialize;
-        NavimashEditor* _navimeshEditor;
+        NavimeshEditor* _navimeshEditor;
 
 
         // ¿£Áø

@@ -226,7 +226,7 @@ xcopy "$(SolutionDir)EpicTool\mapData" "$(TargetDir)Resources\mapData" /Y /E</Co
     <ClInclude Include="ITemplateData.h" />
     <ClInclude Include="IWindow.h" />
     <ClInclude Include="MainTool.h" />
-    <ClInclude Include="NavimashEditor.h" />
+    <ClInclude Include="NavimeshEditor.h" />
     <ClInclude Include="ResourceWindow.h" />
     <ClInclude Include="DataControlWindow.h" />
     <ClInclude Include="Serialize.h" />
@@ -255,7 +255,7 @@ xcopy "$(SolutionDir)EpicTool\mapData" "$(TargetDir)Resources\mapData" /Y /E</Co
     <ClCompile Include="InspectorWindow.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="MainTool.cpp" />
-    <ClCompile Include="NavimashEditor.cpp" />
+    <ClCompile Include="NavimeshEditor.cpp" />
     <ClCompile Include="ResourceWindow.cpp" />
     <ClCompile Include="DataControlWindow.cpp" />
     <ClCompile Include="Serialize.cpp" />

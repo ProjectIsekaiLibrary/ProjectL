@@ -1,32 +1,32 @@
-#include "NavimashEditor.h"
+#include "NavimeshEditor.h"
 #include "imgui.h"
 #include "KunrealAPI.h"
 
 #include <iostream>
 #include <fstream>
 
-EpicTool::NavimashEditor::NavimashEditor()
+EpicTool::NavimeshEditor::NavimeshEditor()
 	: _naviIndex(0), _agentHeight(2.0f), _agentRadius(1.2f), _agentMaxClimb(0.9f), _agentMaxSlope(45.0f)
-	, _navimashEditor(nullptr)
+	, _navimeshEditor(nullptr)
 {
 }
 
-EpicTool::NavimashEditor::~NavimashEditor()
+EpicTool::NavimeshEditor::~NavimeshEditor()
 {
 
 }
 
-void EpicTool::NavimashEditor::Initialize()
+void EpicTool::NavimeshEditor::Initialize()
 {
-	_navimashEditor = &KunrealEngine::Navigation::GetInstance();
-	_navmeshpolys.resize(_navimashEditor->GetPackageSize());
+	_navimeshEditor = &KunrealEngine::Navigation::GetInstance();
+	_navmeshpolys.resize(_navimeshEditor->GetPackageSize());
 	_filePath = "Resources/Navimesh/";
 
-	_fileNameList = _navimashEditor->GetNavimeshPathList();
-	_objList = _navimashEditor->GetMapObjPathList();
+	_fileNameList = _navimeshEditor->GetNavimeshPathList();
+	_objList = _navimeshEditor->GetMapObjPathList();
 }
 
-void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height)
+void EpicTool::NavimeshEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowPos, ImVec2 windowSize, float centerX, float centerY, float radius, float height)
 {
 	ImVec2 center(windowPos.x + centerX, windowPos.y + centerY);
 
@@ -53,7 +53,7 @@ void EpicTool::NavimashEditor::DrawCylinder(ImDrawList* drawList, ImVec2 windowP
 	//drawList->AddCircleFilled(ImVec2(center.x, center.y + height), radius, IM_COL32(255, 0, 0, 255));
 }
 
-void EpicTool::NavimashEditor::UnDrawAll()
+void EpicTool::NavimeshEditor::UnDrawAll()
 {
 	for (auto navpoly : _navmeshpolys)
 	{
@@ -65,17 +65,17 @@ void EpicTool::NavimashEditor::UnDrawAll()
 	}
 }
 
-void EpicTool::NavimashEditor::ShowWindow()
+void EpicTool::NavimeshEditor::ShowWindow()
 {
 
 	char fileName[255] = {0};
 	int selectedItem = -1;
-	ImGui::Begin("Navimash");
+	ImGui::Begin("Navimesh");
 
 	ImVec2 windowPos = ImGui::GetWindowPos();
 	ImVec2 windowSize = ImGui::GetWindowSize();
 
-	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Navimash");
+	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Navimesh");
 
 	ImGui::TextColored(ImVec4(1.0f, 1.0f, 0.0f, 1.0f), "Agent");
 
@@ -102,8 +102,8 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Build"))
 	{
-		_navimashEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
-		_navimashEditor->HandleBuild(_naviIndex, _selectedObjName);
+		_navimeshEditor->SetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
+		_navimeshEditor->HandleBuild(_naviIndex, _selectedObjName);
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
 		{
@@ -117,7 +117,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 		std::vector<DirectX::XMFLOAT3> vertices;
 		std::vector<unsigned int> indices;
-		_navimashEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
+		_navimeshEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
 		_navmeshpolys[_naviIndex] = GRAPHICS->CreateMapDebug(name.c_str(), vertices, indices);
 	}
 
@@ -125,7 +125,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::InputInt("ObjectIndex", &_naviIndex))
 	{
-		int maxindex = _navimashEditor->GetPackageSize() - 1;
+		int maxindex = _navimeshEditor->GetPackageSize() - 1;
 
 		if (_naviIndex > maxindex)
 		{
@@ -136,7 +136,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 			_naviIndex = 0;
 		}
 
-		_navimashEditor->GetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
+		_navimeshEditor->GetAgent(_naviIndex, _agentHeight, _agentMaxSlope, _agentRadius, _agentMaxClimb);
 	}
 
 
@@ -150,7 +150,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 	if (ImGui::Button("Save"))
 	{
-		_navimashEditor->SaveAll(_naviIndex, (_filePath + _fileNameStr).c_str());
+		_navimeshEditor->SaveAll(_naviIndex, (_filePath + _fileNameStr).c_str());
 	}
 
 
@@ -172,7 +172,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 	if (ImGui::Button("Load"))
 	{
 		_selectedFileName = _filePath + _selectedFileName;
-		_navimashEditor->LoadAll(_selectedFileName.c_str(), _naviIndex);
+		_navimeshEditor->LoadAll(_selectedFileName.c_str(), _naviIndex);
 
 		if (_navmeshpolys[_naviIndex] != nullptr)
 		{
@@ -186,13 +186,13 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 		std::vector<DirectX::XMFLOAT3> vertices;
 		std::vector<unsigned int> indices;
-		_navimashEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
+		_navimeshEditor->GetNavmeshRenderInfo(_naviIndex, vertices, indices);
 		_navmeshpolys[_naviIndex] = GRAPHICS->CreateMapDebug(name.c_str(), vertices, indices);
 	}
 
 	if (ImGui::Button("ResetList"))
 	{
-		_fileNameList = _navimashEditor->GetNavimeshPathList();
+		_fileNameList = _navimeshEditor->GetNavimeshPathList();
 	}
 
 	ImGui::SameLine();
@@ -224,7 +224,7 @@ void EpicTool::NavimashEditor::ShowWindow()
 
 }
 
-void EpicTool::NavimashEditor::ShowWindow(bool* _open, std::vector<Object>& object)
+void EpicTool::NavimeshEditor::ShowWindow(bool* _open, std::vector<Object>& object)
 {
 
 }

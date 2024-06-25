@@ -88,6 +88,7 @@ namespace KunrealEngine
 		std::vector<KunrealEngine::GameObject*> _particleTeleportList;
 
 		float _timeCount;
+		float _timeCountPlayerR;
 		bool _isSettingTimer;
 		bool _isBezierStartSetting;
 		bool _isBezierBoomSetting;
@@ -96,7 +97,7 @@ namespace KunrealEngine
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	
 		GInterface::GraphicsInterface* _gInterface;
-
+		
 
 
 		/// 임시용 이미지 컴포넌트

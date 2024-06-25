@@ -562,7 +562,7 @@ void ArkEngine::ResourceManager::SortTransParentMesh()
 {
 	std::sort(_transParentMeshList.begin(), _transParentMeshList.end(),
 		[](ArkEngine::ArkDX11::TransparentMesh* mesh1, ArkEngine::ArkDX11::TransparentMesh* mesh2) {
-			return mesh1->GetTransParency() < mesh2->GetTransParency();
+			return mesh1->GetTransParency() > mesh2->GetTransParency();
 		});
 }
 

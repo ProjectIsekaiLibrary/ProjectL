@@ -126,6 +126,8 @@ namespace KunrealEngine
 	public:
 		const DirectX::XMFLOAT3& GetSwordDirection();
 
+		const DirectX::XMFLOAT3& GetSwordPos();
+
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;

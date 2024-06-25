@@ -187,13 +187,13 @@ void KunrealEngine::Kamen::GamePattern()
 	EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
 	//SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
+	//SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	//SwordLinearAttackPattern();
-	//SwordChopPattern();					// 도넛
+	SwordChopPattern();					// 도넛
 
 	//BasicSwordAttackPattern();
 
-	//CoreEmmergencePattern();hjh
+	//CoreEmmergencePattern();
 
 	//_basicPattern.emplace_back(_leftFireAttack);
 	//_basicPattern.emplace_back(_rightFireAttack);
@@ -1008,9 +1008,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 내부 장판 공격
 	_swordInsideAttack = _boss->GetObjectScene()->CreateObject("InsideAttack");
-	_swordInsideAttack->AddComponent<BoxCollider>();
-	_swordInsideAttack->GetComponent<BoxCollider>()->SetColliderScale(30.0f, 30.0f, 30.0f);
-	_swordInsideAttack->GetComponent<BoxCollider>()->SetActive(false);
+	_swordInsideAttack->AddComponent<CylinderCollider>();
+	_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(30.0f, 30.0f, 30.0f);
+	_swordInsideAttack->GetComponent<CylinderCollider>()->SetActive(false);
 	_swordInsideAttack->AddComponent<Particle>();
 	_swordInsideAttack->GetComponent<Particle>()->SetParticleEffect("fire", "Resources/Textures/Particles/flare.dds", 1000);
 	_swordInsideAttack->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
@@ -1070,9 +1070,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	{
 		auto objectName = "DonutAttack" + std::to_string(i + 1);
 		auto swordDonutAttack = _boss->GetObjectScene()->CreateObject(objectName);
-		swordDonutAttack->AddComponent<BoxCollider>();
+		swordDonutAttack->AddComponent<CylinderCollider>();
 		auto colliderSize = 20.0f + 40 * i;
-		swordDonutAttack->GetComponent<BoxCollider>()->SetColliderScale(colliderSize, colliderSize, colliderSize);
+		swordDonutAttack->GetComponent<CylinderCollider>()->SetColliderScale(colliderSize, colliderSize, colliderSize);
 		swordDonutAttack->SetTotalComponentState(false);
 		swordDonutAttack->SetActive(false);
 		_swordDonutAttack.emplace_back(swordDonutAttack);
@@ -2118,7 +2118,7 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			_swordTimer = 0.0f;
 
 			_swordInsideWarning->GetComponent<Transform>()->SetScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
-			_swordInsideAttack->GetComponent<BoxCollider>()->SetColliderScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
+			_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_circleWarningSize, _circleWarningSize, _circleWarningSize);
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -2233,7 +2233,7 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 				//	_particleSwordOutsideAttack[i]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 300 *i, 60 + _timer * 300*i);
 				//}
 
-				if (_swordTimer >= 3.0f)
+				if (_swordTimer >= 1.5f)
 				{
 					return false;
 				}
@@ -3557,6 +3557,11 @@ DirectX::XMVECTOR KunrealEngine::Kamen::GetEgoDirection()
 const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetSwordDirection()
 {
 	return _swordDirection;
+}
+
+const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetSwordPos()
+{
+	return _freeSword->GetComponent<Transform>()->GetPosition();
 }
 
 void KunrealEngine::Kamen::BackStepCallPattern()
