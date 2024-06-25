@@ -487,6 +487,11 @@ void KunrealEngine::EngineCore::Update()
 		pause_ui_box->SetActive(true);
 	}
 
+	if (inputInstance->KeyInput(KEY::PERIOD))
+	{
+		EventManager::GetInstance().CamShake();
+	}
+
 	if (inputInstance->KeyUp(KEY::CAPSLOCK))
 	{
 		//sceneInstance.GetCurrentScene()->GetGameObject("BaeSung")->AddComponent<BoxCollider>();
@@ -635,26 +640,29 @@ void KunrealEngine::EngineCore::SetEditorMousePos(POINT position)
 void KunrealEngine::EngineCore::PlayGround()
 {
 	// Camera
-	DirectX::XMFLOAT3 cameraPos = { 0.0f, 80.0f, -50.0f };
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
 	// KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
-	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 1.0f };
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
 	testCamera = sceneInstance.GetCurrentScene()->CreateObject("testCamera");
 	testCamera->AddComponent<Camera>();
 	testCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
 	testCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
 	//testCamera->GetComponent<Camera>()->RotateCamera(5.f, 0.f);
 	testCamera->GetComponent<Camera>()->SetMainCamera();
-	
-	testCamera->GetComponent<Transform>()->SetPosition({ 0.0f, 90.0f, -62.5f });
-	testCamera->GetComponent<Transform>()->SetRotation(0.f, 0.f, 0.f);
+
+	testCamera->GetComponent<Transform>()->SetPosition({ 0.0f, 120.0f, -130.0f });
+	testCamera->GetComponent<Transform>()->SetRotation(-43.f, 180.f, 0.f);
+
+	EventManager::GetInstance().SetCamera("testCamera");
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
 	player->AddComponent<Player>();
 
+
 	// Kamen
-	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	kamen->AddComponent<Kamen>();
+	 kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	 kamen->AddComponent<Kamen>();
 
 	// UI의 부모가 될 0,0pos객체
 	//battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");

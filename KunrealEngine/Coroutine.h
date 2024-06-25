@@ -16,7 +16,7 @@
 #define Coroutine_staticFunc(coro_func, exporter) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func = [exporter]() ->KunrealEngine::Coroutine::Coroutine_type
 #define _Coroutine(coro_func) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func
 #define _CoroutineIs(coro_func) coro_func = [this]() ->KunrealEngine::Coroutine::Coroutine_type
-#define Startcoroutine(coro_func) Coroutine::StartCoroutine(coro_func)
+#define Startcoroutine(coro_func) Coroutine::StartCoroutine(&coro_func)
 #define Updatecoroutine Coroutine::UpdateCoroutines
 
 namespace KunrealEngine
@@ -100,12 +100,12 @@ namespace KunrealEngine
 			int mapKey = 0;
 		};
 
-		static void StartCoroutine(std::function<Coroutine_type()> coro);	// 코루틴 함수를 받아서 시작시킴
+		static void StartCoroutine(std::function<Coroutine_type()>* coro);	// 코루틴 함수를 받아서 시작시킴
 		static void UpdateCoroutines();	// 코루틴 함수들을 업데이트 돌린다
 
 	private:
 		static std::vector<Coroutine_type*> _coroutines;	// 코루틴들을 담아두는 곳
-		static std::map<int, std::function<Coroutine_type()>> _AddedCoroutines; // 코루틴의 주소를 저장하는 집합
+		static std::map<int, std::function<Coroutine_type()>*> _AddedCoroutines; // 코루틴의 주소를 저장하는 집합
 		static int idexKey;
 	};
 }

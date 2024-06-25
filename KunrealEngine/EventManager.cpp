@@ -5,10 +5,12 @@
 #include "Kamen.h"
 #include "ToolBox.h"
 #include "EventManager.h"
+#include "Camera.h"
+#include "ToolBox.h"
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
-	_eventStart(false), _insideSafeCount(0)
+	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0)
 {
 
 }
@@ -54,6 +56,28 @@ void KunrealEngine::EventManager::Update()
 			Release();
 		}
 	}
+	 
+	if (_mainCamera != nullptr && _player != nullptr)
+	{
+		DirectX::XMFLOAT3 plpos = _player->GetComponent<Transform>()->GetPosition();
+		static DirectX::XMFLOAT3 capos = _mainCamera->GetComponent<Transform>()->GetPosition();
+
+		plpos.x += capos.x + _camshake;
+		plpos.y += capos.y;
+		plpos.z += capos.z + _camshake;
+
+		_mainCamera->GetComponent<Transform>()->SetPosition(plpos);
+	}
+}
+
+void KunrealEngine::EventManager::SetCamera(std::string name)
+{
+	_mainCamera = SceneManager::GetInstance().GetCurrentScene()->GetGameObject(name);
+}
+
+void KunrealEngine::EventManager::CamShake()
+{
+	_camshake = ToolBox::GetRandomFloat(0.0f, 2.0f);
 }
 
 void KunrealEngine::EventManager::CalculateDamageToBoss()

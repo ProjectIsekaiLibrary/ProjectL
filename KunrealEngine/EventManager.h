@@ -8,6 +8,7 @@ namespace KunrealEngine
 	class GameObject;
 	class Component;
 	class PlayerAbility;
+	class Camera;
 	
 	class Player;
 	class Kamen;
@@ -24,6 +25,9 @@ namespace KunrealEngine
 
 		void Update();
 
+		void SetCamera(std::string name);
+		void CamShake();
+
 		// ΩÃ±€≈Ê
 	public:
 		static EventManager& GetInstance()
@@ -35,14 +39,18 @@ namespace KunrealEngine
 	public:
 		GameObject* _player;
 		GameObject* _boss;
+		GameObject* _mainCamera;
 
 	public:
 		Player* _playerComp;
 		Kamen* _bossComp;
 
+
 		PlayerAbility* _playerAbill;
 
 		bool _eventStart;
+
+		int _camshake;
 
 	private:
 		unsigned int _insideSafeCount;
