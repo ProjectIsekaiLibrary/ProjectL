@@ -12,7 +12,7 @@
 #include "DataControlWindow.h"
 #include "GraphicWindow.h"
 #include "GameWindow.h"
-#include "NavimashEditor.h"
+#include "NavimeshEditor.h"
 
 #include "IWindow.h"
 #include "FileLoad.h"
@@ -130,7 +130,7 @@ HRESULT EpicTool::MainTool::Initialize()
 
     _gameWindow = new GameWindow();   
 
-    _navimeshEditor = new NavimashEditor();
+    _navimeshEditor = new NavimeshEditor();
     _navimeshEditor->Initialize();
 
 

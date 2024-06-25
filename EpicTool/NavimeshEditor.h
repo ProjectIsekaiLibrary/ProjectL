@@ -18,11 +18,11 @@ struct ImVec2;
 namespace EpicTool
 {
 
-	class NavimashEditor : public IWindow
+	class NavimeshEditor : public IWindow
 	{
 	public:
-		NavimashEditor();
-		~NavimashEditor();
+		NavimeshEditor();
+		~NavimeshEditor();
 
 		virtual void ShowWindow() override; // 실제로 창을 출력하는 함수
 		// virtual void ShowWindow(bool* p_open, std::vector<Object> object) override;
@@ -42,7 +42,7 @@ namespace EpicTool
 		float _agentMaxClimb;
 		float _agentMaxSlope;
 
-		KunrealEngine::Navigation* _navimashEditor;
+		KunrealEngine::Navigation* _navimeshEditor;
 
 		std::vector<GInterface::GraphicsDebug*> _navmeshpolys;
 

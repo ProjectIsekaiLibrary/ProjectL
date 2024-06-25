@@ -177,17 +177,17 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//BasicPattern();						// 기본 spell, call
+	BasicPattern();						// 기본 spell, call
 	//
 	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
 
-	EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
-	//SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
+	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
+	//SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
 	//SwordLinearAttackPattern();
 	//SwordChopPattern();					// 도넛
 

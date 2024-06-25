@@ -219,7 +219,7 @@ void KunrealEngine::PlayerAbility::ResetShotPos()
 		this->GetOwner()->GetComponent<Transform>()->GetRotation().z
 	);
 
-	_shot->GetComponent<BoxCollider>()->Update();
+	_shot->GetComponent<BoxCollider>()->FixedUpdate();
 	_shot->GetComponent<MeshRenderer>()->Update();
 	_shot->GetComponent<Particle>()->Update();
 
@@ -340,7 +340,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticleHit1->GetComponent<Particle>()->SetActive(false);
 	_shotParticleHit1->SetActive(true);
-	_shotParticleHit1->SetParent(_shot);
+	//_shotParticleHit1->SetParent(_shot);
 
 	_shotParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit2");
 	_shotParticleHit2->AddComponent<Particle>();
@@ -352,7 +352,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticleHit2->GetComponent<Particle>()->SetActive(false);
 	_shotParticleHit2->SetActive(true);
-	_shotParticleHit2->SetParent(_shot);
+	//_shotParticleHit2->SetParent(_shot);
 
 	_shotParticleHit3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit3");
 	_shotParticleHit3->AddComponent<Particle>();
@@ -364,7 +364,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticleHit3->GetComponent<Particle>()->SetActive(false);
 	_shotParticleHit3->SetActive(true);
-	_shotParticleHit3->SetParent(_shot);
+	//_shotParticleHit3->SetParent(_shot);
 
 
 	shotProj->SetMeshObject("Meteor/Meteor");
@@ -407,9 +407,9 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				
 				if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
 				{
-					_shotParticleHit1->GetComponent<Particle>()->SetActive(true);
-					_shotParticleHit2->GetComponent<Particle>()->SetActive(true);
-					_shotParticleHit3->GetComponent<Particle>()->SetActive(true);
+					//_shotParticleHit1->GetComponent<Particle>()->SetActive(true);
+					//_shotParticleHit2->GetComponent<Particle>()->SetActive(true);
+					//_shotParticleHit3->GetComponent<Particle>()->SetActive(true);
 					_isShotEnded = true;
 				}
 			}
@@ -421,6 +421,10 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				_shotParticleHit1->GetComponent<Particle>()->SetActive(true);
 				_shotParticleHit2->GetComponent<Particle>()->SetActive(true);
 				_shotParticleHit3->GetComponent<Particle>()->SetActive(true);
+				_shotParticleHit1->GetComponent<Transform>()->SetPosition(_shot->GetComponent<Transform>()->GetPosition());
+				_shotParticleHit2->GetComponent<Transform>()->SetPosition(_shot->GetComponent<Transform>()->GetPosition());
+				_shotParticleHit3->GetComponent<Transform>()->SetPosition(_shot->GetComponent<Transform>()->GetPosition());
+
 				_shotParticleHit1->GetComponent<Particle>()->SetParticleSize(_shotParticleTimer * 40, _shotParticleTimer * 40);
 				_shotParticleHit3->GetComponent<Particle>()->SetParticleSize(_shotParticleTimer * 120, _shotParticleTimer * 120);
 
@@ -625,7 +629,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		50.0f,			// 데미지
 		10.0f,			// 마나
 		15.0f,			// 무력화 피해량
-		10.0f,			// 쿨타임
+		0.2f,			// 쿨타임
 		15.0f			// 사거리
 	);
 
@@ -691,53 +695,53 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit1");
 	_meteorParticleHit1->AddComponent<Particle>();
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
-	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDuration(0.6f, 0.5f);
+	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleSize(1.f, 1.f);
 	_meteorParticleHit1->GetComponent<Particle>()->AddParticleColor(1.f, 1.f, 1.f);
-	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 200.0f, 0.0f);
-	_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);
+	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 400.0f, 0.0f);
+	_meteorParticleHit1->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit1->SetActive(true);
-	_meteorParticleHit1->SetParent(_meteor);
+	//_meteorParticleHit1->SetParent(_meteor);
 
 	_meteorParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit2");
 	_meteorParticleHit2->AddComponent<Particle>();
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
-	_meteorParticleHit2->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.7f);
+	_meteorParticleHit2->GetComponent<Particle>()->SetParticleDuration(8.0f, 3.2f);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
 	_meteorParticleHit2->GetComponent<Particle>()->AddParticleColor(2.0f, 0.5f, 0.0f);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_meteorParticleHit2->GetComponent<Particle>()->SetActive(true);
+	_meteorParticleHit2->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit2->SetActive(true);
-	_meteorParticleHit2->SetParent(_meteor);
+	//_meteorParticleHit2->SetParent(_meteor);
 
 	_meteorParticleHit3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit3");
 	_meteorParticleHit3->AddComponent<Particle>();
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
-	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDuration(0.6f, 0.5f);
+	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
 	_meteorParticleHit3->GetComponent<Particle>()->AddParticleColor(2.0f, 0.3f, 0.1f);
-	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_meteorParticleHit3->GetComponent<Particle>()->SetActive(true);
+	_meteorParticleHit3->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit3->SetActive(true);
-	_meteorParticleHit3->SetParent(_meteor);
+	//_meteorParticleHit3->SetParent(_meteor);
 
 	_meteorParticleHit4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit4");
 	_meteorParticleHit4->AddComponent<Particle>();
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	_meteorParticleHit4->GetComponent<Particle>()->SetParticleDuration(1.0f, 3.0f);
+	_meteorParticleHit4->GetComponent<Particle>()->SetParticleDuration(4.0f, 12.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->AddParticleColor(1.0f, 0.0f, 0.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_meteorParticleHit4->GetComponent<Particle>()->SetActive(true);
+	_meteorParticleHit4->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit4->SetActive(true);
-	_meteorParticleHit4->SetParent(_meteor);
+	//_meteorParticleHit4->SetParent(_meteor);
 
 
 	// 비활성화 조건		// 인게임에서는 소멸처럼
@@ -752,6 +756,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 			if (_meteor->GetComponent<Transform>()->GetPosition().y <= 2.0f)
 			{
+				_isMeteorEnded = true;
 				return true;
 			}
 			else
@@ -778,10 +783,10 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				// 실제로 끝나지 않았지만 로직상 문제 X
 				if (meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
 				{
-					_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);
-					_meteorParticleHit2->GetComponent<Particle>()->SetActive(true);
-					_meteorParticleHit3->GetComponent<Particle>()->SetActive(true);
-					_meteorParticleHit4->GetComponent<Particle>()->SetActive(true);
+					//_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);
+					//_meteorParticleHit2->GetComponent<Particle>()->SetActive(true);
+					//_meteorParticleHit3->GetComponent<Particle>()->SetActive(true);
+					//_meteorParticleHit4->GetComponent<Particle>()->SetActive(true);
 					_isMeteorEnded = true;
 				}
 			}
@@ -795,20 +800,25 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				_meteorParticleHit3->GetComponent<Particle>()->SetActive(true);
 				_meteorParticleHit4->GetComponent<Particle>()->SetActive(true);
 
-				_meteorParticleHit1->GetComponent<Particle>()->SetParticleSize(15 - (_meteorParticleTimer * 20), 15 - (_meteorParticleTimer * 20));
+				_meteorParticleHit1->GetComponent<Transform>()->SetPosition(_meteor->GetComponent<Transform>()->GetPosition());
+				_meteorParticleHit2->GetComponent<Transform>()->SetPosition(_meteor->GetComponent<Transform>()->GetPosition());
+				_meteorParticleHit3->GetComponent<Transform>()->SetPosition(_meteor->GetComponent<Transform>()->GetPosition());
+				_meteorParticleHit4->GetComponent<Transform>()->SetPosition(_meteor->GetComponent<Transform>()->GetPosition());
 
-				_meteorParticleHit3->GetComponent<Particle>()->SetParticleSize(60 - (_meteorParticleTimer * 75), 60 - (_meteorParticleTimer * 75));
+				_meteorParticleHit1->GetComponent<Particle>()->SetParticleSize(30 - (_meteorParticleTimer * 40), 30 - (_meteorParticleTimer * 40));
+
+				_meteorParticleHit3->GetComponent<Particle>()->SetParticleSize(120 - (_meteorParticleTimer * 150), 120 - (_meteorParticleTimer * 150));
 				
 
 				if (_meteorParticleTimer < 0.2f)
 				{
-					_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(_meteorParticleTimer * 150, _meteorParticleTimer * 150);
-					_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(_meteorParticleTimer * 150, _meteorParticleTimer * 150);
+					_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(_meteorParticleTimer * 300, _meteorParticleTimer * 300);
+					_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(_meteorParticleTimer * 300, _meteorParticleTimer * 300);
 				}
 				else
 				{
-					_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(60 - (_meteorParticleTimer * 80), 60 - (_meteorParticleTimer * 80));
-					_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(60 - (_meteorParticleTimer * 80), 60 - (_meteorParticleTimer * 80));
+					_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(120 - (_meteorParticleTimer * 160), 120 - (_meteorParticleTimer * 160));
+					_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(120 - (_meteorParticleTimer * 160), 120 - (_meteorParticleTimer * 160));
 				}
 
 
