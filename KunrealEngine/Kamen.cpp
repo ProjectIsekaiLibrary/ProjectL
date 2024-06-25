@@ -177,9 +177,9 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//BasicPattern();						// 기본 spell, call
+	BasicPattern();						// 기본 spell, call
 	//
-	LeftRightPattern();					// 전방 좌, 우 어택
+	//LeftRightPattern();					// 전방 좌, 우 어택
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 	//TeleportSpellPattern();				// 텔포 후 spell	
@@ -188,8 +188,8 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
 	//SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	//SwordLinearAttackPattern();
-	SwordChopPattern();					// 도넛
+	SwordLinearAttackPattern();
+	//SwordChopPattern();					// 도넛
 
 	//BasicSwordAttackPattern();
 
@@ -2490,6 +2490,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 		};
 
 	pattern->SetInitializeLogic(initLogic);
+
 	auto spellLogic = [pattern, this]()
 		{
 			auto animator = _boss->GetComponent<Animator>();
@@ -2513,15 +2514,17 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 					if (pattern->_colliderOnCount > 0)
 					{
-						_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
+						auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+						pattern->_isColliderActive[objectIndex] = false;
 					}
 
 					if (_isEgoAttack)
 					{
 						_egoLazer->GetComponent<Particle>()->SetActive(false);
 						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
-						
-						_egoLazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+
+						auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
+						pattern->_isColliderActive[objectIndex] = false;
 					}
 
 				}
@@ -2537,7 +2540,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 					if (pattern->_colliderOnCount > 0)
 					{
-						_lazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+						auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+						pattern->_isColliderActive[objectIndex] = true;
 					}
 
 					if (_isEgoAttack)
@@ -2548,7 +2552,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
 						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
-						_egoLazerCollider->GetComponent<BoxCollider>()->SetActive(true);
+						auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
+						pattern->_isColliderActive[objectIndex] = true;
 					}
 				}
 			}
