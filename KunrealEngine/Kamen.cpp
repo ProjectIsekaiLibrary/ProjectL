@@ -732,11 +732,12 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			teleportParticle->AddComponent<Particle>();
 			teleportParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
-			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
 			teleportParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportParticle->GetComponent<Particle>()->SetActive(false);
 			_particleEmergenceAttack.emplace_back(teleportParticle);
 		}
@@ -754,16 +755,17 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
 			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportParticle->GetComponent<Particle>()->SetActive(false);
 
-			if (i == 0)
-			{
-				teleportParticle->GetComponent<Particle>()->SetParticleAngle(80.0f, 0.0f, 0.0f);
-			}
-			else if (i == 1)
-			{
-				teleportParticle->GetComponent<Particle>()->SetParticleAngle(260.0f, 0.0f, 0.0f);
-			}
+			//if (i == 0)
+			//{
+			//	teleportParticle->GetComponent<Particle>()->SetParticleAngle(80.0f, 0.0f, 0.0f);
+			//}
+			//else if (i == 1)
+			//{
+			//	teleportParticle->GetComponent<Particle>()->SetParticleAngle(260.0f, 0.0f, 0.0f);
+			//}
 			_particleEmergenceAttack.emplace_back(teleportParticle);
 		}
 		{
@@ -773,11 +775,12 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			teleportParticle->AddComponent<Particle>();
 			teleportParticle->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
-			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
 			teleportParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+			teleportParticle->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
+			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportParticle->GetComponent<Particle>()->SetActive(false);
 			_particleEmergenceAttack.emplace_back(teleportParticle);
 		}
@@ -790,11 +793,12 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			teleportEgoParticle->AddComponent<Particle>();
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
-			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
@@ -812,16 +816,9 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
 
-			if (i == 0)
-			{
-				teleportEgoParticle->GetComponent<Particle>()->SetParticleAngle(80.0f, 0.0f, 0.0f);
-			}
-			else if (i == 1)
-			{
-				teleportEgoParticle->GetComponent<Particle>()->SetParticleAngle(260.0f, 0.0f, 0.0f);
-			}
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 		{
@@ -831,11 +828,12 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			teleportEgoParticle->AddComponent<Particle>();
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
-			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
+			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
@@ -2021,22 +2019,16 @@ void KunrealEngine::Kamen::CreateEmergence()
 					{
 						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(true);
 
-						if (i == 1 || i == 2)
-						{
-							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(20 + 100 * _timer * 1.2f, 20 + 100 * _timer * 1.2f);
-						}
-						else
-						{
-							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 100 * _timer, 10 + 100 * _timer);
-						}
-
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 60 * _timer, 10 + 60 * _timer);
+						
+					}
+					else if (_timer < 2.6f)
+					{
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
 					}
 					else
 					{
-						if (i == 0 || i == 3)
-						{
-							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
-						}
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);					
 					}
 				}
 			}
@@ -2049,22 +2041,16 @@ void KunrealEngine::Kamen::CreateEmergence()
 					{
 						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(true);
 
-						if (i == 1 || i == 2)
-						{
-							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(20 + 100 * _timer * 1.2f, 20 + 100 * _timer * 1.2f);
-						}
-						else
-						{
-							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 100 * _timer, 10 + 100 * _timer);
-						}
-
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(10 + 60 * _timer, 10 + 60 * _timer);
+						
+					}
+					else if(_timer < 2.6f)
+					{
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - ( 60 * (_timer - 1.3f)), 80 - ( 60 * (_timer - 1.3f)));
 					}
 					else
 					{
-						if (i == 0 || i == 3)
-						{
-							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
-						}
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);				
 					}
 				}
 				return true;
@@ -2078,7 +2064,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 				//return true;
 			}
 			else
-			{
+			{			
 				return false;
 			}
 
