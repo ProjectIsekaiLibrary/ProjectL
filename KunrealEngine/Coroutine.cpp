@@ -1,10 +1,13 @@
 #include "Coroutine.h"
 #include "TimeManager.h"
 
+#include "GraphicsSystem.h"
+#include <DirectXMath.h>
+
 namespace KunrealEngine
 {
 	std::vector<KunrealEngine::Coroutine::Coroutine_type*> KunrealEngine::Coroutine::_coroutines;
-	std::map<int, std::function<KunrealEngine::Coroutine::Coroutine_type()>> KunrealEngine::Coroutine::_AddedCoroutines; // 코루틴의 주소를 저장하는 집합
+	std::map<int, std::function<KunrealEngine::Coroutine::Coroutine_type()>*> KunrealEngine::Coroutine::_AddedCoroutines; // 코루틴의 주소를 저장하는 집합
 	int KunrealEngine::Coroutine::idexKey;
 
 	Coroutine::Coroutine()
@@ -184,20 +187,20 @@ namespace KunrealEngine
 	/////////////StartCoroutine///////////
 	//////////////////////////////////////
 
-	void Coroutine::StartCoroutine(std::function<Coroutine_type()> coro)
+	void Coroutine::StartCoroutine(std::function<Coroutine_type()>* coro)
 	{
 		// 이미 추가된 코루틴인지 확인
 		for (auto& coron : _AddedCoroutines) // 코루틴들의 배열을 순회
 		{
 
-			if (coron.second.target_type() == coro.target_type()) // 배열속코루틴의 함수포인터와 coro의 함수 포인터를 비교
+			if (coron.second == coro) // 배열속코루틴의 함수포인터와 coro의 함수 포인터를 비교
 			{
 
 				return;
 			}
 		}
 
-		Coroutine_type* coroutineInstance = new Coroutine_type(coro());
+		Coroutine_type* coroutineInstance = new Coroutine_type((*coro)());
 		_coroutines.emplace_back(coroutineInstance);
 		idexKey++;
 		coroutineInstance->mapKey = idexKey;
@@ -213,9 +216,13 @@ namespace KunrealEngine
 
 	void Coroutine::UpdateCoroutines()
 	{
+		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "Corotine: %d", _coroutines.size());
 		for (auto& coroutine : _coroutines)
 		{
-			if (!coroutine->coro_handle.done() && coroutine->coro_handle.promise().await_ready())
+			bool isready = coroutine->coro_handle.promise().await_ready();
+			bool isdone = coroutine->coro_handle.done();
+			
+			if (!isdone && isready)
 			{
 				// 코루틴이 완료되지 않고, 지정된 시간이 경과하지 않은 경우 resume하지 않음
 				coroutine->coro_handle.resume();
@@ -231,15 +238,16 @@ namespace KunrealEngine
 					}
 				}
 			}
-
-			else if (coroutine->coro_handle.done())
+			
+			else if (isdone)
 			{
 				_AddedCoroutines.erase(coroutine->mapKey);
 
 				auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
-				delete coroutine;
+				//delete coroutine;
 				coroutine = nullptr;
 				_coroutines.erase(iter); // 벡터에서 제거
+			
 			}
 		}
 	}
