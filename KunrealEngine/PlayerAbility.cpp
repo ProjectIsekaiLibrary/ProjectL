@@ -14,6 +14,7 @@
 #include "Kamen.h"
 
 #include "SceneManager.h"
+#include "EventManager.h"
 #include "Scene.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
@@ -793,6 +794,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 			if (!(_meteor->GetActivated()) && _isMeteorEnded == true)
 			{
+
 				_meteorParticleTimer += TimeManager::GetInstance().GetDeltaTime();
 
 				_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);
@@ -832,6 +834,10 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 					_isMeteorEnded = false;
 				}
 
+				if (_meteorParticleTimer < 0.3f)
+				{
+					EventManager::GetInstance().CamShake();
+				}
 			}
 		});
 

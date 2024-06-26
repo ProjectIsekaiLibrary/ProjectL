@@ -10,7 +10,7 @@
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
-	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0)
+	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(true)
 {
 
 }
@@ -77,6 +77,9 @@ void KunrealEngine::EventManager::SetCamera(std::string name)
 
 std::vector<DirectX::XMFLOAT2> KunrealEngine::EventManager::CamShake(float radius, int numPoints)
 {
+	// 원형 카메라 회전
+	// 원의 테두리에서 정점을 numpoint 만큼 추려낸 후, 그 점들을 반환.
+	// 원들의 위치를 순차적으로 적용한다면 카메라는 원을 그리며 흔들린다.(목표)
 #define M_PI       3.14159265358979323846
 	std::vector<DirectX::XMFLOAT2> result;
 
@@ -89,6 +92,36 @@ std::vector<DirectX::XMFLOAT2> KunrealEngine::EventManager::CamShake(float radiu
 	}
 
 	return result;
+}
+
+std::vector<float> KunrealEngine::EventManager::CamShakeLinear(float sigma, int numPoints)
+{
+	// 균등감소 카메라 흔들기
+	// sigma값 범위 만큼 카메라를 흔든다. 이 sigma 값은 점점 작아진다.
+	// 이때의 좌우로 진동 하는 횟수는 numpoint 값이다.
+	std::vector<float> result;
+	float cur_sigma = sigma;
+
+	for (float a = 0; a < numPoints ; a++)
+	{
+		// 현재 진동 강도를 리스트에 추가 (양수)
+		result.push_back(static_cast<int>(cur_sigma));
+		// 현재 진동 강도를 리스트에 추가 (음수)
+		result.push_back(static_cast<int>(-cur_sigma));
+		// 진동 강도 감소
+		cur_sigma -= sigma /numPoints;
+	}
+	result.push_back(static_cast<int>(0));
+
+	return result;
+}
+
+void KunrealEngine::EventManager::CamShake()
+{
+	// 무작위 카메라 흔들기. 
+	// 그냥 지정된 범위 내 랜덤값을 때려박는다.
+	_camshakex = ToolBox::GetRandomFloat(0.0f, 2.0f);
+	_camshakez = ToolBox::GetRandomFloat(0.0f, 2.0f);
 }
 
 void KunrealEngine::EventManager::CalculateDamageToBoss()
