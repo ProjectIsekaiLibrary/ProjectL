@@ -57,14 +57,14 @@ void KunrealEngine::EventManager::Update()
 		}
 	}
 	 
-	if (_mainCamera != nullptr && _player != nullptr)
+	if (_iscamfollow && _mainCamera != nullptr && _player != nullptr)
 	{
 		DirectX::XMFLOAT3 plpos = _player->GetComponent<Transform>()->GetPosition();
 		static DirectX::XMFLOAT3 capos = _mainCamera->GetComponent<Transform>()->GetPosition();
 
-		plpos.x += capos.x + _camshake;
+		plpos.x += capos.x + _camshakex;
 		plpos.y += capos.y;
-		plpos.z += capos.z + _camshake;
+		plpos.z += capos.z + _camshakez;
 
 		_mainCamera->GetComponent<Transform>()->SetPosition(plpos);
 	}
@@ -75,9 +75,20 @@ void KunrealEngine::EventManager::SetCamera(std::string name)
 	_mainCamera = SceneManager::GetInstance().GetCurrentScene()->GetGameObject(name);
 }
 
-void KunrealEngine::EventManager::CamShake()
+std::vector<DirectX::XMFLOAT2> KunrealEngine::EventManager::CamShake(float radius, int numPoints)
 {
-	_camshake = ToolBox::GetRandomFloat(0.0f, 2.0f);
+#define M_PI       3.14159265358979323846
+	std::vector<DirectX::XMFLOAT2> result;
+
+	for (int i = 0; i < numPoints; ++i) {
+		float random = ToolBox::GetRandomFloat(0.0f, radius * M_PI);
+		float theta = random;
+		float x = radius * std::cos(theta);
+		float y = radius * std::sin(theta);
+		result.push_back(DirectX::XMFLOAT2(x, y));
+	}
+
+	return result;
 }
 
 void KunrealEngine::EventManager::CalculateDamageToBoss()

@@ -26,7 +26,7 @@ namespace KunrealEngine
 		void Update();
 
 		void SetCamera(std::string name);
-		void CamShake();
+		std::vector<DirectX::XMFLOAT2> KunrealEngine::EventManager::CamShake(float radius, int numPoints);
 
 		// ΩÃ±€≈Ê
 	public:
@@ -50,7 +50,9 @@ namespace KunrealEngine
 
 		bool _eventStart;
 
-		int _camshake;
+		bool _iscamfollow;
+		float _camshakex;
+		float _camshakez;
 
 	private:
 		unsigned int _insideSafeCount;
