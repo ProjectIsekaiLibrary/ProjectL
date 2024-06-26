@@ -17,13 +17,13 @@ KunrealEngine::Player::Player()
 	, _playerInfo(
 		500.0f,			// hp
 		100.0f,			// stamina
-		15.0f,			// movespeed
+		30.0f,			// movespeed
 		120.0f,			// dashspeed
 		40.0f,			// dashrange
 		8.0f,			// dashcooldown
 		1.0f,			// spellpower
 		1.0f,			// damageReduce
-		1.0f			// speedScale
+		3.0f			// speedScale
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 {
@@ -55,9 +55,12 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->GetComponent<MeshRenderer>()->SetCartoonState(true);
 	
 	this->_owner->AddComponent<BoxCollider>();
-	//this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
-	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
+	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
+
+	this->_owner->AddComponent<CylinderCollider>();
+	this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
+	this->_owner->GetComponent<CylinderCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
 
