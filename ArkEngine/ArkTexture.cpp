@@ -58,6 +58,16 @@ void ArkEngine::ArkDX11::ArkTexture::CreateDDSTexture(const char* textureName)
 
 	DirectX::CreateDDSTextureFromFile(device, tempTextureName, &_textureResource, &_diffuseMapSRV);
 
+	ID3D11Texture2D* texture2D = nullptr;
+	_textureResource->QueryInterface(__uuidof(ID3D11Texture2D), reinterpret_cast<void**>(&texture2D));
+
+	D3D11_TEXTURE2D_DESC desc;
+	texture2D->GetDesc(&desc);
+	_textureSize.x = desc.Width;
+	_textureSize.y = desc.Height;
+
+	texture2D->Release();
+
 	Load(textureName);
 
 	_textureResource->Release();
@@ -140,6 +150,9 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTexture(const char* textureName)
 	// 생성된 SRV를 사용하도록 설정
 	_diffuseMapSRV = srv;
 
+	_textureSize.x = textureDesc.Width;
+	_textureSize.y = textureDesc.Height;
+
 	// 나머지 로드 및 초기화 코드
 	Load(textureName);
 }
@@ -198,6 +211,7 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTGATexture(const char* textureName)
 	}
 
 	hr = device->CreateTexture2D(&textureDesc, initData, &texture);
+
 	delete[] initData;
 
 	if (FAILED(hr)) {
@@ -220,6 +234,15 @@ void ArkEngine::ArkDX11::ArkTexture::CreateTGATexture(const char* textureName)
 	// 생성된 SRV를 사용하도록 설정
 	_diffuseMapSRV = srv;
 
+	_textureSize.x = textureDesc.Width;
+	_textureSize.y = textureDesc.Height;
+
 	// 나머지 로드 및 초기화 코드
 	Load(textureName);
+}
+
+
+const DirectX::XMUINT2& ArkEngine::ArkDX11::ArkTexture::GetTextureSize()
+{
+	return _textureSize;
 }

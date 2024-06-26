@@ -59,7 +59,7 @@ ArkEngine::ArkDX11::DX11Renderer::DX11Renderer()
 	_font(nullptr), _mainCamera(nullptr), _originMainCamera(nullptr), _mainCubeMap(nullptr),
 	_clientWidth(0), _clientHeight(0), _shadowHeight(0), _shadowWidth(0),
 	_isDebugMode(false), _renderingImageView(nullptr), _colorTexture(nullptr),
-	_viewPort(), _shadowViewPort(), _particleCamera(nullptr), _depthStencilStateNoWrite(nullptr)
+	_viewPort(), _shadowViewPort(), _particleCamera(nullptr), _depthStencilStateNoWrite(nullptr), _spriteBatch(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -122,6 +122,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	iCamera->SetProjectionMatrix(0.25f * DirectX::XM_PI, GetAspectRatio(), 1.0f, 1000.0f, true);
 
 	_particleCamera = iCamera;
+
+	_spriteBatch = new DirectX::SpriteBatch(_deviceContext.Get());
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidth, int clientHeight, float backGroundColor[4])
@@ -327,15 +329,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
-	for (const auto& index : ResourceManager::GetInstance()->GetUIImageList())
-	{
-		if (index->GetRenderingState())
-		{
-			// 디퍼드 버퍼 단계에서는 Color 버퍼에 렌더링하여 피킹이 가능하도록 함
-			index->Render(false);
-		}
-	}
-
 	BeginTransparentSet();
 
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
@@ -357,6 +350,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	}
 
 	_font->RenderUI();
+
 
 	// 디버그 모드일 경우
 	if (_isDebugMode)
@@ -400,15 +394,19 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		}
 	}
 
+	_spriteBatch->Begin();
+
 	// UI IMAGE 렌더링
 	for (const auto& index : ResourceManager::GetInstance()->GetUIImageList())
 	{
 		if (index->GetRenderingState())
 		{
 			// 0번 패스로 실질적인 UI IMAGE를 렌더링
-			index->Render(true);
+			index->Render(_spriteBatch);
 		}
 	}
+
+	_spriteBatch->End();
 
 	ID3D11ShaderResourceView* srv = NULL;
 
@@ -430,6 +428,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Finalize()
 	{
 		_renderingImageView->Release();
 	}
+
+	delete _spriteBatch;
 
 	ResourceManager::GetInstance()->ReleaseAll();
 
@@ -692,7 +692,7 @@ GInterface::GraphicsImage* ArkEngine::ArkDX11::DX11Renderer::GetPickedImage(int 
 
 	for (const auto& index : uiList)
 	{
-		if (pickingID == index->GetHashID())
+		//if (pickingID == index->GetHashID())
 		{
 			GInterface::GraphicsImage* tempImage = dynamic_cast<GInterface::GraphicsImage*>(index);
 			return tempImage;

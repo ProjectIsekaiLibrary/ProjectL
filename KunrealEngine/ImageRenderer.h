@@ -70,6 +70,7 @@ namespace KunrealEngine
 		// 클릭이 됐는지
 		bool IsPicked(int mouseX, int mouseY);
 
+		const DirectX::XMUINT2& GetImageSize();
 	};
 }
 

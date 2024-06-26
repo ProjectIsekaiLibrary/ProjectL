@@ -34,7 +34,7 @@ namespace ArkEngine
 			~UIImage();
 
 		public:
-			virtual void Render(bool isFinal) override;
+			virtual void Render(DirectX::DX11::SpriteBatch* sp) override;
 
 		public:
 			virtual bool GetRenderingState() override;
@@ -54,64 +54,23 @@ namespace ArkEngine
 			// 이미지 객체 삭제
 			virtual void Delete() override;
 
-			// 피킹을 위한 해쉬값 가져오기
-			virtual unsigned int GetHashID() override;
+			virtual const DirectX::XMUINT2& GetImageSize() override;
 
 		private:
 			void Initialize();
 			
-		private:
-			void SetEffect();
-			void BuildGeometryBuffers();
-			void ConvertHashToRGBA(int hashValue);
-			void SetHashValue(unsigned int index);
 			void SetTexture();
-
-		private:
-			float NomalizeToScreenX(float num);
-			float NomalizeToScreenY(float num);
 
 		private:
 			std::string _imageName;
 
-		private:
-			ID3DX11Effect* _effect;
-			ID3DX11EffectTechnique* _tech;
-
-		private:
-			ID3DX11EffectMatrixVariable* _fxWorldViewProj;
-
-		private:
-			ID3D11Buffer* _vertexBuffer;
-			ID3D11Buffer* _indexBuffer;
-
-		private:
-			ID3DX11EffectShaderResourceVariable* _diffuseMap;
-			ID3D11ShaderResourceView* _diffuseMapSRV;
-
-			ID3DX11EffectVectorVariable* _fxColor;
-
-		private:
-			ArkEngine::ArkDX11::ArkDevice* _arkDevice;
-			ArkEngine::ArkDX11::ArkBuffer* _arkBuffer;
-			ArkEngine::ArkDX11::ArkEffect* _arkEffect;
-			ArkEngine::ArkDX11::Transform* _meshTransform;
-
-
-		private:
-			float _color[4];
-			unsigned int _hashValue;
-			unsigned int _objectIndex;
-
-		private:
 			bool _isRendering;
 
-		private:
-			int _halfScreenWidth;
-			int _halfScreenHeight;
+			DirectX::XMUINT2 _texturePos;
+			DirectX::XMUINT2 _originTextureSize;
+			DirectX::XMUINT2 _finalTextureSize;
 
-			int _imageHalfWidth;
-			int _imageHalfHeight;
+			ID3D11ShaderResourceView* _textureSRV;
 		};
 	}
 }

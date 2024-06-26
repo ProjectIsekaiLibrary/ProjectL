@@ -9,6 +9,7 @@
 namespace DirectX
 {
 	struct XMFLOAT4X4;
+	struct XMUINT2;
 }
 
 namespace GInterface
@@ -37,5 +38,7 @@ namespace GInterface
 
 		// 디버그 객체 삭제
 		virtual void Delete() abstract;
+
+		virtual const DirectX::XMUINT2& GetImageSize() abstract;
 	};
 }

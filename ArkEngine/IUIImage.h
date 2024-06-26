@@ -10,6 +10,12 @@
 namespace DirectX
 {
 	struct XMFLOAT4X4;
+	struct XMUINT2;
+
+	namespace DX11
+	{
+		class SpriteBatch;
+	}
 }
 
 namespace ArkEngine
@@ -20,7 +26,7 @@ namespace ArkEngine
 		IUIImage() {};
 		virtual ~IUIImage() {};
 
-		virtual void Render(bool isFinal) abstract;
+		virtual void Render(DirectX::DX11::SpriteBatch* sp) abstract;
 
 	public:
 		virtual bool GetRenderingState() abstract;
@@ -32,6 +38,6 @@ namespace ArkEngine
 		virtual void SetRotation(float angle) abstract;
 		virtual void SetScale(float x = 1.0f, float y = 1.0f) abstract;
 
-		virtual unsigned int GetHashID() abstract;
+		virtual const DirectX::XMUINT2& GetImageSize() abstract;
 	};
 }

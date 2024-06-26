@@ -7,6 +7,7 @@
 /// </summary>
 
 #pragma once
+#include <DirectXMath.h>
 #include "IResource.h"
 
 struct ID3D11Resource;
@@ -40,6 +41,12 @@ namespace ArkEngine
 
 		private:
 			ID3D11ShaderResourceView* _diffuseMapSRV;
+
+		public:
+			const DirectX::XMUINT2& GetTextureSize();
+
+		private:
+			DirectX::XMUINT2 _textureSize;
 		};
 	}
 }

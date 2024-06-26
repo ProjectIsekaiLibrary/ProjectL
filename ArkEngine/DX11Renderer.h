@@ -305,6 +305,9 @@ namespace ArkEngine
 		private:
 			D3D11_VIEWPORT _viewPort;
 			D3D11_VIEWPORT _shadowViewPort;
+
+		private:
+			DirectX::SpriteBatch* _spriteBatch;
 		};
 	}
 }

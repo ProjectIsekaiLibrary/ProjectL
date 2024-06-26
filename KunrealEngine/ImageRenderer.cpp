@@ -158,3 +158,8 @@ bool KunrealEngine::ImageRenderer::IsPicked(int mouseX, int mouseY)
 		return false;
 	}
 }
+
+const DirectX::XMUINT2& KunrealEngine::ImageRenderer::GetImageSize()
+{
+	return _image->GetImageSize();
+}

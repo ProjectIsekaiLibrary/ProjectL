@@ -184,10 +184,10 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	_basicPattern.emplace_back(_spellAttack);		// 투사체 4번 터지는 패턴
-	TeleportSpellPattern();							// 텔포 후 spell	
+	//_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	//_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	//_basicPattern.emplace_back(_spellAttack);		// 투사체 4번 터지는 패턴
+	//TeleportSpellPattern();							// 텔포 후 spell	
 	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
 	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
