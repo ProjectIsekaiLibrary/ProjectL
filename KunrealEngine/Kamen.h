@@ -109,6 +109,7 @@ namespace KunrealEngine
 		void CreateBackStep();
 		void CreateTeleportToCenter();
 		void CreateTeleportToCenterWithLook();
+		void CreateTeleportRandomWithLook();
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
 		void CreateReverseEmergence();
@@ -140,6 +141,7 @@ namespace KunrealEngine
 		BossPattern* _turn180;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
+		BossPattern* _teleportRandomWithLook;
 		BossPattern* _reverseEmergence;
 		BossPattern* _emergence;
 
@@ -247,6 +249,9 @@ namespace KunrealEngine
 
 	private:
 		DirectX::XMFLOAT3 _centerPos;
+
+	private:
+		DirectX::XMFLOAT3 _randomPos;
 
 	private:
 		DirectX::XMFLOAT3 _emergencePos;

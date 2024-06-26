@@ -26,7 +26,7 @@ KunrealEngine::Kamen::Kamen()
 	_isEgoAttack(false), _egoLeftHandBone(nullptr), _egoRightHandBone(nullptr),
 	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr), _reverseEmergence(nullptr),
 	_emergence(nullptr), _emergencePos(), _bossInsideWarning(nullptr), _bossInsideAttack(nullptr), _bossRandomInsideWarning(nullptr),
-	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f)
+	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos()
 {
 	BossBasicInfo info;
 
@@ -147,6 +147,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateBackStep();
 	CreateTeleportToCenter();
 	CreateTeleportToCenterWithLook();
+	CreateTeleportRandomWithLook();
 	CreateTurnClockWise();
 	CreateTurnAntiClockWise();
 	CreateReverseEmergence();
@@ -177,26 +178,28 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	BasicPattern();						// 기본 spell, call
-	//
-	//LeftRightPattern();					// 전방 좌, 우 어택
+	//BasicPattern();						// 기본 spell, call
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
-	BackStepCallPattern();				// 백스탭 뒤 콜 어택
-	//TeleportSpellPattern();				// 텔포 후 spell	
+	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
 
-	EmergenceAttackPattern();				// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	SwordTurnAntiClockPattern();		// 텔포 후 반시계 -> 외부 안전
-	SwordTurnClockPattern();			// 텔포 후 시계 -> 내부 안전
-	SwordLinearAttackPattern();
-	SwordChopPattern();					// 도넛
+	_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	_basicPattern.emplace_back(_spellAttack);		// 투사체 4번 터지는 패턴
+	TeleportSpellPattern();							// 텔포 후 spell	
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+
+	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
+	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
+	SwordLinearAttackPattern();						// 칼 직선 공격
+	SwordChopPattern();								// 도넛
 
 	//BasicSwordAttackPattern();
 
 	//CoreEmmergencePattern();
 
-	_basicPattern.emplace_back(_leftFireAttack);
-	_basicPattern.emplace_back(_rightFireAttack);
+
 }
 
 
@@ -707,6 +710,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			donutParticle3->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
 			donutParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			donutParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
+			donutParticle3->SetTotalComponentState(false);
+			donutParticle3->SetActive(false);
 
 			if (i == 0)
 			{
@@ -720,10 +725,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			{
 				donutParticle3->GetComponent<Particle>()->SetParticleSize(215.f, 215.0f);
 			}
-
-			donutParticle3->SetTotalComponentState(false);
-			donutParticle3->SetActive(false);
-
 
 			_particleSwordDonut3.emplace_back(donutParticle3);
 		}
@@ -743,8 +744,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			teleportParticle->GetComponent<Particle>()->SetActive(false);
-			_particleEmergenceAttack.emplace_back(teleportParticle);
+			teleportParticle->SetTotalComponentState(false);
+			teleportParticle->SetActive(false);
 		}
 
 		for (int i = 0; i < 2; i++)
@@ -761,7 +762,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
 			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			teleportParticle->GetComponent<Particle>()->SetActive(false);
+			teleportParticle->SetTotalComponentState(false);
+			teleportParticle->SetActive(false);
 
 			//if (i == 0)
 			//{
@@ -786,7 +788,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
 			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			teleportParticle->GetComponent<Particle>()->SetActive(false);
+			teleportParticle->SetTotalComponentState(false);
+			teleportParticle->SetActive(false);
 			_particleEmergenceAttack.emplace_back(teleportParticle);
 		}
 	}
@@ -804,7 +807,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
+			teleportEgoParticle->SetTotalComponentState(false);
+			teleportEgoParticle->SetActive(false);
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 
@@ -822,7 +826,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
+			teleportEgoParticle->SetTotalComponentState(false);
+			teleportEgoParticle->SetActive(false);
 
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
@@ -839,7 +844,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			teleportEgoParticle->GetComponent<Particle>()->SetActive(false);
+			teleportEgoParticle->SetTotalComponentState(false);
+			teleportEgoParticle->SetActive(false);
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 	}
@@ -857,7 +863,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			particleBossPillar1->GetComponent<Particle>()->AddParticleColor(0.6f, 0.6f, 0.6f);
 			particleBossPillar1->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
 			particleBossPillar1->GetComponent<Particle>()->SetParticleCameraApply(true);
-			particleBossPillar1->GetComponent<Particle>()->SetActive(false);
+			particleBossPillar1->SetTotalComponentState(false);
+			particleBossPillar1->SetActive(false);
 		}
 		{
 			std::string name = "insidePillarBoss";
@@ -872,7 +879,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			particleBossPillar2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.5f, 0.0f);
 			particleBossPillar2->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
 			particleBossPillar2->GetComponent<Particle>()->SetParticleCameraApply(true);
-			particleBossPillar2->GetComponent<Particle>()->SetActive(false);
+			particleBossPillar2->SetTotalComponentState(false);
+			particleBossPillar2->SetActive(false);
 		}
 		{
 			std::string name = "insidePillarBoss";
@@ -887,7 +895,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			particleBossPillar3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.0f, 2.0f);
 			particleBossPillar3->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
 			particleBossPillar3->GetComponent<Particle>()->SetParticleCameraApply(true);
-			particleBossPillar3->GetComponent<Particle>()->SetActive(false);
+			particleBossPillar3->SetTotalComponentState(false);
+			particleBossPillar3->SetActive(false);
 		}
 	}
 	{
@@ -903,7 +912,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		lazerParticle->GetComponent<Particle>()->AddParticleColor(0.8f, 1.0f, 0.0f);
 		lazerParticle->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-		lazerParticle->GetComponent<Particle>()->SetActive(false);
+		lazerParticle->SetTotalComponentState(false);
+		lazerParticle->SetActive(false);
 	}
 	{
 		std::string name = "egoLazerParticle";
@@ -918,7 +928,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		lazerParticle->GetComponent<Particle>()->AddParticleColor(0.8f, 1.0f, 0.0f);
 		lazerParticle->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-		lazerParticle->GetComponent<Particle>()->SetActive(false);
+		lazerParticle->SetTotalComponentState(false);
+		lazerParticle->SetActive(false);
 	}
 }
 
@@ -988,8 +999,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 내부 장판 공격
 	_bossInsideAttack = _boss->GetObjectScene()->CreateObject("BossInsideAttack");
-	_bossInsideAttack->AddComponent<BoxCollider>();
-	_bossInsideAttack->GetComponent<BoxCollider>()->SetColliderScale(40.0f, 40.0f, 40.0f);
+	_bossInsideAttack->AddComponent<CylinderCollider>();
+	_bossInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(40.0f, 40.0f, 40.0f);
 	_bossInsideAttack->SetTotalComponentState(false);
 	_bossInsideAttack->SetActive(false);
 
@@ -1287,9 +1298,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 내부 장판 공격
 	_egoInsideAttack = _boss->GetObjectScene()->CreateObject("EgoInsideAttack");
-	_egoInsideAttack->AddComponent<BoxCollider>();
-	_egoInsideAttack->GetComponent<BoxCollider>()->SetActive(false);
-	_egoInsideAttack->GetComponent<BoxCollider>()->SetColliderScale(40.0f, 40.0f, 40.0f);
+	_egoInsideAttack->AddComponent<CylinderCollider>();
+	_egoInsideAttack->GetComponent<CylinderCollider>()->SetActive(false);
+	_egoInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(40.0f, 40.0f, 40.0f);
 	_egoInsideAttack->SetTotalComponentState(false);
 	_egoInsideAttack->SetActive(false);
 }
@@ -1829,6 +1840,46 @@ void KunrealEngine::Kamen::CreateTeleportToCenterWithLook()
 	_teleportWithLook = pattern;
 }
 
+void KunrealEngine::Kamen::CreateTeleportRandomWithLook()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("TeleportRand");
+
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
+
+	auto initLogic = [pattern, this]()
+		{
+			auto bossPos = _bossTransform->GetPosition();
+
+			auto ranX = ToolBox::GetRandomFloat(bossPos.x-40.0f, bossPos.x+40.0f);
+			auto ranZ = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
+			
+			_randomPos.x = ranX;
+			_randomPos.y = _bossTransform->GetPosition().y;
+			_randomPos.z = ranZ;
+		};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto teleport = [pattern, this]()
+		{
+			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_randomPos.x, _randomPos.y, _randomPos.z), true, 1.0f);
+
+			if (isTeleportFinish)
+			{
+				return false;
+			}
+
+			return true;
+		};
+
+	// 로직 함수 실행 가능하도록 넣어주기
+	pattern->SetLogic(teleport);
+
+	_teleportRandomWithLook = pattern;
+}
+
 void KunrealEngine::Kamen::CreateTurnClockWise()
 {
 	BossPattern* pattern = new BossPattern();
@@ -1973,7 +2024,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 	pattern->SetPatternName("Emergence");
 
 	pattern->SetAnimName("Emergence").SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(10.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox);
+	pattern->SetColliderType(BossPattern::eColliderType::eCylinder);
 	pattern->SetSubObject(_bossInsideAttack);
 	pattern->SetSubObject(_egoInsideAttack);
 
@@ -1999,7 +2050,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 				auto objectIndex = pattern->GetSubObjectIndex(_bossInsideAttack);
 				pattern->_isColliderActive[objectIndex] = true;
 
-				_bossInsideAttack->GetComponent<BoxCollider>()->SetColliderScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
+				_bossInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
 			}
 
 			if (_isEgoAttack)
@@ -2010,7 +2061,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 				auto objectIndex = pattern->GetSubObjectIndex(_egoInsideAttack);
 				pattern->_isColliderActive[objectIndex] = true;
 
-				_egoInsideAttack->GetComponent<BoxCollider>()->SetColliderScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
+				_egoInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
 
 				for (auto& index : _particleEgoEmergenceAttack)
 				{
@@ -3599,7 +3650,7 @@ void KunrealEngine::Kamen::TeleportSpellPattern()
 	teleportSpellPattern->SetSkipChase(true);
 	teleportSpellPattern->SetRange(100.0f);
 
-	teleportSpellPattern->SetPattern(_teleportWithLook);
+	teleportSpellPattern->SetPattern(_teleportRandomWithLook);
 
 	teleportSpellPattern->SetPattern(_spellAttack);
 
