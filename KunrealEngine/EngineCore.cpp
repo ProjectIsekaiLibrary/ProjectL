@@ -503,9 +503,24 @@ void KunrealEngine::EngineCore::Update()
 		pause_ui_box->SetActive(true);
 	}
 
-	if (inputInstance->KeyInput(KEY::PERIOD))
+	if (inputInstance->KeyDown(KEY::PERIOD))
 	{
-		EventManager::GetInstance().CamShake();
+		EventManager::GetInstance()._iscamfollow = EventManager::GetInstance()._iscamfollow ? false : true;
+
+		//_Coroutine(camshake);
+		//_CoroutineIs(camshake)
+		//{
+		//	std::vector<DirectX::XMFLOAT2> campos = EventManager::GetInstance().CamShake(3,15);
+		//	for (auto pos : campos)
+		//	{
+		//		EventManager::GetInstance()._camshakex = pos.x;
+		//		EventManager::GetInstance()._camshakez = pos.y;
+		//		Return_null;
+		//	}
+		//	EventManager::GetInstance()._camshakex = 0;
+		//	EventManager::GetInstance()._camshakez = 0;
+		//};
+		//Startcoroutine(camshake);
 	}
 
 	if (inputInstance->KeyUp(KEY::CAPSLOCK))

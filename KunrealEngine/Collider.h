@@ -32,7 +32,7 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _scale;		// physx에 넘겨줄 크기	// transform과 별개임
 		DirectX::XMFLOAT4 _quaternion;	// physX에 넘겨줄 Quaternion
 		DirectX::XMFLOAT3 _offset;		// 오브젝트의 Transform으로부터 얼마나 차이가 날 것인지
-	
+
 	public:
 		// 충돌 여부 반환
 		bool IsCollided();

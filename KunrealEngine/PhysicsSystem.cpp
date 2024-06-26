@@ -218,7 +218,7 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 
 		if (!pair.first->GetOwnerObject()->GetActivated())
 		{
-			//pair.first->_isCollided = false;
+			pair.first->_isCollided = false;
 			pair.first->_targetObj = nullptr;
 		}
 	}
@@ -263,8 +263,9 @@ void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
 	this->_dynamicMap.at(collider)->detachShape(*collider->_shape);
 
 	// 크기에 맞게 새로운 shape 생성
+	// box의 scale에 맞추기 위해 전체적인 scale을 절반으로
 	physx::PxMeshScale scale(physx::PxVec3(
-		collider->GetColliderScale().x, collider->GetColliderScale().y, collider->GetColliderScale().z),
+		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y /2.0f, collider->GetColliderScale().z / 2.0f),
 		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
 	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
@@ -285,15 +286,15 @@ void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active
 		//this->_dynamicMap.at(collider)->wakeUp();
 		
 		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 	}
 	else
 	{
 		//this->_dynamicMap.at(collider)->putToSleep();
 		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+		collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+		collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 	}
 }
 
@@ -443,11 +444,6 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	col1 = GetColliderFromDynamic(casted1);
 	col2 = GetColliderFromDynamic(casted2);
 
-	if (col1->GetOwnerObject()->GetObjectName() == "Player" || col2->GetOwnerObject()->GetObjectName() == "Player")
-	{
-		int a = 10;
-	}
-
 	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
 	if (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated())
 	{
@@ -484,18 +480,7 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 
 void KunrealEngine::PhysicsSystem::onTrigger(physx::PxTriggerPair* pairs, physx::PxU32 count)
 {
-	for (physx::PxU32 i = 0; i < count; i++)
-	{
-		const physx::PxTriggerPair& pair = pairs[i];
 
-		if (pair.status & physx::PxPairFlag::eNOTIFY_TOUCH_FOUND) 
-		{
-			physx::PxActor* triggerActor = pair.triggerActor;
-			physx::PxActor* otherActor = pair.otherActor;
-
-			int a = 10;
-		}
-	}
 }
 
 void KunrealEngine::PhysicsSystem::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)

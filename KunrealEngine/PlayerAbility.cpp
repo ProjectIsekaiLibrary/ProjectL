@@ -14,6 +14,7 @@
 #include "Kamen.h"
 
 #include "SceneManager.h"
+#include "EventManager.h"
 #include "Scene.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
@@ -63,10 +64,10 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady)
 	{
 		ResetShotPos();
+		Startcoroutine(shotCoolDown);
 		_isShotDetected = true;
 		_isShotReady = false;
 		_isShotHit = true;
-		Startcoroutine(shotCoolDown);
 		_shot->SetActive(true);
 		_shot->GetComponent<Projectile>()->SetActive(true);
 		_shotParticle2->GetComponent<Particle>()->SetActive(true);
@@ -179,7 +180,7 @@ void KunrealEngine::PlayerAbility::Update()
 	}
 	else
 	{
-		GRAPHICS->DrawDebugText(100, 800, 40, "Q On CoolDown");
+		GRAPHICS->DrawDebugText(100, 800, 40, "R On CoolDown");
 	}
 }
 
@@ -372,7 +373,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	// Q 스킬은 메쉬가 안 보이게
 	_shot->GetComponent<MeshRenderer>()->SetAlpha(0.0f);
 
-	shotProj->GetCollider()->SetColliderScale(3.0f, 3.0f, 3.0f);
+	shotProj->GetCollider()->SetColliderScale(5.0f, 5.0f, 5.0f);
 	shotProj->SetDestoryCondition([shot, shotProj, this]()->bool
 		{
 			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
@@ -793,6 +794,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 			if (!(_meteor->GetActivated()) && _isMeteorEnded == true)
 			{
+
 				_meteorParticleTimer += TimeManager::GetInstance().GetDeltaTime();
 
 				_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);
@@ -832,6 +834,10 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 					_isMeteorEnded = false;
 				}
 
+				if (_meteorParticleTimer < 0.3f)
+				{
+					EventManager::GetInstance().CamShake();
+				}
 			}
 		});
 

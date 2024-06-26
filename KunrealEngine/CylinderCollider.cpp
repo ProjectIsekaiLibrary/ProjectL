@@ -15,6 +15,7 @@ void KunrealEngine::CylinderCollider::Initialize()
 	this->_position = this->_transform->GetPosition();
 
 	PhysicsSystem::GetInstance().CreateCylinderCollider(this);
+	SetColliderScale(this->_transform->GetScale());
 }
 
 void KunrealEngine::CylinderCollider::Release()
