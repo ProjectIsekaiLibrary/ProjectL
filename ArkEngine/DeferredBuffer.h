@@ -26,14 +26,6 @@ enum class eBUFFERTYPE
 	GBUFFER_COUNT		
 };
 
-// GBuffer에 들어갈 요소들
-enum class eBLOOM
-{
-	BLOOM_ORIGIN,
-	BLOOM_COUNT
-};
-
-
 namespace ArkEngine
 {
 	namespace ArkDX11
@@ -105,15 +97,14 @@ namespace ArkEngine
 			ID3D11ShaderResourceView* _shaderResourceViewArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
 
 		private:
-			ID3D11Texture2D* _renderTargetTextureArrayForFinal[static_cast<int>(eBLOOM::BLOOM_COUNT)];
-			ID3D11RenderTargetView* _renderTargetViewArrayForFinal[static_cast<int>(eBLOOM::BLOOM_COUNT)];
-			ID3D11ShaderResourceView* _shaderResourceViewArrayForFinal[static_cast<int>(eBLOOM::BLOOM_COUNT)];
-
+			ID3D11Texture2D* _renderTargetTextureArrayForFinal;
+			ID3D11RenderTargetView* _renderTargetViewArrayForFinal;
+			ID3D11ShaderResourceView* _shaderResourceViewArrayForFinal;
 
 		private:
-			ID3D11Texture2D* _renderTargetTextureArrayForBloom[static_cast<int>(eBLOOM::BLOOM_COUNT)];
-			ID3D11RenderTargetView* _renderTargetViewArrayForBloom[static_cast<int>(eBLOOM::BLOOM_COUNT)];
-			ID3D11ShaderResourceView* _shaderResourceViewArrayForBloom[static_cast<int>(eBLOOM::BLOOM_COUNT)];
+			ID3D11Texture2D* _renderTargetTextureArrayForBloom;
+			ID3D11RenderTargetView* _renderTargetViewArrayForBloom;
+			ID3D11ShaderResourceView* _shaderResourceViewArrayForBloom;
 		};
 	}
 }

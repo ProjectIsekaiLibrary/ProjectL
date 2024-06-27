@@ -29,22 +29,22 @@ void ArkEngine::ArkDX11::deferredBuffer::Initialize()
 	CreateRenderTargetView();
 	CreateShaderResourceView();
 
-	for (int i = 0; i < static_cast<int>(eBLOOM::BLOOM_COUNT); i++)
+	for (int i = 0; i < 1; i++)
 	{
-		_renderTargetTextureArrayForFinal[i] = nullptr;
-		_renderTargetViewArrayForFinal[i] = nullptr;
-		_shaderResourceViewArrayForFinal[i] = nullptr;
+		_renderTargetTextureArrayForFinal = nullptr;
+		_renderTargetViewArrayForFinal = nullptr;
+		_shaderResourceViewArrayForFinal = nullptr;
 	}
 
 	CreateRenderTargetTextureForFinal();
 	CreateRenderTargetViewForFinal();
 	CreateShaderResourceViewForFinal();
 
-	for (int i = 0; i < static_cast<int>(eBLOOM::BLOOM_COUNT); i++)
+	for (int i = 0; i < 1; i++)
 	{
-		_renderTargetTextureArrayForBloom[i] = nullptr;
-		_renderTargetViewArrayForBloom[i] = nullptr;
-		_shaderResourceViewArrayForBloom[i] = nullptr;
+		_renderTargetTextureArrayForBloom = nullptr;
+		_renderTargetViewArrayForBloom = nullptr;
+		_shaderResourceViewArrayForBloom = nullptr;
 	}
 
 	CreateRenderTargetTextureForBloom();
@@ -61,12 +61,14 @@ void ArkEngine::ArkDX11::deferredBuffer::Finalize()
 		_shaderResourceViewArray[i]->Release();
 	}
 
-	for (int i = 0; i < static_cast<int>(eBLOOM::BLOOM_COUNT); i++)
-	{
-		_renderTargetTextureArrayForBloom[i]->Release();
-		_renderTargetViewArrayForBloom[i]->Release();
-		_shaderResourceViewArrayForBloom[i]->Release();
-	}
+	_renderTargetTextureArrayForFinal->Release();
+	_renderTargetViewArrayForFinal->Release();
+	_shaderResourceViewArrayForFinal->Release();
+
+	_renderTargetTextureArrayForBloom->Release();
+	_renderTargetViewArrayForBloom->Release();
+	_shaderResourceViewArrayForBloom->Release();
+
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargets()
@@ -90,16 +92,13 @@ void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(float color[4])
 
 void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargetsForFinal()
 {
-	_arkDevice->GetDeviceContext()->OMSetRenderTargets(static_cast<int>(eBLOOM::BLOOM_COUNT), _renderTargetViewArrayForFinal, _arkDevice->GetDepthStencilView());
+	_arkDevice->GetDeviceContext()->OMSetRenderTargets(1, &_renderTargetViewArrayForFinal, _arkDevice->GetDepthStencilView());
 }
 
 
 void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargetsForFinal(float color[4])
 {
-	for (int i = 0; i < static_cast<int>(eBLOOM::BLOOM_COUNT); i++)
-	{
-		_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArrayForFinal[i], color);
-	}
+	_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArrayForFinal, color);
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(int index, float color[4])
@@ -109,15 +108,12 @@ void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(int index, float col
 
 void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargetsForBloom()
 {
-	_arkDevice->GetDeviceContext()->OMSetRenderTargets(static_cast<int>(eBLOOM::BLOOM_COUNT), _renderTargetViewArrayForBloom, _arkDevice->GetDepthStencilView());
+	_arkDevice->GetDeviceContext()->OMSetRenderTargets(1, &_renderTargetViewArrayForBloom, _arkDevice->GetDepthStencilView());
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargetsForBloom(float color[4])
 {
-	for (int i = 0; i < static_cast<int>(eBLOOM::BLOOM_COUNT); i++)
-	{
-		_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArrayForBloom[i], color);
-	}
+	_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArrayForBloom, color);
 }
 
 ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRV(int index)
@@ -138,36 +134,36 @@ ID3D11RenderTargetView* ArkEngine::ArkDX11::deferredBuffer::GetRenderTargetView(
 
 ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRVForFinal(int index)
 {
-	return _shaderResourceViewArrayForFinal[index];
+	return _shaderResourceViewArrayForFinal;
 }
 
 
 ID3D11Texture2D* ArkEngine::ArkDX11::deferredBuffer::GetTextrueForFinal(int index)
 {
-	return _renderTargetTextureArrayForFinal[index];
+	return _renderTargetTextureArrayForFinal;
 }
 
 
 ID3D11RenderTargetView* ArkEngine::ArkDX11::deferredBuffer::GetRenderTargetViewForFinal(int index)
 {
-	return _renderTargetViewArrayForFinal[index];
+	return _renderTargetViewArrayForFinal;
 }
 
 ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRVForBloom(int index)
 {
-	return _shaderResourceViewArrayForBloom[index];
+	return _shaderResourceViewArrayForBloom;
 }
 
 
 ID3D11Texture2D* ArkEngine::ArkDX11::deferredBuffer::GetTextrueForBloom(int index)
 {
-	return _renderTargetTextureArrayForBloom[index];
+	return _renderTargetTextureArrayForBloom;
 }
 
 
 ID3D11RenderTargetView* ArkEngine::ArkDX11::deferredBuffer::GetRenderTargetViewForBloom(int index)
 {
-	return _renderTargetViewArrayForBloom[index];
+	return _renderTargetViewArrayForBloom;
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture()
@@ -259,7 +255,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForFinal()
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArrayForFinal[0]);
+	HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArrayForFinal);
 }
 
 
@@ -271,7 +267,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetViewForFinal()
 	renderTagetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTagetViewDesc.Texture2D.MipSlice = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArrayForFinal[0], &renderTagetViewDesc, &_renderTargetViewArrayForFinal[0]);
+	HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArrayForFinal, &renderTagetViewDesc, &_renderTargetViewArrayForFinal);
 }
 
 
@@ -284,15 +280,15 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForFinal()
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(_renderTargetTextureArrayForFinal[0], &shaderResourceViewDesc, &_shaderResourceViewArrayForFinal[0]);
+	HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(&_renderTargetTextureArrayForFinal[0], &shaderResourceViewDesc, &_shaderResourceViewArrayForFinal);
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForBloom()
 {
 	D3D11_TEXTURE2D_DESC textureDesc;
 
-	textureDesc.Height = _textureHeight * 0.25f;
-	textureDesc.Width = _textureWidth * 0.25f;
+	textureDesc.Height = _textureHeight * 0.125f;
+	textureDesc.Width = _textureWidth * 0.125f;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
 	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
@@ -303,7 +299,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForBloom()
 	textureDesc.CPUAccessFlags = 0;
 	textureDesc.MiscFlags = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArrayForBloom[0]);
+	HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArrayForBloom);
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetViewForBloom()
@@ -314,7 +310,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetViewForBloom()
 	renderTagetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTagetViewDesc.Texture2D.MipSlice = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArrayForBloom[0], &renderTagetViewDesc, &_renderTargetViewArrayForBloom[0]);
+	HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArrayForBloom, &renderTagetViewDesc, &_renderTargetViewArrayForBloom);
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForBloom()
@@ -326,5 +322,5 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForBloom()
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(_renderTargetTextureArrayForBloom[0], &shaderResourceViewDesc, &_shaderResourceViewArrayForBloom[0]);
+	HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(_renderTargetTextureArrayForBloom, &shaderResourceViewDesc, &_shaderResourceViewArrayForBloom);
 }
