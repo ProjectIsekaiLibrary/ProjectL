@@ -180,6 +180,8 @@ namespace ArkEngine
 		private:
 			void BeginShadowRender();
 			void BeginRender();
+			void BeginFinalRender();
+			void BeginBloomRender();
 			void FinalRender();
 			void EndRender();
 

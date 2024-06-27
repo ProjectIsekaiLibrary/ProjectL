@@ -26,6 +26,14 @@ enum class eBUFFERTYPE
 	GBUFFER_COUNT		
 };
 
+// GBuffer에 들어갈 요소들
+enum class eBLOOM
+{
+	BLOOM_ORIGIN,
+	BLOOM_COUNT
+};
+
+
 namespace ArkEngine
 {
 	namespace ArkDX11
@@ -49,16 +57,45 @@ namespace ArkEngine
 			void ClearRenderTargets(int index, float color[4]);
 
 		public:
+			void SetRenderTargetsForFinal();
+			void ClearRenderTargetsForFinal(float color[4]);
+
+		public:
+			void SetRenderTargetsForBloom();
+			void ClearRenderTargetsForBloom(float color[4]);
+
+		public:
 			ID3D11ShaderResourceView* GetSRV(int index);
 			ID3D11Texture2D* GetTextrue(int index);
 			ID3D11RenderTargetView* GetRenderTargetView(int index);
 
-		private:
-			void CreateRenderTargetTexture(ArkEngine::ArkDX11::ArkDevice* pDeivce);
-			void CreateRenderTargetView(ArkEngine::ArkDX11::ArkDevice* pDeivce);
-			void CreateShaderResourceView(ArkEngine::ArkDX11::ArkDevice* pDeivce);
+		public:
+			ID3D11ShaderResourceView* GetSRVForFinal(int index);
+			ID3D11Texture2D* GetTextrueForFinal(int index);
+			ID3D11RenderTargetView* GetRenderTargetViewForFinal(int index);
+
+		public:
+			ID3D11ShaderResourceView* GetSRVForBloom(int index);
+			ID3D11Texture2D* GetTextrueForBloom(int index);
+			ID3D11RenderTargetView* GetRenderTargetViewForBloom(int index);
 
 		private:
+			void CreateRenderTargetTexture();
+			void CreateRenderTargetView();
+			void CreateShaderResourceView();
+
+		private:
+			void CreateRenderTargetTextureForFinal();
+			void CreateRenderTargetViewForFinal();
+			void CreateShaderResourceViewForFinal();
+
+		private:
+			void CreateRenderTargetTextureForBloom();
+			void CreateRenderTargetViewForBloom();
+			void CreateShaderResourceViewForBloom();
+
+		private:
+			ArkDevice* _arkDevice;
 			int _textureWidth;
 			int _textureHeight;
 
@@ -66,6 +103,17 @@ namespace ArkEngine
 			ID3D11Texture2D* _renderTargetTextureArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
 			ID3D11RenderTargetView* _renderTargetViewArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
 			ID3D11ShaderResourceView* _shaderResourceViewArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
+
+		private:
+			ID3D11Texture2D* _renderTargetTextureArrayForFinal[static_cast<int>(eBLOOM::BLOOM_COUNT)];
+			ID3D11RenderTargetView* _renderTargetViewArrayForFinal[static_cast<int>(eBLOOM::BLOOM_COUNT)];
+			ID3D11ShaderResourceView* _shaderResourceViewArrayForFinal[static_cast<int>(eBLOOM::BLOOM_COUNT)];
+
+
+		private:
+			ID3D11Texture2D* _renderTargetTextureArrayForBloom[static_cast<int>(eBLOOM::BLOOM_COUNT)];
+			ID3D11RenderTargetView* _renderTargetViewArrayForBloom[static_cast<int>(eBLOOM::BLOOM_COUNT)];
+			ID3D11ShaderResourceView* _shaderResourceViewArrayForBloom[static_cast<int>(eBLOOM::BLOOM_COUNT)];
 		};
 	}
 }
