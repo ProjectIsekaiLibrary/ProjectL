@@ -2,6 +2,7 @@
 #include "CommonHeader.h"
 #include "Component.h"
 #include "Collider.h"
+#include "GraphicsSystem.h"
 
 /// <summary>
 /// 원기둥 모양의 debugMesh는 없으니 관련 기능은 필요 없어보인다
@@ -37,6 +38,11 @@ namespace KunrealEngine
 		void SetColliderScale(float x, float y, float z) override;
 		void SetColliderScale(const DirectX::XMFLOAT3& scale) override;
 
+		// Debug Object 설정
+		void SetDebugMeshData();
+
+	private:
+		GInterface::GraphicsDebug* _debugObject;
 	};
 }
 

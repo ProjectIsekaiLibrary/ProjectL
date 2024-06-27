@@ -318,9 +318,15 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		}
 
 		// physx 관련 부분
+		// collider는 오브젝트가 비활성화 상태일 때 simulation이 종료되어야 함
 		if (this->GetComponent<BoxCollider>() != nullptr)
 		{
 			this->GetComponent<BoxCollider>()->_debugObject->SetActive(false);
+		}
+
+		if (this->GetComponent<CylinderCollider>() != nullptr)
+		{
+			this->GetComponent<CylinderCollider>()->_debugObject->SetActive(false);
 		}
 	}
 	else
@@ -354,6 +360,11 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		if (this->GetComponent<BoxCollider>() != nullptr)
 		{
 			this->GetComponent<BoxCollider>()->_debugObject->SetActive(this->GetComponent<BoxCollider>()->GetActivated());
+		}
+
+		if (this->GetComponent<CylinderCollider>() != nullptr)
+		{
+			this->GetComponent<CylinderCollider>()->_debugObject->SetActive(this->GetComponent<CylinderCollider>()->GetActivated());
 		}
 	}
 
