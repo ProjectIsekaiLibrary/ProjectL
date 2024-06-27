@@ -3,7 +3,8 @@
 KunrealEngine::Collider::Collider()
 	: _transform(nullptr), _isCollided(false), _ownerObj(nullptr), _targetObj(nullptr), _shape(nullptr)
 	, _position({ 0.0f, 0.0f, 0.0f }), _scale({ 1.0f, 1.0f, 1.0f }), _quaternion({ 0.0f, 0.0f, 0.0f, 0.0f })
-	, _offset({ 0.0f, 0.0f, 0.0f })
+	, _offset({ 0.0f, 0.0f, 0.0f }), _colliderActivated(true)
+	, _isCylinder(false)
 {
 
 }

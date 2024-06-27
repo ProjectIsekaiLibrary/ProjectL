@@ -4,6 +4,7 @@
 #include "PhysicsSystem.h"
 
 KunrealEngine::CylinderCollider::CylinderCollider()
+	:_debugObject(nullptr)
 {
 
 }
@@ -15,12 +16,18 @@ void KunrealEngine::CylinderCollider::Initialize()
 	this->_position = this->_transform->GetPosition();
 
 	PhysicsSystem::GetInstance().CreateCylinderCollider(this);
+
+	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), this->_scale.x, this->_scale.y, this->_scale.z);
 	SetColliderScale(this->_transform->GetScale());
+
+	///
+	this->_isCylinder = true;
+	///
 }
 
 void KunrealEngine::CylinderCollider::Release()
 {
-	
+	_debugObject->Delete();
 }
 
 void KunrealEngine::CylinderCollider::FixedUpdate()
@@ -56,7 +63,7 @@ void KunrealEngine::CylinderCollider::FixedUpdate()
 
 void KunrealEngine::CylinderCollider::Update()
 {
-	
+	SetDebugMeshData();
 }
 
 void KunrealEngine::CylinderCollider::LateUpdate()
@@ -82,6 +89,7 @@ void KunrealEngine::CylinderCollider::OnTriggerExit()
 void KunrealEngine::CylinderCollider::SetActive(bool active)
 {
 	this->_isActivated = active;
+	this->_colliderActivated = active;
 
 	if (!this->_isActivated)
 	{
@@ -90,6 +98,7 @@ void KunrealEngine::CylinderCollider::SetActive(bool active)
 	}
 
 	PhysicsSystem::GetInstance().SetActorState(this, active);
+	_debugObject->SetActive(active);
 }
 
 KunrealEngine::CylinderCollider::~CylinderCollider()
@@ -103,12 +112,34 @@ void KunrealEngine::CylinderCollider::SetColliderScale(float x, float y, float z
 	this->_scale.y = y;
 	this->_scale.z = z;
 
+	this->_debugObject->SetScale(x, y, z);
 	PhysicsSystem::GetInstance().SetCylinderSize(this);
+}
+
+void KunrealEngine::CylinderCollider::SetDebugMeshData()
+{
+	if (!_transform->_haveParentBone)
+	{
+		_debugObject->SetPosition(_position.x, _position.y, _position.z);
+		_debugObject->SetScale(this->_scale.x, this->_scale.y, this->_scale.z);
+		_debugObject->SetRotation(_transform->GetRotation().x, _transform->GetRotation().y, _transform->GetRotation().z);
+	}
+	else
+	{
+		DirectX::XMFLOAT4X4 worldToDebug;
+
+		DirectX::XMStoreFloat4x4(&worldToDebug, DirectX::XMMatrixScaling(this->_scale.x, this->_scale.y, this->_scale.z)
+			* DirectX::XMMatrixRotationQuaternion(DirectX::XMLoadFloat4(&this->_quaternion))
+			* DirectX::XMMatrixTranslation(_position.x, _position.y, _position.z));
+
+		_debugObject->SetTransform(worldToDebug);
+	}
 }
 
 void KunrealEngine::CylinderCollider::SetColliderScale(const DirectX::XMFLOAT3& scale)
 {
 	this->_scale = scale;
 
+	this->_debugObject->SetScale(scale.x, scale.y, scale.z);
 	PhysicsSystem::GetInstance().SetCylinderSize(this);
 }
