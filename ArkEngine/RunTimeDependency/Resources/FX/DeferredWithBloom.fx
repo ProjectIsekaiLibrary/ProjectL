@@ -6,11 +6,15 @@
 
 // 빛을 받는 객채의 포지션
 Texture2D FinalTexture : register(t0);
-Texture2D GrayScaleTexture : register(t1);
+Texture2D GrayScaleTexture1;
+Texture2D GrayScaleTexture2;
+Texture2D GrayScaleTexture3;
+Texture2D GrayScaleTexture4;
+
 
 SamplerState samAnisotropic
 {
-    Filter = MIN_MAG_MIP_POINT;
+    Filter = MIN_MAG_MIP_LINEAR;
     MaxAnisotropy = 16;
 
     AddressU = WRAP;
@@ -33,11 +37,17 @@ struct VertexOut
     float2 Tex : TEXCOORD0;
 };
 
-void GetGBufferAttributes(float2 texCoord, out float4 finalTexture, out float4 grayScale)
+void GetGBufferAttributes(float2 texCoord, out float4 finalTexture, out float4 grayScale1, out float4 grayScale2, out float4 grayScale3, out float4 grayScale4)
 {
     finalTexture = FinalTexture.Sample(samAnisotropic, texCoord);
+    
+    grayScale1 = GrayScaleTexture1.Sample(samAnisotropic, texCoord);
 
-    grayScale = GrayScaleTexture.Sample(samAnisotropic, texCoord);
+    grayScale2 = GrayScaleTexture2.Sample(samAnisotropic, texCoord);
+    
+    grayScale3 = GrayScaleTexture3.Sample(samAnisotropic, texCoord);
+    
+    grayScale4 = GrayScaleTexture4.Sample(samAnisotropic, texCoord);
 }
 
 VertexOut VS(VertexIn vin)
@@ -53,11 +63,22 @@ VertexOut VS(VertexIn vin)
 float4 PS(VertexOut pin) : SV_Target
 {
     float4 finalTexture;
-    float4 grayScale;
     
-    GetGBufferAttributes(pin.Tex, finalTexture, grayScale);
+    float4 grayScale1;
+    float4 grayScale2;
+    float4 grayScale3;
+    float4 grayScale4;
     
-    float4 result = finalTexture + grayScale;
+    GetGBufferAttributes(pin.Tex, finalTexture, grayScale1, grayScale2, grayScale3, grayScale4);
+    
+    float4 combinedGrayScale = (grayScale1 + grayScale2 + grayScale3 + grayScale4) * 0.4f;
+
+    // Bloom intensity
+    float bloomIntensity = 1.0f;
+
+    //float4 result = finalTexture + grayScale1;
+    // 최종 결과에 블러 및 그레이스케일 효과 추가
+    float4 result = finalTexture + combinedGrayScale * bloomIntensity;
     
     return result;
 }

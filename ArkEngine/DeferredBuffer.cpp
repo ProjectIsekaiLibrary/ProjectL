@@ -40,11 +40,11 @@ void ArkEngine::ArkDX11::deferredBuffer::Initialize()
 	CreateRenderTargetViewForFinal();
 	CreateShaderResourceViewForFinal();
 
-	for (int i = 0; i < 1; i++)
+	for (int i = 0; i < 4; i++)
 	{
-		_renderTargetTextureArrayForBloom = nullptr;
-		_renderTargetViewArrayForBloom = nullptr;
-		_shaderResourceViewArrayForBloom = nullptr;
+		_renderTargetTextureArrayForBloom.emplace_back();
+		_renderTargetViewArrayForBloom.emplace_back();
+		_shaderResourceViewArrayForBloom.emplace_back();
 	}
 
 	CreateRenderTargetTextureForBloom();
@@ -65,10 +65,12 @@ void ArkEngine::ArkDX11::deferredBuffer::Finalize()
 	_renderTargetViewArrayForFinal->Release();
 	_shaderResourceViewArrayForFinal->Release();
 
-	_renderTargetTextureArrayForBloom->Release();
-	_renderTargetViewArrayForBloom->Release();
-	_shaderResourceViewArrayForBloom->Release();
-
+	for (int i = 0; i < _renderTargetTextureArrayForBloom.size(); i++)
+	{
+		_renderTargetTextureArrayForBloom[i]->Release();
+		_renderTargetViewArrayForBloom[i]->Release();
+		_shaderResourceViewArrayForBloom[i]->Release();
+	}
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargets()
@@ -106,14 +108,14 @@ void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargets(int index, float col
 	_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArray[index], color);
 }
 
-void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargetsForBloom()
+void ArkEngine::ArkDX11::deferredBuffer::SetRenderTargetsForBloom(int index)
 {
-	_arkDevice->GetDeviceContext()->OMSetRenderTargets(1, &_renderTargetViewArrayForBloom, _arkDevice->GetDepthStencilView());
+	_arkDevice->GetDeviceContext()->OMSetRenderTargets(1, &_renderTargetViewArrayForBloom[index], _arkDevice->GetDepthStencilView());
 }
 
-void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargetsForBloom(float color[4])
+void ArkEngine::ArkDX11::deferredBuffer::ClearRenderTargetsForBloom(int index, float color[4])
 {
-	_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArrayForBloom, color);
+	_arkDevice->GetDeviceContext()->ClearRenderTargetView(_renderTargetViewArrayForBloom[index], color);
 }
 
 ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRV(int index)
@@ -149,21 +151,27 @@ ID3D11RenderTargetView* ArkEngine::ArkDX11::deferredBuffer::GetRenderTargetViewF
 	return _renderTargetViewArrayForFinal;
 }
 
-ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRVForBloom(int index)
+
+std::vector<ID3D11ShaderResourceView*>& ArkEngine::ArkDX11::deferredBuffer::GetSRVForBloomVec()
 {
 	return _shaderResourceViewArrayForBloom;
+}
+
+ID3D11ShaderResourceView* ArkEngine::ArkDX11::deferredBuffer::GetSRVForBloom(int index)
+{
+	return _shaderResourceViewArrayForBloom[index];
 }
 
 
 ID3D11Texture2D* ArkEngine::ArkDX11::deferredBuffer::GetTextrueForBloom(int index)
 {
-	return _renderTargetTextureArrayForBloom;
+	return _renderTargetTextureArrayForBloom[index];
 }
 
 
 ID3D11RenderTargetView* ArkEngine::ArkDX11::deferredBuffer::GetRenderTargetViewForBloom(int index)
 {
-	return _renderTargetViewArrayForBloom;
+	return _renderTargetViewArrayForBloom[index];
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture()
@@ -285,42 +293,61 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForFinal()
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForBloom()
 {
-	D3D11_TEXTURE2D_DESC textureDesc;
+	for (int i = 0; i < _renderTargetTextureArrayForBloom.size(); i++)
+	{
+		D3D11_TEXTURE2D_DESC textureDesc;
 
-	textureDesc.Height = _textureHeight * 0.125f;
-	textureDesc.Width = _textureWidth * 0.125f;
-	textureDesc.MipLevels = 1;
-	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	textureDesc.SampleDesc.Count = 1;
-	textureDesc.SampleDesc.Quality = 0;
-	textureDesc.Usage = D3D11_USAGE_DEFAULT;
-	textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
-	textureDesc.CPUAccessFlags = 0;
-	textureDesc.MiscFlags = 0;
+		if (i == 0)
+		{
+			textureDesc.Height = _textureHeight * 0.0625f;
+			textureDesc.Width = _textureWidth * 0.0625;
+		}
+		else
+		{
+			textureDesc.Height = _textureHeight * 0.0625f *(pow(2,i));
+			textureDesc.Width = _textureWidth * 0.0625f *(pow(2,i));
+		}
 
-	HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArrayForBloom);
+		textureDesc.MipLevels = 1;
+		textureDesc.ArraySize = 1;
+		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		textureDesc.SampleDesc.Count = 1;
+		textureDesc.SampleDesc.Quality = 0;
+		textureDesc.Usage = D3D11_USAGE_DEFAULT;
+		textureDesc.BindFlags = D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE;
+		textureDesc.CPUAccessFlags = 0;
+		textureDesc.MiscFlags = 0;
+
+		HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArrayForBloom[i]);
+	}
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetViewForBloom()
 {
-	D3D11_RENDER_TARGET_VIEW_DESC renderTagetViewDesc;
+	for (int i = 0; i < _renderTargetTextureArrayForBloom.size(); i++)
+	{
+		D3D11_RENDER_TARGET_VIEW_DESC renderTagetViewDesc;
 
-	renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	renderTagetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
-	renderTagetViewDesc.Texture2D.MipSlice = 0;
+		renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		renderTagetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
+		renderTagetViewDesc.Texture2D.MipSlice = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArrayForBloom, &renderTagetViewDesc, &_renderTargetViewArrayForBloom);
+		HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArrayForBloom[i], &renderTagetViewDesc, &_renderTargetViewArrayForBloom[i]);
+	}
+
 }
 
 void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForBloom()
 {
-	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
+	for (int i = 0; i < _renderTargetTextureArrayForBloom.size(); i++)
+	{
+		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
-	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
-	shaderResourceViewDesc.Texture2D.MipLevels = 1;
-	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
+		shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
+		shaderResourceViewDesc.Texture2D.MipLevels = 1;
+		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
 
-	HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(_renderTargetTextureArrayForBloom, &shaderResourceViewDesc, &_shaderResourceViewArrayForBloom);
+		HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(_renderTargetTextureArrayForBloom[i], &shaderResourceViewDesc, &_shaderResourceViewArrayForBloom[i]);
+	}
 }

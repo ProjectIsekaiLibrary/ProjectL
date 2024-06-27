@@ -9,7 +9,7 @@ Texture2D FinalTexture : register(t0);
 
 SamplerState samAnisotropic
 {
-    Filter = MIN_MAG_MIP_POINT;
+    Filter = MIN_MAG_MIP_LINEAR;
     MaxAnisotropy = 16;
 
     AddressU = WRAP;
@@ -32,9 +32,9 @@ struct VertexOut
     float2 Tex : TEXCOORD0;
 };
 
-void GetGBufferAttributes(float2 texCoord, out float4 finalTexture)
+void GetGBufferAttributes(float2 texCoord, out float4 finalTexture, float scale)
 {
-    float2 scaledTexCoord = texCoord * float2(4.0f, 4.0f);
+    float2 scaledTexCoord = texCoord * float2(scale, scale);
     finalTexture = FinalTexture.Sample(samAnisotropic, scaledTexCoord);
 }
 
@@ -48,28 +48,101 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-float4 PS(VertexOut pin) : SV_Target
+float4 PS16(VertexOut pin) : SV_Target
 {
     float4 finalTexture;
     
-    GetGBufferAttributes(pin.Tex, finalTexture);
+    GetGBufferAttributes(pin.Tex, finalTexture, 16.0f);
         
     float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
     
     float4 bb = dot(finalTexture, graycolor);
-    bb -= 0.7;
+    bb -= 0.7f;
     bb = saturate(bb);
     
     bb.a = 1.0f;
     
     return bb;
 }
+
+float4 PS8(VertexOut pin) : SV_Target
+{
+    float4 finalTexture;
+    
+    GetGBufferAttributes(pin.Tex, finalTexture, 8.0f);
+
+    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
+    
+    float4 bb = dot(finalTexture, graycolor);
+    bb -= 0.7f;
+    bb = saturate(bb);
+    
+    bb.a = 1.0f;
+    
+    return bb;
+}
+
+float4 PS4(VertexOut pin) : SV_Target
+{
+    float4 finalTexture;
+    
+    GetGBufferAttributes(pin.Tex, finalTexture, 4.0f);
+        
+    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
+    
+    float4 bb = dot(finalTexture, graycolor);
+    bb -= 0.7f;
+    bb = saturate(bb);
+    
+    bb.a = 1.0f;
+    
+    return bb;
+}
+
+float4 PS2(VertexOut pin) : SV_Target
+{
+    float4 finalTexture;
+    
+    GetGBufferAttributes(pin.Tex, finalTexture, 2.0f);
+        
+    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
+    
+    float4 bb = dot(finalTexture, graycolor);
+    bb -= 0.7f;
+    bb = saturate(bb);
+    
+    bb.a = 1.0f;
+    
+    return bb;
+}
+
 technique11 Final
 {
     pass P0
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PS()));
+        SetPixelShader(CompileShader(ps_5_0, PS16()));
+    }
+
+    pass P1
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS8()));
+    }
+
+    pass P2
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS4()));
+    }
+
+    pass P3
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PS2()));
     }
 }

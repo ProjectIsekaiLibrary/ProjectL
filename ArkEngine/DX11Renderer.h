@@ -181,7 +181,7 @@ namespace ArkEngine
 			void BeginShadowRender();
 			void BeginRender();
 			void BeginFinalRender();
-			void BeginBloomRender();
+			void BeginBloomRender(int index);
 			void FinalRender();
 			void EndRender();
 

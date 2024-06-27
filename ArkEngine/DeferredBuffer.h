@@ -6,6 +6,8 @@
 /// </summary>
 
 #pragma once
+#include <vector>
+
 struct ID3D11Texture2D;
 struct ID3D11RenderTargetView;
 struct ID3D11ShaderResourceView;
@@ -53,8 +55,8 @@ namespace ArkEngine
 			void ClearRenderTargetsForFinal(float color[4]);
 
 		public:
-			void SetRenderTargetsForBloom();
-			void ClearRenderTargetsForBloom(float color[4]);
+			void SetRenderTargetsForBloom(int index);
+			void ClearRenderTargetsForBloom(int index, float color[4]);
 
 		public:
 			ID3D11ShaderResourceView* GetSRV(int index);
@@ -67,6 +69,7 @@ namespace ArkEngine
 			ID3D11RenderTargetView* GetRenderTargetViewForFinal(int index);
 
 		public:
+			std::vector<ID3D11ShaderResourceView*>& GetSRVForBloomVec();
 			ID3D11ShaderResourceView* GetSRVForBloom(int index);
 			ID3D11Texture2D* GetTextrueForBloom(int index);
 			ID3D11RenderTargetView* GetRenderTargetViewForBloom(int index);
@@ -102,9 +105,9 @@ namespace ArkEngine
 			ID3D11ShaderResourceView* _shaderResourceViewArrayForFinal;
 
 		private:
-			ID3D11Texture2D* _renderTargetTextureArrayForBloom;
-			ID3D11RenderTargetView* _renderTargetViewArrayForBloom;
-			ID3D11ShaderResourceView* _shaderResourceViewArrayForBloom;
+			std::vector<ID3D11Texture2D*> _renderTargetTextureArrayForBloom;
+			std::vector<ID3D11RenderTargetView*> _renderTargetViewArrayForBloom;
+			std::vector<ID3D11ShaderResourceView*> _shaderResourceViewArrayForBloom;
 		};
 	}
 }

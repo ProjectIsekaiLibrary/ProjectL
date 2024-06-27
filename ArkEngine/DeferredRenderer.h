@@ -51,12 +51,12 @@ namespace ArkEngine
 			void BeginRenderShadowDepth();
 			void BeginShadowRender();
 			void BeginFinalRender();
-			void BeginBloomRender();
+			void BeginBloomRender(int index);
 			void BeginRender();
 			void Update(ArkEngine::ICamera* pCamera);
 			void Render();
 			void RenderForFinalTexture();
-			void RenderForBloom();
+			void RenderForBloom(int index);
 			void Finalize();
 
 		public:
@@ -104,7 +104,8 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _shadowDepthMap;
 
 			ID3DX11EffectShaderResourceVariable* _finalTexture;
-			ID3DX11EffectShaderResourceVariable* _grayScaleTexture;
+			std::vector<ID3DX11EffectShaderResourceVariable*> _grayScaleTexture;
+
 
 		private:
 			ArkEngine::ArkDX11::deferredBuffer* _deferredBuffer;

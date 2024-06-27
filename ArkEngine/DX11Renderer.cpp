@@ -247,9 +247,21 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		{
 			testdef = 10;
 		}
-		if (GetAsyncKeyState(VK_F11))
+		if (GetAsyncKeyState('V'))
 		{
 			testdef = 11;
+		}
+		if (GetAsyncKeyState('B'))
+		{
+			testdef = 12;
+		}
+		if (GetAsyncKeyState('N'))
+		{
+			testdef = 13;
+		}
+		if (GetAsyncKeyState('M'))
+		{
+			testdef = 14;
 		}
 
 		if (GetAsyncKeyState('H') & 0x8000)
@@ -343,9 +355,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	_deferredRenderer->RenderForFinalTexture();
 
-	BeginBloomRender();
+	auto bloomCount = _deferredRenderer->GetDeferredBuffer()->GetSRVForBloomVec().size();
+	for (int i = 0; i < bloomCount; i++)
+	{
+		BeginBloomRender(i);
 
-	_deferredRenderer->RenderForBloom();
+		_deferredRenderer->RenderForBloom(i);
+	}
+
 
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
@@ -909,9 +926,9 @@ void ArkEngine::ArkDX11::DX11Renderer::BeginFinalRender()
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::BeginBloomRender()
+void ArkEngine::ArkDX11::DX11Renderer::BeginBloomRender(int index)
 {
-	_deferredRenderer->BeginBloomRender();
+	_deferredRenderer->BeginBloomRender(index);
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 }
@@ -1036,9 +1053,9 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForFinal(0));
 	}
-	else if (testdef == 11)
+	else if (testdef > 10)
 	{
-		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForBloom(0));
+		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForBloom(testdef-11));
 	}
 }
 
