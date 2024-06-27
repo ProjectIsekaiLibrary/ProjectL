@@ -104,7 +104,7 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _shadowDepthMap;
 
 			ID3DX11EffectShaderResourceVariable* _finalTexture;
-			std::vector<ID3DX11EffectShaderResourceVariable*> _grayScaleTexture;
+			ID3DX11EffectShaderResourceVariable* _grayScaleTexture;
 
 
 		private:

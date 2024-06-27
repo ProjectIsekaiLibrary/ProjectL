@@ -48,63 +48,12 @@ VertexOut VS(VertexIn vin)
     return vout;
 }
 
-float4 PS16(VertexOut pin) : SV_Target
-{
-    float4 finalTexture;
-    
-    GetGBufferAttributes(pin.Tex, finalTexture, 16.0f);
-        
-    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
-    
-    float4 bb = dot(finalTexture, graycolor);
-    bb -= 0.7f;
-    bb = saturate(bb);
-    
-    bb.a = 1.0f;
-    
-    return bb;
-}
-
-float4 PS8(VertexOut pin) : SV_Target
+float4 PS(VertexOut pin) : SV_Target
 {
     float4 finalTexture;
     
     GetGBufferAttributes(pin.Tex, finalTexture, 8.0f);
 
-    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
-    
-    float4 bb = dot(finalTexture, graycolor);
-    bb -= 0.7f;
-    bb = saturate(bb);
-    
-    bb.a = 1.0f;
-    
-    return bb;
-}
-
-float4 PS4(VertexOut pin) : SV_Target
-{
-    float4 finalTexture;
-    
-    GetGBufferAttributes(pin.Tex, finalTexture, 4.0f);
-        
-    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
-    
-    float4 bb = dot(finalTexture, graycolor);
-    bb -= 0.7f;
-    bb = saturate(bb);
-    
-    bb.a = 1.0f;
-    
-    return bb;
-}
-
-float4 PS2(VertexOut pin) : SV_Target
-{
-    float4 finalTexture;
-    
-    GetGBufferAttributes(pin.Tex, finalTexture, 2.0f);
-        
     float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
     
     float4 bb = dot(finalTexture, graycolor);
@@ -122,27 +71,6 @@ technique11 Final
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PS16()));
-    }
-
-    pass P1
-    {
-        SetVertexShader(CompileShader(vs_5_0, VS()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PS8()));
-    }
-
-    pass P2
-    {
-        SetVertexShader(CompileShader(vs_5_0, VS()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PS4()));
-    }
-
-    pass P3
-    {
-        SetVertexShader(CompileShader(vs_5_0, VS()));
-        SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PS2()));
+        SetPixelShader(CompileShader(ps_5_0, PS()));
     }
 }

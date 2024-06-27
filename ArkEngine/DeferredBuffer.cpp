@@ -40,7 +40,7 @@ void ArkEngine::ArkDX11::deferredBuffer::Initialize()
 	CreateRenderTargetViewForFinal();
 	CreateShaderResourceViewForFinal();
 
-	for (int i = 0; i < 4; i++)
+	for (int i = 0; i < 3; i++)
 	{
 		_renderTargetTextureArrayForBloom.emplace_back();
 		_renderTargetViewArrayForBloom.emplace_back();
@@ -297,17 +297,10 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForBloom()
 	{
 		D3D11_TEXTURE2D_DESC textureDesc;
 
-		if (i == 0)
-		{
-			textureDesc.Height = _textureHeight * 0.0625f;
-			textureDesc.Width = _textureWidth * 0.0625;
-		}
-		else
-		{
-			textureDesc.Height = _textureHeight * 0.0625f *(pow(2,i));
-			textureDesc.Width = _textureWidth * 0.0625f *(pow(2,i));
-		}
+		float mul = 0.125f;
 
+		textureDesc.Height = _textureHeight * mul;
+		textureDesc.Width = _textureWidth * mul;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
 		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;

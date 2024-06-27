@@ -247,21 +247,17 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		{
 			testdef = 10;
 		}
-		if (GetAsyncKeyState('V'))
+		if (GetAsyncKeyState('B'))
 		{
 			testdef = 11;
 		}
-		if (GetAsyncKeyState('B'))
+		if (GetAsyncKeyState('N'))
 		{
 			testdef = 12;
 		}
-		if (GetAsyncKeyState('N'))
-		{
-			testdef = 13;
-		}
 		if (GetAsyncKeyState('M'))
 		{
-			testdef = 14;
+			testdef = 13;
 		}
 
 		if (GetAsyncKeyState('H') & 0x8000)

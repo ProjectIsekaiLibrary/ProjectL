@@ -47,7 +47,8 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowDepthMap(nullptr),
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
-	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr)
+	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
+	_grayScaleTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -56,11 +57,6 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 
 	_shadowBuffer = new ShadowBuffer(_shadowWidth, _shadowHeight);
 	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
-
-	for (int i = 0; i < _deferredBuffer->GetSRVForBloomVec().size(); i++)
-	{
-		_grayScaleTexture.emplace_back();
-	}
 
 	Initailize();
 }
@@ -130,10 +126,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
 
-	for (int i = 0; i < _grayScaleTexture.size(); i++)
-	{
-		_grayScaleTexture[i]->SetResource(_deferredBuffer->GetSRVForBloom(i));
-	}
+	_grayScaleTexture->SetResource(_deferredBuffer->GetSRVForBloom(0));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -229,7 +222,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	deviceContext->IASetIndexBuffer(_arkBuffer->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
-	_tech->GetPassByIndex(index)->Apply(0, deviceContext);
+	_tech->GetPassByIndex(0)->Apply(0, deviceContext);
 
 	deviceContext->DrawIndexed(6, 0, 0);
 }
@@ -239,11 +232,6 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkBuffer = nullptr;
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
-
-	for (int i = 0; i < _grayScaleTexture.size(); i++)
-	{
-		_grayScaleTexture[i]->Release();
-	}
 	
 	_shadowDepthMap = nullptr;
 	_additionalMap = nullptr;
@@ -280,13 +268,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 
 	_finalTexture = effect->GetVariableByName("FinalTexture")->AsShaderResource();
 
-	_grayScaleTexture[0] = effect->GetVariableByName("GrayScaleTexture1")->AsShaderResource();
-
-	_grayScaleTexture[1] = effect->GetVariableByName("GrayScaleTexture2")->AsShaderResource();
-
-	_grayScaleTexture[2] = effect->GetVariableByName("GrayScaleTexture3")->AsShaderResource();
-
-	_grayScaleTexture[3] = effect->GetVariableByName("GrayScaleTexture4")->AsShaderResource();
+	_grayScaleTexture = effect->GetVariableByName("GrayScaleTexture")->AsShaderResource();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
