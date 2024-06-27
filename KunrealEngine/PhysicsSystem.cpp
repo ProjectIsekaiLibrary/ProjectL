@@ -218,6 +218,7 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 
 		if (!pair.first->GetOwnerObject()->GetActivated())
 		{
+
 			pair.first->_isCollided = false;
 			pair.first->_targetObj = nullptr;
 		}
@@ -265,8 +266,7 @@ void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
 	// 크기에 맞게 새로운 shape 생성
 	// box의 scale에 맞추기 위해 전체적인 scale을 절반으로
 	physx::PxMeshScale scale(physx::PxVec3(
-		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y /2.0f, collider->GetColliderScale().z / 2.0f),
-		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
+		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y /2.0f, collider->GetColliderScale().z / 2.0f));
 	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
 
@@ -286,15 +286,15 @@ void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active
 		//this->_dynamicMap.at(collider)->wakeUp();
 		
 		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
-		collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-		collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
 	}
 	else
 	{
 		//this->_dynamicMap.at(collider)->putToSleep();
 		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
-		collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
-		collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
+		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
 	}
 }
 
@@ -468,6 +468,11 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
 		&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated() || (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated()))
 	{
+		if (col1->_isCylinder || col2->_isCylinder)
+		{
+			int a = 10;
+		}
+
 		// 충돌 여부를 false로
 		col1->_isCollided = false;
 		col2->_isCollided = false;
