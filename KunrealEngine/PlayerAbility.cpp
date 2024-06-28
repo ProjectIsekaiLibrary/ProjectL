@@ -23,7 +23,7 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	, _isShotHit(false), _isIceHit(false), _isAreaHit(false), _isMeteorHit(false)
 	, _currentBoss(nullptr), _currentDamage(0.0f)
 	, _isShotDetected(false), _isIceDetected(false), _isAreaDetected(false), _isMeteorDetected(false), _isShotEnded(false) ,
-	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0)
+	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0)
 {
 
 }
@@ -86,20 +86,24 @@ void KunrealEngine::PlayerAbility::Update()
 		_isIceHit = true;
 		Startcoroutine(iceCoolDown);
 		Startcoroutine(iceStandby);								// 얼음 출현 대기	
+		
+		_iceParticle3->GetComponent<Particle>()->SetActive(true);
+		_iceParticle1->GetComponent<Particle>()->SetActive(true);
+		_iceParticle2->GetComponent<Particle>()->SetActive(true);
 		_playerComp->_playerStatus = Player::Status::ABILITY;
-		_playerComp->_abilityAnimationIndex = 2;				// 얼음 소환 애니메이션
+		_playerComp->_abilityAnimationIndex = 2;				// 얼음 소환 애니메이션	
 		Startcoroutine(iceDestroy);
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isAreaReady)
 	{
-		ResetAreaPos();
-		_isAreaDetected = true;
-		_isAreaHit = true;
-		Startcoroutine(AreaCoolDown);
-		_area->GetComponent<BoxCollider>()->SetActive(true);
-		_playerComp->_playerStatus = Player::Status::ABILITY;
-		_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
+		//ResetAreaPos();
+		//_isAreaDetected = true;
+		//_isAreaHit = true;
+		//Startcoroutine(AreaCoolDown);
+		//_area->GetComponent<BoxCollider>()->SetActive(true);
+		//_playerComp->_playerStatus = Player::Status::ABILITY;
+		//_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady)
@@ -504,6 +508,64 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	_ice->GetComponent<Transform>()->SetScale(30.0f, 30.0f, 30.0f);
 	_ice->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
 	
+	_iceParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle1");
+	_iceParticle1->AddComponent<Particle>();
+	_iceParticle1->GetComponent<Particle>()->SetParticleEffect("Blast3", "Resources/Textures/Particles/fx_Blast3.dds", 1000);
+	_iceParticle1->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
+	_iceParticle1->GetComponent<Particle>()->SetParticleVelocity(8.0f, true);
+	_iceParticle1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+	_iceParticle1->GetComponent<Particle>()->AddParticleColor(0.5f, 3.0f, 5.0f);
+	_iceParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, -1.0f, 0.0f);
+	_iceParticle1->GetComponent<Particle>()->SetParticleAngle(339.0f, 0.0f, 30.0f);
+	_iceParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_iceParticle1->GetComponent<Particle>()->SetActive(false);
+
+	_iceParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle2");
+	_iceParticle2->AddComponent<Particle>();
+	_iceParticle2->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
+	_iceParticle2->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
+	_iceParticle2->GetComponent<Particle>()->SetParticleVelocity(8.0f, true);
+	_iceParticle2->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+	_iceParticle2->GetComponent<Particle>()->AddParticleColor(0.5f, 3.0f, 5.0f);
+	_iceParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_iceParticle2->GetComponent<Particle>()->SetParticleAngle(339.0f, 0.0f, 30.0f);
+	_iceParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_iceParticle2->GetComponent<Particle>()->SetActive(false);
+
+	_iceParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle3");
+	_iceParticle3->AddComponent<Particle>();
+	_iceParticle3->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
+	_iceParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+	_iceParticle3->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	_iceParticle3->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	_iceParticle3->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 2.0f);
+	_iceParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_iceParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_iceParticle3->GetComponent<Particle>()->SetActive(false);
+
+	_iceParticleHit1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticleHit1");
+	_iceParticleHit1->AddComponent<Particle>();
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleDuration(4.0f, 0.5f);
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleSize(25.0f, 25.0f);
+	_iceParticleHit1->GetComponent<Particle>()->AddParticleColor(0.5f, 3.0f, 5.0f);
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+	_iceParticleHit1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_iceParticleHit1->GetComponent<Particle>()->SetActive(false);
+
+	_iceParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticleHit2");
+	_iceParticleHit2->AddComponent<Particle>();
+	_iceParticleHit2->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
+	_iceParticleHit2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+	_iceParticleHit2->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	_iceParticleHit2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	_iceParticleHit2->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 2.0f);
+	_iceParticleHit2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_iceParticleHit2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_iceParticleHit2->GetComponent<Particle>()->SetActive(false);
+
 	// 투사체 컴포넌트 추가
 	_ice->AddComponent<Projectile>();
 	Projectile* iceProj = _ice->GetComponent<Projectile>();
@@ -526,6 +588,10 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	
 	ice->SetLogic([ice, iceProj, this]()
 		{
+			_iceParticle1->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
+			_iceParticle2->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
+			_iceParticle3->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
+
 			if (iceProj->GetCollider()->GetTargetObject() != nullptr && iceProj->GetCollider()->GetTargetObject()->GetTag() == "BOSS" && _isIceHit)
 			{
 				_currentBoss->_info._hp -= 30.0f;

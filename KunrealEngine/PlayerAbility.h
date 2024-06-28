@@ -9,10 +9,13 @@
 #include "Projectile.h"
 #include "BoxCollider.h"
 #include "Coroutine.h"
+#include "Particle.h"
+#include "Transform.h"
 
 namespace KunrealEngine
 {
 	class Boss;
+	class Particle;
 
 	class _DECLSPEC PlayerAbility : public Component
 	{
@@ -79,6 +82,12 @@ namespace KunrealEngine
 		GameObject* _shotParticleHit2;
 		GameObject* _shotParticleHit3;
 
+		GameObject* _iceParticle1;
+		GameObject* _iceParticle2;
+		GameObject* _iceParticle3;
+		GameObject* _iceParticleHit1;
+		GameObject* _iceParticleHit2;
+
 		GameObject* _meteorParticle2;
 		GameObject* _meteorParticle3;
 		GameObject* _meteorParticle4;
@@ -92,6 +101,10 @@ namespace KunrealEngine
 		// q 스킬 체크용 변수
 		bool _isShotEnded;
 		float _shotParticleTimer;
+
+		// w 스킬 체크용 변수
+		bool _isIceEnded;
+		float _iceParticleTimer;
 
 		// r 스킬 체크용 변수
 		bool _isMeteorEnded;
@@ -155,8 +168,18 @@ namespace KunrealEngine
 		{
 			auto* ability = this;
 			Waitforsecond(3.0f);
+			_iceParticle1->GetComponent<Particle>()->SetActive(false);
+			_iceParticle2->GetComponent<Particle>()->SetActive(false);
+			_iceParticle3->GetComponent<Particle>()->SetActive(false);
+			_iceParticleHit1->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
+			_iceParticleHit2->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
+			_iceParticleHit1->GetComponent<Particle>()->SetActive(true);
+			_iceParticleHit2->GetComponent<Particle>()->SetActive(true);
 			ability->_destroyIce = true;
 			ability->_isIceReady = false;
+			Waitforsecond(1.0f);		
+			_iceParticleHit1->GetComponent<Particle>()->SetActive(false);
+			_iceParticleHit2->GetComponent<Particle>()->SetActive(false);
 		};
 
 		// E스킬 쿨타임
