@@ -28,9 +28,16 @@ namespace KunrealEngine
 		// 버튼 동작시 실행할 함수를 지정
 		void SetButtonFunc(std::function<void()> func);
 		void SetImage(ImageRenderer* image);
+		void Setfocused(ImageRenderer* focusimage);
 
 	private: 
 		ImageRenderer* _image;
+		ImageRenderer* _focusimage;
+
+		// 이미지가 포커스드인지 아닌지 구별하기 위한 변수
+		// 매프레임 셋이미지를 하면 속도가 장난 아닐것 같아서 추가
+		bool _focused;
+
 		std::function<void()> _script;
 	};
 }

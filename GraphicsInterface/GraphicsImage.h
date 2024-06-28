@@ -40,5 +40,7 @@ namespace GInterface
 		virtual void Delete() abstract;
 
 		virtual const DirectX::XMUINT2& GetImageSize() abstract;
+
+		virtual void ChangeImage(const std::string& imageName) abstract;
 	};
 }
