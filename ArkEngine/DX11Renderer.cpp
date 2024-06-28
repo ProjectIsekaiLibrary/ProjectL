@@ -164,14 +164,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 
 	ResourceManager::GetInstance()->SortMeshRendererByAlpha();
 
-	if (_isDebugMode)
-	{
-		for (const auto& index : ResourceManager::GetInstance()->GetLineObjectList())
-		{
-			index->Update(_mainCamera);
-		}
-	}
-
 	if (GetAsyncKeyState(0x23) & 0x0001)
 	{
 		if (_isDebugMode == true)
@@ -181,65 +173,6 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		else
 		{
 			_isDebugMode = true;
-		}
-	}
-
-	_deferredRenderer->Update(_mainCamera);
-
-	if (GetAsyncKeyState(VK_F1))
-	{
-		testdef = 0;
-	}
-
-	if (GetAsyncKeyState(VK_F2))
-	{
-		testdef = 1;
-	}
-
-	if (GetAsyncKeyState(VK_F3))
-	{
-		testdef = 2;
-	}
-
-	if (GetAsyncKeyState(VK_F4))
-	{
-		testdef = 3;
-	}
-
-	if (GetAsyncKeyState(VK_F5))
-	{
-		testdef = 4;
-	}
-
-	if (GetAsyncKeyState(VK_F6))
-	{
-		testdef = 5;
-	}
-	if (GetAsyncKeyState(VK_F7))
-	{
-		testdef = 6;
-	}
-	if (GetAsyncKeyState(VK_F8))
-	{
-		testdef = 7;
-	}
-	if (GetAsyncKeyState(VK_F9))
-	{
-		testdef = 9;
-	}
-
-	if (GetAsyncKeyState('H') & 0x8000)
-	{
-		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-		{
-			index->Stop();
-		}
-	}
-	if (GetAsyncKeyState('J') & 0x8000)
-	{
-		for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-		{
-			index->Start();
 		}
 	}
 
@@ -258,6 +191,89 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
 	{
 		index->Update(_mainCamera);
+	}
+
+
+	// 디버그용
+	if (_isDebugMode)
+	{
+		for (const auto& index : ResourceManager::GetInstance()->GetLineObjectList())
+		{
+			index->Update(_mainCamera);
+		}
+
+		if (GetAsyncKeyState(VK_F1))
+		{
+			testdef = 0;
+		}
+
+		if (GetAsyncKeyState(VK_F2))
+		{
+			testdef = 1;
+		}
+
+		if (GetAsyncKeyState(VK_F3))
+		{
+			testdef = 2;
+		}
+
+		if (GetAsyncKeyState(VK_F4))
+		{
+			testdef = 3;
+		}
+
+		if (GetAsyncKeyState(VK_F5))
+		{
+			testdef = 4;
+		}
+
+		if (GetAsyncKeyState(VK_F6))
+		{
+			testdef = 5;
+		}
+		if (GetAsyncKeyState(VK_F7))
+		{
+			testdef = 6;
+		}
+		if (GetAsyncKeyState(VK_F8))
+		{
+			testdef = 7;
+		}
+		if (GetAsyncKeyState(VK_F9))
+		{
+			testdef = 9;
+		}
+		if (GetAsyncKeyState(VK_F10))
+		{
+			testdef = 10;
+		}
+		if (GetAsyncKeyState('B'))
+		{
+			testdef = 11;
+		}
+		if (GetAsyncKeyState('N'))
+		{
+			testdef = 12;
+		}
+		if (GetAsyncKeyState('M'))
+		{
+			testdef = 13;
+		}
+
+		if (GetAsyncKeyState('H') & 0x8000)
+		{
+			for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+			{
+				index->Stop();
+			}
+		}
+		if (GetAsyncKeyState('J') & 0x8000)
+		{
+			for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+			{
+				index->Start();
+			}
+		}
 	}
 }
 
@@ -329,7 +345,20 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
+	BeginFinalRender();
+
 	BeginTransparentSet();
+
+	_deferredRenderer->RenderForFinalTexture();
+
+	auto bloomCount = _deferredRenderer->GetDeferredBuffer()->GetSRVForBloomVec().size();
+	for (int i = 0; i < bloomCount; i++)
+	{
+		BeginBloomRender(i);
+
+		_deferredRenderer->RenderForBloom(i);
+	}
+
 
 	// 최종적으로 디퍼드 버퍼를 합산한 결과물을 화면에 출력할 준비
 	FinalRender();
@@ -885,6 +914,21 @@ void ArkEngine::ArkDX11::DX11Renderer::BeginRender()
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 }
 
+
+void ArkEngine::ArkDX11::DX11Renderer::BeginFinalRender()
+{
+	_deferredRenderer->BeginFinalRender();
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::BeginBloomRender(int index)
+{
+	_deferredRenderer->BeginBloomRender(index);
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+}
+
 void ArkEngine::ArkDX11::DX11Renderer::FinalRender()
 {
 	BindView();
@@ -1001,7 +1045,14 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	{
 		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRV(testdef));
 	}
-
+	else if (testdef == 10)
+	{
+		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForFinal(0));
+	}
+	else if (testdef > 10)
+	{
+		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForBloom(testdef-11));
+	}
 }
 
 void* ArkEngine::ArkDX11::DX11Renderer::GetDevice()

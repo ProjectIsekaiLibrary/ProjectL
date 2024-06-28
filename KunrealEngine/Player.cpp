@@ -55,12 +55,12 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->GetComponent<MeshRenderer>()->SetCartoonState(true);
 	
 	this->_owner->AddComponent<BoxCollider>();
-	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
+	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 
-	this->_owner->AddComponent<CylinderCollider>();
-	this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
-	this->_owner->GetComponent<CylinderCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
+	//this->_owner->AddComponent<CylinderCollider>();
+	//this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
+	//this->_owner->GetComponent<CylinderCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
 
@@ -161,7 +161,7 @@ void KunrealEngine::Player::AnimateByStatus()
 				this->_owner->GetComponent<Animator>()->Play("Staggered", 20.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::PARALYSIS:
-				this->_owner->GetComponent<Animator>()->Play("Paralysis2", 60.0f * _playerInfo._speedScale, false);
+				this->_owner->GetComponent<Animator>()->Play("SmallHit", 60.0f * _playerInfo._speedScale, false);
 				break;
 			case KunrealEngine::Player::Status::SWEEP:
 				this->_owner->GetComponent<Animator>()->Play("Sweep", _sweepAnimationSpeed * _playerInfo._speedScale, false);

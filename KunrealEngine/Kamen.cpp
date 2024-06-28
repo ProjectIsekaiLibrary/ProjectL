@@ -1219,7 +1219,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 		_alterEgo->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
 		_alterEgo->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
 	}
-
+	_alterEgo->GetComponent<MeshRenderer>()->SetCartoonState(true);
 	_alterEgo->SetTotalComponentState(false);
 	_alterEgo->SetActive(false);
 

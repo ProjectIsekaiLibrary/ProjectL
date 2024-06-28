@@ -6,6 +6,8 @@
 /// </summary>
 
 #pragma once
+#include <vector>
+
 struct ID3D11Texture2D;
 struct ID3D11RenderTargetView;
 struct ID3D11ShaderResourceView;
@@ -49,16 +51,46 @@ namespace ArkEngine
 			void ClearRenderTargets(int index, float color[4]);
 
 		public:
+			void SetRenderTargetsForFinal();
+			void ClearRenderTargetsForFinal(float color[4]);
+
+		public:
+			void SetRenderTargetsForBloom(int index);
+			void ClearRenderTargetsForBloom(int index, float color[4]);
+
+		public:
 			ID3D11ShaderResourceView* GetSRV(int index);
 			ID3D11Texture2D* GetTextrue(int index);
 			ID3D11RenderTargetView* GetRenderTargetView(int index);
 
-		private:
-			void CreateRenderTargetTexture(ArkEngine::ArkDX11::ArkDevice* pDeivce);
-			void CreateRenderTargetView(ArkEngine::ArkDX11::ArkDevice* pDeivce);
-			void CreateShaderResourceView(ArkEngine::ArkDX11::ArkDevice* pDeivce);
+		public:
+			ID3D11ShaderResourceView* GetSRVForFinal(int index);
+			ID3D11Texture2D* GetTextrueForFinal(int index);
+			ID3D11RenderTargetView* GetRenderTargetViewForFinal(int index);
+
+		public:
+			std::vector<ID3D11ShaderResourceView*>& GetSRVForBloomVec();
+			ID3D11ShaderResourceView* GetSRVForBloom(int index);
+			ID3D11Texture2D* GetTextrueForBloom(int index);
+			ID3D11RenderTargetView* GetRenderTargetViewForBloom(int index);
 
 		private:
+			void CreateRenderTargetTexture();
+			void CreateRenderTargetView();
+			void CreateShaderResourceView();
+
+		private:
+			void CreateRenderTargetTextureForFinal();
+			void CreateRenderTargetViewForFinal();
+			void CreateShaderResourceViewForFinal();
+
+		private:
+			void CreateRenderTargetTextureForBloom();
+			void CreateRenderTargetViewForBloom();
+			void CreateShaderResourceViewForBloom();
+
+		private:
+			ArkDevice* _arkDevice;
 			int _textureWidth;
 			int _textureHeight;
 
@@ -66,6 +98,16 @@ namespace ArkEngine
 			ID3D11Texture2D* _renderTargetTextureArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
 			ID3D11RenderTargetView* _renderTargetViewArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
 			ID3D11ShaderResourceView* _shaderResourceViewArray[static_cast<int>(eBUFFERTYPE::GBUFFER_COUNT)];
+
+		private:
+			ID3D11Texture2D* _renderTargetTextureArrayForFinal;
+			ID3D11RenderTargetView* _renderTargetViewArrayForFinal;
+			ID3D11ShaderResourceView* _shaderResourceViewArrayForFinal;
+
+		private:
+			std::vector<ID3D11Texture2D*> _renderTargetTextureArrayForBloom;
+			std::vector<ID3D11RenderTargetView*> _renderTargetViewArrayForBloom;
+			std::vector<ID3D11ShaderResourceView*> _shaderResourceViewArrayForBloom;
 		};
 	}
 }
