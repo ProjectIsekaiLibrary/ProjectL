@@ -14,8 +14,8 @@ SamplerState samAnisotropic
     Filter = MIN_MAG_MIP_LINEAR;
     MaxAnisotropy = 16;
 
-    AddressU = WRAP;
-    AddressV = WRAP;
+    AddressU = ClAMP;
+    AddressV = ClAMP;
 
     MipLODBias = 0.0;
     MinLOD = 0;
@@ -60,7 +60,7 @@ float4 PS(VertexOut pin) : SV_Target
     GetGBufferAttributes(pin.Tex, finalTexture, grayScale);
 
     // Bloom intensity
-    float bloomIntensity = 1.0f;
+    float bloomIntensity = 3.0f;
 
     //float4 result = finalTexture + grayScale1;
     // 최종 결과에 블러 및 그레이스케일 효과 추가

@@ -126,7 +126,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
 
-	_grayScaleTexture->SetResource(_deferredBuffer->GetSRVForBloom(0));
+	_grayScaleTexture->SetResource(_deferredBuffer->GetSRVForBloom(2));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -202,7 +202,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture()
 void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
 {
 	SetBloomEffect();
-
+	
 	auto deviceContext = _arkDevice->GetDeviceContext();
 
 	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
@@ -210,7 +210,15 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
 
 	deviceContext->RSSetState(_arkDevice->GetSolidRS());
 
-	_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
+	if (index == 0)
+	{
+		_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
+	}
+	
+	if (index > 0)
+	{
+		_finalTexture->SetResource(_deferredBuffer->GetSRVForBloom(index - 1));
+	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -222,7 +230,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
 	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
 	deviceContext->IASetIndexBuffer(_arkBuffer->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
-	_tech->GetPassByIndex(0)->Apply(0, deviceContext);
+	_tech->GetPassByIndex(index)->Apply(0, deviceContext);
 
 	deviceContext->DrawIndexed(6, 0, 0);
 }
