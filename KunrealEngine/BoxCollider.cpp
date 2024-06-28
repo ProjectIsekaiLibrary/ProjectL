@@ -18,6 +18,7 @@ KunrealEngine::BoxCollider::~BoxCollider()
 void KunrealEngine::BoxCollider::Initialize()
 {
 	this->_ownerObj = this->GetOwner();
+	this->_ownerObj->SetCollider(this);
 	this->_transform = this->_ownerObj->GetComponent<Transform>();
 	this->_position = this->_transform->GetPosition();
 	
@@ -90,7 +91,7 @@ void KunrealEngine::BoxCollider::Update()
 
 void KunrealEngine::BoxCollider::LateUpdate()
 {
-
+	
 }
 
 void KunrealEngine::BoxCollider::OnTriggerEnter()
@@ -110,17 +111,28 @@ void KunrealEngine::BoxCollider::OnTriggerExit()
 
 void KunrealEngine::BoxCollider::SetActive(bool active)
 {
+	PhysicsSystem::GetInstance().SetActorState(this, active);
+	this->_debugObject->SetActive(active);
+
 	this->_isActivated = active;
-	this->_colliderActivated = active;
 
 	if (!this->_isActivated)
 	{
-		this->_isCollided = false;
-		this->_targetObj = nullptr;
-	}
+		if (_targetObj != nullptr)
+		{
+			// collider 비활성화 후 대상 object에 자신에 관한 정보가 남아있다면 비워준다
+			if (this->_targetObj->GetCollider()->GetTargetObject() == this->_ownerObj)
+			{
+				this->_targetObj->GetCollider()->Clear();
+			}
 
-	PhysicsSystem::GetInstance().SetActorState(this, active);
-	_debugObject->SetActive(active);
+			Clear();
+		}
+		else
+		{
+			Clear();
+		}
+	}
 }
 
 void KunrealEngine::BoxCollider::SetDebugMeshData()

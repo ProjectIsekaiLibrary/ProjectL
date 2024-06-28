@@ -15,6 +15,7 @@ namespace KunrealEngine
 {
 	class Component;
 	class Transform;
+	class Collider;
 
 	class _DECLSPEC GameObject
 	{
@@ -51,6 +52,8 @@ namespace KunrealEngine
 		std::string _tag;									// 오브젝트를 비교할 태그
 
 		std::vector<GameObject*> _childContainer;			// 자식 오브젝트를 담을 벡터
+
+		Collider* _collider;								// collider 객체
 
 	public:
 		// 오브젝트의 이름을 반환
@@ -109,6 +112,12 @@ namespace KunrealEngine
 
 		// 태그 반환
 		std::string GetTag();
+
+		// collider 설정
+		void SetCollider(Collider* col);
+
+		// object의 collider 반환
+		Collider* GetCollider();
 
 	/// 컴포넌트 관련
 	private:

@@ -25,18 +25,13 @@ namespace KunrealEngine
 		bool _isCollided;				// 충돌했는지
 		Transform* _transform;			// collider의 transform 정보
 		GameObject* _ownerObj;			// collider 컴포넌트를 가지고 있는 오브젝트
-		GameObject* _targetObj;			// 어떤 오브젝트와 충돌했는지
 		physx::PxShape* _shape;			// physx에서 가지고 있는 collider의 shape
+		GameObject* _targetObj;			// 어떤 오브젝트와 충돌했는지
 		
 		DirectX::XMFLOAT3 _position;	// PhysX에 넘겨줄 위치값
 		DirectX::XMFLOAT3 _scale;		// physx에 넘겨줄 크기	// transform과 별개임
 		DirectX::XMFLOAT4 _quaternion;	// physX에 넘겨줄 Quaternion
 		DirectX::XMFLOAT3 _offset;		// 오브젝트의 Transform으로부터 얼마나 차이가 날 것인지
-		bool _colliderActivated;				// 하위 collider 객체의 active 여부
-
-		///
-		bool _isCylinder;
-		///
 
 	public:
 		// 충돌 여부 반환
@@ -63,6 +58,12 @@ namespace KunrealEngine
 
 		// collider의 쿼터니언 반환
 		DirectX::XMFLOAT4 GetColliderQuaternion();
+
+		// 충돌여부를 false로, 대상 object를 nullptr로
+		void Clear();
+
+		// physx actor의 활동 여부 조절
+		void SetActorState(bool active);
 
 	public:
 		/// collider 종류별로 다르게 동작해야하는 가상함수들
