@@ -59,6 +59,7 @@ namespace KunrealEngine
 		bool _destroyIce;			// W 소멸 조건을 위한 변수
 		
 		bool _isAreaReady;			// E 스킬 쿨타임 조건
+		bool _destroyArea;			// E 소멸 조건을 위한 변수
 
 		bool _isMeteorReady;		// R 쿨타임 조건
 
@@ -88,6 +89,9 @@ namespace KunrealEngine
 		GameObject* _iceParticleHit1;
 		GameObject* _iceParticleHit2;
 
+		GameObject* _lazerParticle1;
+		GameObject* _lazerParticle2;
+
 		GameObject* _meteorParticle2;
 		GameObject* _meteorParticle3;
 		GameObject* _meteorParticle4;
@@ -105,6 +109,12 @@ namespace KunrealEngine
 		// w 스킬 체크용 변수
 		bool _isIceEnded;
 		float _iceParticleTimer;
+
+		// e 스킬 체크용 변수
+		bool _isLazerStarted;
+		bool _isLazerEnded;
+		float _lazerParticleTimer;
+
 
 		// r 스킬 체크용 변수
 		bool _isMeteorEnded;
@@ -171,15 +181,17 @@ namespace KunrealEngine
 			_iceParticle1->GetComponent<Particle>()->SetActive(false);
 			_iceParticle2->GetComponent<Particle>()->SetActive(false);
 			_iceParticle3->GetComponent<Particle>()->SetActive(false);
-			_iceParticleHit1->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
-			_iceParticleHit2->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
 			_iceParticleHit1->GetComponent<Particle>()->SetActive(true);
 			_iceParticleHit2->GetComponent<Particle>()->SetActive(true);
+			_iceParticleHit1->SetActive(true);
+			_iceParticleHit2->SetActive(true);
 			ability->_destroyIce = true;
 			ability->_isIceReady = false;
-			Waitforsecond(1.0f);		
+			Waitforsecond(0.5f);
 			_iceParticleHit1->GetComponent<Particle>()->SetActive(false);
 			_iceParticleHit2->GetComponent<Particle>()->SetActive(false);
+			_iceParticleHit1->SetActive(false);
+			_iceParticleHit2->SetActive(false);
 		};
 
 		// E스킬 쿨타임
@@ -188,6 +200,20 @@ namespace KunrealEngine
 			auto* ability = this;
 			Waitforsecond(ability->_abilityContainer[2]->_cooldown);
 			ability->_isAreaReady = true;
+		};
+
+		// E스킬 발동 대기
+		Coroutine_Func(AreaStandby)
+		{
+			auto* ability = this;
+			Waitforsecond(0.8f);		// 2초 뒤 실행
+
+			//ability->_destroyIce = false;	// 소멸 조건 초기화
+			ability->_area->SetActive(true);
+			//ability->_area->GetComponent<Projectile>()->SetActive(true);
+			//ability->_area->GetComponent<Projectile>()->ResetCondition();
+			_lazerParticle1->SetActive(true);
+			_lazerParticle2->SetActive(true);
 		};
 
 		// R스킬 쿨타임

@@ -181,7 +181,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//BasicPattern();						// 기본 spell, call
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
-
+	
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
 	//_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
@@ -2510,6 +2510,9 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
 
+			_timer = 0.0;
+			_spellDel = 0.0f;
+			_spellWaveDel = 0.0f;
 			auto lazerPosOffset = 15.0f;
 			auto lazerScaleOffset = 80.0f;
 
@@ -2598,13 +2601,24 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				}
 				else
 				{
+					
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
 					//_lazer->GetComponent<Particle>()->SetParticleSize(40.f,40.f);
-					_lazer->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 60.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+					_lazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.0f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.0f- _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+					if (animator->GetCurrentFrame() >= 40)
+					{
+						_timer += TimeManager::GetInstance().GetDeltaTime();
+						if (_timer < 1.0f)
+						{
+							_spellDel = _timer * 60;
+							_spellWaveDel = _timer * 40;
+						}
+					}
 
 					if (animator->GetCurrentFrame() >= 32.0f)
 					{
@@ -2619,10 +2633,10 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					if (_isEgoAttack)
 					{
 						_egoLazer->GetComponent<Particle>()->SetActive(true);
-						_egoLazer->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+						_egoLazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
-						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize(40.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 30.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 						if (animator->GetCurrentFrame() >= 32.0f)
 						{
@@ -2635,6 +2649,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 			if (isAnimationPlaying == false)
 			{
+				_timer = 0.0F;
 				return false;
 			}
 
