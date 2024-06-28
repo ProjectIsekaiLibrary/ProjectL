@@ -26,7 +26,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowDepthMap(nullptr),
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
-	_shadowWidth(clientWidth), _shadowHeight(clientHeight)
+	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -47,7 +47,8 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowDepthMap(nullptr),
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
-	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight)
+	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
+	_grayScaleTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -69,8 +70,6 @@ void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
 {
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 	
-	SetEffect();
-
 	BuildQuadBuffers();
 }
 
@@ -82,6 +81,20 @@ void ArkEngine::ArkDX11::DeferredRenderer::BeginRenderShadowDepth()
 void ArkEngine::ArkDX11::DeferredRenderer::BeginShadowRender()
 {
 	_shadowBuffer->SetDepthStencilView();
+}
+
+
+void ArkEngine::ArkDX11::DeferredRenderer::BeginFinalRender()
+{
+	_deferredBuffer->SetRenderTargetsForFinal();
+	_deferredBuffer->ClearRenderTargetsForFinal(_backGroundColor);
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::BeginBloomRender(int index)
+{
+	_deferredBuffer->SetRenderTargetsForBloom(index);
+
+	_deferredBuffer->ClearRenderTargetsForBloom(index, _backGroundColor);
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BeginRender()
@@ -102,13 +115,46 @@ void ArkEngine::ArkDX11::DeferredRenderer::Update(ArkEngine::ICamera* pCamera)
 
 void ArkEngine::ArkDX11::DeferredRenderer::Render()
 {
+	SetEffect();
+
 	auto deviceContext = _arkDevice->GetDeviceContext();
 
 	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
 	deviceContext->RSSetState(_arkDevice->GetSolidRS());
-	
+
+	_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
+
+	_grayScaleTexture->SetResource(_deferredBuffer->GetSRVForBloom(2));
+
+	D3DX11_TECHNIQUE_DESC techDesc;
+	_tech->GetDesc(&techDesc);
+
+	UINT stride = sizeof(ArkEngine::ArkDX11::Postex);
+	UINT offset = 0;
+
+	auto vertexBuffer = _arkBuffer->GetVertexBuffer();
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(_arkBuffer->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	_tech->GetPassByIndex(0)->Apply(0, deviceContext);
+
+	deviceContext->DrawIndexed(6, 0, 0);
+}
+
+
+void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture()
+{
+	SetFinalEffect();
+
+	auto deviceContext = _arkDevice->GetDeviceContext();
+
+	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	deviceContext->RSSetState(_arkDevice->GetSolidRS());
+
 	SetDirLight();
 
 	SetPointLight();
@@ -121,7 +167,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 	{
 		auto lightView = ResourceManager::GetInstance()->GetShadowCamera()[0]->GetViewMatrix();
 		auto lightProj = ResourceManager::GetInstance()->GetShadowCamera()[0]->GetProjMatrix();
-		
+
 		_fxLightView->SetMatrix(reinterpret_cast<float*>(&lightView));
 		_fxLightProj->SetMatrix(reinterpret_cast<float*>(&lightProj));
 
@@ -150,6 +196,42 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 	deviceContext->IASetIndexBuffer(_arkBuffer->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
 
 	_tech->GetPassByIndex(0)->Apply(0, deviceContext);
+	deviceContext->DrawIndexed(6, 0, 0);
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
+{
+	SetBloomEffect();
+	
+	auto deviceContext = _arkDevice->GetDeviceContext();
+
+	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
+	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
+	deviceContext->RSSetState(_arkDevice->GetSolidRS());
+
+	if (index == 0)
+	{
+		_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
+	}
+	
+	if (index > 0)
+	{
+		_finalTexture->SetResource(_deferredBuffer->GetSRVForBloom(index - 1));
+	}
+
+	D3DX11_TECHNIQUE_DESC techDesc;
+	_tech->GetDesc(&techDesc);
+
+	UINT stride = sizeof(ArkEngine::ArkDX11::Postex);
+	UINT offset = 0;
+
+	auto vertexBuffer = _arkBuffer->GetVertexBuffer();
+	deviceContext->IASetVertexBuffers(0, 1, &vertexBuffer, &stride, &offset);
+	deviceContext->IASetIndexBuffer(_arkBuffer->GetIndexBuffer(), DXGI_FORMAT_R32_UINT, 0);
+
+	_tech->GetPassByIndex(index)->Apply(0, deviceContext);
+
 	deviceContext->DrawIndexed(6, 0, 0);
 }
 
@@ -183,7 +265,21 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	delete _shadowBuffer;
 }
 
+
 void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
+{
+	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/DeferredWithBloom.fx");
+
+	auto effect = _arkEffect->GetEffect();
+
+	_tech = effect->GetTechniqueByIndex(0);
+
+	_finalTexture = effect->GetVariableByName("FinalTexture")->AsShaderResource();
+
+	_grayScaleTexture = effect->GetVariableByName("GrayScaleTexture")->AsShaderResource();
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 {
 	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/finalDeferredToon.fx");
 	auto effect = _arkEffect->GetEffect();
@@ -217,6 +313,18 @@ void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()
 	generator.CreateQuad();
 
 	_arkBuffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("Quad");
+}
+
+
+void ArkEngine::ArkDX11::DeferredRenderer::SetBloomEffect()
+{
+	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/BloomDeferredRender.fx");
+
+	auto effect = _arkEffect->GetEffect();
+
+	_tech = effect->GetTechniqueByIndex(0);
+
+	_finalTexture = effect->GetVariableByName("FinalTexture")->AsShaderResource();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::SetDirLight()

@@ -12,6 +12,7 @@ KunrealEngine::CylinderCollider::CylinderCollider()
 void KunrealEngine::CylinderCollider::Initialize()
 {
 	this->_ownerObj = this->GetOwner();
+	this->_ownerObj->SetCollider(this);
 	this->_transform = this->_ownerObj->GetComponent<Transform>();
 	this->_position = this->_transform->GetPosition();
 
@@ -19,10 +20,6 @@ void KunrealEngine::CylinderCollider::Initialize()
 
 	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), this->_scale.x, this->_scale.y, this->_scale.z);
 	SetColliderScale(this->_transform->GetScale());
-
-	///
-	this->_isCylinder = true;
-	///
 }
 
 void KunrealEngine::CylinderCollider::Release()
@@ -88,17 +85,28 @@ void KunrealEngine::CylinderCollider::OnTriggerExit()
 
 void KunrealEngine::CylinderCollider::SetActive(bool active)
 {
+	PhysicsSystem::GetInstance().SetActorState(this, active);
+	this->_debugObject->SetActive(active);
+
 	this->_isActivated = active;
-	this->_colliderActivated = active;
 
 	if (!this->_isActivated)
 	{
-		this->_isCollided = false;
-		this->_targetObj = nullptr;
-	}
+		if (this->_targetObj != nullptr)
+		{
+			// collider 비활성화 후 대상 object에 자신에 관한 정보가 남아있다면 비워준다
+			if (this->_targetObj->GetCollider()->GetTargetObject() == this->_ownerObj)
+			{
+				this->_targetObj->GetCollider()->Clear();
+			}
 
-	PhysicsSystem::GetInstance().SetActorState(this, active);
-	_debugObject->SetActive(active);
+			Clear();
+		}
+		else
+		{
+			Clear();
+		}
+	}
 }
 
 KunrealEngine::CylinderCollider::~CylinderCollider()
