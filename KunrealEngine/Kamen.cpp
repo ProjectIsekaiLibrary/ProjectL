@@ -27,7 +27,8 @@ KunrealEngine::Kamen::Kamen()
 	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr), _reverseEmergence(nullptr),
 	_emergence(nullptr), _emergencePos(), _bossInsideWarning(nullptr), _bossInsideAttack(nullptr), _bossRandomInsideWarning(nullptr),
 	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos(),
-	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr)
+	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
+	_swordSwingVertical(nullptr), _kamenSword(nullptr)
 {
 	BossBasicInfo info;
 
@@ -167,6 +168,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateDonutSafe();
 	CreateDonutAttack();
 	CreateFiveWayAttack();
+	CreateSwordSwingVertical();
 
 	CreateSwordLookPlayer();
 	CreateSwordLinearReady();
@@ -186,12 +188,14 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	TeleportSpellPattern();							// 텔포 후 spell	
-	BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	//_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	//_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	//TeleportSpellPattern();							// 텔포 후 spell	
+	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+
+	_basicPattern.emplace_back(_swordSwingVertical);
 
 
 	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
@@ -1159,37 +1163,55 @@ void KunrealEngine::Kamen::CreateSubObject()
 		_fiveAttack.emplace_back(fiveAttack);
 	}
 
-	// 따로 패턴하는 검
-	_freeSword = _boss->GetObjectScene()->CreateObject("KamenSword");
-	_freeSword->AddComponent<MeshRenderer>();
-	_freeSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
-	_freeSword->GetComponent<MeshRenderer>()->SetActive(false);
-	auto texSize = _freeSword->GetComponent<MeshRenderer>()->GetTextures().size();
-	for (int i = 0; i < texSize; i++)
 	{
-		_freeSword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
-		_freeSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
-		_freeSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+		// 따로 패턴하는 검
+		_freeSword = _boss->GetObjectScene()->CreateObject("KamenFreeSword");
+		_freeSword->AddComponent<MeshRenderer>();
+		_freeSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(false);
+		auto texSize = _freeSword->GetComponent<MeshRenderer>()->GetTextures().size();
+		for (int i = 0; i < texSize; i++)
+		{
+			_freeSword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+			_freeSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+			_freeSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+		}
+		_freeSword->SetTotalComponentState(false);
+		_freeSword->SetActive(false);
+
+		// 검 콜라이더
+		_freeSwordCollider = _boss->GetObjectScene()->CreateObject("KamenSwordCollider");
+		_freeSwordCollider->AddComponent<BoxCollider>();
+		_freeSwordCollider->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 5.0f, 30.0f);
+		_freeSwordCollider->GetComponent<BoxCollider>()->SetActive(true);
+
+		// 검 경로 장판
+		_swordPath = _boss->GetObjectScene()->CreateObject("swordPath");
+		_swordPath->AddComponent<TransparentMesh>();
+		_swordPath->GetComponent<TransparentMesh>()->CreateTMesh("SwordPath", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
+		_swordPath->GetComponent<Transform>()->SetScale(200.0f, 10.0f, 10.0f);
+		_swordPath->GetComponent<TransparentMesh>()->SetTimer(4.5f);
+		_swordPath->GetComponent<TransparentMesh>()->SetActive(false);
+		_swordPath->SetTotalComponentState(false);
+		_swordPath->SetActive(false);
 	}
-	_freeSword->SetTotalComponentState(false);
-	_freeSword->SetActive(false);
+	// 카멘에 종속된 검
+	{
+		_kamenSword = _boss->GetObjectScene()->CreateObject("KamenSword");
+		_kamenSword->AddComponent<MeshRenderer>();
+		_kamenSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenAttackSword/KamenAttackSword");
+		_kamenSword->GetComponent<MeshRenderer>()->SetActive(false);
+		auto texSize = _kamenSword->GetComponent<MeshRenderer>()->GetTextures().size();
+		for (int i = 0; i < texSize; i++)
+		{
+			_kamenSword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+			_kamenSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+			_kamenSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+		}
+		_kamenSword->SetTotalComponentState(false);
+		_kamenSword->SetActive(false);
+	}
 
-
-	// 검 콜라이더
-	_freeSwordCollider = _boss->GetObjectScene()->CreateObject("KamenSwordCollider");
-	_freeSwordCollider->AddComponent<BoxCollider>();
-	_freeSwordCollider->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 5.0f, 30.0f);
-	_freeSwordCollider->GetComponent<BoxCollider>()->SetActive(true);
-
-	// 검 경로 장판
-	_swordPath = _boss->GetObjectScene()->CreateObject("swordPath");
-	_swordPath->AddComponent<TransparentMesh>();
-	_swordPath->GetComponent<TransparentMesh>()->CreateTMesh("SwordPath", "Resources/Textures/Warning/Warning.dds", 0.6f, false);
-	_swordPath->GetComponent<Transform>()->SetScale(200.0f, 10.0f, 10.0f);
-	_swordPath->GetComponent<TransparentMesh>()->SetTimer(4.5f);
-	_swordPath->GetComponent<TransparentMesh>()->SetActive(false);
-	_swordPath->SetTotalComponentState(false);
-	_swordPath->SetActive(false);
 
 	/// 분신 서브 오브젝트들
 	// 분신 소환
@@ -3572,6 +3594,45 @@ void KunrealEngine::Kamen::CreateSwordChopAttack()
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	_swordChopAttack = pattern;
+}
+
+void KunrealEngine::Kamen::CreateSwordSwingVertical()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordSwingVertical");
+
+	pattern->SetAnimName("SwordIdle").SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(10.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetColliderType(BossPattern::eColliderType::eBox);
+	pattern->SetSubObject(_kamenSword);
+
+	auto initLogic = [pattern, this]()
+		{
+			_kamenSword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "MiddleFinger1_R");
+			_kamenSword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+			_kamenSword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+
+			
+
+			_kamenSword->SetActive(true);
+			_kamenSword->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_kamenSword->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+		};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+		{
+			auto animator = _boss->GetComponent<Animator>();
+			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, true);
+
+			return true;
+		};
+
+	pattern->SetLogic(attackLogic);
+
+	_swordSwingVertical = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordLookPlayer()

@@ -104,6 +104,10 @@ namespace KunrealEngine
 
 		void CreateSwordChopAttack();
 
+		// 3페이즈 with 검
+	private:
+		void CreateSwordSwingVertical();
+
 		// 카멘 이동 관련
 	private:
 		void CreateTurn180();
@@ -171,6 +175,9 @@ namespace KunrealEngine
 		BossPattern* _swordLookPlayer;
 		BossPattern* _swordChopAttack;
 
+		/// 3페이즈
+		BossPattern* _swordSwingVertical;
+
 	private:
 		BossPattern* _emergence9Lich;
 
@@ -198,6 +205,8 @@ namespace KunrealEngine
 		GameObject* _freeSword;
 		GameObject* _freeSwordCollider;
 		GameObject* _swordPath;
+
+		GameObject* _kamenSword;
 
 		std::vector<GameObject*> _handFire;
 
