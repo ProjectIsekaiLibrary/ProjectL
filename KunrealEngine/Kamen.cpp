@@ -26,7 +26,8 @@ KunrealEngine::Kamen::Kamen()
 	_isEgoAttack(false), _egoLeftHandBone(nullptr), _egoRightHandBone(nullptr),
 	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr), _reverseEmergence(nullptr),
 	_emergence(nullptr), _emergencePos(), _bossInsideWarning(nullptr), _bossInsideAttack(nullptr), _bossRandomInsideWarning(nullptr),
-	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos()
+	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos(),
+	_timer2(0.0f), _timer3(0.0f)
 {
 	BossBasicInfo info;
 
@@ -116,6 +117,7 @@ void KunrealEngine::Kamen::SetTexture()
 void KunrealEngine::Kamen::SetBossTransform()
 {
 	_boss->GetComponent<Transform>()->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
+	_boss->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
 }
 
 
@@ -123,8 +125,8 @@ void KunrealEngine::Kamen::SetBossCollider()
 {
 	_boss->AddComponent<BoxCollider>();
 	_boss->GetComponent<BoxCollider>()->SetTransform(_boss, "Spine1_M");
-	_boss->GetComponent<BoxCollider>()->SetColliderScale(6.0f, 18.0f, 10.0f);
-	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
+	_boss->GetComponent<BoxCollider>()->SetColliderScale(10.0f, 30.0f, 20.0f);
+	_boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -6.0f, 0.0f);
 }
 
 void KunrealEngine::Kamen::CreatePattern()
@@ -181,14 +183,14 @@ void KunrealEngine::Kamen::GamePattern()
 	//BasicPattern();						// 기본 spell, call
 	//RightLeftPattern();					// 전방 좌, 후방 우 어택
 	//BackStepCallPattern();				// 백스탭 뒤 콜 어택
-	
+
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
 	//_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
 	//_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//_basicPattern.emplace_back(_spellAttack);		// 투사체 4번 터지는 패턴
+	_basicPattern.emplace_back(_spellAttack);		// 투사체 4번 터지는 패턴
 	//TeleportSpellPattern();							// 텔포 후 spell	
-	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 
 	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
@@ -1211,6 +1213,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_alterEgo->AddComponent<MeshRenderer>();
 	_alterEgo->GetComponent<MeshRenderer>()->SetMeshObject("FakeLich/FakeLich");
 	_alterEgo->GetComponent<Transform>()->SetPosition(0.0f, 2.0f, 0.0f);
+	_alterEgo->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
+
 
 	auto egoTexSize = _alterEgo->GetComponent<MeshRenderer>()->GetTextures().size();
 	for (int i = 0; i < egoTexSize; i++)
@@ -1422,7 +1426,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
-			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
 			auto fireSpeed = 0.05f;
 
 			// 분신용
@@ -1476,7 +1480,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 							_egoHandFireReady[i] = false;
 
 							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
-							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 20.0f, egoPosTransform.z);
+							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 30.0f, egoPosTransform.z);
 
 							auto mat = _egoLeftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
 							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
@@ -1616,7 +1620,7 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
-			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 20.0f, _bossTransform->GetPosition().z);
+			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
 			auto fireSpeed = 0.05f;
 
 			// 분신용
@@ -1679,7 +1683,7 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 							_egoHandFireReady[i] = false;
 
 							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
-							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 20.0f, egoPosTransform.z);
+							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 30.0f, egoPosTransform.z);
 
 							auto mat = _egoRightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
 							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
@@ -1852,9 +1856,9 @@ void KunrealEngine::Kamen::CreateTeleportRandomWithLook()
 		{
 			auto bossPos = _bossTransform->GetPosition();
 
-			auto ranX = ToolBox::GetRandomFloat(bossPos.x-40.0f, bossPos.x+40.0f);
+			auto ranX = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
 			auto ranZ = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
-			
+
 			_randomPos.x = ranX;
 			_randomPos.y = _bossTransform->GetPosition().y;
 			_randomPos.z = ranZ;
@@ -2513,13 +2517,13 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 			_timer = 0.0;
 			_spellDel = 0.0f;
 			_spellWaveDel = 0.0f;
-			auto lazerPosOffset = 15.0f;
+			auto lazerPosOffset = 20.0f;
 			auto lazerScaleOffset = 80.0f;
 
 			auto direction = GetDirection();
 
 			auto lazerScaleDir = DirectX::XMVectorScale(direction, lazerPosOffset);
-			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
+			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 25.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
 			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 			_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 
@@ -2527,7 +2531,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 			auto lazerColliderScaleDir = DirectX::XMVectorScale(direction, lazerScaleOffset);
 
-			_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerColliderScaleDir.m128_f32[0], 16.0f, _bossTransform->GetPosition().z + lazerColliderScaleDir.m128_f32[2]);
+			_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerColliderScaleDir.m128_f32[0], 25.0f, _bossTransform->GetPosition().z + lazerColliderScaleDir.m128_f32[2]);
 
 			_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
 
@@ -2538,13 +2542,13 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				auto egoLazerDirection = GetEgoDirection();
 				auto egoLazerScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerPosOffset);
 
-				_egoLazer->GetComponent<Transform>()->SetPosition(egoPos.x + egoLazerScaleDir.m128_f32[0], 16.0f, egoPos.z + egoLazerScaleDir.m128_f32[2]);
+				_egoLazer->GetComponent<Transform>()->SetPosition(egoPos.x + egoLazerScaleDir.m128_f32[0], 25.0f, egoPos.z + egoLazerScaleDir.m128_f32[2]);
 				_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
 				_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
 
 				auto egolazerColliderScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerScaleOffset);
 
-				_egoLazerCollider->GetComponent<Transform>()->SetPosition(egoTransform->GetPosition().x + egolazerColliderScaleDir.m128_f32[0], 16.0f, egoTransform->GetPosition().z + egolazerColliderScaleDir.m128_f32[2]);
+				_egoLazerCollider->GetComponent<Transform>()->SetPosition(egoTransform->GetPosition().x + egolazerColliderScaleDir.m128_f32[0], 25.0f, egoTransform->GetPosition().z + egolazerColliderScaleDir.m128_f32[2]);
 
 				_egoLazerCollider->GetComponent<Transform>()->SetRotation(egoTransform->GetRotation().x, egoTransform->GetRotation().y + 90.0f, egoTransform->GetRotation().z);
 
@@ -2583,11 +2587,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					_lazer->GetComponent<Particle>()->SetActive(false);
 					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
 
-					if (pattern->_colliderOnCount > 0)
-					{
-						auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
-						pattern->_isColliderActive[objectIndex] = false;
-					}
+					auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+					pattern->_isColliderActive[objectIndex] = false;
 
 					if (_isEgoAttack)
 					{
@@ -2601,14 +2602,13 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				}
 				else
 				{
-					
+
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
-					//_lazer->GetComponent<Particle>()->SetParticleSize(40.f,40.f);
 					_lazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.0f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.0f- _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.0f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 					if (animator->GetCurrentFrame() >= 40)
 					{
@@ -2622,10 +2622,21 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 					if (animator->GetCurrentFrame() >= 32.0f)
 					{
-						if (pattern->_colliderOnCount > 0)
+						auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+
+						if (pattern->_isColliderHit[objectIndex] == false)
 						{
-							auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
 							pattern->_isColliderActive[objectIndex] = true;
+						}
+						else
+						{
+							_timer2 += TimeManager::GetInstance().GetDeltaTime();
+
+							if (_timer2 >= 0.5f)
+							{
+								pattern->_isColliderHit[objectIndex] = false;
+								_timer2 = 0.0f;
+							}
 						}
 					}
 
@@ -2641,7 +2652,21 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 						if (animator->GetCurrentFrame() >= 32.0f)
 						{
 							auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
-							pattern->_isColliderActive[objectIndex] = true;
+
+							if (pattern->_isColliderHit[objectIndex] == false)
+							{
+								pattern->_isColliderActive[objectIndex] = true;
+							}
+							else
+							{
+								_timer3 += TimeManager::GetInstance().GetDeltaTime();
+
+								if (_timer3 >= 0.5f)
+								{
+									pattern->_isColliderHit[objectIndex] = false;
+									_timer3 = 0.0f;
+								}
+							}
 						}
 					}
 				}
