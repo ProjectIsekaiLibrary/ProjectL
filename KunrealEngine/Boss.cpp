@@ -526,9 +526,6 @@ void KunrealEngine::Boss::PatternReady()
 	// 현재 실행 중인 Idle 애니메이션을 종료
 	_boss->GetComponent<Animator>()->Stop();
 
-	// 패턴내의 첫 패턴 초기화해줘야할 것들 초기화
-	_nowTitlePattern->Initialize();
-
 	// 패턴 내의 첫 패턴이 지닌 하위 오브젝트들을 모두 켬
 	for (const auto& object : _nowTitlePattern->_subObject)
 	{
@@ -538,6 +535,9 @@ void KunrealEngine::Boss::PatternReady()
 		// 모든 컴포넌트는 끔
 		object->SetTotalComponentState(false);
 	}
+
+	// 패턴내의 첫 패턴 초기화해줘야할 것들 초기화
+	_nowTitlePattern->Initialize();
 
 	// 코어 패턴일 경우
 	if (_isCorePattern)

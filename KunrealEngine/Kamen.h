@@ -79,6 +79,7 @@ namespace KunrealEngine
 		void CreateCallAttack();
 		void CreateCall2Attack();
 		void CreateBossRandomInsideWarning();
+		void CreateFiveWayAttack();
 
 		// °Ë with Ä«¸à ÆÐÅÏ
 	private:
@@ -140,6 +141,7 @@ namespace KunrealEngine
 		BossPattern* _callAttack;
 		BossPattern* _call2Attack;
 		BossPattern* _bossRandomInsideWarning;
+		BossPattern* _fiveWayAttack;
 
 		BossPattern* _backStep;
 		BossPattern* _turn180;
@@ -182,6 +184,7 @@ namespace KunrealEngine
 		GameObject* _lazerCollider;
 		GameObject* _bossInsideWarning;
 		GameObject* _bossInsideAttack;
+		std::vector<GameObject*> _fiveAttack;
 
 		GameObject* _swordInsideWarning;
 		GameObject* _swordInsideAttack;
@@ -229,6 +232,9 @@ namespace KunrealEngine
 
 		unsigned int _egoCall2PrevStep;
 
+	private:
+		std::vector<DirectX::XMFLOAT3> _fakeDirVec;
+		std::vector<float> _fakeMoveDistance;
 
 	private:
 		std::vector<bool> _handFireReady;
