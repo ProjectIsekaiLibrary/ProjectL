@@ -91,6 +91,8 @@ namespace KunrealEngine
 
 		GameObject* _lazerParticle1;
 		GameObject* _lazerParticle2;
+		GameObject* _lazerParticle3;
+		GameObject* _lazerParticle4;
 
 		GameObject* _meteorParticle2;
 		GameObject* _meteorParticle3;
@@ -214,6 +216,8 @@ namespace KunrealEngine
 			//ability->_area->GetComponent<Projectile>()->ResetCondition();
 			_lazerParticle1->SetActive(true);
 			_lazerParticle2->SetActive(true);
+			_lazerParticle3->SetActive(true);
+			_lazerParticle4->SetActive(true);
 		};
 
 		// R스킬 쿨타임
