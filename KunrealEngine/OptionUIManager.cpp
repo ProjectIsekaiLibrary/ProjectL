@@ -21,12 +21,16 @@ void KunrealEngine::OptionUIManager::Initialize()
 	KunrealEngine::GameObject* button_bgmon;
 	KunrealEngine::GameObject* button_sfxon;
 
+	KunrealEngine::GameObject* button_bgm;
+	KunrealEngine::GameObject* button_sfx;
+
 	KunrealEngine::GameObject* button_check1;
 	KunrealEngine::GameObject* button_check2;
 	KunrealEngine::GameObject* fullscreen_text;
 	KunrealEngine::GameObject* windowed_text;
 
 	KunrealEngine::GameObject* button_exit;
+	KunrealEngine::GameObject* button_exit_focus;
 
 	optionuibox = this->GetOwner();
 	optionuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
@@ -50,14 +54,14 @@ void KunrealEngine::OptionUIManager::Initialize()
 	imagebackgroundL = scene->CreateObject("background_L");
 	imagebackgroundL->AddComponent<ImageRenderer>();
 	imagebackgroundL->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideL.png");
-	imagebackgroundL->GetComponent<ImageRenderer>()->SetPosition(350.f, 75.f);
+	imagebackgroundL->GetComponent<ImageRenderer>()->SetPosition(305.f, 75.f);
 	imagebackgroundL->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 1.0f);
 	imagebackgroundL->SetParent(optionuibox);
 
 	imagebackgroundR = scene->CreateObject("background_R");
 	imagebackgroundR->AddComponent<ImageRenderer>();
 	imagebackgroundR->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideR.png");
-	imagebackgroundR->GetComponent<ImageRenderer>()->SetPosition(1500.f, 75.f);
+	imagebackgroundR->GetComponent<ImageRenderer>()->SetPosition(1500.f,  75.f);
 	imagebackgroundR->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 1.0f);
 	imagebackgroundR->SetParent(optionuibox);
 
@@ -91,6 +95,13 @@ void KunrealEngine::OptionUIManager::Initialize()
 			}
 		});
 
+	button_bgm = scene->CreateObject("button_bgm");
+	button_bgm->SetParent(optionuibox);
+	button_bgm->AddComponent<ImageRenderer>();
+	button_bgm->GetComponent<ImageRenderer>()->SetImage("ui/BGM_text.png");
+	button_bgm->GetComponent<ImageRenderer>()->SetPosition(405.0f, 274.0f);
+	button_bgm->GetComponent<Transform>()->SetScale(0.7f, 0.7f, 0.7f);
+
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
 	//SFX 사운드 조절
@@ -120,6 +131,13 @@ void KunrealEngine::OptionUIManager::Initialize()
 				_sfx_step = 1;
 			}
 		});
+
+	button_sfx = scene->CreateObject("button_sfx");
+	button_sfx->SetParent(optionuibox);
+	button_sfx->AddComponent<ImageRenderer>();
+	button_sfx->GetComponent<ImageRenderer>()->SetImage("ui/SFX_text.png");
+	button_sfx->GetComponent<ImageRenderer>()->SetPosition(405.0f, 405.0f);
+	button_sfx->GetComponent<Transform>()->SetScale(0.7, 0.7, 0.7f);
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
@@ -158,9 +176,9 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_exit = scene->CreateObject("button_exit");
 	button_exit->SetParent(optionuibox);
 	button_exit->AddComponent<ImageRenderer>();
-	button_exit->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	button_exit->GetComponent<ImageRenderer>()->SetPosition(1600.f, 130.f);
-	button_exit->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	button_exit->GetComponent<ImageRenderer>()->SetImage("ui/button-short.png");
+	button_exit->GetComponent<ImageRenderer>()->SetPosition(1468.f, 114.f);
+	button_exit->GetComponent<Transform>()->SetScale(1.2f, 1.2f, 1.0f);
 	button_exit->AddComponent<ButtonSystem>();
 	button_exit->GetComponent<ButtonSystem>()->SetImage(button_exit->GetComponent<ImageRenderer>());
 	button_exit->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
@@ -168,6 +186,14 @@ void KunrealEngine::OptionUIManager::Initialize()
 			scene->GetGameObject("pauseuibox")->SetActive(true);
 			optionuibox->SetActive(false);
 		});
+
+	button_exit_focus = scene->CreateObject("button_exit");
+	button_exit_focus->SetParent(optionuibox);
+	button_exit_focus->AddComponent<ImageRenderer>();
+	button_exit_focus->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
+	button_exit_focus->GetComponent<ImageRenderer>()->SetPosition(1468.f, 114.f);
+	button_exit_focus->GetComponent<Transform>()->SetScale(1.2f, 1.2f, 1.0f);
+	button_exit->GetComponent<ButtonSystem>()->Setfocused(button_exit_focus->GetComponent<ImageRenderer>());
 
 	optionuibox->SetActive(false);
 }
