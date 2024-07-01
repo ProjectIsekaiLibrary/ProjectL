@@ -309,5 +309,9 @@ namespace KunrealEngine
 		std::vector<GameObject*> _particleSwordDonut1;
 		std::vector<GameObject*> _particleSwordDonut2;
 		std::vector<GameObject*> _particleSwordDonut3;
+		// ½ºÆç ¼Ò¸ê°ªÀ» À§ÇÑ º¯¼ö
+
+		float _spellDel;
+		float _spellWaveDel;
 	};
 }

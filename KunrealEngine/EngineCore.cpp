@@ -338,26 +338,24 @@ void KunrealEngine::EngineCore::Update()
 	//	test->GetComponent<Particle>()->SetParticleRotation(90.0f, 0.0f, 0.0f);
 
 	//	GameObject* PlayerE1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE1");
-	//	PlayerE1->GetComponent<Particle>()->SetParticleSize(20 * _timeCount, 20 * _timeCount);
+	//	PlayerE1->GetComponent<Particle>()->SetParticleSize(10 * _timeCount, 10 * _timeCount);
 
 	//	GameObject* PlayerE2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2");
-	//	PlayerE2->GetComponent<Particle>()->SetParticleSize(50 * _timeCount, 50 * _timeCount);
+	//	PlayerE2->GetComponent<Particle>()->SetParticleSize(25 * _timeCount, 25 * _timeCount);
 
 	//	GameObject* PlayerE3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE3");
-	//	PlayerE3->GetComponent<Particle>()->SetParticleSize(50 * _timeCount, 50 * _timeCount);
+	//	PlayerE3->GetComponent<Particle>()->SetParticleSize(25 * _timeCount, 25 * _timeCount);
 
-	//	GameObject* PlayerE2_1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_1");
-	//	PlayerE2_1->GetComponent<Particle>()->SetParticleSize(20 * _timeCount, 20 * _timeCount);
+	//	GameObject* PlayerE2_1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_1"); // 플레이어 e 폭발, 살짝 커졌다가 작아지며 소멸
+	//	PlayerE2_1->GetComponent<Particle>()->SetParticleSize(30 * _timeCount, 30 * _timeCount);
 
 	//	GameObject* PlayerE2_2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_2");
-	//	PlayerE2_2->GetComponent<Particle>()->SetParticleSize(40 * _timeCount, 40 * _timeCount);
+	//	PlayerE2_2->GetComponent<Particle>()->SetParticleSize(30 * _timeCount, 30 * _timeCount);
 
 
 	//	GameObject* PlayerE2_3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_3");
-	//	PlayerE2_3->GetComponent<Particle>()->SetParticleSize(60 * _timeCount, 60 * _timeCount);
+	//	PlayerE2_3->GetComponent<Particle>()->SetParticleSize(45 * _timeCount, 45 * _timeCount);
 
-	//	GameObject* PlayerE33= sceneInstance.GetCurrentScene()->GetGameObject("PlayerE3_1");
-	//	PlayerE33->GetComponent<Particle>()->SetParticleSize(60 * _timeCount, 60 * _timeCount);
 
 	//	// 플레이어 Q 착탄
 
@@ -450,7 +448,7 @@ void KunrealEngine::EngineCore::Update()
 	//	++timeCountIndex;
 	//}
 
-	//if (_timeCount > 0.2f)
+	//if (_timeCount > 0.5f)
 	//{
 	//	_timeCount = 0.0f;
 	//}
@@ -692,15 +690,15 @@ void KunrealEngine::EngineCore::PlayGround()
 
 
 	// Kamen
-	 kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	 kamen->AddComponent<Kamen>();
+	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	kamen->AddComponent<Kamen>();
 
 	// UI의 부모가 될 0,0pos객체
-	//battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
-	//battle_ui_box->AddComponent<BattleUIManager>();
-	//pause_ui_box = MakeTitleUIPack();
-	//option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
-	//option_ui_box->AddComponent<OptionUIManager>();
+	 battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	 battle_ui_box->AddComponent<BattleUIManager>();
+	 pause_ui_box = MakeMenuUIPack();
+	 option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
+	 option_ui_box->AddComponent<OptionUIManager>();
 	//Title_ui_box = 
 
 	//// cube map test
@@ -1125,14 +1123,15 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle10->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
 
 	particle11 = sceneInstance.GetCurrentScene()->CreateObject("Particle11");
-	particle11->GetComponent<Transform>()->SetPosition(20, 0, -25.f);
+	particle11->GetComponent<Transform>()->SetPosition(-50, 0, 0.f);
 	particle11->AddComponent<Particle>();
 	particle11->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
-	particle11->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
-	particle11->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	particle11->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
-	particle11->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
-	particle11->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 200.0f);
+	particle11->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+	particle11->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	particle11->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+	particle11->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 2.0f);
+	particle11->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	particle11->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	particle12 = sceneInstance.GetCurrentScene()->CreateObject("Particle12");
 	particle12->GetComponent<Transform>()->SetPosition(30, 0, -25.f);
@@ -1383,22 +1382,26 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particlePlayerW1 = sceneInstance.GetCurrentScene()->CreateObject("PlayerW1");
 	particlePlayerW1->GetComponent<Transform>()->SetPosition(-50, 3, 0.f);
 	particlePlayerW1->AddComponent<Particle>();
-	particlePlayerW1->GetComponent<Particle>()->SetParticleEffect("Blast3", "Resources/Textures/Particles/fx_Blast3.dds", 1000);
-	particlePlayerW1->GetComponent<Particle>()->SetParticleDuration(4.0f, 6.0f);
+	particlePlayerW1->GetComponent<Particle>()->SetParticleEffect("Blast3", "Resources/Textures/Particles/fx_Blast3.dds", 100);
+	particlePlayerW1->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
 	particlePlayerW1->GetComponent<Particle>()->SetParticleVelocity(4.0f, true);
 	particlePlayerW1->GetComponent<Particle>()->SetParticleSize(3.f, 3.0f);
 	particlePlayerW1->GetComponent<Particle>()->AddParticleColor(0.5f, 3.0f, 5.0f);
 	particlePlayerW1->GetComponent<Particle>()->SetParticleDirection(0.0f, -1.0f, 0.0f);
+	particlePlayerW1->GetComponent<Particle>()->SetParticleAngle(339.0f, 0.0f, 30.0f);
+	particlePlayerW1->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	particlePlayerW2 = sceneInstance.GetCurrentScene()->CreateObject("PlayerW2");
 	particlePlayerW2->GetComponent<Transform>()->SetPosition(-50, 0, 0.f);
 	particlePlayerW2->AddComponent<Particle>();
-	particlePlayerW2->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
-	particlePlayerW2->GetComponent<Particle>()->SetParticleDuration(4.0f, 6.0f);
-	particlePlayerW2->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
-	particlePlayerW2->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 100);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleDuration(4.0f, 2.0f);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleSize(3.0f, 3.0f);
 	particlePlayerW2->GetComponent<Particle>()->AddParticleColor(0.5f, 3.0f, 5.0f);
 	particlePlayerW2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleAngle(339.0f, 0.0f, 30.0f);
+	particlePlayerW2->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	//플레이어 R
 
@@ -1794,18 +1797,20 @@ void KunrealEngine::EngineCore::ParticleTest()
 	playerE1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	playerE1->GetComponent<Particle>()->AddParticleColor(0.7f, 0.7f, 0.0f);
 	playerE1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	playerE1->GetComponent<Particle>()->SetParticleAngle(335,0,30);
+	playerE1->GetComponent<Particle>()->SetParticleCameraApply(true);
 	//playerE1->GetComponent<Particle>()->SetParticleAngle(60.f);
 	
 	playerE2 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE2");
 	playerE2->GetComponent<Transform>()->SetPosition(-68, 7, 7);
 	playerE2->AddComponent<Particle>();
 	playerE2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
-	playerE2->GetComponent<Particle>()->SetParticleDuration(2.0f, 10.f);
-	playerE2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	playerE2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
+	playerE2->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
 	playerE2->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	playerE2->GetComponent<Particle>()->AddParticleColor(2.0f, 0.4f, 0.0f);
 	playerE2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	playerE2->GetComponent<Particle>()->SetParticleAngle(66.f);
+	playerE2->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	playerE3 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE3");
 	playerE3->GetComponent<Transform>()->SetPosition(-68, 7, 7.f);
@@ -1816,49 +1821,44 @@ void KunrealEngine::EngineCore::ParticleTest()
 	playerE3->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	playerE3->GetComponent<Particle>()->AddParticleColor(2.0f, 0.0f, 0.0f);
 	playerE3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	playerE3->GetComponent<Particle>()->SetParticleAngle(335.f, 0.0f, 30.f);
+	playerE3->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	playerE2_1 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE2_1");
-	playerE2_1->GetComponent<Transform>()->SetPosition(-48, -3.3, -65.f);
+	playerE2_1->GetComponent<Transform>()->SetPosition(-115, 10.2, -65.f);
 	playerE2_1->AddComponent<Particle>();
-	playerE2_1->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	playerE2_1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.4f);
-	playerE2_1->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-	playerE2_1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
-	playerE2_1->GetComponent<Particle>()->AddParticleColor(2.0f, 2.0f, 0.0f);
+	playerE2_1->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+	playerE2_1->GetComponent<Particle>()->SetParticleDuration(0.5f, 0.2f);
+	playerE2_1->GetComponent<Particle>()->SetParticleVelocity(50.0f, true);
+	playerE2_1->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	playerE2_1->GetComponent<Particle>()->AddParticleColor(2.0f, 0.8f, 0.0f);
 	playerE2_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	playerE2_1->GetComponent<Particle>()->SetParticleAngle(55.0f);
+	playerE2_1->GetComponent<Particle>()->SetParticleAngle(335.f, 0.0f, 30.f);
+	playerE2_1->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	playerE2_2 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE2_2");
-	playerE2_2->GetComponent<Transform>()->SetPosition(-48, 10.2, -65.f);
+	playerE2_2->GetComponent<Transform>()->SetPosition(-115, 10.2, -65.f);
 	playerE2_2->AddComponent<Particle>();
-	playerE2_2->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
-	playerE2_2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
-	playerE2_2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	playerE2_2->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+	playerE2_2->GetComponent<Particle>()->SetParticleDuration(0.2f, 0.2f);
+	playerE2_2->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
 	playerE2_2->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
-	playerE2_2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.04f);
+	playerE2_2->GetComponent<Particle>()->AddParticleColor(1.0f, 0.3f, 0.0f);
 	playerE2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	playerE2_2->GetComponent<Particle>()->SetParticleAngle(339,0,30);
+	playerE2_2->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 	playerE2_3 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE2_3");
-	playerE2_3->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
+	playerE2_3->GetComponent<Transform>()->SetPosition(-115, 10.2, -65.f);
 	playerE2_3->AddComponent<Particle>();
-	playerE2_3->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	playerE2_3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
-	playerE2_3->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	playerE2_3->GetComponent<Particle>()->SetParticleSize(45.f, 45.0f);
-	playerE2_3->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+	playerE2_3->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+	playerE2_3->GetComponent<Particle>()->SetParticleDuration(0.2f, 0.2f);
+	playerE2_3->GetComponent<Particle>()->SetParticleVelocity(20.0f, true);
+	playerE2_3->GetComponent<Particle>()->SetParticleSize(22.f, 22.0f);
+	playerE2_3->GetComponent<Particle>()->AddParticleColor(1.0f, 0.0f, 0.0f);
 	playerE2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	playerE2_3->GetComponent<Particle>()->SetParticleAngle(55.0f);
-
-	playerE2_4 = sceneInstance.GetCurrentScene()->CreateObject("PlayerE3_1");
-	playerE2_4->GetComponent<Transform>()->SetPosition(-48, 10.2, -65.f);
-	playerE2_4->AddComponent<Particle>();
-	playerE2_4->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	playerE2_4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
-	playerE2_4->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	playerE2_4->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-	playerE2_4->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
-	playerE2_4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	//playerE3_1->GetComponent<Particle>()->SetParticleAngle(60.0f);
+	playerE2_3->GetComponent<Particle>()->SetParticleCameraApply(true);
+	playerE2_3->GetComponent<Particle>()->SetParticleAngle(339, 0 , 30);
 
 	bossTeleportAttack1 = sceneInstance.GetCurrentScene()->CreateObject("bossTeleportAttack1");
 	bossTeleportAttack1->GetComponent<Transform>()->SetPosition(48, 10.2, 125.f);

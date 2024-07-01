@@ -39,5 +39,7 @@ namespace ArkEngine
 		virtual void SetScale(float x = 1.0f, float y = 1.0f) abstract;
 
 		virtual const DirectX::XMUINT2& GetImageSize() abstract;
+
+		virtual void ChangeImage(const std::string& imageName) abstract;
 	};
 }

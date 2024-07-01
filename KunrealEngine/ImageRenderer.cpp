@@ -106,6 +106,12 @@ void KunrealEngine::ImageRenderer::SetImage(std::string imageName)
 	_image = GRAPHICS->CreateImage(imageName.c_str());
 }
 
+void KunrealEngine::ImageRenderer::ChangeImage(const std::string& imageName)
+{
+	std::string path = "Resources/Textures/";
+	_image->ChangeImage(path + imageName);
+}               
+
 const std::string& KunrealEngine::ImageRenderer::GetImageName()
 {
 	if (_image != nullptr)
@@ -148,15 +154,26 @@ bool KunrealEngine::ImageRenderer::IsPicked(int mouseX, int mouseY)
 	{
 		return false;
 	}
+// AABB를 이용하여 마우스 커서가 이 위에 올려져 있는지 확인한다.
+// top, bottom은 이미지의 포지션으로 지정한다.	
+	auto tbpos = GetOwner()->GetComponent<Transform>()->GetPosition();
+	auto tlbpos = GetImageSize();
 
-	if (_image != nullptr && GRAPHICS->GetPickedImage(mouseX, mouseY) == _image)
+	int posl = tbpos.x + tlbpos.x;
+	int posb = tbpos.y + tlbpos.y;
+
+	bool isaa = false;
+	bool isbb = false;
+
+	isaa = (mouseX > tbpos.x) && (mouseX < posl);
+	isbb = (mouseY > tbpos.y) && (mouseY < posb);
+
+	if (isaa && isbb)
 	{
 		return true;
 	}
-	else
-	{
-		return false;
-	}
+
+	return false;
 }
 
 const DirectX::XMUINT2& KunrealEngine::ImageRenderer::GetImageSize()

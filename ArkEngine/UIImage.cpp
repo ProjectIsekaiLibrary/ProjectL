@@ -27,7 +27,7 @@ void ArkEngine::ArkDX11::UIImage::Render(DirectX::DX11::SpriteBatch* sp)
 	int posX = _texturePos.x;
 	int posY = _texturePos.y;
 	RECT destRect = { _texturePos.x, _texturePos.y, _texturePos.x + _finalTextureSize.x, _texturePos.y + _finalTextureSize.y };
-
+ 
 	sp->Draw(_textureSRV, destRect, &sourceRect, DirectX::Colors::White, 0.0f);
 }
 
@@ -79,6 +79,13 @@ const DirectX::XMUINT2& ArkEngine::ArkDX11::UIImage::GetImageSize()
 	return _finalTextureSize;
 }
 
+void ArkEngine::ArkDX11::UIImage::ChangeImage(const std::string& imageName)
+{
+	_imageName = imageName;
+
+	ChangeTexture();
+}
+
 void ArkEngine::ArkDX11::UIImage::Initialize()
 {
 	SetTexture();
@@ -100,12 +107,30 @@ void ArkEngine::ArkDX11::UIImage::SetTexture()
 
 	_texturePos.x = 0.0f;
 	_texturePos.y = 0.0f;
-	//
+	
 	_originTextureSize.x = texture->GetTextureSize().x;
 	_originTextureSize.y = texture->GetTextureSize().y;
 
 	_finalTextureSize.x = _originTextureSize.x;
 	_finalTextureSize.y = _originTextureSize.y;
+
+	_textureSRV = texture->GetDiffuseMapSRV();
+}
+
+void ArkEngine::ArkDX11::UIImage::ChangeTexture()
+{
+	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>(_imageName);
+
+	if (texture == nullptr)
+	{
+		ArkTexture* newTexture = new ArkTexture(_imageName.c_str());
+		ResourceManager::GetInstance()->SetTextureNameList(_imageName);
+
+		texture = newTexture;
+	}
+
+	_originTextureSize.x = texture->GetTextureSize().x;
+	_originTextureSize.y = texture->GetTextureSize().y;
 
 	_textureSRV = texture->GetDiffuseMapSRV();
 }
