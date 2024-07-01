@@ -145,30 +145,62 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check1 = scene->CreateObject("button_check1");
 	button_check1->SetParent(optionuibox);
 	button_check1->AddComponent<ImageRenderer>();
-	button_check1->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	button_check1->GetComponent<ImageRenderer>()->SetPosition(820.0f, 680.0f);
-	button_check1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	button_check1->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
+	button_check1->GetComponent<ImageRenderer>()->SetPosition(860.0f, 625.0f);
+	button_check1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+	button_check1->AddComponent<ButtonSystem>();
+	button_check1->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
+	button_check1->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
+		{
+			auto image = scene->GetGameObject("button_check1")->GetComponent<ImageRenderer>();
+			std::string path = "Resources/Textures/";
+			if (image->GetImageName() == path + "ui/Check-false.png")
+			{
+				image->ChangeImage("ui/Check-true.png");
+			}
+
+			else if (image->GetImageName() == path + "ui/Check-true.png")
+			{
+				image->ChangeImage("ui/Check-false.png");
+			}
+		});
 
 	button_check2 = scene->CreateObject("button_check2");
 	button_check2->SetParent(optionuibox);
 	button_check2->AddComponent<ImageRenderer>();
-	button_check2->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	button_check2->GetComponent<ImageRenderer>()->SetPosition(1240.0f, 680.0f);
-	button_check2->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	button_check2->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
+	button_check2->GetComponent<ImageRenderer>()->SetPosition(1400.0f, 625.0f);
+	button_check2->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+	button_check2->AddComponent<ButtonSystem>();
+	button_check2->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
+	button_check2->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
+		{
+			auto image = scene->GetGameObject("button_check2")->GetComponent<ImageRenderer>();
+			std::string path = "Resources/Textures/";
+			if (image->GetImageName() == path + "ui/Check-false.png")
+			{
+				image->ChangeImage("ui/Check-true.png");
+			}
+
+			else if (image->GetImageName() == path + "ui/Check-true.png")
+			{
+				image->ChangeImage("ui/Check-false.png");
+			}
+		});
 
 	fullscreen_text = scene->CreateObject("fullscreen_text");
 	fullscreen_text->SetParent(optionuibox);
 	fullscreen_text->AddComponent<ImageRenderer>();
-	fullscreen_text->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	fullscreen_text->GetComponent<ImageRenderer>()->SetPosition(400.0f, 640.0f);
-	fullscreen_text->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	fullscreen_text->GetComponent<ImageRenderer>()->SetImage("ui/FullScreen.png");
+	fullscreen_text->GetComponent<ImageRenderer>()->SetPosition(430.0f, 560.0f);
+	fullscreen_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	windowed_text = scene->CreateObject("windowed_text");
 	windowed_text->SetParent(optionuibox);
 	windowed_text->AddComponent<ImageRenderer>();
-	windowed_text->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	windowed_text->GetComponent<ImageRenderer>()->SetPosition(1100.0f, 640.0f);
-	windowed_text->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	windowed_text->GetComponent<ImageRenderer>()->SetImage("ui/Windowed.png");
+	windowed_text->GetComponent<ImageRenderer>()->SetPosition(950.0f, 560.0f);
+	windowed_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
@@ -280,7 +312,7 @@ void KunrealEngine::OptionUIManager::InitializeVolumeButton(std::vector<GameObje
 	float yscale = 10.0f;
 	float xscale = 7.0f;
 
-	for (int step = 1 ; step < 11 ; step++)
+	for (int step = 1 ; step < 11 ; step++)    
 	{
 		KunrealEngine::GameObject* bgm;
 
