@@ -77,5 +77,7 @@ namespace KunrealEngine
 	private:
 		const DirectX::XMVECTOR& SetWarningAttackDirection(GameObject* subObject);
 		const DirectX::XMVECTOR& SetBossAttackDirection(GameObject* subObject);
+		const DirectX::XMVECTOR& SetEgoAttackDirection(GameObject* subObject);
+
 	};
 }

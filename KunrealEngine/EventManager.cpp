@@ -175,9 +175,18 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 						// 보스와 서브 오브젝트 사이의 디렉션으로 넘어뜨림
 						if (nowPattern->_attackState == BossPattern::eAttackState::ePush)
 						{
-							auto colliderDirVec = SetBossAttackDirection(subObjectList[i]);
+							if (subObjectList[i]->GetObjectName().find("Ego") == std::string::npos)
+							{
+								auto colliderDirVec = SetBossAttackDirection(subObjectList[i]);
 
-							_playerComp->CalculateSweep(colliderDirVec);
+								_playerComp->CalculateSweep(colliderDirVec);
+							}
+							else
+							{
+								auto colliderDirVec = SetEgoAttackDirection(subObjectList[i]);
+
+								_playerComp->CalculateSweep(colliderDirVec);
+							}
 						}
 
 						auto damage = nowPattern->_damage;
@@ -465,8 +474,16 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
 
-						auto a = _bossComp->GetSwordPos();
+						auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+						auto swordPos = _bossComp->GetSwordPos();
 
+						auto distance = ToolBox::GetDistance(swordPos, playerPos);
+
+						if (distance <= _bossComp->GetDonutSize())
+						{
+							int a = _bossComp->GetDonutSize();
+							return;
+						}
 
 						auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
 						_playerComp->CalculateSweep(colliderDirVec);
@@ -534,6 +551,20 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetBossAttackDirection(Gam
 	bossPos.y = playerPos.y;
 
 	auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, colliderPos);
+
+	return colliderDirVec;
+}
+
+const DirectX::XMVECTOR& KunrealEngine::EventManager::SetEgoAttackDirection(GameObject* subObject)
+{
+	auto colliderPos = subObject->GetComponent<Transform>()->GetPosition();
+	auto egoPos = _bossComp->GetEgoPos();
+	auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+
+	colliderPos.y = playerPos.y;
+	egoPos.y = playerPos.y;
+
+	auto colliderDirVec = ToolBox::GetDirectionVec(egoPos, colliderPos);
 
 	return colliderDirVec;
 }

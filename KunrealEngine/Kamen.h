@@ -129,6 +129,10 @@ namespace KunrealEngine
 
 		const DirectX::XMFLOAT3& GetSwordPos();
 
+		const DirectX::XMFLOAT3& GetEgoPos();
+
+		const float GetDonutSize();
+
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
