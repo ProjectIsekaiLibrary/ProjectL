@@ -27,7 +27,7 @@ KunrealEngine::Kamen::Kamen()
 	_egoCall2PrevStep(0), _egoCall2(nullptr), _egoLazer(nullptr), _egoLazerCollider(nullptr), _reverseEmergence(nullptr),
 	_emergence(nullptr), _emergencePos(), _bossInsideWarning(nullptr), _bossInsideAttack(nullptr), _bossRandomInsideWarning(nullptr),
 	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos(),
-	_timer2(0.0f), _timer3(0.0f)
+	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr)
 {
 	BossBasicInfo info;
 
@@ -166,6 +166,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateInsideSafe();
 	CreateDonutSafe();
 	CreateDonutAttack();
+	CreateFiveWayAttack();
 
 	CreateSwordLookPlayer();
 	CreateSwordLinearReady();
@@ -190,6 +191,8 @@ void KunrealEngine::Kamen::GamePattern()
 	TeleportSpellPattern();							// 텔포 후 spell	
 	BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+
 
 	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
@@ -1142,6 +1145,20 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_call2->SetTotalComponentState(false);
 	_call2->SetActive(false);
 
+	for (int i = 0; i < 5; i++)
+	{
+		std::string objectName = "FiveWarning" + std::to_string(i);
+		auto fiveAttack = _boss->GetObjectScene()->CreateObject(objectName);
+		fiveAttack->AddComponent<TransparentMesh>();
+		fiveAttack->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+		fiveAttack->GetComponent<TransparentMesh>()->SetTimer(1.5f);
+		fiveAttack->GetComponent<TransparentMesh>()->SetRenderType(0);
+		fiveAttack->GetComponent<Transform>()->SetScale(12.0f, 12.0f, 100.0f);
+		fiveAttack->SetTotalComponentState(false);
+		fiveAttack->SetActive(false);
+		_fiveAttack.emplace_back(fiveAttack);
+	}
+
 	// 따로 패턴하는 검
 	_freeSword = _boss->GetObjectScene()->CreateObject("KamenSword");
 	_freeSword->AddComponent<MeshRenderer>();
@@ -1182,7 +1199,6 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_alterEgo->GetComponent<MeshRenderer>()->SetMeshObject("FakeLich/FakeLich");
 	_alterEgo->GetComponent<Transform>()->SetPosition(0.0f, 2.0f, 0.0f);
 	_alterEgo->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
-
 
 	auto egoTexSize = _alterEgo->GetComponent<MeshRenderer>()->GetTextures().size();
 	for (int i = 0; i < egoTexSize; i++)
@@ -1275,33 +1291,40 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_egoInsideAttack->SetTotalComponentState(false);
 	_egoInsideAttack->SetActive(false);
 
-	//// 핵심패턴 9마리 보스
-//for (int i = 0; i < 9; i++)
-//{
-//	std::string index = "fake" + std::to_string(i + 1);
-//	auto boss = _boss->GetObjectScene()->CreateObject(index);
-//
-//	boss->AddComponent<MeshRenderer>();
-//	boss->GetComponent<MeshRenderer>()->SetMeshObject("FakeLich/FakeLich");
-//
-//	auto texSize = boss->GetComponent<MeshRenderer>()->GetTextures().size();
-//	for (int i = 0; i < texSize; i++)
-//	{
-//		boss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
-//		boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
-//		boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
-//	}
-//
-//	boss->AddComponent<BoxCollider>();
-//	boss->GetComponent<BoxCollider>()->SetTransform(boss, "Spine1_M");
-//	boss->GetComponent<BoxCollider>()->SetColliderScale(6.0f, 18.0f, 10.0f);
-//	boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -1.5f, 0.0f);
-//
-//	boss->SetTotalComponentState(false);
-//	boss->SetActive(false);
-//
-//	_fakeBoss.emplace_back(boss);
-//}
+	//// Fake Boss
+	for (int i = 0; i < 5; i++)
+	{
+		std::string index = "fake" + std::to_string(i + 1);
+		auto boss = _boss->GetObjectScene()->CreateObject(index);
+	
+		boss->AddComponent<MeshRenderer>();
+		boss->GetComponent<MeshRenderer>()->SetMeshObject("FakeLich/FakeLich");
+		boss->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
+	
+		auto texSize = boss->GetComponent<MeshRenderer>()->GetTextures().size();
+		for (int i = 0; i < texSize; i++)
+		{
+			boss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+			boss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+			boss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+		}
+	
+		boss->AddComponent<BoxCollider>();
+		boss->GetComponent<BoxCollider>()->SetTransform(boss, "Spine1_M");
+		boss->GetComponent<BoxCollider>()->SetColliderScale(10.0f, 30.0f, 20.0f);
+		boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -6.0f, 0.0f);
+	
+		boss->GetComponent<MeshRenderer>()->SetAlpha(0.5f);
+
+		boss->SetTotalComponentState(false);
+		boss->SetActive(false);
+	
+		_fakeBoss.emplace_back(boss);
+
+		_fakeDirVec.emplace_back();
+
+		_fakeMoveDistance.emplace_back(0.0f);
+	}
 }
 
 
@@ -2965,6 +2988,138 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 	pattern->SetLogic(outsideSafe);
 
 	_bossRandomInsideWarning = pattern;
+}
+
+void KunrealEngine::Kamen::CreateFiveWayAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("FiveWayAttack");
+
+	pattern->SetAnimName("Idle").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
+	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush).SetColliderType(BossPattern::eColliderType::eBox);
+
+	for (auto& index : _fiveAttack)
+	{
+		pattern->SetSubObject(index);
+	}
+
+	for (auto& index : _fakeBoss)
+	{
+		pattern->SetSubObject(index);
+	}
+
+	auto initLogic = [pattern, this]()
+		{
+			_timer = 0.0f;
+
+			for (int i = 0; i < _fiveAttack.size(); i++)
+			{
+				auto bossPos = _bossTransform->GetPosition();
+				auto angle = _bossTransform->GetRotation().y + (72.0f * i);
+
+				_fiveAttack[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+
+				auto direction = DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f };
+				direction = ToolBox::RotateVector(direction, angle);
+
+				auto interval = 120.0f;
+				
+				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3 (&direction), interval));
+				
+				_fiveAttack[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], bossPos.y, newPosition.m128_f32[2]);
+
+				_fiveAttack[i]->GetComponent<TransparentMesh>()->Reset();
+				_fiveAttack[i]->GetComponent<TransparentMesh>()->SetActive(true);
+
+				_fakeBoss[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+
+				DirectX::XMVECTOR fakePosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), 20.0f));
+
+				_fakeBoss[i]->GetComponent<Transform>()->SetPosition(fakePosition.m128_f32[0], bossPos.y, fakePosition.m128_f32[2]);
+				_fakeBoss[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+
+				_fakeDirVec[i] = direction;
+
+				DirectX::XMVECTOR targetPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), 1000.0f));
+
+				Navigation::GetInstance().SetSEpos(1, fakePosition.m128_f32[0], 0.0f, fakePosition.m128_f32[2],
+					targetPos.m128_f32[0], 0.0f, targetPos.m128_f32[2]);
+
+				auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
+
+				auto fakePos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
+				_fakeMoveDistance[i] = ToolBox::GetDistance(fakePos, targetPosition) - 5.0f;
+			}
+		};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+		{
+			auto isPlaying = _boss->GetComponent<Animator>()->Play(pattern->_animName, pattern->_speed, true);
+
+			bool warningFinsh = false;
+
+			for (auto& index : _fiveAttack)
+			{
+				auto isPlayed = index->GetComponent<TransparentMesh>()->PlayOnce();
+
+				if (isPlayed)
+				{
+					warningFinsh = true;
+
+					break;
+				}
+			}
+
+			if (warningFinsh)
+			{
+				auto fakeSpeed = 0.075f;
+
+				int sumGoal = 0;
+
+				for (int i = 0; i < _fakeBoss.size(); i++)
+				{
+					_fakeBoss[i]->GetComponent<Animator>()->Play("Run", pattern->_speed, true);
+
+					_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(true);
+
+					// 콜라이더 키기
+					auto objectIndex = pattern->GetSubObjectIndex(_fakeBoss[i]);
+					pattern->_isColliderActive[objectIndex] = true;
+
+					auto fakeBossPos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
+
+					auto moveSpeed = pattern->_speed * fakeSpeed;
+
+					DirectX::XMVECTOR fakePosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&fakeBossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_fakeDirVec[i]), moveSpeed));
+
+					_fakeMoveDistance[i] -= moveSpeed;
+
+					_fakeBoss[i]->GetComponent<Transform>()->SetPosition(fakePosition.m128_f32[0], fakeBossPos.y, fakePosition.m128_f32[2]);
+
+					if (_fakeMoveDistance[i] < 0.0f)
+					{
+						_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(false);
+						pattern->_isColliderActive[objectIndex] = false;
+
+						sumGoal++;
+					}
+				}
+
+				if (sumGoal == 5)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(attackLogic);
+
+	_fiveWayAttack = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordAttack()
