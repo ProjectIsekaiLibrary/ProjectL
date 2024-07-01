@@ -60,7 +60,7 @@ float4 PS(VertexOut pin) : SV_Target
     GetGBufferAttributes(pin.Tex, finalTexture, grayScale);
 
     // Bloom intensity
-    float bloomIntensity = 3.0f;
+    float bloomIntensity = 1.0f;
 
     //float4 result = finalTexture + grayScale1;
     // 최종 결과에 블러 및 그레이스케일 효과 추가
