@@ -108,7 +108,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_playerhp_bar_downGauge = scene.GetCurrentScene()->CreateObject("playerhp_bar");
 	_playerhp_bar_downGauge->SetParent(_battleuibox);
 	_playerhp_bar_downGauge->AddComponent<ImageRenderer>();
-	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("volume-in.png");
+	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("ui/volume-in.png");
 	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(500.f, 850.f);
 	_playerhp_bar_downGauge->GetComponent<Transform>()->SetScale(_playerhpsize, 0.1f, 0.1f);
 
@@ -122,7 +122,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_bosshp_bar_downGauge = scene.GetCurrentScene()->CreateObject("_bosshp_bar_downGauge");
 	_bosshp_bar_downGauge->SetParent(_battleuibox);
 	_bosshp_bar_downGauge->AddComponent<ImageRenderer>();
-	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("volume-in.png");
+	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("ui/volume-in.png");
 	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(500.f, 15.f);
 	_bosshp_bar_downGauge->GetComponent<Transform>()->SetScale(_bosshpsize, 0.1f, 0.1f);
 
