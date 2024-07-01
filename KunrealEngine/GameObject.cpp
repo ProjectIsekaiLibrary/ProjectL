@@ -5,7 +5,7 @@
 #include "ComponentHeaders.h"
 
 KunrealEngine::GameObject::GameObject()
-	:_isActivated(true), _objectName(""), _layer(0), _parent(nullptr), _transform(nullptr)
+	:_isActivated(true), _objectName(""), _layer(0), _parent(nullptr), _transform(nullptr), _collider(nullptr)
 {
 	SceneManager& smInstance = SceneManager::GetInstance();
 	int objectCount = 0;
@@ -321,11 +321,13 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		// collider는 오브젝트가 비활성화 상태일 때 simulation이 종료되어야 함
 		if (this->GetComponent<BoxCollider>() != nullptr)
 		{
+			this->GetComponent<BoxCollider>()->SetActorState(false);
 			this->GetComponent<BoxCollider>()->_debugObject->SetActive(false);
 		}
 
 		if (this->GetComponent<CylinderCollider>() != nullptr)
 		{
+			this->GetComponent<CylinderCollider>()->SetActorState(false);
 			this->GetComponent<CylinderCollider>()->_debugObject->SetActive(false);
 		}
 	}
@@ -359,11 +361,13 @@ void KunrealEngine::GameObject::SetActive(bool active)
 
 		if (this->GetComponent<BoxCollider>() != nullptr)
 		{
+			this->GetComponent<BoxCollider>()->SetActorState(this->GetComponent<BoxCollider>()->GetActivated());
 			this->GetComponent<BoxCollider>()->_debugObject->SetActive(this->GetComponent<BoxCollider>()->GetActivated());
 		}
 
 		if (this->GetComponent<CylinderCollider>() != nullptr)
 		{
+			this->GetComponent<CylinderCollider>()->SetActorState(this->GetComponent<CylinderCollider>()->GetActivated());
 			this->GetComponent<CylinderCollider>()->_debugObject->SetActive(this->GetComponent<CylinderCollider>()->GetActivated());
 		}
 	}
@@ -403,6 +407,18 @@ void KunrealEngine::GameObject::SetTag(const std::string& tag)
 std::string KunrealEngine::GameObject::GetTag()
 {
 	return this->_tag;
+}
+
+
+void KunrealEngine::GameObject::SetCollider(Collider* col)
+{
+	this->_collider = col;
+}
+
+
+KunrealEngine::Collider* KunrealEngine::GameObject::GetCollider()
+{
+	return this->_collider;
 }
 
 std::string KunrealEngine::GameObject::GetOriginalTypeName(std::string name)

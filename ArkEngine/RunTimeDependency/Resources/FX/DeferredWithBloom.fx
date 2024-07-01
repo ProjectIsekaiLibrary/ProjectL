@@ -14,8 +14,8 @@ SamplerState samAnisotropic
     Filter = MIN_MAG_MIP_LINEAR;
     MaxAnisotropy = 16;
 
-    AddressU = WRAP;
-    AddressV = WRAP;
+    AddressU = ClAMP;
+    AddressV = ClAMP;
 
     MipLODBias = 0.0;
     MinLOD = 0;

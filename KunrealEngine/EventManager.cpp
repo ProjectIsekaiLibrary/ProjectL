@@ -56,7 +56,7 @@ void KunrealEngine::EventManager::Update()
 			Release();
 		}
 	}
-	 
+
 	if (_iscamfollow && _mainCamera != nullptr && _player != nullptr)
 	{
 		DirectX::XMFLOAT3 plpos = _player->GetComponent<Transform>()->GetPosition();
@@ -102,14 +102,14 @@ std::vector<float> KunrealEngine::EventManager::CamShakeLinear(float sigma, int 
 	std::vector<float> result;
 	float cur_sigma = sigma;
 
-	for (float a = 0; a < numPoints ; a++)
+	for (float a = 0; a < numPoints; a++)
 	{
 		// 현재 진동 강도를 리스트에 추가 (양수)
 		result.push_back(static_cast<int>(cur_sigma));
 		// 현재 진동 강도를 리스트에 추가 (음수)
 		result.push_back(static_cast<int>(-cur_sigma));
 		// 진동 강도 감소
-		cur_sigma -= sigma /numPoints;
+		cur_sigma -= sigma / numPoints;
 	}
 	result.push_back(static_cast<int>(0));
 
@@ -159,7 +159,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 			for (int i = 0; i < subObjectList.size(); i++)
 			{
 				auto collider = subObjectList[i]->GetComponent<BoxCollider>();
-					
+
 				if (collider != nullptr && !nowPattern->_isColliderActive[i])
 				{
 					collider->SetActive(false);
@@ -173,9 +173,21 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
 						// 보스와 서브 오브젝트 사이의 디렉션으로 넘어뜨림
-						auto colliderDirVec = SetBossAttackDirection(subObjectList[i]);
+						if (nowPattern->_attackState == BossPattern::eAttackState::ePush)
+						{
+							if (subObjectList[i]->GetObjectName().find("Ego") == std::string::npos)
+							{
+								auto colliderDirVec = SetBossAttackDirection(subObjectList[i]);
 
-						_playerComp->CalculateSweep(colliderDirVec);
+								_playerComp->CalculateSweep(colliderDirVec);
+							}
+							else
+							{
+								auto colliderDirVec = SetEgoAttackDirection(subObjectList[i]);
+
+								_playerComp->CalculateSweep(colliderDirVec);
+							}
+						}
 
 						auto damage = nowPattern->_damage;
 
@@ -226,8 +238,11 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
-						auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
-						_playerComp->CalculateSweep(colliderDirVec);
+						if (nowPattern->_attackState == BossPattern::eAttackState::ePush)
+						{
+							auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
+							_playerComp->CalculateSweep(colliderDirVec);
+						}
 
 						auto damage = nowPattern->_damage;
 
@@ -403,7 +418,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
-						
+
 					}
 					else
 					{
@@ -441,12 +456,12 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 		else if (nowPattern->_colliderType == BossPattern::eColliderType::eDonut)
 		{
 			auto subObjectList = nowPattern->_subObject;
-		
+
 			for (int i = 0; i < subObjectList.size(); i++)
 			{
 				auto collider = subObjectList[i]->GetComponent<CylinderCollider>();
 
-				if (collider!=nullptr && !nowPattern->_isColliderActive[i])
+				if (collider != nullptr && !nowPattern->_isColliderActive[i])
 				{
 					collider->SetActive(false);
 				}
@@ -459,8 +474,16 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
 
-						auto a = _bossComp->GetSwordPos();
+						auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+						auto swordPos = _bossComp->GetSwordPos();
 
+						auto distance = ToolBox::GetDistance(swordPos, playerPos);
+
+						if (distance <= _bossComp->GetDonutSize())
+						{
+							int a = _bossComp->GetDonutSize();
+							return;
+						}
 
 						auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
 						_playerComp->CalculateSweep(colliderDirVec);
@@ -528,6 +551,20 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetBossAttackDirection(Gam
 	bossPos.y = playerPos.y;
 
 	auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, colliderPos);
+
+	return colliderDirVec;
+}
+
+const DirectX::XMVECTOR& KunrealEngine::EventManager::SetEgoAttackDirection(GameObject* subObject)
+{
+	auto colliderPos = subObject->GetComponent<Transform>()->GetPosition();
+	auto egoPos = _bossComp->GetEgoPos();
+	auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+
+	colliderPos.y = playerPos.y;
+	egoPos.y = playerPos.y;
+
+	auto colliderDirVec = ToolBox::GetDirectionVec(egoPos, colliderPos);
 
 	return colliderDirVec;
 }

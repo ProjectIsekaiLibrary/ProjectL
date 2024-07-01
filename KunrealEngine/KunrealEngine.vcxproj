@@ -179,7 +179,8 @@ xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
       <AdditionalDependencies>ArkEngine.lib;Recast.lib;Detour.lib;DetourTileCache.lib;$(CoreLibraryDependencies);%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PostBuildEvent>
-      <Command>xcopy "$(Projectdir)AfterBuild" "$(targetdir)Resources"/D /E /C /Q /H /R /Y /K</Command>
+      <Command>xcopy "$(Projectdir)AfterBuild" "$(targetdir)Resources"/D /E /C /Q /H /R /Y /K
+xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

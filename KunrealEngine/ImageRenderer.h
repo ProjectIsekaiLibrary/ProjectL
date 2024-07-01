@@ -49,6 +49,8 @@ namespace KunrealEngine
 		// 어떤 이미지를 출력할 것인지 설정
 		void SetImage(std::string imageName);
 
+		void ChangeImage(const std::string& imageName);
+
 		// 출력 중인 이미지 이름 반환
 		const std::string& GetImageName();
 

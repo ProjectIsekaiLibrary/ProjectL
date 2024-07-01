@@ -696,15 +696,15 @@ void KunrealEngine::EngineCore::PlayGround()
 
 
 	// Kamen
-	 kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	 kamen->AddComponent<Kamen>();
+	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	kamen->AddComponent<Kamen>();
 
 	// UI의 부모가 될 0,0pos객체
-	//battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
-	//battle_ui_box->AddComponent<BattleUIManager>();
-	//pause_ui_box = MakeTitleUIPack();
-	//option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
-	//option_ui_box->AddComponent<OptionUIManager>();
+	 battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	 battle_ui_box->AddComponent<BattleUIManager>();
+	 pause_ui_box = MakeMenuUIPack();
+	 option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
+	 option_ui_box->AddComponent<OptionUIManager>();
 	//Title_ui_box = 
 
 	//// cube map test

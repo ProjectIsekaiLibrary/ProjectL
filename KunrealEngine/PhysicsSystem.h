@@ -76,9 +76,6 @@ namespace KunrealEngine
 
 		// Dynamic actor들 업데이트
 		void UpdateDynamics();
-		
-		// Static actor들 업데이트
-		void UpdateStatics();
 
 		void TestFunc();			/// 실험용 꼭 지워
 

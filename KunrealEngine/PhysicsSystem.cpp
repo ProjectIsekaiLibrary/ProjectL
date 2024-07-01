@@ -78,7 +78,6 @@ void KunrealEngine::PhysicsSystem::Release()
 void KunrealEngine::PhysicsSystem::FixedUpdate()
 {
 	UpdateDynamics();
-	UpdateStatics();
 
 	_pxScene->simulate(TimeManager::GetInstance().GetDeltaTime());
 	_pxScene->fetchResults(true);
@@ -208,29 +207,16 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 		pxTrans.q.z = pair.first->GetColliderQuaternion().z;
 		pxTrans.q.w = pair.first->GetColliderQuaternion().w;
 
-		//pair.second->setGlobalPose(
-		// physx::PxTransform(
-		// physx::PxVec3(
-		// pair.first->GetColliderPos().x, 
-		// pair.first->GetColliderPos().y, 
-		// pair.first->GetColliderPos().z)));
-		pair.second->setGlobalPose(pxTrans, true);
 
 		if (!pair.first->GetOwnerObject()->GetActivated())
 		{
+			pxTrans.p = physx::PxVec3(4000.0f, 4000.0f, 4000.0f);
 
 			pair.first->_isCollided = false;
 			pair.first->_targetObj = nullptr;
 		}
-	}
-}
 
-void KunrealEngine::PhysicsSystem::UpdateStatics()
-{
-	// 포지션 관련
-	for (const auto& pair : _staticMap)
-	{
-		pair.second->setGlobalPose(physx::PxTransform(physx::PxVec3(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z)));
+		pair.second->setGlobalPose(pxTrans, true);
 	}
 }
 
@@ -281,21 +267,22 @@ void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
 
 void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active)
 {
-	if (active)
+	if (!active)
 	{
-		//this->_dynamicMap.at(collider)->wakeUp();
-		
-		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, true);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, true);
+		physx::PxTransform pxTrans;
+		pxTrans.p = physx::PxVec3(4000.0f, 4000.0f, 4000.0f);
+
+		pxTrans.q.x = collider->GetColliderQuaternion().x;
+		pxTrans.q.y = collider->GetColliderQuaternion().y;
+		pxTrans.q.z = collider->GetColliderQuaternion().z;
+		pxTrans.q.w = collider->GetColliderQuaternion().w;
+
+		this->_dynamicMap.at(collider)->setGlobalPose(pxTrans, false);
 	}
-	else
-	{
-		//this->_dynamicMap.at(collider)->putToSleep();
-		this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, false);
-		//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, false);
-	}
+
+	this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
+	collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, active);
+	collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, active);
 }
 
 void KunrealEngine::PhysicsSystem::TestFunc()
@@ -466,13 +453,9 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 
 	// 충돌에서 벗어났을 때
 	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_LOST)
-		&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated() || (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated()))
+		//&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated() || (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated()))
+		)
 	{
-		if (col1->_isCylinder || col2->_isCylinder)
-		{
-			int a = 10;
-		}
-
 		// 충돌 여부를 false로
 		col1->_isCollided = false;
 		col2->_isCollided = false;

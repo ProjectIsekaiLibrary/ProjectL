@@ -56,10 +56,14 @@ namespace ArkEngine
 
 			virtual const DirectX::XMUINT2& GetImageSize() override;
 
+			virtual void ChangeImage(const std::string& imageName) override;
+
 		private:
 			void Initialize();
 			
 			void SetTexture();
+
+			void ChangeTexture();
 
 		private:
 			std::string _imageName;
