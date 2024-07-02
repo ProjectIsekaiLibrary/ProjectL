@@ -107,6 +107,8 @@ namespace KunrealEngine
 		// 3페이즈 with 검
 	private:
 		void CreateSwordSwingVertical();
+		void CreateSwordSwingTwice();
+		void CreateSwordSwingTwiceHard();
 
 		// 카멘 이동 관련
 	private:
@@ -124,11 +126,6 @@ namespace KunrealEngine
 	private:
 		void CreateEmergenceAttack();
 
-
-		// 분신용 편의성 함수
-	private:
-		DirectX::XMVECTOR GetEgoDirection();
-
 	public:
 		const DirectX::XMFLOAT3& GetSwordDirection();
 
@@ -137,6 +134,15 @@ namespace KunrealEngine
 		const DirectX::XMFLOAT3& GetEgoPos();
 
 		const float GetDonutSize();
+
+		// 분신용 편의성 함수
+	private:
+		DirectX::XMVECTOR GetEgoDirection();
+
+		// 카멘에 붙이는 칼 콜라이더 위치 조정용
+	private:
+		void SetKamenSwordCollider(int startFrame, int EndFrame, int nowFrame);
+		void SetKamenSwordCollider();
 
 	private:
 		BossPattern* _leftAttack;
@@ -177,6 +183,8 @@ namespace KunrealEngine
 
 		/// 3페이즈
 		BossPattern* _swordSwingVertical;
+		BossPattern* _swordSwingTwice;
+		BossPattern* _swordSwingTwiceHard;
 
 	private:
 		BossPattern* _emergence9Lich;
@@ -207,6 +215,8 @@ namespace KunrealEngine
 		GameObject* _swordPath;
 
 		GameObject* _kamenSword;
+		GameObject* _kamenSwordCollider;
+		GameObject* _blade;
 
 		std::vector<GameObject*> _handFire;
 
@@ -302,6 +312,9 @@ namespace KunrealEngine
 		float _swordTimer;
 
 		float _warningMaxTimer;
+
+	private:
+		bool _isSwordSecondAttackStart;
 
 	private:
 		bool _isSpecial2Ready;
