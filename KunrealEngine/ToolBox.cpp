@@ -151,6 +151,21 @@ DirectX::XMFLOAT3 KunrealEngine::ToolBox::RotateVector(const DirectX::XMFLOAT3& 
 	return rotatedDirection;
 }
 
+
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::RotateVector(const DirectX::XMFLOAT3& direction, DirectX::XMVECTOR& quaternion)
+{
+	DirectX::XMVECTOR vec = XMLoadFloat3(&direction);
+
+	quaternion = DirectX::XMQuaternionNormalize(quaternion);
+
+	DirectX::XMVECTOR rotatedVec = DirectX::XMVector3Rotate(vec, quaternion);
+
+	DirectX::XMFLOAT3 rotatedDirection;
+	XMStoreFloat3(&rotatedDirection, rotatedVec);
+
+	return rotatedDirection;
+}
+
 void KunrealEngine::ToolBox::CalculateParabolaPath(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float duration, float gravity, std::vector<DirectX::XMFLOAT3>& path)
 {
 	float t = 0.0f;

@@ -40,6 +40,9 @@ namespace KunrealEngine
 
 		// 백터 일정 각도만큼 회전시키기
 		static DirectX::XMFLOAT3 RotateVector(const DirectX::XMFLOAT3& direction, float angle);
+
+		// 백터 일정 각도만큼 회전시키기
+		static DirectX::XMFLOAT3 RotateVector(const DirectX::XMFLOAT3& direction, DirectX::XMVECTOR& quaternion);
 	
 		/// 반복문에 넣지말고 1번만 호출되도록 해야함
 		// 포물선의 좌표를 vector<XMFLOAT3> 변수에 넣어주는 함수
