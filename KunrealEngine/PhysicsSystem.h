@@ -119,6 +119,13 @@ namespace KunrealEngine
 		// eventcallback으로부터 받은 actor가 어떤 collider에 대응하는지
 		Collider* GetColliderFromDynamic(const physx::PxRigidDynamic* dynamic);
 
+		// physx용 quaternion
+		physx::PxQuat EulerToQuaternion(float pitch, float yaw, float roll);
+
+		/// ??
+		void ResizeBoxShape(physx::PxShape* shape, const physx::PxVec3& newDimension);
+		///
+
 	private:
 		Collider* col1;
 		Collider* col2;
