@@ -109,6 +109,7 @@ namespace KunrealEngine
 		void CreateSwordSwingVertical();
 		void CreateSwordSwingTwice();
 		void CreateSwordSwingTwiceHard();
+		void CreateSwordSwingHorizontal();
 
 		// 카멘 이동 관련
 	private:
@@ -117,6 +118,7 @@ namespace KunrealEngine
 		void CreateTeleportToCenter();
 		void CreateTeleportToCenterWithLook();
 		void CreateTeleportRandomWithLook();
+		void CreateTeleportWithSwordSwing();
 		void CreateTurnClockWise();
 		void CreateTurnAntiClockWise();
 		void CreateReverseEmergence();
@@ -185,6 +187,9 @@ namespace KunrealEngine
 		BossPattern* _swordSwingVertical;
 		BossPattern* _swordSwingTwice;
 		BossPattern* _swordSwingTwiceHard;
+		BossPattern* _swordSwingHorizontal;
+
+		BossPattern* _swordSwingTeleport;
 
 	private:
 		BossPattern* _emergence9Lich;
