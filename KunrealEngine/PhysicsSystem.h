@@ -124,6 +124,10 @@ namespace KunrealEngine
 
 		/// ??
 		void ResizeBoxShape(physx::PxShape* shape, const physx::PxVec3& newDimension);
+
+		// 마지막에 호출
+	public:
+		void PlayerForceUpdate();
 		///
 
 	private:

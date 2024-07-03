@@ -216,7 +216,7 @@ namespace KunrealEngine
 
 		GameObject* _kamenSword;
 		GameObject* _kamenSwordCollider;
-		GameObject* _blade;
+		std::vector<GameObject*> _blade;
 
 		std::vector<GameObject*> _handFire;
 
@@ -296,10 +296,14 @@ namespace KunrealEngine
 		float _bossCircleWarningSize;
 
 
-		float _swordLinearDistance;
+		float _swordMoveDistance;
+		float _swordMoveDistance2;
+
 
 		DirectX::XMFLOAT3 _swordDirection;
 		DirectX::XMFLOAT3 _swordRotation;
+
+		DirectX::XMFLOAT3 _swordDirection2;
 
 		float _swordChopSpeed;
 

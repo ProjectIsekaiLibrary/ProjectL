@@ -132,6 +132,8 @@ namespace KunrealEngine
 
 		bool RotateClockWise(float rotateSpeed, bool isClockWise);
 
+		bool RotateClockWise(float goalAngle, float rotateSpeed, bool isClockWise);
+
 		// 특정 포지션으로 이동시키기 (raycast true시 무언가에 막히면 거기까지만 찾아감)
 		bool Move(DirectX::XMFLOAT3& targetPos, float speed, bool roateToTarget, bool rayCast);
 

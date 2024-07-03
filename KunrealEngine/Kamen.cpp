@@ -28,7 +28,7 @@ KunrealEngine::Kamen::Kamen()
 	_emergence(nullptr), _emergencePos(), _bossInsideWarning(nullptr), _bossInsideAttack(nullptr), _bossRandomInsideWarning(nullptr),
 	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos(),
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
-	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _blade(nullptr)
+	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f)
 {
 	BossBasicInfo info;
 
@@ -205,7 +205,7 @@ void KunrealEngine::Kamen::GamePattern()
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
 	//SwordChopPattern();								// 도넛
-	SwordLinearAttackPattern();						// 칼 직선 공격
+	//SwordLinearAttackPattern();						// 칼 직선 공격
 
 	//BasicSwordAttackPattern();
 
@@ -1230,12 +1230,31 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 	// 칼 검기
 	{
-		_blade = _boss->GetObjectScene()->CreateObject("Blade");
-		_blade->AddComponent<MeshRenderer>();
-		_blade->GetComponent<MeshRenderer>()->SetMeshObject("Blade/Blade");
-		// 텍스쳐 필요함
-		_blade->SetTotalComponentState(false);
-		_blade->SetActive(false);
+		for (int i = 0; i < 2; i++)
+		{
+			auto blade = _boss->GetObjectScene()->CreateObject("Blade");
+			blade->AddComponent<MeshRenderer>();
+			blade->GetComponent<MeshRenderer>()->SetMeshObject("Blade/Blade");
+			// 텍스쳐 필요함
+			blade->SetTotalComponentState(false);
+			blade->SetActive(false);
+
+			auto texSize = blade->GetComponent<MeshRenderer>()->GetTextures().size();
+			for (int i = 0; i < texSize; i++)
+			{
+				blade->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Blade/Diffuse.png");
+				blade->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Blade/Normal.png");
+			}
+			blade->GetComponent<MeshRenderer>()->SetAlpha(0.6f);
+			
+			blade->GetComponent<Transform>()->SetScale(25.0f, 20.0f, 20.0f);
+
+			blade->SetTotalComponentState(false);
+			blade->SetActive(false);
+
+			_blade.emplace_back(blade);
+		}
+
 	}
 
 	/// 분신 서브 오브젝트들
@@ -3536,7 +3555,7 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 		auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
-		_swordLinearDistance = ToolBox::GetDistance(swordPos, targetPosition) - 10.0f;
+		_swordMoveDistance = ToolBox::GetDistance(swordPos, targetPosition) - 10.0f;
 	};
 
 	pattern->SetInitializeLogic(lenearAttackInitLogic);
@@ -3558,9 +3577,9 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 		_freeSwordCollider->GetComponent<Transform>()->SetPosition(colliderNewPosition.m128_f32[0], colliderNewPosition.m128_f32[1], colliderNewPosition.m128_f32[2]);
 
-		_swordLinearDistance -= moveSpeed;
+		_swordMoveDistance -= moveSpeed;
 
-		if (_swordLinearDistance <= 0.0f)
+		if (_swordMoveDistance <= 0.0f)
 		{
 			pattern->DeleteSubObject(_freeSword);
 			return false;
@@ -3779,11 +3798,16 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 	pattern->SetPatternName("SwordHardSwingTwice");
 
-	pattern->SetAnimName("SwordHardSwingTwice").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("SwordHardSwingTwice").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eBox);
 
 	pattern->SetSubObject(_kamenSwordCollider);
-	pattern->SetSubObject(_blade);
+
+	for (auto& index : _blade)
+	{
+		pattern->SetSubObject(index);
+	}
+	
 
 	auto initLogic = [pattern, this]()
 	{
@@ -3791,6 +3815,56 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 		pattern->SetDamage(10.0f);
 
 		_isSwordSecondAttackStart = false;
+
+		for (int i=0; i < _blade.size(); i++)
+		{
+			auto bossDirection = GetDirection();
+
+			_swordDirection = { bossDirection.m128_f32[0], bossDirection.m128_f32[1], bossDirection.m128_f32[2] };
+
+			_swordDirection2 = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _bossTransform->GetRotation().y + 180.0f);
+			
+			auto bossPos = _bossTransform->GetPosition();
+			
+			auto bladeStartPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(bossDirection, 40.0f));
+
+			auto bladeStartPos2 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), 40.0f));
+			
+			if (i == 0)
+			{
+				_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos.m128_f32[0], 15.0f, bladeStartPos.m128_f32[2]);
+				_blade[i]->GetComponent<Transform>()->SetRotation(0.0f, _bossTransform->GetRotation().y, 0.0f);
+			}
+			else
+			{
+				_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos2.m128_f32[0], 30.0f, bladeStartPos2.m128_f32[2]);
+				_blade[i]->GetComponent<Transform>()->SetRotation(30.0f, _bossTransform->GetRotation().y + 180, -10.0f);
+			}
+
+			auto bladePos = _blade[0]->GetComponent<Transform>()->GetPosition();
+			auto bladePos2 = _blade[1]->GetComponent<Transform>()->GetPosition();
+
+			DirectX::XMVECTOR targetPos1 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 1000.0f));
+
+			Navigation::GetInstance().SetSEpos(1, bladePos.x, 0.0f, bladePos.z,
+				targetPos1.m128_f32[0], 0.0f, targetPos1.m128_f32[2]);
+
+			auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
+
+
+			DirectX::XMVECTOR targetPos2 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), 1000.0f));
+
+			Navigation::GetInstance().SetSEpos(1, bladePos2.x, 0.0f, bladePos.z,
+				targetPos2.m128_f32[0], 0.0f, targetPos2.m128_f32[2]);
+
+			auto targetPosition2 = Navigation::GetInstance().FindRaycastPath(1);
+
+			_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) - 5.0f;
+
+			_swordMoveDistance2 = ToolBox::GetDistance(bladePos2, targetPosition2) - 5.0f;
+
+			_isRotateFinish = false;
+		}
 	};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -3803,6 +3877,82 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 		auto nowFrame = animator->GetCurrentFrame();
 
+		auto bladeMesh1 = _blade[0]->GetComponent<MeshRenderer>();
+		auto bladeMesh2 = _blade[1]->GetComponent<MeshRenderer>();
+
+		if (52 < nowFrame && nowFrame < 69)
+		{
+			SetKamenSwordCollider();
+
+			if (nowFrame > 64)
+			{
+				bladeMesh1->SetActive(true);
+			}
+		}
+		else if (82 < nowFrame && nowFrame < 94)
+		{
+			SetKamenSwordCollider();
+
+			if (nowFrame >= 91)
+			{
+				bladeMesh2->SetActive(true);
+			}
+		}
+		else
+		{
+			auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
+
+			pattern->_isColliderActive[index] = false;
+		}
+
+		if (68 < nowFrame && nowFrame < 83)
+		{
+			if (!_isRotateFinish)
+			{
+				auto rotateFinish = RotateClockWise(180.0f, pattern->_speed*13.0f, true);
+
+				_isRotateFinish = rotateFinish;
+			}
+		}
+
+		auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
+		auto moveSpeed = pattern->_speed * bladeSpeed;
+
+		if (bladeMesh1->GetActivated())
+		{
+			if (_swordMoveDistance < 0)
+			{
+				bladeMesh1->SetActive(false);
+			}
+			else
+			{
+				_swordMoveDistance -= moveSpeed;
+
+				auto bladePos1 = _blade[0]->GetComponent<Transform>()->GetPosition();
+
+				auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos1), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
+
+				_blade[0]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos1.y, bladeMove.m128_f32[2]);
+			}
+		}
+		
+		if (bladeMesh2->GetActivated())
+		{
+			if (_swordMoveDistance2 < 0)
+			{
+				bladeMesh2->SetActive(false);
+			}
+			else
+			{
+				_swordMoveDistance2 -= moveSpeed;
+
+				auto bladePos2 = _blade[1]->GetComponent<Transform>()->GetPosition();
+
+				auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos2), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), moveSpeed));
+
+				_blade[1]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos2.y, bladeMove.m128_f32[2]);
+			}
+		}
 
 		if (isAnimationPlaying == false)
 		{
