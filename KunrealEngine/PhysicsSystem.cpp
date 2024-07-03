@@ -62,6 +62,11 @@ void KunrealEngine::PhysicsSystem::Release()
 {
 	/// actor들 release 하는 부분 필요
 
+	for (physx::PxRigidDynamic* actor : _rigidDynamics)
+	{
+		actor->release();
+	}
+
 	_rigidDynamics.clear();
 	_rigidStatics.clear();
 	_dynamicMap.clear();
@@ -200,13 +205,16 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 	for (const auto& pair : _dynamicMap)
 	{
 		physx::PxTransform pxTrans;
-		pxTrans.p = physx::PxVec3(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z);
+		physx::PxVec3 pxPos(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z);
+		physx::PxQuat pxRot = EulerToQuaternion(pair.first->GetOwnerObject()->GetComponent<Transform>()->GetRotation().x, pair.first->GetOwnerObject()->GetComponent<Transform>()->GetRotation().y, pair.first->GetOwnerObject()->GetComponent<Transform>()->GetRotation().z);
 
-		pxTrans.q.x = pair.first->GetColliderQuaternion().x;
-		pxTrans.q.y = pair.first->GetColliderQuaternion().y;
-		pxTrans.q.z = pair.first->GetColliderQuaternion().z;
-		pxTrans.q.w = pair.first->GetColliderQuaternion().w;
+		pxTrans.p = pxPos;
+		pxTrans.q = pxRot;
 
+		if (!pxTrans.isValid())
+		{
+			std::cout << "PHYSX TRANSFORM ERROR" << std::endl;
+		}
 
 		if (!pair.first->GetOwnerObject()->GetActivated())
 		{
@@ -225,20 +233,20 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(Collider* collider)
 	/// attach된 shape의 크기를 직접 변경해주는 함수가 없어서 사이즈 변경 함수가 호출될 때마다 삭제/추가를 반복하도록 만들었음
 	// 붙여줬던 shape를 떼주고
 	this->_dynamicMap.at(collider)->detachShape(*collider->_shape);
-
+	//
 	// 메모리 해제
-	/// detachShape에서 delete까지 해주는 모양이다
-	//static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape->release();
-
+	// detachShape에서 delete까지 해주는 모양이다
+	////static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape->release();
+	//
 	// 크기에 맞게 새로운 shape 생성
 	physx::PxShape* boxShape = _physics->createShape(physx::PxBoxGeometry(
 		collider->GetColliderScale().x / 2.f,
 		collider->GetColliderScale().y / 2.f,
 		collider->GetColliderScale().z / 2.f), *_material);
-
+	
 	// 새롭게 만든 shape 추가
 	this->_dynamicMap.at(collider)->attachShape(*boxShape);
-
+	//
 	// userData 업데이트
 	static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = boxShape;
 }
@@ -269,20 +277,18 @@ void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active
 {
 	if (!active)
 	{
+		physx::PxQuat pxRot = EulerToQuaternion(collider->GetOwnerObject()->GetComponent<Transform>()->GetRotation().x, collider->GetOwnerObject()->GetComponent<Transform>()->GetRotation().y, collider->GetOwnerObject()->GetComponent<Transform>()->GetRotation().z);
+
 		physx::PxTransform pxTrans;
 		pxTrans.p = physx::PxVec3(4000.0f, 4000.0f, 4000.0f);
-
-		pxTrans.q.x = collider->GetColliderQuaternion().x;
-		pxTrans.q.y = collider->GetColliderQuaternion().y;
-		pxTrans.q.z = collider->GetColliderQuaternion().z;
-		pxTrans.q.w = collider->GetColliderQuaternion().w;
+		pxTrans.q = pxRot;
 
 		this->_dynamicMap.at(collider)->setGlobalPose(pxTrans, false);
 	}
 
 	this->_dynamicMap.at(collider)->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, !active);
-	collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, active);
-	collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, active);
+	//collider->_shape->setFlag(physx::PxShapeFlag::eTRIGGER_SHAPE, active);
+	//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, active);
 }
 
 void KunrealEngine::PhysicsSystem::TestFunc()
@@ -376,6 +382,28 @@ KunrealEngine::Collider* KunrealEngine::PhysicsSystem::GetColliderFromDynamic(co
 			return pair.first;
 		}
 	}
+}
+
+
+physx::PxQuat KunrealEngine::PhysicsSystem::EulerToQuaternion(float pitch, float yaw, float roll)
+{
+	pitch *= (physx::PxPi / 180.0f);
+	yaw *= (physx::PxPi / 180.0f);
+	roll *= (physx::PxPi / 180.0f);
+
+	physx::PxQuat qx(pitch, physx::PxVec3(1.0f, 0.0f, 0.0f));
+	physx::PxQuat qy(yaw, physx::PxVec3(0.0f, 1.0f, 0.0f));
+	physx::PxQuat qz(roll, physx::PxVec3(0.0f, 0.0f, 1.0f));
+
+	return qy * qx * qz;
+}
+
+
+void KunrealEngine::PhysicsSystem::ResizeBoxShape(physx::PxShape* shape, const physx::PxVec3& newDimension)
+{
+	physx::PxBoxGeometry newBoxGeometry(newDimension);
+
+	shape->setGeometry(newBoxGeometry);
 }
 
 void KunrealEngine::PhysicsSystem::onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count)
