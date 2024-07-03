@@ -192,7 +192,6 @@ namespace KunrealEngine
 		// 이미 추가된 코루틴인지 확인
 		for (auto& coron : _AddedCoroutines) // 코루틴들의 배열을 순회
 		{
-
 			if (coron.second == coro) // 배열속코루틴의 함수포인터와 coro의 함수 포인터를 비교
 			{
 
@@ -241,13 +240,17 @@ namespace KunrealEngine
 			
 			else if (isdone)
 			{
-				_AddedCoroutines.erase(coroutine->mapKey);
-
 				auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
-				//delete coroutine;
+				
+				if (!coroutine)
+				{
+					return;
+				}
+
+				_AddedCoroutines.erase(coroutine->mapKey);
+				delete coroutine;
 				coroutine = nullptr;
 				_coroutines.erase(iter); // 벡터에서 제거
-			
 			}
 		}
 	}

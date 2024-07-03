@@ -1,4 +1,5 @@
 #include "EngineCore.h"
+#include <DirectXMath.h>
 #include "SceneManager.h"
 #include "Scene.h"
 #include "GameObject.h"
@@ -10,16 +11,10 @@
 #include "Navigation.h"
 #include "ButtonSystem.h"
 #include "EventManager.h"
-
 #include "ComponentHeaders.h"
-
 #include "UIPackageFuntion.hpp"
-
-/// 꼭 지워야해 내 수학라이브러리와 동일한 결과가 나오는지 체크용
-#include <DirectXMath.h>
 #include "ToolBox.h"
 #include "TimeManager.h"
-/// 
 
 KunrealEngine::SceneManager& sceneInstance = KunrealEngine::SceneManager::GetInstance();
 KunrealEngine::TimeManager& timeInstance = KunrealEngine::TimeManager::GetInstance();
@@ -216,14 +211,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	auto list = GRAPHICS->GetCubeMapList();
 	GRAPHICS->SetMainCubeMap(list.back());
 
-	sceneInstance.CreateScene("mapTest2.json");
-	sceneInstance.CreateScene("mapTest3.json");
-	sceneInstance.CreateScene("mapTest4.json");
-	sceneInstance.CreateScene("mapTest6.json");
-
 	sceneInstance.CreateScene("ParticleTest");
-
-
 
 	_timeCount = 0.0f;
 	_timeCountPlayerR = 0.0f;
@@ -257,249 +245,13 @@ bool moveTo = true;
 
 void KunrealEngine::EngineCore::Update()
 {
-	//particleBossSword3->GetComponent<Particle>()->SetParticleSize(5.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 5.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
-	//
-	//POINT particlePoint = {10,0};
-	//POINT particlePoint2 = {10,0};
-	//GameObject* sword = sceneInstance.GetCurrentScene()->GetGameObject("sword2");
-	//
-	// //z 는 조절하지 않는다
-	// //x값을 신경쓰고 y는 튀어오르는 높이  시작지점이 다르면 y를 -로 줘서 아래로 포물선을 그릴수 있음
-	//if (_isBezierStartSetting == false)
-	//{
-	//	//for (auto& bezierObject : _bezierObjectList) // 베지어 곡선 초기 설정
-	//	//{
-	//	//	_bezierPointsList.push_back(BezierSetting(bezierObject));
-	//	//}
+	UpdateParticleTest();
 
-	//	for (auto& ParticleSwordSoul : ParticleSwordSoulList)
-	//	{
-	//		_bezierSwordSoulPointsList.push_back(BezierSetting(ParticleSwordSoul));
-	//	}
-	//	_isBezierStartSetting = true;
-	//}
-
-
-	////for (auto& bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
-	////{	
-	////	Point3D particlePoint;
-	////	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], p3, _timeCount);
-	////	_particlePointList.push_back(particlePoint);
-	////}
-
-	//int bezierPointIndex = 0;
-
-	//for (auto& bezierPoint : _bezierSwordSoulPointsList) // 각 점을 통한 베지어 곡선을 구함
-	//{		
-	//	DirectX::XMFLOAT3 particlePoint;
-	//	DirectX::XMFLOAT3 endPoint;
-
-	//	endPoint = { sword->GetComponent<Transform>()->GetPosition().x, sword->GetComponent<Transform>()->GetPosition().y + 20.f, sword->GetComponent<Transform>()->GetPosition().z };
-	//	
-	//	if (_isSettingTimer == false)
-	//	{
-	//		_timeCount = ToolBox::GetRandomFloat(0.1f, 0.8f);
-
-	//		_timeCountList.push_back(_timeCount);
-	//	}
-	//	
-	//	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], endPoint, _timeCountList[bezierPointIndex]);
-	//	_particleSwordSoulPointList.push_back(particlePoint);
-	//	++bezierPointIndex;
-	//}
-	//_isSettingTimer = true;
-
-	////for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
-	////{
-	////	_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
-	////}
-
-	//for (int i = 0; i < ParticleSwordSoulList.size(); ++i) // 곡선을 따라 이동
-	//{
-	//	ParticleSwordSoulList[i]->GetComponent<Transform>()->SetPosition(_particleSwordSoulPointList[i].x, _particleSwordSoulPointList[i].y, _particleSwordSoulPointList[i].z);
-	//}
-	//
-	////if (_timeCount > 0.7f)
-	////{
-	//
-	//// 파티클 업데이트 테스트 동적으로 값변경이 필요할경우 사용
-
-	//	_timeCount += TimeManager::GetInstance().GetDeltaTime();
-
-
-	//	DirectX::XMFLOAT3 particlePoint3 = {0,0,0};
-	//	DirectX::XMFLOAT3 particlePoint3_2 = {0,0,0};
-
-
-
-	//	GameObject* PlayerE1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE1");
-	//	PlayerE1->GetComponent<Particle>()->SetParticleSize(10 * _timeCount, 10 * _timeCount);
-
-	//	GameObject* PlayerE2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2");
-	//	PlayerE2->GetComponent<Particle>()->SetParticleSize(25 * _timeCount, 25 * _timeCount);
-
-	//	GameObject* PlayerE3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE3");
-	//	PlayerE3->GetComponent<Particle>()->SetParticleSize(25 * _timeCount, 25 * _timeCount);
-
-	//	GameObject* PlayerE2_1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_1"); // 플레이어 e 폭발, 살짝 커졌다가 작아지며 소멸
-	//	PlayerE2_1->GetComponent<Particle>()->SetParticleSize(30 * _timeCount, 30 * _timeCount);
-
-	//	GameObject* PlayerE2_2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_2");
-	//	PlayerE2_2->GetComponent<Particle>()->SetParticleSize(30 * _timeCount, 30 * _timeCount);
-
-
-	//	GameObject* PlayerE2_3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_3");
-	//	PlayerE2_3->GetComponent<Particle>()->SetParticleSize(45 * _timeCount, 45 * _timeCount);
-
-
-	//	// 플레이어 Q 착탄
-
-	//	GameObject* playerQEnd1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerQ1End1");
-	//	playerQEnd1->GetComponent<Particle>()->SetParticleSize(_timeCount * 40, _timeCount * 40);
-	//	//GameObject* playerQEnd2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerQ1End2");
-	//	GameObject* playerQEnd3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerQ1End3");
-	//	playerQEnd3->GetComponent<Particle>()->SetParticleSize(_timeCount * 120, _timeCount * 120);
-
-	//	GameObject* playerREnd1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd1");
-	//	playerREnd1->GetComponent<Particle>()->SetParticleSize(15 - (_timeCountPlayerR * 20), 15 - ( _timeCountPlayerR * 20));
-	//	GameObject* playerREnd2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd2");
-	//	GameObject* playerREnd3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd3");
-	//	playerREnd3->GetComponent<Particle>()->SetParticleSize(60 - (_timeCountPlayerR * 75), 60 - (_timeCountPlayerR * 75));
-	//	GameObject* playerREnd4 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd4");
-
-	//	if (_timeCountPlayerR < 0.2f)
-	//	{
-	//		playerREnd2->GetComponent<Particle>()->SetParticleSize(_timeCountPlayerR * 150, _timeCountPlayerR * 150);
-	//		playerREnd4->GetComponent<Particle>()->SetParticleSize(_timeCountPlayerR * 150, _timeCountPlayerR * 150);
-	//	}
-	//	else
-	//	{
-	//		playerREnd2->GetComponent<Particle>()->SetParticleSize(60 - (_timeCountPlayerR * 80), 60 - (_timeCountPlayerR * 80));
-	//		playerREnd4->GetComponent<Particle>()->SetParticleSize(60 - (_timeCountPlayerR * 80), 60 - (_timeCountPlayerR * 80));
-	//	}
-
-	//	//if (_timeCount > 0.2)
-	//	//{
-	//		_timeCountPlayerR += TimeManager::GetInstance().GetDeltaTime();
-	//		// 3페 충격파
-	//		particleBossDonut1->GetComponent<Particle>()->SetParticleSize(80 + (45 *_timeCountPlayerR * 6), 80 + (45 * _timeCountPlayerR * 6));
-	//		//particleBossDonut2->GetComponent<Particle>()->SetParticleSize(75 + (75 *_timeCountPlayerR * 2), 75 + (75 * _timeCountPlayerR * 2));
-	//		//particleBossDonut3->GetComponent<Particle>()->SetParticleSize(60 + (60 * _timeCountPlayerR * 2), 60 + (60 * _timeCountPlayerR * 2));
-	//		//particleBossDonut4->GetComponent<Particle>()->SetParticleSize(30 - (30 *_timeCountPlayerR), 30 - (30 * _timeCountPlayerR));
-	//		particleBossDonut3->GetComponent<Particle>()->SetParticleSize(75 + (45 *_timeCountPlayerR * 6), 75 + (45 * _timeCountPlayerR * 6));
-	//	//}
-
-
-
-	//	//if (_isBezierTeleportSetting == false)
-	//	//{
-	//	DirectX::XMFLOAT2 bezierTeleport;
-	//	DirectX::XMFLOAT2 teleportPosition = { 0,0 };
-	//	DirectX::XMFLOAT2 bezierTeleport1 = { 10.0f, 10.0f};  // 두 중간점 사이가 좁을 수록 가파른 곡선
-	//	DirectX::XMFLOAT2 bezierTeleport2 = { 20.0f, 20.0f};
-	//	DirectX::XMFLOAT2 bezierTeleportEnd = { 150.0f, 150.0f};
-
-	//	bezierTeleport = BezierPoint2D(teleportPosition, bezierTeleport1, bezierTeleport2, bezierTeleportEnd, _timeCount);
-
-	//	_particleTelepotyPointList.push_back(bezierTeleport);
-
-	//	//	_isBezierTeleportSetting = true;
-	//	//}
-	//	
-	//	bossTeleportAttack1->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
-	//	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x + 20, _particleTelepotyPointList[0].y + 20);
-	//	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x + 20, _particleTelepotyPointList[0].y + 20);
-	//	bossTeleportAttack4->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
-
-	//	
-	//	//DirectX::XMFLOAT3 testEnd;
-	//	//DirectX::XMFLOAT3 testEnd_2;
-	//	//DirectX::XMFLOAT3 testEnd1; // 베지어로 폭발세팅 테스트중
-	//	//DirectX::XMFLOAT3 testEnd2;
-	//	//DirectX::XMFLOAT3 testEnd3;
-
-	//	//testEnd = { 10,10,10 };
-	//	//testEnd_2 = { 15,15,15 };
-	//	//testEnd1 = { 20,20,20 };
-	//	//testEnd2 = { 30,30,30 };
-	//	//testEnd3 = { 70,70,70 };
-
-	//	//particlePoint3 = Bezier(testEnd, testEnd1, testEnd2, testEnd3, _timeCount * 2   );
-	//	//particlePoint3_2 = Bezier(testEnd_2, testEnd1, testEnd2, testEnd3, _timeCount * 2   );
-
-	//	//PlayerE33->GetComponent<Particle>()->SetParticleSize(2 * particlePoint3_2.x, 2 * particlePoint3_2.y);
-	//	//PlayerE2_2->GetComponent<Particle>()->SetParticleSize(1 * particlePoint3.x, 1 * particlePoint3.y);
-	////}
-	////else
-	////{
-	//	for (auto& timeCount : _timeCountList)
-	//	{
-	//		timeCount += TimeManager::GetInstance().GetDeltaTime() / 4;
-	//	}
-	////}
-	//
-	//int timeCountIndex = 0;
-
-	//for (auto& timeCount : _timeCountList)
-	//{
-	//	if (timeCount > 1.0f)
-	//	{
-	//		_bezierSwordSoulPointsList.erase(_bezierSwordSoulPointsList.begin() + timeCountIndex);
-	//		timeCount = 0.0f;
-	//		//_isSettingTimer = false;
-
-	//	ParticleSwordSoulList[timeCountIndex]->GetComponent<Transform>()->SetPosition(sword->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-50.0f, 50.0f),
-	//		sword->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), sword->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-62.0f, 62.0f));
-
-	//	_bezierSwordSoulPointsList.insert(_bezierSwordSoulPointsList.begin() + timeCountIndex ,BezierSetting(ParticleSwordSoulList[timeCountIndex]));
-	//	}
-	//	++timeCountIndex;
-	//}
-
-	//if (_timeCount > 1.0f)
-	//{
-	//	_timeCount = 0.0f;
-	//	_timeCountPlayerR = 0.0f;
-	//}
-
-	////{
-	////	_bezierPointsList.clear();
-	////	
-	////	for (auto bezierObject : _bezierObjectList)
-	////	{
-	////		bezierObject->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f), ToolBox::GetRandomFloat(-62.0f, 62.0f));
-
-	////		_bezierPointsList.push_back(BezierSetting(bezierObject));
-	////	}
-
-	////
-	////}
-
-	//
-	//_particlePointList.clear(); // 파티클 포인트 초기화 반드시 해줘야함
-	//_particleSwordSoulPointList.clear();
-	//_particleTelepotyPointList.clear();
-
-	CheckMousePosition();
 	inputInstance->Update(GetDeltaTime());
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
-
-	if (this->_isEditor)
-	{
-		inputInstance->UpdateEditorMousePos(_editorMousepos);
-		GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
-	}
-	else
-	{
-		inputInstance->UpdateEditorMousePos(_finalMousePosition);
-		GraphicsSystem::GetInstance().Update(_finalMousePosition.x, _finalMousePosition.y);
-	}
+	CheckMousePosition();
 	
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
-
-	//std::pair<DirectX::XMFLOAT3, DirectX::XMFLOAT3> pos = kamen->GetComponent<Kamen>()->GetBossPosition();
-	//navigationInstance.MoveTempObstacle(pos.first, pos.second);
-
 
 	// UI 실행,종료
 	if (inputInstance->KeyDown(KEY::ESCAPE))
@@ -526,122 +278,10 @@ void KunrealEngine::EngineCore::Update()
 		//};
 		//Startcoroutine(camshake);
 	}
-
-	if (inputInstance->KeyUp(KEY::CAPSLOCK))
-	{
-		//sceneInstance.GetCurrentScene()->GetGameObject("BaeSung")->AddComponent<BoxCollider>();
-		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
-	}
 	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
-	//cursorimage->SetPosition(_ingameMouseX, _ingameMouseY);
-	//cursorimage->SetScale(0.9 * 0.1, 1.6 * 0.1);
-
-	//spider->GetComponent<Animator>()->Play("Idle", 70.f, true);
-
-	auto gameObjectList = GetCurrentScene()->GetObjectList();
-
-
-	if (GetCurrentScene()->GetGameObject("RuneStoneGolem") != nullptr)
-	{
-		if (GetCurrentScene()->GetGameObject("RuneStoneGolem")->GetComponent<BoxCollider>()->IsCollided() == true)
-		{
-			if (GetCurrentScene()->GetGameObject("RuneStoneGolem")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
-			{
-				ChangeScene("mapTest2.json");
-			}
-		}
-	}
-
-
-	if (GetCurrentScene()->GetGameObject("RuneStoneEnte") != nullptr)
-	{
-		if (GetCurrentScene()->GetGameObject("RuneStoneEnte")->GetComponent<BoxCollider>()->IsCollided() == true)
-		{
-			if (GetCurrentScene()->GetGameObject("RuneStoneEnte")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
-			{
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-52, 6, -72);
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(6.0);
-				//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest3.json");
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest3.json");
-				ChangeScene("mapTest3.json");
-				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 0);
-
-				navigationInstance.LoadAll("Resources/Navimesh/3-p.bin", 1);
-
-				std::vector<DirectX::XMFLOAT3> vertices;
-				std::vector<unsigned int> indices;
-				navigationInstance.GetNavmeshRenderInfo(1, vertices, indices);
-				GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
-
-			}
-		}
-	}
-	
-		if (GetCurrentScene()->GetGameObject("RuneStoneKamen") != nullptr)
-	{
-		if (GetCurrentScene()->GetGameObject("RuneStoneKamen")->GetComponent<BoxCollider>()->IsCollided() == true)
-		{
-			if (GetCurrentScene()->GetGameObject("RuneStoneKamen")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
-			{
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
-				//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
-				KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
-				ChangeScene("mapTest4.json");
-
-				navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
-
-				navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
-
-				std::vector<DirectX::XMFLOAT3> vertices;
-				std::vector<unsigned int> indices;
-				navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
-				GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
-
-			}
-		}
-	}
-
-		//if (InputSystem::GetInstance()->KeyUp(KEY::H))
-		//{
-		//	KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(-32, 2.2, -72);
-		//	KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.2f);
-		//	//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("mapTest4.json");
-		//	KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("mapTest4.json");
-		//	ChangeScene("mapTest4.json");
-
-		//	navigationInstance.LoadAll("Resources/Navimesh/4-p.bin", 0);
-
-		//	navigationInstance.LoadAll("Resources/Navimesh/4-b.bin", 1);
-
-		//	std::vector<DirectX::XMFLOAT3> vertices;
-		//	std::vector<unsigned int> indices;
-		//	navigationInstance.GetNavmeshRenderInfo(0, vertices, indices);
-		//	GRAPHICS->CreateMapDebug("navimesh4_4", vertices, indices);
-		//}
-
-	if (GetCurrentScene()->GetGameObject("RuneStoneArachne") != nullptr)
-	{
-		if (GetCurrentScene()->GetGameObject("RuneStoneArachne")->GetComponent<BoxCollider>()->IsCollided() == true)
-		{
-			if (GetCurrentScene()->GetGameObject("RuneStoneArachne")->GetComponent<BoxCollider>()->GetTargetObject() == GetCurrentScene()->GetGameObject("Player") && InputSystem::GetInstance()->KeyUp(KEY::G))
-			{
-				ChangeScene("mapTest6.json");
-			}
-		}
-	}
-
-	if (InputSystem::GetInstance()->KeyUp(KEY::CAPSLOCK))
-	{
-		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Transform>()->SetPosition(0, 4, 0);
-		//KunrealEngine::GetCurrentScene()->GetGameObject("Player")->MoveToScene("Main");
-		KunrealEngine::GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->MoveToScene("Main");
-		ChangeScene("Main");
-		navigationInstance.LoadAll("Resources/Navimesh/0-p.bin", 0);
-	}
 	Updatecoroutine();
 }
 
@@ -649,6 +289,8 @@ void KunrealEngine::EngineCore::LateUpdate()
 {
 	sceneInstance.LateUpdateScene(sceneInstance.GetCurrentScene());
 	GRAPHICS->Update();	// 그래픽스쪽 카메라 업데이트 관련
+
+	PhysicsSystem::GetInstance().PlayerForceUpdate();
 }
 
 void KunrealEngine::EngineCore::UpdateAll()
@@ -941,6 +583,17 @@ void KunrealEngine::EngineCore::CheckMousePosition()
 
 		this->_isEditor = true;
 	}
+
+	if (this->_isEditor)
+	{
+		inputInstance->UpdateEditorMousePos(_editorMousepos);
+		GraphicsSystem::GetInstance().Update(_editorMousepos.x, _editorMousepos.y);
+	}
+	else
+	{
+		inputInstance->UpdateEditorMousePos(_finalMousePosition);
+		GraphicsSystem::GetInstance().Update(_finalMousePosition.x, _finalMousePosition.y);
+	}
 }
 
 void KunrealEngine::EngineCore::MakeObstacle()
@@ -998,23 +651,6 @@ void KunrealEngine::EngineCore::ParticleTest()
 	bossMap->GetComponent<MeshRenderer>()->SetMeshObject("MapMesh/MapMesh");
 	bossMap->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	bossMap->GetComponent<Transform>()->SetPosition(0.0f, -10.0f, 0.0f);
-
-	// Plane 
-	//auto plane = sceneInstance.GetCurrentScene()->CreateObject("plane");
-	//plane->AddComponent<MeshRenderer>();
-	//plane->GetComponent<MeshRenderer>()->SetMeshObject("cube/cube", true);
-	//plane->GetComponent<MeshRenderer>()->SetDiffuseTexture(0, "floor.dds");
-	////plane->GetComponent<MeshRenderer>()->SetNormalTexture(0, "floor_nmap.dds");
-	//plane->GetComponent<Transform>()->SetScale(100.0f, 1.0f, 100.0f);
-	//plane->GetComponent<Transform>()->SetPosition(0, -7.0f, 0);
-	//plane->GetComponent<MeshRenderer>()->SetShadowState(false);
-	//plane->GetComponent<MeshRenderer>()->SetIsDissolve(true);
-	//_timeMan -= 0.01f;
-	//if (_timeMan <= 0.0f)
-	//{
-	//	_timeMan = 1.0f;
-	//}
-	//plane->GetComponent<MeshRenderer>()->SetDissolve(0.5f);
 
 	// light test
 	DirectX::XMFLOAT4 diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
@@ -2252,7 +1888,224 @@ std::vector<DirectX::XMFLOAT3> KunrealEngine::EngineCore::BezierSetting(GameObje
 	return bezierPosintList;
 }
 
-float KunrealEngine::EngineCore::GetDeltaTime()
+void KunrealEngine::EngineCore::UpdateParticleTest()
 {
-	return timeInstance.GetDeltaTime();
+	//particleBossSword3->GetComponent<Particle>()->SetParticleSize(5.f * ToolBox::GetRandomFloat(0.3f, 1.0f), 5.0f * ToolBox::GetRandomFloat(0.1f, 1.0f));
+	//
+	//POINT particlePoint = {10,0};
+	//POINT particlePoint2 = {10,0};
+	//GameObject* sword = sceneInstance.GetCurrentScene()->GetGameObject("sword2");
+	//
+	// //z 는 조절하지 않는다
+	// //x값을 신경쓰고 y는 튀어오르는 높이  시작지점이 다르면 y를 -로 줘서 아래로 포물선을 그릴수 있음
+	//if (_isBezierStartSetting == false)
+	//{
+	//	//for (auto& bezierObject : _bezierObjectList) // 베지어 곡선 초기 설정
+	//	//{
+	//	//	_bezierPointsList.push_back(BezierSetting(bezierObject));
+	//	//}
+
+	//	for (auto& ParticleSwordSoul : ParticleSwordSoulList)
+	//	{
+	//		_bezierSwordSoulPointsList.push_back(BezierSetting(ParticleSwordSoul));
+	//	}
+	//	_isBezierStartSetting = true;
+	//}
+
+
+	////for (auto& bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
+	////{	
+	////	Point3D particlePoint;
+	////	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], p3, _timeCount);
+	////	_particlePointList.push_back(particlePoint);
+	////}
+
+	//int bezierPointIndex = 0;
+
+	//for (auto& bezierPoint : _bezierSwordSoulPointsList) // 각 점을 통한 베지어 곡선을 구함
+	//{		
+	//	DirectX::XMFLOAT3 particlePoint;
+	//	DirectX::XMFLOAT3 endPoint;
+
+	//	endPoint = { sword->GetComponent<Transform>()->GetPosition().x, sword->GetComponent<Transform>()->GetPosition().y + 20.f, sword->GetComponent<Transform>()->GetPosition().z };
+	//	
+	//	if (_isSettingTimer == false)
+	//	{
+	//		_timeCount = ToolBox::GetRandomFloat(0.1f, 0.8f);
+
+	//		_timeCountList.push_back(_timeCount);
+	//	}
+	//	
+	//	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], endPoint, _timeCountList[bezierPointIndex]);
+	//	_particleSwordSoulPointList.push_back(particlePoint);
+	//	++bezierPointIndex;
+	//}
+	//_isSettingTimer = true;
+
+	////for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
+	////{
+	////	_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
+	////}
+
+	//for (int i = 0; i < ParticleSwordSoulList.size(); ++i) // 곡선을 따라 이동
+	//{
+	//	ParticleSwordSoulList[i]->GetComponent<Transform>()->SetPosition(_particleSwordSoulPointList[i].x, _particleSwordSoulPointList[i].y, _particleSwordSoulPointList[i].z);
+	//}
+	//
+	////if (_timeCount > 0.7f)
+	////{
+	//
+	//// 파티클 업데이트 테스트 동적으로 값변경이 필요할경우 사용
+
+	//	_timeCount += TimeManager::GetInstance().GetDeltaTime();
+	//	_timeCountPlayerR += TimeManager::GetInstance().GetDeltaTime();
+
+	//	DirectX::XMFLOAT3 particlePoint3 = {0,0,0};
+	//	DirectX::XMFLOAT3 particlePoint3_2 = {0,0,0};
+
+
+	//	GameObject* test = sceneInstance.GetCurrentScene()->GetGameObject("Particle16");
+
+	//	test->GetComponent<Particle>()->SetParticleSize(100 * _timeCount, 100 * _timeCount);
+	//	//test->GetComponent<Transform>()->SetRotation(90.0f, 0, 0);
+	//	test->GetComponent<Particle>()->SetParticleRotation(90.0f, 0.0f, 0.0f);
+
+	//	GameObject* PlayerE1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE1");
+	//	PlayerE1->GetComponent<Particle>()->SetParticleSize(20 * _timeCount, 20 * _timeCount);
+
+	//	GameObject* PlayerE2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2");
+	//	PlayerE2->GetComponent<Particle>()->SetParticleSize(50 * _timeCount, 50 * _timeCount);
+
+	//	GameObject* PlayerE3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE3");
+	//	PlayerE3->GetComponent<Particle>()->SetParticleSize(50 * _timeCount, 50 * _timeCount);
+
+	//	GameObject* PlayerE2_1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_1");
+	//	PlayerE2_1->GetComponent<Particle>()->SetParticleSize(20 * _timeCount, 20 * _timeCount);
+
+	//	GameObject* PlayerE2_2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_2");
+	//	PlayerE2_2->GetComponent<Particle>()->SetParticleSize(40 * _timeCount, 40 * _timeCount);
+
+
+	//	GameObject* PlayerE2_3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerE2_3");
+	//	PlayerE2_3->GetComponent<Particle>()->SetParticleSize(60 * _timeCount, 60 * _timeCount);
+
+	//	GameObject* PlayerE33= sceneInstance.GetCurrentScene()->GetGameObject("PlayerE3_1");
+	//	PlayerE33->GetComponent<Particle>()->SetParticleSize(60 * _timeCount, 60 * _timeCount);
+
+	//	// 플레이어 Q 착탄
+
+	//	GameObject* playerQEnd1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerQ1End1");
+	//	playerQEnd1->GetComponent<Particle>()->SetParticleSize(_timeCount * 40, _timeCount * 40);
+	//	//GameObject* playerQEnd2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerQ1End2");
+	//	GameObject* playerQEnd3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerQ1End3");
+	//	playerQEnd3->GetComponent<Particle>()->SetParticleSize(_timeCount * 120, _timeCount * 120);
+
+	//	GameObject* playerREnd1 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd1");
+	//	playerREnd1->GetComponent<Particle>()->SetParticleSize(15 - (_timeCountPlayerR * 20), 15 - ( _timeCountPlayerR * 20));
+	//	GameObject* playerREnd2 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd2");
+	//	GameObject* playerREnd3 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd3");
+	//	playerREnd3->GetComponent<Particle>()->SetParticleSize(60 - (_timeCountPlayerR * 75), 60 - (_timeCountPlayerR * 75));
+	//	GameObject* playerREnd4 = sceneInstance.GetCurrentScene()->GetGameObject("PlayerREnd4");
+
+	//	if (_timeCountPlayerR < 0.2f)
+	//	{
+	//		playerREnd2->GetComponent<Particle>()->SetParticleSize(_timeCountPlayerR * 150, _timeCountPlayerR * 150);
+	//		playerREnd4->GetComponent<Particle>()->SetParticleSize(_timeCountPlayerR * 150, _timeCountPlayerR * 150);
+	//	}
+	//	else
+	//	{
+	//		playerREnd2->GetComponent<Particle>()->SetParticleSize(60 - (_timeCountPlayerR * 80), 60 - (_timeCountPlayerR * 80));
+	//		playerREnd4->GetComponent<Particle>()->SetParticleSize(60 - (_timeCountPlayerR * 80), 60 - (_timeCountPlayerR * 80));
+	//	}
+
+	//	//if (_isBezierTeleportSetting == false)
+	//	//{
+	//	DirectX::XMFLOAT2 bezierTeleport;
+	//	DirectX::XMFLOAT2 teleportPosition = { 0,0 };
+	//	DirectX::XMFLOAT2 bezierTeleport1 = { 10.0f, 10.0f};  // 두 중간점 사이가 좁을 수록 가파른 곡선
+	//	DirectX::XMFLOAT2 bezierTeleport2 = { 20.0f, 20.0f};
+	//	DirectX::XMFLOAT2 bezierTeleportEnd = { 150.0f, 150.0f};
+
+	//	bezierTeleport = BezierPoint2D(teleportPosition, bezierTeleport1, bezierTeleport2, bezierTeleportEnd, _timeCount);
+
+	//	_particleTelepotyPointList.push_back(bezierTeleport);
+
+	//	//	_isBezierTeleportSetting = true;
+	//	//}
+	//	
+	//	bossTeleportAttack1->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
+	//	bossTeleportAttack2->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x + 20, _particleTelepotyPointList[0].y + 20);
+	//	bossTeleportAttack3->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x + 20, _particleTelepotyPointList[0].y + 20);
+	//	bossTeleportAttack4->GetComponent<Particle>()->SetParticleSize(_particleTelepotyPointList[0].x, _particleTelepotyPointList[0].y);
+
+	//	
+	//	//DirectX::XMFLOAT3 testEnd;
+	//	//DirectX::XMFLOAT3 testEnd_2;
+	//	//DirectX::XMFLOAT3 testEnd1; // 베지어로 폭발세팅 테스트중
+	//	//DirectX::XMFLOAT3 testEnd2;
+	//	//DirectX::XMFLOAT3 testEnd3;
+
+	//	//testEnd = { 10,10,10 };
+	//	//testEnd_2 = { 15,15,15 };
+	//	//testEnd1 = { 20,20,20 };
+	//	//testEnd2 = { 30,30,30 };
+	//	//testEnd3 = { 70,70,70 };
+
+	//	//particlePoint3 = Bezier(testEnd, testEnd1, testEnd2, testEnd3, _timeCount * 2   );
+	//	//particlePoint3_2 = Bezier(testEnd_2, testEnd1, testEnd2, testEnd3, _timeCount * 2   );
+
+	//	//PlayerE33->GetComponent<Particle>()->SetParticleSize(2 * particlePoint3_2.x, 2 * particlePoint3_2.y);
+	//	//PlayerE2_2->GetComponent<Particle>()->SetParticleSize(1 * particlePoint3.x, 1 * particlePoint3.y);
+	////}
+	////else
+	////{
+	//	for (auto& timeCount : _timeCountList)
+	//	{
+	//		timeCount += TimeManager::GetInstance().GetDeltaTime() / 4;
+	//	}
+	////}
+	//
+	//int timeCountIndex = 0;
+
+	//for (auto& timeCount : _timeCountList)
+	//{
+	//	if (timeCount > 1.0f)
+	//	{
+	//		_bezierSwordSoulPointsList.erase(_bezierSwordSoulPointsList.begin() + timeCountIndex);
+	//		timeCount = 0.0f;
+	//		//_isSettingTimer = false;
+
+	//	ParticleSwordSoulList[timeCountIndex]->GetComponent<Transform>()->SetPosition(sword->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-50.0f, 50.0f),
+	//		sword->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), sword->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-62.0f, 62.0f));
+
+	//	_bezierSwordSoulPointsList.insert(_bezierSwordSoulPointsList.begin() + timeCountIndex ,BezierSetting(ParticleSwordSoulList[timeCountIndex]));
+	//	}
+	//	++timeCountIndex;
+	//}
+
+	//if (_timeCount > 0.2f)
+	//{
+	//	_timeCount = 0.0f;
+	//}
+	//if (_timeCountPlayerR > 0.8f)
+	//{
+	//	_timeCountPlayerR = 0.0f;
+	//}
+	////{
+	////	_bezierPointsList.clear();
+	////	
+	////	for (auto bezierObject : _bezierObjectList)
+	////	{
+	////		bezierObject->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f), ToolBox::GetRandomFloat(-62.0f, 62.0f));
+
+	////		_bezierPointsList.push_back(BezierSetting(bezierObject));
+	////	}
+
+	////
+	////}
+
+	//
+	//_particlePointList.clear(); // 파티클 포인트 초기화 반드시 해줘야함
+	//_particleSwordSoulPointList.clear();
+	//_particleTelepotyPointList.clear();
 }

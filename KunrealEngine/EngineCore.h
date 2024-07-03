@@ -97,15 +97,11 @@ namespace KunrealEngine
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	
 		GInterface::GraphicsInterface* _gInterface;
-		
-
 
 		/// 임시용 이미지 컴포넌트
 		GInterface::GraphicsImage* cursorimage;
 
-	/// 임시로 델타타임
-	public:
-		float GetDeltaTime();
+		void UpdateParticleTest();
 
 	private:
 		// 인게임 마우스 포지션
@@ -116,8 +112,6 @@ namespace KunrealEngine
 		POINT _editorMousepos = {-1, -1};
 
 		POINT _finalMousePosition = { 0,0 };
-
-		float _timeMan = 1.0f;
 
 		bool _isEditor;			// 에디터 실행인지
 	};
