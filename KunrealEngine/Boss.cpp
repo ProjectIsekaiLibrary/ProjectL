@@ -586,6 +586,11 @@ void KunrealEngine::Boss::CoreAttack()
 
 void KunrealEngine::Boss::SpecialAttack()
 {
+	if (_specialPattern.empty())
+	{
+		return;
+	}
+
 	if (!_canPlaySpecialPattern)
 	{
 		return;
@@ -1444,6 +1449,19 @@ bool KunrealEngine::Boss::RotateClockWise(float rotateSpeed, bool isClockWise)
 	else
 	{
 		return LookAtPlayer(-360.0f, rotateSpeed);
+	}
+}
+
+
+bool KunrealEngine::Boss::RotateClockWise(float goalAngle, float rotateSpeed, bool isClockWise)
+{
+	if (isClockWise)
+	{
+		return LookAtPlayer(goalAngle, rotateSpeed);
+	}
+	else
+	{
+		return LookAtPlayer(-goalAngle, rotateSpeed);
 	}
 }
 
