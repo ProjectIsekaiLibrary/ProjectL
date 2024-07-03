@@ -26,11 +26,12 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowDepthMap(nullptr),
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
-	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr)
+	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
+	_blurTexture(nullptr), _blurGrayTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		_backGroundColor[i] = 1.0f;
+		_backGroundColor[i] = 0.0f;
 	}
 
 	_shadowBuffer = new ShadowBuffer(_shadowWidth, _shadowHeight);
@@ -48,11 +49,11 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
-	_grayScaleTexture(nullptr)
+	_blurTexture(nullptr), _blurGrayTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
-		_backGroundColor[i] = 1.0f;
+		_backGroundColor[i] = 0.0f;
 	}
 
 	_shadowBuffer = new ShadowBuffer(_shadowWidth, _shadowHeight);
@@ -126,7 +127,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
 
-	_grayScaleTexture->SetResource(_deferredBuffer->GetSRVForBloom(2));
+	_blurTexture->SetResource(_deferredBuffer->GetSRVForBloom(1));
+	_blurGrayTexture->SetResource(_deferredBuffer->GetSRVForBloom(2));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -276,7 +278,9 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 
 	_finalTexture = effect->GetVariableByName("FinalTexture")->AsShaderResource();
 
-	_grayScaleTexture = effect->GetVariableByName("GrayScaleTexture")->AsShaderResource();
+	_blurTexture = effect->GetVariableByName("BlurTexture")->AsShaderResource();
+
+	_blurGrayTexture = effect->GetVariableByName("BlurGrayTexture")->AsShaderResource();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
