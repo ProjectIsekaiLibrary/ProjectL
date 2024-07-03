@@ -73,7 +73,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill1_cool = scene.GetCurrentScene()->CreateObject("_ui_skill1_cool");
 	_ui_skill1_cool->SetParent(_battleuibox);
 	_ui_skill1_cool->AddComponent<ImageRenderer>();
-	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
 	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetPosition(708.f, 970.f);
 	_ui_skill1_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
@@ -87,7 +87,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill2_cool = scene.GetCurrentScene()->CreateObject("_ui_skill2_cool");
 	_ui_skill2_cool->SetParent(_battleuibox);
 	_ui_skill2_cool->AddComponent<ImageRenderer>();
-	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
 	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
 	_ui_skill2_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
@@ -101,7 +101,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill3_cool = scene.GetCurrentScene()->CreateObject("_ui_skill3_cool");
 	_ui_skill3_cool->SetParent(_battleuibox);
 	_ui_skill3_cool->AddComponent<ImageRenderer>();
-	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
 	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
 	_ui_skill3_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
@@ -115,7 +115,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill4_cool = scene.GetCurrentScene()->CreateObject("_ui_skill4_cool");
 	_ui_skill4_cool->SetParent(_battleuibox);
 	_ui_skill4_cool->AddComponent<ImageRenderer>();
-	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
 	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
 	_ui_skill4_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
