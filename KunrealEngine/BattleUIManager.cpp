@@ -4,7 +4,7 @@
 #include "PlayerAbility.h"
 
 KunrealEngine::BattleUIManager::BattleUIManager()
-	:_bosshpsize(0.1f), _playerhpsize(0.1f), _skillcoolsize(1.21f)
+	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.21f)
 {
 	_eventmanager = &KunrealEngine::EventManager::GetInstance();
 }
@@ -17,121 +17,214 @@ void KunrealEngine::BattleUIManager::Initialize()
 {
 	KunrealEngine::SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
 
-	KunrealEngine::GameObject* background;			// 전투 UI 배경
-	KunrealEngine::GameObject* _bosshp_barback;		// 보스 체력바 배경
-	KunrealEngine::GameObject* _playerhp_barback;	// 플레이어 체력바 배경
-	KunrealEngine::GameObject* _ui_skill1;		// 1번 스킬
-	KunrealEngine::GameObject* _ui_skill2;		// 2번 스킬
-	KunrealEngine::GameObject* _ui_skill3;		// 3번 스킬
-	KunrealEngine::GameObject* _ui_skill4;		// 4번 스킬
+	KunrealEngine::GameObject* player_background;			// 전투 UI 배경
+	KunrealEngine::GameObject* player_background1;			// 전투 UI 배경
+	KunrealEngine::GameObject* player_background2;			// 전투 UI 배경
+
+	KunrealEngine::GameObject* boss_background;			// 전투 UI 배경
+	KunrealEngine::GameObject* boss_background1;			// 전투 UI 배경
+	KunrealEngine::GameObject* boss_background2;			// 전투 UI 배경
+
+	KunrealEngine::GameObject* bosshp_barback;		// 보스 체력바 배경
+	KunrealEngine::GameObject* bosshp_background;	// 플레이어 체력바 배경
+	KunrealEngine::GameObject* bosshp_background1;	// 플레이어 체력바 배경
+	KunrealEngine::GameObject* bosshp_background2;	// 플레이어 체력바 배경
+
+	KunrealEngine::GameObject* playerhp_barback;	// 플레이어 체력바 배경
+	KunrealEngine::GameObject* playerhp_background;	// 플레이어 체력바 배경
+	KunrealEngine::GameObject* playerhp_background1;	// 플레이어 체력바 배경
+	KunrealEngine::GameObject* playerhp_background2;	// 플레이어 체력바 배경
+
+	KunrealEngine::GameObject* ui_skill1;		// 1번 스킬
+	KunrealEngine::GameObject* ui_skill2;		// 2번 스킬
+	KunrealEngine::GameObject* ui_skill3;		// 3번 스킬
+	KunrealEngine::GameObject* ui_skill4;		// 4번 스킬
 
 	_battleuibox = this->GetOwner();
 
-	background = scene.GetCurrentScene()->CreateObject("background");
-	background->SetParent(_battleuibox);
-	background->AddComponent<ImageRenderer>();
-	background->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	background->GetComponent<ImageRenderer>()->SetPosition(460.0f, 815.0f);
-	background->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	player_background = scene.GetCurrentScene()->CreateObject("background");
+	player_background->SetParent(_battleuibox);
+	player_background->AddComponent<ImageRenderer>();
+	player_background->GetComponent<ImageRenderer>()->SetImage("ui/freebox-middle.png");
+	player_background->GetComponent<ImageRenderer>()->SetPosition(673.0f, 933.0f);
+	player_background->GetComponent<Transform>()->SetScale(2.81f, 0.5f, 1.0f);
 
-	_ui_skill1 = scene.GetCurrentScene()->CreateObject("ui_skill1");
-	_ui_skill1->SetParent(_battleuibox);
-	_ui_skill1->AddComponent<ImageRenderer>();
-	_ui_skill1->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_ui_skill1->GetComponent<ImageRenderer>()->SetPosition(570.f, 910.f);
-	_ui_skill1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	player_background1 = scene.GetCurrentScene()->CreateObject("background");
+	player_background1->SetParent(_battleuibox);
+	player_background1->AddComponent<ImageRenderer>();
+	player_background1->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideL.png");
+	player_background1->GetComponent<ImageRenderer>()->SetPosition(651.0f, 933.0f);
+	player_background1->GetComponent<Transform>()->SetScale(0.5f, 0.5f, 1.0f);
+
+	player_background2 = scene.GetCurrentScene()->CreateObject("background");
+	player_background2->SetParent(_battleuibox);
+	player_background2->AddComponent<ImageRenderer>();
+	player_background2->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideR.png");
+	player_background2->GetComponent<ImageRenderer>()->SetPosition(1268.0f, 933.0f);
+	player_background2->GetComponent<Transform>()->SetScale(0.5f, 0.5f, 1.0f);
+
+	ui_skill1 = scene.GetCurrentScene()->CreateObject("ui_skill1");
+	ui_skill1->SetParent(_battleuibox);
+	ui_skill1->AddComponent<ImageRenderer>();
+	ui_skill1->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill1->GetComponent<ImageRenderer>()->SetPosition(708.0f, 970.f);
+	ui_skill1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill1_cool = scene.GetCurrentScene()->CreateObject("_ui_skill1_cool");
 	_ui_skill1_cool->SetParent(_battleuibox);
 	_ui_skill1_cool->AddComponent<ImageRenderer>();
-	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetImage("black_sheet.png");
-	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetPosition(570.f, 910.f);
-	_ui_skill1_cool->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetPosition(708.f, 970.f);
+	_ui_skill1_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	_ui_skill2 = scene.GetCurrentScene()->CreateObject("ui_skill2");
-	_ui_skill2->SetParent(_battleuibox);
-	_ui_skill2->AddComponent<ImageRenderer>();
-	_ui_skill2->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_ui_skill2->GetComponent<ImageRenderer>()->SetPosition(724.f, 910.f);
-	_ui_skill2->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	ui_skill2 = scene.GetCurrentScene()->CreateObject("ui_skill2");
+	ui_skill2->SetParent(_battleuibox);
+	ui_skill2->AddComponent<ImageRenderer>();
+	ui_skill2->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill2->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	ui_skill2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill2_cool = scene.GetCurrentScene()->CreateObject("_ui_skill2_cool");
 	_ui_skill2_cool->SetParent(_battleuibox);
 	_ui_skill2_cool->AddComponent<ImageRenderer>();
-	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetImage("black_sheet.png");
-	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetPosition(724.f, 910.f);
-	_ui_skill2_cool->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	_ui_skill2_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	_ui_skill3 = scene.GetCurrentScene()->CreateObject("ui_skill3");
-	_ui_skill3->SetParent(_battleuibox);
-	_ui_skill3->AddComponent<ImageRenderer>();
-	_ui_skill3->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_ui_skill3->GetComponent<ImageRenderer>()->SetPosition(880.f, 910.f);
-	_ui_skill3->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	ui_skill3 = scene.GetCurrentScene()->CreateObject("ui_skill3");
+	ui_skill3->SetParent(_battleuibox);
+	ui_skill3->AddComponent<ImageRenderer>();
+	ui_skill3->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill3->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	ui_skill3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill3_cool = scene.GetCurrentScene()->CreateObject("_ui_skill3_cool");
 	_ui_skill3_cool->SetParent(_battleuibox);
 	_ui_skill3_cool->AddComponent<ImageRenderer>();
-	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetImage("black_sheet.png");
-	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetPosition(880.f, 910.f);
-	_ui_skill3_cool->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	_ui_skill3_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	_ui_skill4 = scene.GetCurrentScene()->CreateObject("ui_skill4");
-	_ui_skill4->SetParent(_battleuibox);
-	_ui_skill4->AddComponent<ImageRenderer>();
-	_ui_skill4->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1035.f, 910.f);
-	_ui_skill4->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	ui_skill4 = scene.GetCurrentScene()->CreateObject("ui_skill4");
+	ui_skill4->SetParent(_battleuibox);
+	ui_skill4->AddComponent<ImageRenderer>();
+	ui_skill4->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	ui_skill4->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill4_cool = scene.GetCurrentScene()->CreateObject("_ui_skill4_cool");
 	_ui_skill4_cool->SetParent(_battleuibox);
 	_ui_skill4_cool->AddComponent<ImageRenderer>();
-	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetImage("black_sheet.png");
-	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetPosition(1035.f, 910.f);
-	_ui_skill4_cool->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetImage("ui/black_sheet.png");
+	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	_ui_skill4_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_potion = scene.GetCurrentScene()->CreateObject("ui_skill5");
 	_potion->SetParent(_battleuibox);
 	_potion->AddComponent<ImageRenderer>();
-	_potion->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_potion->GetComponent<ImageRenderer>()->SetPosition(1310.f, 940.f);
-	_potion->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_potion->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
+	_potion->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
+	_potion->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
 
 	_dash = scene.GetCurrentScene()->CreateObject("ui_skill6");
 	_dash->SetParent(_battleuibox);
 	_dash->AddComponent<ImageRenderer>();
-	_dash->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_dash->GetComponent<ImageRenderer>()->SetPosition(1200.f, 940.f);
-	_dash->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	_dash->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
+	_dash->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
+	_dash->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
 
+	/// player
+	playerhp_background = scene.GetCurrentScene()->CreateObject("_playerhp_background");
+	playerhp_background->SetParent(_battleuibox);
+	playerhp_background->AddComponent<ImageRenderer>();
+	playerhp_background->GetComponent<ImageRenderer>()->SetImage("ui/Gauge-middle.png");
+	playerhp_background->GetComponent<ImageRenderer>()->SetPosition(689.0f, 950.f);
+	playerhp_background->GetComponent<Transform>()->SetScale(32.14, 1.0f, 0.1f);
 
 	_playerhp_bar_downGauge = scene.GetCurrentScene()->CreateObject("playerhp_bar");
 	_playerhp_bar_downGauge->SetParent(_battleuibox);
 	_playerhp_bar_downGauge->AddComponent<ImageRenderer>();
-	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("ui/volume-in.png");
-	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(500.f, 850.f);
-	_playerhp_bar_downGauge->GetComponent<Transform>()->SetScale(_playerhpsize, 0.1f, 0.1f);
+	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("ui/GaugeFillY-middle.png");
+	_playerhp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(678.0f, 954.f);
+	_playerhp_bar_downGauge->GetComponent<Transform>()->SetScale(_playerhpsize, 1.0f, 0.1f);
 
 	_playerhp_bar = scene.GetCurrentScene()->CreateObject("playerhp_bar");
 	_playerhp_bar->SetParent(_battleuibox);
 	_playerhp_bar->AddComponent<ImageRenderer>();
-	_playerhp_bar->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_playerhp_bar->GetComponent<ImageRenderer>()->SetPosition(500.f, 850.f);
-	_playerhp_bar->GetComponent<Transform>()->SetScale(_playerhpsize, 0.1f, 0.1f);
+	_playerhp_bar->GetComponent<ImageRenderer>()->SetImage("ui/GaugeFillR-middle.png");
+	_playerhp_bar->GetComponent<ImageRenderer>()->SetPosition(678.0f, 954.f);
+	_playerhp_bar->GetComponent<Transform>()->SetScale(_playerhpsize, 1.0f, 0.1f);
+
+	playerhp_background1 = scene.GetCurrentScene()->CreateObject("backgroundL");
+	playerhp_background1->SetParent(_battleuibox);
+	playerhp_background1->AddComponent<ImageRenderer>();
+	playerhp_background1->GetComponent<ImageRenderer>()->SetImage("ui/gauge-sideL_cover.png");
+	playerhp_background1->GetComponent<ImageRenderer>()->SetPosition(674.0f, 950.0f);
+	playerhp_background1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	playerhp_background2 = scene.GetCurrentScene()->CreateObject("backgroundR");
+	playerhp_background2->SetParent(_battleuibox);
+	playerhp_background2->AddComponent<ImageRenderer>();
+	playerhp_background2->GetComponent<ImageRenderer>()->SetImage("ui/gauge-sideR_cover.png");
+	playerhp_background2->GetComponent<ImageRenderer>()->SetPosition(1235.0f, 950.0f);
+	playerhp_background2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	/// boss
+	boss_background = scene.GetCurrentScene()->CreateObject("boss_background");
+	boss_background->SetParent(_battleuibox);
+	boss_background->AddComponent<ImageRenderer>();
+	boss_background->GetComponent<ImageRenderer>()->SetImage("ui/freebox-middle.png");
+	boss_background->GetComponent<ImageRenderer>()->SetPosition(454.0f, 6.0f);
+	boss_background->GetComponent<Transform>()->SetScale(4.71f, 0.11f, 1.0f);
+
+	boss_background1 = scene.GetCurrentScene()->CreateObject("boss_background1");
+	boss_background1->SetParent(_battleuibox);
+	boss_background1->AddComponent<ImageRenderer>();
+	boss_background1->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideL.png");
+	boss_background1->GetComponent<ImageRenderer>()->SetPosition(445.0f, 6.0f);
+	boss_background1->GetComponent<Transform>()->SetScale(0.2f, 0.11f, 1.0f);
+
+	boss_background2 = scene.GetCurrentScene()->CreateObject("boss_background2");
+	boss_background2->SetParent(_battleuibox);
+	boss_background2->AddComponent<ImageRenderer>();
+	boss_background2->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideR.png");
+	boss_background2->GetComponent<ImageRenderer>()->SetPosition(1452.0f, 6.0f);
+	boss_background2->GetComponent<Transform>()->SetScale(0.2f, 0.11f, 1.0f);
+
+	bosshp_background = scene.GetCurrentScene()->CreateObject("bosshp_background");
+	bosshp_background->SetParent(_battleuibox);
+	bosshp_background->AddComponent<ImageRenderer>();
+	bosshp_background->GetComponent<ImageRenderer>()->SetImage("ui/Gauge-middle.png");
+	bosshp_background->GetComponent<ImageRenderer>()->SetPosition(469.f, 11.f);
+	bosshp_background->GetComponent<Transform>()->SetScale(57.0, 1.0f, 0.1f);
 
 	_bosshp_bar_downGauge = scene.GetCurrentScene()->CreateObject("_bosshp_bar_downGauge");
 	_bosshp_bar_downGauge->SetParent(_battleuibox);
 	_bosshp_bar_downGauge->AddComponent<ImageRenderer>();
-	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("ui/volume-in.png");
-	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(500.f, 15.f);
-	_bosshp_bar_downGauge->GetComponent<Transform>()->SetScale(_bosshpsize, 0.1f, 0.1f);
+	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetImage("ui/GaugeFillY-middle.png");
+	_bosshp_bar_downGauge->GetComponent<ImageRenderer>()->SetPosition(455.f, 14.f);
+	_bosshp_bar_downGauge->GetComponent<Transform>()->SetScale(_bosshpsize, 1.0f, 1.f);
 
-	_bosshp_bar = scene.GetCurrentScene()->CreateObject("bosshp_bar");
+	_bosshp_bar = scene.GetCurrentScene()->CreateObject("_bosshp_bar");
 	_bosshp_bar->SetParent(_battleuibox);
 	_bosshp_bar->AddComponent<ImageRenderer>();
-	_bosshp_bar->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-	_bosshp_bar->GetComponent<ImageRenderer>()->SetPosition(500.f, 15.f);
-	_bosshp_bar->GetComponent<Transform>()->SetScale(_bosshpsize, 0.1f, 0.1f);
+	_bosshp_bar->GetComponent<ImageRenderer>()->SetImage("ui/GaugeFillR-middle.png");
+	_bosshp_bar->GetComponent<ImageRenderer>()->SetPosition(455.0f, 14.f);
+	_bosshp_bar->GetComponent<Transform>()->SetScale(_bosshpsize, 1.0f, 1.f);
+
+	bosshp_background1 = scene.GetCurrentScene()->CreateObject("bosshp_background1");
+	bosshp_background1->SetParent(_battleuibox);
+	bosshp_background1->AddComponent<ImageRenderer>();
+	bosshp_background1->GetComponent<ImageRenderer>()->SetImage("ui/gauge-sideL_cover.png");
+	bosshp_background1->GetComponent<ImageRenderer>()->SetPosition(454.0f, 11.0f);
+	bosshp_background1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	bosshp_background2 = scene.GetCurrentScene()->CreateObject("bosshp_background2");
+	bosshp_background2->SetParent(_battleuibox);
+	bosshp_background2->AddComponent<ImageRenderer>();
+	bosshp_background2->GetComponent<ImageRenderer>()->SetImage("ui/gauge-sideR_cover.png");
+	bosshp_background2->GetComponent<ImageRenderer>()->SetPosition(1436.0f, 11.0f);
+	bosshp_background2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_battleuibox->SetActive(true);
 	_ui_skill1_cool->SetActive(false);
@@ -151,35 +244,54 @@ void KunrealEngine::BattleUIManager::FixedUpdate()
 void KunrealEngine::BattleUIManager::Update()
 {
 	auto  abill = _eventmanager->_playerAbill;
+	auto& boosinfo = _eventmanager->_bossComp->GetBossInfo();
+	auto playerinfo = _eventmanager->_playerComp->GetPlayerData();
 
+
+	// 이건 테스트 용으로 보스나 플레이어의 체력을 강제로 만질 수 있게 해둔 부분
 	if (InputSystem::GetInstance()->KeyDown(KEY::UP))
 	{
-		int currenthp = _eventmanager->_bossComp->GetBossInfo()._hp += 10;
+		boosinfo._hp += 10;
 		SetBossHpbar();
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
+	else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
 	{
-		int currenthp = _eventmanager->_playerComp->GetPlayerData()._hp -= 10;
-		if (_eventmanager->_bossComp->GetBossInfo()._hp <= 0)
+		boosinfo._hp -= 10;
+		if (boosinfo._hp <= 0)
 		{
-			currenthp = _eventmanager->_bossComp->GetBossInfo()._hp = 1;
+			boosinfo._hp = 1;
 		}
 		SetBossHpbar();
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::PGUP))
 	{
-		_eventmanager->_playerComp->GetPlayerData()._hp += 10;
+		playerinfo._hp += 10;
 		SetPlayerHpBar();
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
+	else if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
 	{
-		_eventmanager->_playerComp->GetPlayerData()._hp -= 10;
+		playerinfo._hp -= 10;
 		SetPlayerHpBar();
 	}
+	 
+	// 체력을 받아와서 게이지에 반영하는 부분
+	//int bosshp = boosinfo._hp;
+	//int playerhp = playerinfo._hp;
+	//
+	//if (pre_bosshp != bosshp)
+	//{
+	//}
+	//if (pre_playerhp != playerhp)
+	//{
+	//}
+	//
+	//pre_playerhp = bosshp;
+	//pre_playerhp = playerhp;
 
+	// 스킬 쿨타임 세팅
 	if (abill->_isShotDetected)
 	{
 		SetSkillcool1();
@@ -232,7 +344,7 @@ void KunrealEngine::BattleUIManager::SetBossHpbar()
 		float minhpbar = 0;
 
 		booshp_targetscale = ((currenthp - minhp) / (maxhp - minhp)) * (_bosshpsize - minhpbar) + minhpbar;
-		_bosshp_bar->GetComponent<Transform>()->SetScale(booshp_targetscale, 0.3f, 1.0f);
+		_bosshp_bar->GetComponent<Transform>()->SetScale(booshp_targetscale, 1.0f, 1.0f);
 		_CoroutineIs(bossdowngauge)
 		{
 			//닼소식 체력 감소 연출을 어떻게 해야 할까
@@ -248,12 +360,12 @@ void KunrealEngine::BattleUIManager::SetBossHpbar()
 			auto  downGauge = _bosshp_bar_downGauge;	//GameObject
 			float scale = downGauge->GetComponent<Transform>()->GetScale().x;
 			float& targetscale = booshp_targetscale;
-			float speed = 1.0f;
+			float speed = 6.0f;
 
 
 			while (targetscale - TimeManager::GetInstance().GetDeltaTime() * speed < scale)
 			{
-				downGauge->GetComponent<Transform>()->SetScale(scale, 0.3f, 1.0f);
+				downGauge->GetComponent<Transform>()->SetScale(scale, 1.0f, 1.0f);
 				scale -= TimeManager::GetInstance().GetDeltaTime() * speed;
 				Return_null;
 			}
@@ -268,30 +380,30 @@ void KunrealEngine::BattleUIManager::SetPlayerHpBar()
 {
 	float currenthp = _eventmanager->_playerComp->GetPlayerData()._hp;
 	//float maxhp = _eventmanager->_playerComp->GetPlayerInfo()._Maxhp;
-	float maxhp = 500;
+	float maxhp = 1000;
 	float minhp = 0;
 	float minhpbar = 0;
 
 	playerhp_targetscale = ((currenthp - minhp) / (maxhp - minhp)) * (_bosshpsize - minhpbar) + minhpbar;
-	_playerhp_bar->GetComponent<Transform>()->SetScale(playerhp_targetscale, 0.3f, 1.0f);
-	_CoroutineIs(bossdowngauge)
+	_playerhp_bar->GetComponent<Transform>()->SetScale(playerhp_targetscale, 1.0f, 1.0f);
+	_CoroutineIs(playerdowngauge)
 	{
-		auto  hpbarcontrol = this;
+		//auto  hpbarcontrol = this;
 		auto  downGauge = _playerhp_bar_downGauge;	//GameObject
 		float scale = downGauge->GetComponent<Transform>()->GetScale().x;
 		float& targetscale = playerhp_targetscale;
-		float speed = 0.5f;
+		float speed = 3.0f;
 
 		while (targetscale - TimeManager::GetInstance().GetDeltaTime() * speed < scale)
 		{
-			downGauge->GetComponent<Transform>()->SetScale(scale, 0.3f, 1.0f);
+			downGauge->GetComponent<Transform>()->SetScale(scale, 1.0f, 1.0f);
 			scale -= TimeManager::GetInstance().GetDeltaTime() * speed;
 			Return_null;
 		}
 		targetscale = 0;
 	};
 
-	Startcoroutine(bossdowngauge);
+	Startcoroutine(playerdowngauge);
 }
 
 /// 1번 스킬

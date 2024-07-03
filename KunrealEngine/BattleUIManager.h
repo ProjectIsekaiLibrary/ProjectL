@@ -36,6 +36,11 @@ namespace KunrealEngine
 		void SetSkillcool4();
 
 	private:
+		// 이쪽 변수 확인시 참조.
+		// 이미지에 변화가 오지 않을 배경 이미지들은 그냥 Initialize 할때 함수 내부에서 지역변수로 생성하고 관리했음.
+		// (필요하다면 Setparent 해둘거니까 그걸 통해서 접근하면 됨)
+		// 여기 있는 변수들은 모두 오브젝트에 변화가 있을거라고 판단해서 가져다 쓰기 쉽게 꺼내둔 것들
+
 		KunrealEngine::GameObject* _battleuibox;	// 부모가 되어줄 오브젝트(Empty)
 
 		KunrealEngine::GameObject* _ui_skill1_cool;	// 1번 스킬 쿨다운
@@ -52,6 +57,9 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* _bosshp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
 		float booshp_targetscale;
 		float playerhp_targetscale;
+
+		int pre_playerhp;
+		int pre_bosshp;
 
 	private:
 		EventManager* _eventmanager;
