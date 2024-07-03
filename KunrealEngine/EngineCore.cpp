@@ -289,6 +289,8 @@ void KunrealEngine::EngineCore::LateUpdate()
 {
 	sceneInstance.LateUpdateScene(sceneInstance.GetCurrentScene());
 	GRAPHICS->Update();	// 그래픽스쪽 카메라 업데이트 관련
+
+	PhysicsSystem::GetInstance().PlayerForceUpdate();
 }
 
 void KunrealEngine::EngineCore::UpdateAll()

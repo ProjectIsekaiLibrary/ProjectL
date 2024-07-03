@@ -204,6 +204,13 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 	// 포지션 관련
 	for (const auto& pair : _dynamicMap)
 	{
+		pair.first->Clear();
+
+		if (pair.first->GetOwnerObject()->GetObjectName() == "Player")
+		{
+			pair.second->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
+		}
+
 		physx::PxTransform pxTrans;
 		physx::PxVec3 pxPos(pair.first->GetColliderPos().x, pair.first->GetColliderPos().y, pair.first->GetColliderPos().z);
 		physx::PxQuat pxRot = EulerToQuaternion(pair.first->GetOwnerObject()->GetComponent<Transform>()->GetRotation().x, pair.first->GetOwnerObject()->GetComponent<Transform>()->GetRotation().y, pair.first->GetOwnerObject()->GetComponent<Transform>()->GetRotation().z);
@@ -406,6 +413,18 @@ void KunrealEngine::PhysicsSystem::ResizeBoxShape(physx::PxShape* shape, const p
 	shape->setGeometry(newBoxGeometry);
 }
 
+
+void KunrealEngine::PhysicsSystem::PlayerForceUpdate()
+{
+	for (auto actor : _dynamicMap)
+	{
+		if (actor.first->GetOwnerObject()->GetObjectName() == "Player")
+		{
+			actor.second->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
+		}
+	}
+}
+
 void KunrealEngine::PhysicsSystem::onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count)
 {
 	
@@ -468,7 +487,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	// 충돌이 발생했을 때
 	if (current.events & (physx::PxPairFlag::eNOTIFY_TOUCH_FOUND | physx::PxPairFlag::eNOTIFY_TOUCH_CCD | physx::PxPairFlag::eNOTIFY_TOUCH_PERSISTS)
 		| physx::PxPairFlag::eMODIFY_CONTACTS
-		&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated())
+		//&& col1->GetOwnerObject()->GetActivated() && col2->GetOwnerObject()->GetActivated())
+		)
 	{
 		// 충돌 여부를 true로
 		col1->_isCollided = true;
