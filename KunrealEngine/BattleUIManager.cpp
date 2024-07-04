@@ -252,7 +252,6 @@ void KunrealEngine::BattleUIManager::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::UP))
 	{
 		boosinfo._hp += 10;
-		SetBossHpbar();
 	}
 
 	else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
@@ -262,34 +261,33 @@ void KunrealEngine::BattleUIManager::Update()
 		{
 			boosinfo._hp = 1;
 		}
-		SetBossHpbar();
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::PGUP))
 	{
 		playerinfo._hp += 10;
-		SetPlayerHpBar();
 	}
 
 	else if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
 	{
 		playerinfo._hp -= 10;
-		SetPlayerHpBar();
 	}
 	 
 	// 체력을 받아와서 게이지에 반영하는 부분
-	//int bosshp = boosinfo._hp;
-	//int playerhp = playerinfo._hp;
-	//
-	//if (pre_bosshp != bosshp)
-	//{
-	//}
-	//if (pre_playerhp != playerhp)
-	//{
-	//}
-	//
-	//pre_playerhp = bosshp;
-	//pre_playerhp = playerhp;
+	int bosshp = boosinfo._hp;
+	int playerhp = playerinfo._hp;
+
+	if (pre_bosshp != bosshp)
+	{
+		SetBossHpbar();
+	}
+	if (pre_playerhp != playerhp)
+	{
+		SetPlayerHpBar();
+	}
+
+	pre_playerhp = bosshp;
+	pre_playerhp = playerhp;
 
 	// 스킬 쿨타임 세팅
 	if (abill->_isShotDetected)

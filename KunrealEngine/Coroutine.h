@@ -97,6 +97,7 @@ namespace KunrealEngine
 			~Coroutine_type();
 
 			std::coroutine_handle<promise_type> coro_handle;
+			std::function<Coroutine_type()>* func_ptr;
 			int mapKey = 0;
 		};
 

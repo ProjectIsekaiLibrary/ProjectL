@@ -203,6 +203,7 @@ namespace KunrealEngine
 		_coroutines.emplace_back(coroutineInstance);
 		idexKey++;
 		coroutineInstance->mapKey = idexKey;
+		coroutineInstance->func_ptr = coro;
 		coroutineInstance->coro_handle.promise().duration = DurationManager::getInstance().getDuration();
 		DurationManager::getInstance().durationtonull();
 
@@ -216,7 +217,7 @@ namespace KunrealEngine
 	void Coroutine::UpdateCoroutines()
 	{
 		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "Corotine: %d", _coroutines.size());
-		for (auto& coroutine : _coroutines)
+		for (auto coroutine : _coroutines)
 		{
 			bool isready = coroutine->coro_handle.promise().await_ready();
 			bool isdone = coroutine->coro_handle.done();
@@ -240,13 +241,13 @@ namespace KunrealEngine
 			
 			else if (isdone)
 			{
-				auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
 				
-				if (!coroutine)
+				if (_AddedCoroutines.find(coroutine->mapKey)->second != coroutine->func_ptr)
 				{
 					return;
 				}
 
+				auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
 				_AddedCoroutines.erase(coroutine->mapKey);
 				delete coroutine;
 				coroutine = nullptr;
