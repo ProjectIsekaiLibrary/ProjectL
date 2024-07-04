@@ -255,7 +255,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForFinal()
 	textureDesc.Width = _textureWidth;
 	textureDesc.MipLevels = 1;
 	textureDesc.ArraySize = 1;
-	textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	textureDesc.SampleDesc.Count = 1;
 	textureDesc.SampleDesc.Quality = 0;
 	textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -271,7 +271,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetViewForFinal()
 {
 	D3D11_RENDER_TARGET_VIEW_DESC renderTagetViewDesc;
 
-	renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	renderTagetViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	renderTagetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 	renderTagetViewDesc.Texture2D.MipSlice = 0;
 
@@ -283,7 +283,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForFinal()
 {
 	D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
-	shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+	shaderResourceViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 	shaderResourceViewDesc.Texture2D.MipLevels = 1;
 	shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;
@@ -297,13 +297,13 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForBloom()
 	{
 		D3D11_TEXTURE2D_DESC textureDesc;
 
-		float mul = 0.25f;
+		float mul = 0.125f;
 
 		textureDesc.Height = _textureHeight * mul;
 		textureDesc.Width = _textureWidth * mul;
 		textureDesc.MipLevels = 1;
 		textureDesc.ArraySize = 1;
-		textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		textureDesc.SampleDesc.Count = 1;
 		textureDesc.SampleDesc.Quality = 0;
 		textureDesc.Usage = D3D11_USAGE_DEFAULT;
@@ -321,7 +321,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetViewForBloom()
 	{
 		D3D11_RENDER_TARGET_VIEW_DESC renderTagetViewDesc;
 
-		renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		renderTagetViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		renderTagetViewDesc.ViewDimension = D3D11_RTV_DIMENSION_TEXTURE2D;
 		renderTagetViewDesc.Texture2D.MipSlice = 0;
 
@@ -336,7 +336,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceViewForBloom()
 	{
 		D3D11_SHADER_RESOURCE_VIEW_DESC shaderResourceViewDesc;
 
-		shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		shaderResourceViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		shaderResourceViewDesc.ViewDimension = D3D11_SRV_DIMENSION_TEXTURE2D;
 		shaderResourceViewDesc.Texture2D.MipLevels = 1;
 		shaderResourceViewDesc.Texture2D.MostDetailedMip = 0;

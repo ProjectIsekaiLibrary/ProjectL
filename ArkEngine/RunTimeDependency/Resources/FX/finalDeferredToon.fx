@@ -43,6 +43,12 @@ TextureCube gCubeMap;
 //    AddressW = CLAMP;
 //};
 
+float3 ToneMapReinhard(float3 color)
+{
+    float3 mappedColor = color / (color + float3(1.0, 1.0, 1.0));
+    return mappedColor;
+}
+
 SamplerState samAnisotropic
 {
     Filter = MIN_MAG_MIP_POINT;
@@ -315,8 +321,13 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 	
 	// 원래 물체의 색상과 외곽선을 더함
     float4 finalColor = litColor; //+ outline + specular + rimLighting;
-
-    return finalColor;
+    
+    float3 toneMappedColor = ToneMapReinhard(finalColor.xyz);
+    
+    return float4(toneMappedColor, diffuseAlbedo.a);
+    
+    //return finalColor;
+   
 }
 
 technique11 Light

@@ -59,19 +59,25 @@ float4 PSGrayScale(VertexOut pin) : SV_Target
     float4 finalTexture;
     
     // GetGBufferAttributes 함수를 사용하여 텍스처 샘플링
-    GetGBufferAttributes(pin.Tex, finalTexture, 4.0f);
+    GetGBufferAttributes(pin.Tex, finalTexture, 8.0f);
 
     // Rec. 709 가중치를 사용하여 그레이스케일 변환
     float3 grayWeights = float3(0.2126f, 0.7152f, 0.0722f);
     float grayValue = dot(finalTexture.rgb, grayWeights);
-
-    // 그레이스케일 값 설정
-    float4 grayColor = float4(grayValue, grayValue, grayValue, finalTexture.a);
-
-    // 명도 조정을 위한 값 감소 및 클램프
-    grayColor.rgb = saturate(grayColor.rgb - 0.5f) * 2.0f;
-
-    return grayColor;
+    
+    float4 result = lerp(float4(0.0f, 0.0f, 0.0f, 1.0f), finalTexture, step(0.5f, grayValue));
+    
+    //result *= 2.0f;
+    
+    return result;
+    
+    //// 그레이스케일 값 설정
+    //float4 grayColor = float4(grayValue, grayValue, grayValue, finalTexture.a);
+    //
+    //// 명도 조정을 위한 값 감소 및 클램프
+    //grayColor.rgb = saturate(grayColor.rgb - 0.5f) * 2.0f;
+    //
+    //return grayColor;
 }
 
 float4 PSBlurVertical(VertexOut pin) : SV_Target
@@ -79,16 +85,18 @@ float4 PSBlurVertical(VertexOut pin) : SV_Target
     float4 sum = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float weightSum = 0.0f;
     
-    // 1 / 270.0f;
-    float2 texelSize = float2(0.0f, 0.00370f);
+    float weights[9] = { 0.028532f, 0.067234f, 0.124009f, 0.179044f, 0.20236f, 0.179044f, 0.124009f, 0.067234f, 0.028532f };
+    
+    // 1 / 1080.0f;
+    float2 texelSize = float2(0.0f, 0.00092592592);
     
     // 가우시안 블러링 수행
-    for (int i = -1; i <= 1; ++i)
+    for (int i = -4; i <= 4; ++i)
     {
         float weight = gaussWeight(i);
         
         // 텍스처 좌표에 4배 스케일링을 적용하여 샘플링
-        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(0.0f, i) * texelSize) * float2(4.0f, 4.0f)) * weight;
+        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(0.0f, i) * texelSize) * float2(8.0f, 8.0f)) * weight;
         weightSum += weight;
     }
     
@@ -101,16 +109,18 @@ float4 PSBlurHorizontal(VertexOut pin) : SV_Target
     float4 sum = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float weightSum = 0.0f;
     
-    // 1 / 480.0f;
-    float2 texelSize = float2(0.00208f, 0.0f);
+    float weights[9] = { 0.028532f, 0.067234f, 0.124009f, 0.179044f, 0.20236f, 0.179044f, 0.124009f, 0.067234f, 0.028532f };
+    
+    // 1 / 1920.0f;
+    float2 texelSize = float2(0.00052083333, 0.0f);
     
     // 가우시안 블러링 수행
-    for (int i = -1; i <= 1; ++i)
+    for (int i = -4; i <= 4; ++i)
     {
         float weight = gaussWeight(i);
         
         // 텍스처 좌표에 4배 스케일링을 적용하여 샘플링
-        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(i, 0.0f) * texelSize) * float2(4.0f, 4.0f)) * weight;
+        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(i, 0.0f) * texelSize) * float2(8.0f, 8.0f)) * weight;
         weightSum += weight;
     }
     
@@ -124,7 +134,7 @@ technique11 Final
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSBlurVertical()));
+        SetPixelShader(CompileShader(ps_5_0, PSGrayScale()));
     }
     pass P1
     {
@@ -136,6 +146,6 @@ technique11 Final
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSGrayScale()));
+        SetPixelShader(CompileShader(ps_5_0, PSBlurVertical()));
     }
 }

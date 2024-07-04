@@ -36,6 +36,12 @@ struct VertexOut
     float2 Tex : TEXCOORD0;
 };
 
+float3 ToneMapReinhard(float3 color)
+{
+    float3 mappedColor = color / (color + float3(1.0, 1.0, 1.0));
+    return mappedColor;
+}
+
 void GetGBufferAttributes(float2 texCoord, out float4 finalTexture, out float4 blur, out float4 blurGray)
 {
     finalTexture = FinalTexture.Sample(samAnisotropic, texCoord);
@@ -65,16 +71,28 @@ float4 PS(VertexOut pin) : SV_Target
     
     GetGBufferAttributes(pin.Tex, finalTexture, blur, blurGrayScale);
     
-    // Èå¸²+¹àÀº»ö °­Á¶ : Èå¸² Ã³¸® + ¹àÀº»ö ÃßÃâ 
-    float4 result = blur + blurGrayScale;
+    float4 result = finalTexture + blurGrayScale;
     
-    // ¿øº» È¥ÇÕ : Èå¸²,ºû°­Á¶ * ¿øº»
-    result *= finalTexture;
+    return finalTexture + blurGrayScale;
     
-    // ¿øº» °­Á¶ : ¿øº» È¥ÇÕ * ¿øº»
-    result += finalTexture;
+    //float3 toneMappedColor = ToneMapReinhard(result.xyz);
+    //
+    //return float4(toneMappedColor, result.a);
     
-    return result;
+    //// Èå¸²+¹àÀº»ö °­Á¶ : Èå¸² Ã³¸® + ¹àÀº»ö ÃßÃâ 
+    //float4 result = blur + blurGrayScale;
+    //
+    //// ¿øº» È¥ÇÕ : Èå¸²,ºû°­Á¶ * ¿øº»
+    //result *= finalTexture;
+    //
+    //// ¿øº» °­Á¶ : ¿øº» È¥ÇÕ * ¿øº»
+    //result += finalTexture;
+    //
+    //float3 toneMappedColor = ToneMapReinhard(result.xyz);
+    //
+    //return float4(toneMappedColor, result.a);
+    //
+    //return result;
 }
 
 technique11 Final
