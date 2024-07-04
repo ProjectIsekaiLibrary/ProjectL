@@ -127,7 +127,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 
 	_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
 
-	_blurTexture->SetResource(_deferredBuffer->GetSRVForBloom(1));
+	_blurTexture->SetResource(_deferredBuffer->GetSRVForBloom(0));
 	_blurGrayTexture->SetResource(_deferredBuffer->GetSRVForBloom(2));
 
 	D3DX11_TECHNIQUE_DESC techDesc;
