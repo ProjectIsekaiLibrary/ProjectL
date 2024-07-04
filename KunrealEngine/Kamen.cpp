@@ -69,6 +69,37 @@ void KunrealEngine::Kamen::Update()
 {
 	// 반드시 해야함
 	Boss::Update();
+
+	/// 일단 여기서 카멘 소드 파티클에 대한 업데이트 처리
+	auto originBoneTransform = _boss->GetComponent<MeshRenderer>()->GetBoneTransform("MiddleFinger1_R");
+
+	DirectX::XMVECTOR scl;
+	DirectX::XMVECTOR rot;
+	DirectX::XMVECTOR trs;
+
+	DirectX::XMMatrixDecompose(&scl, &rot, &trs, DirectX::XMLoadFloat4x4(&originBoneTransform));
+
+	DirectX::XMFLOAT3 originDir = { 0.0f, 0.0f, 1.0f };
+
+	originDir = ToolBox::RotateVector(originDir, rot);
+
+	auto vec = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 2.0f);
+	auto vec2 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 20.0f);
+	auto vec3 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 30.0f);
+	auto vec4 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 40.0f);
+	auto vec5 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 50.0f);
+
+	DirectX::XMFLOAT3 particleOriginDir = { originDir.x * 360.0f, originDir.y * 360.0f, originDir.z * 360.0f };
+	_kamenSwordParticle[0]->GetComponent<Particle>()->SetParticleDirection(particleOriginDir.x, particleOriginDir.y, particleOriginDir.z);
+	_kamenSwordParticle[0]->GetComponent<Particle>()->SetOffSet(vec.m128_f32[0], vec.m128_f32[1], vec.m128_f32[2]);
+
+	
+	_kamenSwordParticle[1]->GetComponent<Particle>()->SetOffSet(vec2.m128_f32[0], vec2.m128_f32[1], vec2.m128_f32[2]);
+	_kamenSwordParticle[2]->GetComponent<Particle>()->SetOffSet(vec3.m128_f32[0], vec3.m128_f32[1], vec3.m128_f32[2]);
+	_kamenSwordParticle[3]->GetComponent<Particle>()->SetOffSet(vec4.m128_f32[0], vec4.m128_f32[1], vec4.m128_f32[2]);
+	_kamenSwordParticle[4]->GetComponent<Particle>()->SetOffSet(vec5.m128_f32[0], vec5.m128_f32[1], vec5.m128_f32[2]);
+
+
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -199,10 +230,10 @@ void KunrealEngine::Kamen::GamePattern()
 	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
-	//_basicPattern.emplace_back(_swordSwingVertical);
+	_basicPattern.emplace_back(_swordSwingVertical);
 	//_basicPattern.emplace_back(_swordSwingTwice);
 	//_basicPattern.emplace_back(_swordSwingTwiceHard);
-	_basicPattern.emplace_back(_swordSwingHorizontal);
+	//_basicPattern.emplace_back(_swordSwingHorizontal);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
@@ -944,6 +975,235 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 		lazerParticle->SetTotalComponentState(false);
 		lazerParticle->SetActive(false);
+	}
+	{
+		for (int i = 0; i < _fakeBoss.size(); ++i)
+		{
+			std::string name1 = "fakeBossParticle1(" + std::to_string(i) + ")";
+			auto fakeBossParticle1 = _boss->GetObjectScene()->CreateObject(name1);
+			fakeBossParticle1->SetParent(_fakeBoss[i]);
+			fakeBossParticle1->AddComponent<Particle>();
+			fakeBossParticle1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+			fakeBossParticle1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
+			fakeBossParticle1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			fakeBossParticle1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+			fakeBossParticle1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
+			fakeBossParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+			fakeBossParticle1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
+			fakeBossParticle1->SetActive(false);
+
+			//std::string name2 = "fakeBossParticle2(" + std::to_string(i) + ")";
+			//auto fakeBossParticle2 = _boss->GetObjectScene()->CreateObject(name2);
+			//fakeBossParticle2->SetParent(_fakeBoss[i]);
+			//fakeBossParticle2->AddComponent<Particle>();
+			//fakeBossParticle2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+			//fakeBossParticle2->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
+			//fakeBossParticle2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+			//fakeBossParticle2->GetComponent<Particle>()->SetParticleSize(15.0f, 35.0f);
+			//fakeBossParticle2->GetComponent<Particle>()->AddParticleColor(0.0f, 0.2f, 1.0f);
+			//fakeBossParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			//fakeBossParticle2->GetComponent<Transform>()->SetPosition(0, 13.0f, 0.0f);
+			//fakeBossParticle2->SetActive(false);
+
+			//std::string name3 = "fakeBossParticle3(" + std::to_string(i) + ")";
+			//auto fakeBossParticle3 = _boss->GetObjectScene()->CreateObject(name3);
+			//fakeBossParticle3->SetParent(_fakeBoss[i]);
+			//fakeBossParticle3->AddComponent<Particle>();
+			//fakeBossParticle3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+			//fakeBossParticle3->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
+			//fakeBossParticle3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+			//fakeBossParticle3->GetComponent<Particle>()->SetParticleSize(15.0f, 35.0f);
+			//fakeBossParticle3->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			//fakeBossParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			//fakeBossParticle3->GetComponent<Transform>()->SetPosition(0, 13.0f, 0.0f);
+			//fakeBossParticle3->SetActive(false);
+
+			std::string name4 = "fakeBossParticle4(" + std::to_string(i) + ")";
+			auto fakeBossParticle4 = _boss->GetObjectScene()->CreateObject(name4);
+			fakeBossParticle4->SetParent(_fakeBoss[i]);
+			fakeBossParticle4->AddComponent<Particle>();
+			fakeBossParticle4->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+			fakeBossParticle4->GetComponent<Particle>()->SetParticleDuration(0.5f, 1.0f);
+			fakeBossParticle4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			fakeBossParticle4->GetComponent<Particle>()->SetParticleSize(15.f, 40.0f);
+			fakeBossParticle4->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			fakeBossParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
+			fakeBossParticle4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
+			fakeBossParticle4->SetActive(false);
+		}
+	}
+	{
+		std::string name = "verticalParticleSide1";
+		auto verticalParticleside = _boss ->GetObjectScene()->CreateObject(name);
+
+		verticalParticleside->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
+		verticalParticleside->AddComponent<Particle>();
+		verticalParticleside->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+		verticalParticleside->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.2f);
+		verticalParticleside->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+		verticalParticleside->GetComponent<Particle>()->SetParticleSize(35.f, 35.0f);
+		verticalParticleside->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+		verticalParticleside->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
+		verticalParticleside->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticleside->SetActive(false);
+
+		_verticalParticleSide.emplace_back(verticalParticleside);
+	}
+	{	
+		std::string name = "verticalParticleSide2";
+		auto verticalParticleside = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticleside->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
+		verticalParticleside->AddComponent<Particle>();
+		verticalParticleside->GetComponent<Particle>()->SetParticleEffect("fx_Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+		verticalParticleside->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.2f);
+		verticalParticleside->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+		verticalParticleside->GetComponent<Particle>()->SetParticleSize(35.f, 35.0f);
+		verticalParticleside->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
+		verticalParticleside->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
+		verticalParticleside->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticleside->SetActive(false);
+
+		_verticalParticleSide.emplace_back(verticalParticleside);
+	}
+	{
+		std::string name = "verticalParticle1";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(1.f, 1.f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(1.f, 1.f, 1.f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 400.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetActive(false);
+		verticalParticle->SetActive(false);
+
+		_verticalParticle.emplace_back(verticalParticle);
+	}
+	{
+		std::string name = "verticalParticle2";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.3f, 2.0f, 0.1f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(false);
+		verticalParticle->SetActive(false);
+
+		_verticalParticle.emplace_back(verticalParticle);
+	}
+
+	{
+		std::string name = "verticalParticle2test";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 0.5f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.3f, 2.0f, 0.1f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(true);
+		verticalParticle->SetActive(true);
+		verticalParticle->SetParent(_kamenSword);
+
+
+		verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
+
+		_kamenSwordParticle.emplace_back(verticalParticle);
+	}
+	{
+		std::string name = "verticalParticle2test";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 0.7f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 0.1f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(true);
+		verticalParticle->SetActive(true);
+		verticalParticle->SetParent(_kamenSword);
+
+
+		verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
+
+		_kamenSwordParticle.emplace_back(verticalParticle);
+	}
+	{
+		std::string name = "verticalParticle2test";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 1.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 0.1f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(true);
+		verticalParticle->SetActive(true);
+		verticalParticle->SetParent(_kamenSword);
+
+
+		verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
+
+		_kamenSwordParticle.emplace_back(verticalParticle);
+	}
+	{
+		std::string name = "verticalParticle2test";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 1.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 0.1f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(true);
+		verticalParticle->SetActive(true);
+		verticalParticle->SetParent(_kamenSword);
+
+
+		verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
+
+		_kamenSwordParticle.emplace_back(verticalParticle);
+	}
+	{
+		std::string name = "verticalParticle2test";
+		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
+
+		verticalParticle->AddComponent<Particle>();
+		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
+		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 0.7f);
+		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		verticalParticle->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 0.1f);
+		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(true);
+		verticalParticle->SetActive(true);
+		verticalParticle->SetParent(_kamenSword);
+
+
+		verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
+
+		_kamenSwordParticle.emplace_back(verticalParticle);
 	}
 }
 
@@ -3214,6 +3474,11 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 
 					_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(true);
 
+					for (int j = 0; j < _fakeBoss[i]->GetChilds().size(); j++)
+					{
+						_fakeBoss[i]->GetChilds()[j]->GetComponent<Particle>()->SetActive(true);
+					}
+
 					// 콜라이더 키기
 					auto objectIndex = pattern->GetSubObjectIndex(_fakeBoss[i]);
 					pattern->_isColliderActive[objectIndex] = true;
@@ -3742,9 +4007,16 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 			_swordDonutWarning2->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
 			_swordDonutWarning2->GetComponent<Transform>()->SetScale(outsideCircleSize, outsideCircleSize, outsideCircleSize);
 
+			_verticalParticleSide[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+			_verticalParticleSide[1]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+			_verticalParticle[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+			_verticalParticle[1]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+
 			_swordDonutAttack[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
 
 			_swordDonutAttack[0]->GetComponent<CylinderCollider>()->SetColliderScale(outsideCircleSize * 2, outsideCircleSize * 2, outsideCircleSize * 2);
+		
+			_timer = 0.0;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -3766,15 +4038,42 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 
 			if (28 <= nowFrame && nowFrame <= 40)
 			{
+				auto outsideCircleSize = _swordCircleWarningSize * 2.0f;
+				_timer += TimeManager::GetInstance().GetDeltaTime();
 				//pattern->_isColliderActive[index] = true;
+
+				for (auto& verticalParticle : _verticalParticleSide)
+				{
+					verticalParticle->SetActive(true);
+					verticalParticle->GetComponent<Particle>()->SetActive(true);
+					verticalParticle->GetComponent<Particle>()->SetParticleSize(outsideCircleSize + (_timer * 500 * ToolBox::GetRandomFloat(0.8f, 1.0f)), outsideCircleSize + (_timer * 500 * ToolBox::GetRandomFloat(0.8f, 1.0f)));
+				}
+
+				for (auto& verticalParticle : _verticalParticle)
+				{
+					verticalParticle->SetActive(true);
+					verticalParticle->GetComponent<Particle>()->SetActive(true);
+				}
+
+				_verticalParticle[0]->GetComponent<Particle>()->SetParticleSize((_timer * 30) * ToolBox::GetRandomFloat(0.8f, 1.0f), (_timer * 30) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				_verticalParticle[1]->GetComponent<Particle>()->SetParticleSize((_timer * 50) * ToolBox::GetRandomFloat(0.8f, 1.0f), (_timer * 50) * ToolBox::GetRandomFloat(0.8f, 1.0f));			
 			}
 			else
 			{
 				//pattern->_isColliderActive[index] = false;
+				for (auto& verticalParticle : _verticalParticleSide)
+				{
+					verticalParticle->SetActive(false);
+				}
+				for (auto& verticalParticle : _verticalParticle)
+				{
+					verticalParticle->SetActive(false);
+				}
 			}
 
 			if (isAnimationPlaying == false)
-			{
+			{	
+				_timer = 0.0f;
 				return false;
 			}
 
