@@ -5,7 +5,7 @@
 //=============================================================================
 
 // 빛을 받는 객채의 포지션
-Texture2D FinalTexture : register(t0);
+Texture2D FinalTexture;
 
 SamplerState samAnisotropic
 {
@@ -58,17 +58,20 @@ float4 PSGrayScale(VertexOut pin) : SV_Target
 {
     float4 finalTexture;
     
+    // GetGBufferAttributes 함수를 사용하여 텍스처 샘플링
     GetGBufferAttributes(pin.Tex, finalTexture, 4.0f);
 
-    float4 graycolor = float4(0.2627f, 0.6780f, 0.0593f, 0.0f);
-    
-    float4 bb = dot(finalTexture, graycolor);
-    bb -= 0.7f;
-    bb = saturate(bb);
-    
-    bb.a = 1.0f;
-    
-    return bb;
+    // Rec. 709 가중치를 사용하여 그레이스케일 변환
+    float3 grayWeights = float3(0.2126f, 0.7152f, 0.0722f);
+    float grayValue = dot(finalTexture.rgb, grayWeights);
+
+    // 그레이스케일 값 설정
+    float4 grayColor = float4(grayValue, grayValue, grayValue, finalTexture.a);
+
+    // 명도 조정을 위한 값 감소 및 클램프
+    grayColor.rgb = saturate(grayColor.rgb - 0.5f) * 2.0f;
+
+    return grayColor;
 }
 
 float4 PSBlurVertical(VertexOut pin) : SV_Target
@@ -80,7 +83,7 @@ float4 PSBlurVertical(VertexOut pin) : SV_Target
     float2 texelSize = float2(0.0f, 0.00370f);
     
     // 가우시안 블러링 수행
-    for (int i = -4; i <= 4; ++i)
+    for (int i = -1; i <= 1; ++i)
     {
         float weight = gaussWeight(i);
         
@@ -102,7 +105,7 @@ float4 PSBlurHorizontal(VertexOut pin) : SV_Target
     float2 texelSize = float2(0.00208f, 0.0f);
     
     // 가우시안 블러링 수행
-    for (int i = -4; i <= 4; ++i)
+    for (int i = -1; i <= 1; ++i)
     {
         float weight = gaussWeight(i);
         
@@ -121,18 +124,18 @@ technique11 Final
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSGrayScale()));
+        SetPixelShader(CompileShader(ps_5_0, PSBlurVertical()));
     }
     pass P1
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSBlurVertical()));
+        SetPixelShader(CompileShader(ps_5_0, PSBlurHorizontal()));
     }
     pass P2
     {
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
-        SetPixelShader(CompileShader(ps_5_0, PSBlurHorizontal()));
+        SetPixelShader(CompileShader(ps_5_0, PSGrayScale()));
     }
 }

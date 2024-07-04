@@ -104,8 +104,8 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _shadowDepthMap;
 
 			ID3DX11EffectShaderResourceVariable* _finalTexture;
-			ID3DX11EffectShaderResourceVariable* _grayScaleTexture;
-
+			ID3DX11EffectShaderResourceVariable* _blurTexture;
+			ID3DX11EffectShaderResourceVariable* _blurGrayTexture;
 
 		private:
 			ArkEngine::ArkDX11::deferredBuffer* _deferredBuffer;

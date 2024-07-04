@@ -5,9 +5,11 @@
 //=============================================================================
 
 // 빛을 받는 객채의 포지션
-Texture2D FinalTexture : register(t0);
+Texture2D FinalTexture;
 
-Texture2D GrayScaleTexture;
+Texture2D BlurTexture;
+
+Texture2D BlurGrayTexture;
 
 SamplerState samAnisotropic
 {
@@ -34,11 +36,13 @@ struct VertexOut
     float2 Tex : TEXCOORD0;
 };
 
-void GetGBufferAttributes(float2 texCoord, out float4 finalTexture, out float4 grayScale)
+void GetGBufferAttributes(float2 texCoord, out float4 finalTexture, out float4 blur, out float4 blurGray)
 {
     finalTexture = FinalTexture.Sample(samAnisotropic, texCoord);
     
-    grayScale = GrayScaleTexture.Sample(samAnisotropic, texCoord);
+    blur = BlurTexture.Sample(samAnisotropic, texCoord);
+    
+    blurGray = BlurGrayTexture.Sample(samAnisotropic, texCoord);
 }
 
 VertexOut VS(VertexIn vin)
@@ -55,16 +59,20 @@ float4 PS(VertexOut pin) : SV_Target
 {
     float4 finalTexture;
     
-    float4 grayScale;
+    float4 blur;
     
-    GetGBufferAttributes(pin.Tex, finalTexture, grayScale);
-
-    // Bloom intensity
-    float bloomIntensity = 1.0f;
-
-    //float4 result = finalTexture + grayScale1;
-    // 최종 결과에 블러 및 그레이스케일 효과 추가
-    float4 result = finalTexture + (grayScale * bloomIntensity);
+    float4 blurGrayScale;
+    
+    GetGBufferAttributes(pin.Tex, finalTexture, blur, blurGrayScale);
+    
+    // 흐림+밝은색 강조 : 흐림 처리 + 밝은색 추출 
+    float4 result = blur + blurGrayScale;
+    
+    // 원본 혼합 : 흐림,빛강조 * 원본
+    result *= finalTexture;
+    
+    // 원본 강조 : 원본 혼합 * 원본
+    result += finalTexture;
     
     return result;
 }
