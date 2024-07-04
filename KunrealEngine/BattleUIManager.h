@@ -34,6 +34,8 @@ namespace KunrealEngine
 		void SetSkillcool2();
 		void SetSkillcool3();
 		void SetSkillcool4();
+		void Setdashcool();
+		void Setpotioncool();
 
 	private:
 		// 이쪽 변수 확인시 참조.
@@ -48,8 +50,8 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* _ui_skill3_cool;	// 3번 스킬 쿨다운
 		KunrealEngine::GameObject* _ui_skill4_cool;	// 4번 스킬 쿨다운
 
-		KunrealEngine::GameObject* _potion;			// 포션 먹기
-		KunrealEngine::GameObject* _dash;			// 대쉬(회피?)
+		KunrealEngine::GameObject* _potion_cool;			// 포션 먹기
+		KunrealEngine::GameObject* _dash_cool;			// 대쉬(회피?)
 
 		KunrealEngine::GameObject* _playerhp_bar;		// 플레이어 체력바
 		KunrealEngine::GameObject* _playerhp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
@@ -73,5 +75,7 @@ namespace KunrealEngine
 		_Coroutine(skillgauge2);
 		_Coroutine(skillgauge3);
 		_Coroutine(skillgauge4);
+		_Coroutine(dashgauge);
+		_Coroutine(potiongauge);
 	};
 }

@@ -4,7 +4,7 @@
 #include "PlayerAbility.h"
 
 KunrealEngine::BattleUIManager::BattleUIManager()
-	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.21f)
+	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.0f)
 {
 	_eventmanager = &KunrealEngine::EventManager::GetInstance();
 }
@@ -36,9 +36,18 @@ void KunrealEngine::BattleUIManager::Initialize()
 	KunrealEngine::GameObject* playerhp_background2;	// 플레이어 체력바 배경
 
 	KunrealEngine::GameObject* ui_skill1;		// 1번 스킬
+	KunrealEngine::GameObject* ui_skill1_icon;		// 1번 스킬
 	KunrealEngine::GameObject* ui_skill2;		// 2번 스킬
+	KunrealEngine::GameObject* ui_skill2_icon;		// 1번 스킬
 	KunrealEngine::GameObject* ui_skill3;		// 3번 스킬
+	KunrealEngine::GameObject* ui_skill3_icon;		// 1번 스킬
 	KunrealEngine::GameObject* ui_skill4;		// 4번 스킬
+	KunrealEngine::GameObject* ui_skill4_icon;		// 1번 스킬
+
+	KunrealEngine::GameObject* potion;			// 포션 먹기
+	KunrealEngine::GameObject* potion_icon;			// 포션 먹기
+	KunrealEngine::GameObject* dash;			// 대쉬(회피?)
+	KunrealEngine::GameObject* dash_icon;			// 대쉬(회피?)
 
 	_battleuibox = this->GetOwner();
 
@@ -63,12 +72,12 @@ void KunrealEngine::BattleUIManager::Initialize()
 	player_background2->GetComponent<ImageRenderer>()->SetPosition(1268.0f, 933.0f);
 	player_background2->GetComponent<Transform>()->SetScale(0.5f, 0.5f, 1.0f);
 
-	ui_skill1 = scene.GetCurrentScene()->CreateObject("ui_skill1");
-	ui_skill1->SetParent(_battleuibox);
-	ui_skill1->AddComponent<ImageRenderer>();
-	ui_skill1->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill1->GetComponent<ImageRenderer>()->SetPosition(708.0f, 970.f);
-	ui_skill1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill1_icon = scene.GetCurrentScene()->CreateObject("ui_skill1_icon");
+	ui_skill1_icon->SetParent(_battleuibox);
+	ui_skill1_icon->AddComponent<ImageRenderer>();
+	ui_skill1_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
+	ui_skill1_icon->GetComponent<ImageRenderer>()->SetPosition(708.0f, 970.f);
+	ui_skill1_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill1_cool = scene.GetCurrentScene()->CreateObject("_ui_skill1_cool");
 	_ui_skill1_cool->SetParent(_battleuibox);
@@ -77,12 +86,19 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetPosition(708.f, 970.f);
 	_ui_skill1_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	ui_skill2 = scene.GetCurrentScene()->CreateObject("ui_skill2");
-	ui_skill2->SetParent(_battleuibox);
-	ui_skill2->AddComponent<ImageRenderer>();
-	ui_skill2->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill2->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
-	ui_skill2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill1 = scene.GetCurrentScene()->CreateObject("ui_skill1");
+	ui_skill1->SetParent(_battleuibox);
+	ui_skill1->AddComponent<ImageRenderer>();
+	ui_skill1->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill1->GetComponent<ImageRenderer>()->SetPosition(708.0f, 970.f);
+	ui_skill1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	ui_skill2_icon = scene.GetCurrentScene()->CreateObject("ui_skill2_icon");
+	ui_skill2_icon->SetParent(_battleuibox);
+	ui_skill2_icon->AddComponent<ImageRenderer>();
+	ui_skill2_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
+	ui_skill2_icon->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	ui_skill2_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill2_cool = scene.GetCurrentScene()->CreateObject("_ui_skill2_cool");
 	_ui_skill2_cool->SetParent(_battleuibox);
@@ -91,12 +107,19 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
 	_ui_skill2_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	ui_skill3 = scene.GetCurrentScene()->CreateObject("ui_skill3");
-	ui_skill3->SetParent(_battleuibox);
-	ui_skill3->AddComponent<ImageRenderer>();
-	ui_skill3->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill3->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
-	ui_skill3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill2 = scene.GetCurrentScene()->CreateObject("ui_skill2");
+	ui_skill2->SetParent(_battleuibox);
+	ui_skill2->AddComponent<ImageRenderer>();
+	ui_skill2->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill2->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	ui_skill2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	ui_skill3_icon = scene.GetCurrentScene()->CreateObject("ui_skill3_icon");
+	ui_skill3_icon->SetParent(_battleuibox);
+	ui_skill3_icon->AddComponent<ImageRenderer>();
+	ui_skill3_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
+	ui_skill3_icon->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	ui_skill3_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill3_cool = scene.GetCurrentScene()->CreateObject("_ui_skill3_cool");
 	_ui_skill3_cool->SetParent(_battleuibox);
@@ -105,12 +128,19 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
 	_ui_skill3_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	ui_skill4 = scene.GetCurrentScene()->CreateObject("ui_skill4");
-	ui_skill4->SetParent(_battleuibox);
-	ui_skill4->AddComponent<ImageRenderer>();
-	ui_skill4->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
-	ui_skill4->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill3 = scene.GetCurrentScene()->CreateObject("ui_skill3");
+	ui_skill3->SetParent(_battleuibox);
+	ui_skill3->AddComponent<ImageRenderer>();
+	ui_skill3->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill3->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	ui_skill3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	ui_skill4_icon = scene.GetCurrentScene()->CreateObject("ui_skill4");
+	ui_skill4_icon->SetParent(_battleuibox);
+	ui_skill4_icon->AddComponent<ImageRenderer>();
+	ui_skill4_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
+	ui_skill4_icon->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	ui_skill4_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill4_cool = scene.GetCurrentScene()->CreateObject("_ui_skill4_cool");
 	_ui_skill4_cool->SetParent(_battleuibox);
@@ -119,19 +149,54 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
 	_ui_skill4_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	_potion = scene.GetCurrentScene()->CreateObject("ui_skill5");
-	_potion->SetParent(_battleuibox);
-	_potion->AddComponent<ImageRenderer>();
-	_potion->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
-	_potion->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
-	_potion->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+	ui_skill4 = scene.GetCurrentScene()->CreateObject("ui_skill4_icon");
+	ui_skill4->SetParent(_battleuibox);
+	ui_skill4->AddComponent<ImageRenderer>();
+	ui_skill4->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
+	ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	ui_skill4->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-	_dash = scene.GetCurrentScene()->CreateObject("ui_skill6");
-	_dash->SetParent(_battleuibox);
-	_dash->AddComponent<ImageRenderer>();
-	_dash->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
-	_dash->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
-	_dash->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+	potion_icon = scene.GetCurrentScene()->CreateObject("ui_skill5");
+	potion_icon->SetParent(_battleuibox);
+	potion_icon->AddComponent<ImageRenderer>();
+	potion_icon->GetComponent<ImageRenderer>()->SetImage("ui/potion.png");
+	potion_icon->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
+	potion_icon->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
+	_potion_cool = scene.GetCurrentScene()->CreateObject("ui_skill5");
+	_potion_cool->SetParent(_battleuibox);
+	_potion_cool->AddComponent<ImageRenderer>();
+	_potion_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
+	_potion_cool->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
+	_potion_cool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
+	potion = scene.GetCurrentScene()->CreateObject("ui_skill5");
+	potion->SetParent(_battleuibox);
+	potion->AddComponent<ImageRenderer>();
+	potion->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
+	potion->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
+	potion->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
+	dash_icon = scene.GetCurrentScene()->CreateObject("ui_skill6");
+	dash_icon->SetParent(_battleuibox);
+	dash_icon->AddComponent<ImageRenderer>();
+	dash_icon->GetComponent<ImageRenderer>()->SetImage("ui/potion.png");
+	dash_icon->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
+	dash_icon->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
+	_dash_cool = scene.GetCurrentScene()->CreateObject("ui_skill6");
+	_dash_cool->SetParent(_battleuibox);
+	_dash_cool->AddComponent<ImageRenderer>();
+	_dash_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
+	_dash_cool->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
+	_dash_cool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
+	dash = scene.GetCurrentScene()->CreateObject("ui_skill6");
+	dash->SetParent(_battleuibox);
+	dash->AddComponent<ImageRenderer>();
+	dash->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
+	dash->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
+	dash->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
 
 	/// player
 	playerhp_background = scene.GetCurrentScene()->CreateObject("_playerhp_background");
@@ -245,7 +310,7 @@ void KunrealEngine::BattleUIManager::Update()
 {
 	auto  abill = _eventmanager->_playerAbill;
 	auto& boosinfo = _eventmanager->_bossComp->GetBossInfo();
-	auto playerinfo = _eventmanager->_playerComp->GetPlayerData();
+	auto& playerinfo = _eventmanager->_playerComp->GetPlayerData();
 
 
 	// 이건 테스트 용으로 보스나 플레이어의 체력을 강제로 만질 수 있게 해둔 부분
@@ -286,7 +351,7 @@ void KunrealEngine::BattleUIManager::Update()
 		SetPlayerHpBar();
 	}
 
-	pre_playerhp = bosshp;
+	pre_bosshp = bosshp;
 	pre_playerhp = playerhp;
 
 	// 스킬 쿨타임 세팅
@@ -413,7 +478,7 @@ void KunrealEngine::BattleUIManager::SetSkillcool1()
 	// 그러면서 까만 화면이 점점 사라지고 스케일이 0이 되면 스킬쿨이 다 돌아간것. active를 끈다.
 	_CoroutineIs(skillgauge1)
 	{
-		auto  hpbarcontrol = this;
+		auto control = this;
 		auto skillcool = _ui_skill1_cool;
 		auto ability = _eventmanager->_playerAbill->_abilityContainer[0];
 
@@ -443,14 +508,14 @@ void KunrealEngine::BattleUIManager::SetSkillcool1()
 			}
 
 			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
-			skillcool->GetComponent<Transform>()->SetScale(0.7f, nowscale, 1.0f);
+			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
 
 			Return_null;
 		}
 
-		hpbarcontrol->_eventmanager->_playerAbill->_isShotDetected = false;
+		control->_eventmanager->_playerAbill->_isShotDetected = false;
 		skillcool->SetActive(false);
-		skillcool->GetComponent<Transform>()->SetScale(0.7f, _skillcoolsize, 1.0f);
+		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
 	};
 	Startcoroutine(skillgauge1);
 }
@@ -460,7 +525,7 @@ void KunrealEngine::BattleUIManager::SetSkillcool2()
 {
 	_CoroutineIs(skillgauge2)
 	{
-		auto  hpbarcontrol = this;
+		auto control = this;
 		auto skillcool = _ui_skill2_cool;
 		auto ability = _eventmanager->_playerAbill->_abilityContainer[1];
 
@@ -485,14 +550,14 @@ void KunrealEngine::BattleUIManager::SetSkillcool2()
 			}
 
 			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
-			skillcool->GetComponent<Transform>()->SetScale(0.7f, nowscale, 1.0f);
+			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
 
 			Return_null;
 		}
 
-		hpbarcontrol->_eventmanager->_playerAbill->_isIceDetected = false;
+		control->_eventmanager->_playerAbill->_isIceDetected = false;
 		skillcool->SetActive(false);
-		skillcool->GetComponent<Transform>()->SetScale(0.7f, _skillcoolsize, 1.0f);
+		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
 	};
 
 	Startcoroutine(skillgauge2);
@@ -503,7 +568,7 @@ void KunrealEngine::BattleUIManager::SetSkillcool3()
 {
 	_CoroutineIs(skillgauge3)
 	{
-		auto  hpbarcontrol = this;
+		auto control = this;
 		auto skillcool = _ui_skill3_cool;
 		auto ability = _eventmanager->_playerAbill->_abilityContainer[2];
 
@@ -528,14 +593,14 @@ void KunrealEngine::BattleUIManager::SetSkillcool3()
 			}
 
 			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
-			skillcool->GetComponent<Transform>()->SetScale(0.7f, nowscale, 1.0f);
+			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
 
 			Return_null;
 		}
 
-		hpbarcontrol->_eventmanager->_playerAbill->_isAreaDetected = false;
+		control->_eventmanager->_playerAbill->_isAreaDetected = false;
 		skillcool->SetActive(false);
-		skillcool->GetComponent<Transform>()->SetScale(0.7f, _skillcoolsize, 1.0f);
+		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
 	};
 
 	Startcoroutine(skillgauge3);
@@ -546,8 +611,92 @@ void KunrealEngine::BattleUIManager::SetSkillcool4()
 {
 	_CoroutineIs(skillgauge4)
 	{
-		auto  hpbarcontrol = this;
+		auto control = this;
 		auto skillcool = _ui_skill4_cool;
+		auto ability = _eventmanager->_playerAbill->_abilityContainer[3];
+
+		// 스킬 쿨타임 동안 skillcool 오브젝트 활성화
+		skillcool->SetActive(true);
+
+		float currenttime = ability->_cooldown;
+		float maxcool = ability->_cooldown;
+		float mincool = 0;
+
+		float _coolsize = 0.8;
+		float coolgauge = 0;
+
+		float speed = 1.0f;
+
+		while (0.1 <= currenttime)
+		{
+			currenttime -= TimeManager::GetInstance().GetDeltaTime();
+			if (currenttime < 0.1)
+			{
+				currenttime == 0.1;
+			}
+
+			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
+			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
+
+			Return_null;
+		}
+
+		control->_eventmanager->_playerAbill->_isMeteorDetected = false;
+		skillcool->SetActive(false);
+		skillcool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+	};
+
+	Startcoroutine(skillgauge4);
+}
+
+void KunrealEngine::BattleUIManager::Setdashcool()
+{
+	_CoroutineIs(dashgauge)
+	{
+		auto control = this;
+		auto skillcool = _dash_cool;
+		//auto ability = _eventmanager->_playerAbill->_abilityContainer[3];
+
+		// 스킬 쿨타임 동안 skillcool 오브젝트 활성화
+		skillcool->SetActive(true);
+
+		float currenttime = 8.0f;
+		float maxcool = 8.0f;
+		float mincool = 0;
+
+		float _coolsize = _skillcoolsize;
+		float coolgauge = 0;
+
+		float speed = 1.0f;
+
+		while (0.1 <= currenttime)
+		{
+			currenttime -= TimeManager::GetInstance().GetDeltaTime();
+			if (currenttime < 0.1)
+			{
+				currenttime == 0.1;
+			}
+
+			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
+			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
+
+			Return_null;
+		}
+
+		control->_eventmanager->_playerAbill->_isMeteorDetected = false;
+		skillcool->SetActive(false);
+		skillcool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+	};
+
+	Startcoroutine(dashgauge);
+}
+
+void KunrealEngine::BattleUIManager::Setpotioncool()
+{
+	_CoroutineIs(potiongauge)
+	{
+		auto control = this;
+		auto skillcool = _potion_cool;
 		auto ability = _eventmanager->_playerAbill->_abilityContainer[3];
 
 		// 스킬 쿨타임 동안 skillcool 오브젝트 활성화
@@ -571,15 +720,15 @@ void KunrealEngine::BattleUIManager::SetSkillcool4()
 			}
 
 			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
-			skillcool->GetComponent<Transform>()->SetScale(0.7f, nowscale, 1.0f);
+			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
 
 			Return_null;
 		}
 
-		hpbarcontrol->_eventmanager->_playerAbill->_isMeteorDetected = false;
+		control->_eventmanager->_playerAbill->_isMeteorDetected = false;
 		skillcool->SetActive(false);
-		skillcool->GetComponent<Transform>()->SetScale(0.7f, _skillcoolsize, 1.0f);
+		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
 	};
 
-	Startcoroutine(skillgauge4);
+	Startcoroutine(potiongauge);
 }

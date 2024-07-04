@@ -217,8 +217,17 @@ namespace KunrealEngine
 	void Coroutine::UpdateCoroutines()
 	{
 		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "Corotine: %d", _coroutines.size());
+		bool ismember = true;
+
 		for (auto coroutine : _coroutines)
 		{
+			for (auto coro : _coroutines)
+			{
+				if (coroutine != coro) ismember = false;
+				else ismember = true;
+			}
+			if(!ismember) continue;
+
 			bool isready = coroutine->coro_handle.promise().await_ready();
 			bool isdone = coroutine->coro_handle.done();
 			
