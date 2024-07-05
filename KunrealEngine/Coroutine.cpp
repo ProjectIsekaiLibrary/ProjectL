@@ -95,19 +95,19 @@ namespace KunrealEngine
 
 	bool Coroutine::Coroutine_type::promise_type::await_ready() noexcept
 	{
-			timer += TimeManager::GetInstance().GetDeltaTime();
+		timer += TimeManager::GetInstance().GetDeltaTime();
 
-			if (timer > duration)
-			{
-				timer = 0;
-				duration = 0;
-				return true;
-			}
+		if (timer > duration)
+		{
+			timer = 0;
+			duration = 0;
+			return true;
+		}
 
-			else
-			{
-				return false;
-			}
+		else
+		{
+			return false;
+		}
 
 		return true;
 	}
@@ -129,7 +129,7 @@ namespace KunrealEngine
 
 	void Coroutine::Coroutine_type::WaitForSeconds::await_suspend(std::coroutine_handle<> handle)
 	{
-		
+
 	}
 
 	void Coroutine::Coroutine_type::WaitForSeconds::await_resume() const noexcept {}
@@ -176,7 +176,7 @@ namespace KunrealEngine
 
 	void Coroutine::Coroutine_type::ReturnNull::await_suspend(std::coroutine_handle<> handle)
 	{
-		
+
 	}
 
 	void Coroutine::Coroutine_type::ReturnNull::await_resume() const noexcept
@@ -219,21 +219,27 @@ namespace KunrealEngine
 		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "Corotine: %d", _coroutines.size());
 		bool ismember = true;
 
+		std::vector<Coroutine_type*> deletethings;
+
 		for (auto coroutine : _coroutines)
 		{
-			for (auto coro : _coroutines)
-			{
-				if (coroutine != coro) ismember = false;
-				else ismember = true;
-			}
-			if (!ismember)
-			{
-				continue;
-			}
+			//for (auto coro : _coroutines)
+			//{
+			//	if (coroutine != coro) ismember = false;
+			//	else if (coroutine == coro)
+			//	{
+			//		ismember = true;
+			//		break;
+			//	}
+			//}
+			//if (!ismember)
+			//{
+			//	continue;
+			//}
 
 			bool isready = coroutine->coro_handle.promise().await_ready();
 			bool isdone = coroutine->coro_handle.done();
-			
+
 			if (!isdone && isready)
 			{
 				// 코루틴이 완료되지 않고, 지정된 시간이 경과하지 않은 경우 resume하지 않음
@@ -250,21 +256,25 @@ namespace KunrealEngine
 					}
 				}
 			}
-			
+
 			else if (isdone)
 			{
-				
-				if (_AddedCoroutines.find(coroutine->mapKey)->second != coroutine->func_ptr)
-				{
-					return;
-				}
-
-				auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
-				_AddedCoroutines.erase(coroutine->mapKey);
-				delete coroutine;
-				coroutine = nullptr;
-				_coroutines.erase(iter); // 벡터에서 제거
+				deletethings.push_back(coroutine);
 			}
+		}
+
+		for (auto coroutine : deletethings)
+		{
+			if (_AddedCoroutines.find(coroutine->mapKey)->second != coroutine->func_ptr)
+			{
+				return;
+			}
+
+			auto iter = std::find(_coroutines.begin(), _coroutines.end(), coroutine);
+			_AddedCoroutines.erase(coroutine->mapKey);
+			delete coroutine;
+			coroutine = nullptr;
+			_coroutines.erase(iter); // 벡터에서 제거
 		}
 	}
 }
