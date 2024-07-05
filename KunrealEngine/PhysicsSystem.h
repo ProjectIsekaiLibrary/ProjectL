@@ -67,9 +67,13 @@ namespace KunrealEngine
 		// sphere collider
 		void CreateDynamicSphereCollider(SphereCollider* collider);
 
+		// custom mesh collider
+		void CreateMeshCollider(Collider* collider, std::string meshName);
+
 		// physx 객체의 크기를 Collider의 크기에 맞게
 		void SetBoxSize(Collider* collider);
 		void SetCylinderSize(Collider* collider);
+		void SetMeshSize(Collider* collider, std::string meshName);
 
 		// physx 객체 on off
 		void SetActorState(Collider* collider, bool active);
@@ -100,12 +104,15 @@ namespace KunrealEngine
 		physx::PxMaterial*					_material;
 		physx::PxPvd*						_pvd;
 
-		physx::PxConvexMesh* _convexMesh;
-		std::vector<DirectX::XMFLOAT3> _cylinderVertices;	// FBX 실린더의 데이터를 담을
+		physx::PxConvexMesh* _cylinderConvexMesh;
+		physx::PxConvexMesh* _swordAuraConvexMesh;
+
 	private:
 		// FBX로부터 Cylinder 모양 추출
 		void CreateCylinderData();
 
+		// FBX로부터 검기 모양 추출
+		void CreateSwordAuraData();
 
 	// eventcallback 대응함수
 	private:
@@ -121,9 +128,6 @@ namespace KunrealEngine
 
 		// physx용 quaternion
 		physx::PxQuat EulerToQuaternion(float pitch, float yaw, float roll);
-
-		/// ??
-		void ResizeBoxShape(physx::PxShape* shape, const physx::PxVec3& newDimension);
 
 		// 마지막에 호출
 	public:

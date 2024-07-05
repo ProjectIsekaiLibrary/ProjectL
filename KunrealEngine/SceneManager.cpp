@@ -105,7 +105,10 @@ void KunrealEngine::SceneManager::ChangeScene(std::string sceneName)
 		{
 			for (auto objects : _currentScene->GetObjectList())
 			{
-				objects->SetActive(true);
+				if (objects->_autoAwake)
+				{
+					objects->SetActive(true);
+				}
 			}
 		}
 

@@ -208,6 +208,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	GameObject* meshTest = sceneInstance.GetCurrentScene()->CreateObject("meshTest");
 	meshTest->AddComponent<MeshRenderer>();
 	meshTest->GetComponent<MeshRenderer>()->SetMeshObject("cylinder/cylinder");
+	meshTest->GetComponent<MeshRenderer>()->SetMeshObject("Blade/Blade");
 	sceneInstance.GetCurrentScene()->DeleteGameObject(meshTest);
 
 	PhysicsSystem::GetInstance().Initialize();

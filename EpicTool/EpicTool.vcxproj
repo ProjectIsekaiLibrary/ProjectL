@@ -102,7 +102,7 @@
       <WarningLevel>Level4</WarningLevel>
       <Optimization>Disabled</Optimization>
       <AdditionalIncludeDirectories>$(SolutionDir)imgui;$(SolutionDir)ExLibrary\json-develop\include;$(SolutionDir)nfd\src\include;$(SolutionDir)imgui\backends;$(SolutionDir)KunrealEngine;$(SolutionDir)Bin\x64\Debug\;$(SolutionDir)boost_1_84_0;$(SolutionDir)imgui\Imguizmo\ImGuizmo-master;$(SolutionDir)Inc\Recast;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
-      <AdditionalOptions>/utf-8 %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalOptions>/utf-8 /MP %(AdditionalOptions)</AdditionalOptions>
       <LanguageStandard>stdcpp20</LanguageStandard>
       <DisableSpecificWarnings>4828</DisableSpecificWarnings>
     </ClCompile>

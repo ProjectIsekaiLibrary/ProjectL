@@ -159,6 +159,12 @@ void KunrealEngine::Particle::SetParticleSize(float x, float y)
 	_size = size;
 }
 
+
+DirectX::XMFLOAT2 KunrealEngine::Particle::GetParticleSize()
+{
+	return this->_size;
+}
+
 void KunrealEngine::Particle::SetParticleVelocity(float velocity, bool isRandom)
 {
 	_particle->SetEmitVelocity(velocity, isRandom);

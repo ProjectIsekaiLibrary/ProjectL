@@ -1,33 +1,36 @@
-#include "CylinderCollider.h"
+#include "MeshCollider.h"
 #include "GameObject.h"
 #include "Transform.h"
 #include "PhysicsSystem.h"
 
-KunrealEngine::CylinderCollider::CylinderCollider()
-	:_debugObject(nullptr)
+KunrealEngine::MeshCollider::MeshCollider()
+	:_debugObject(nullptr), _meshName("")
 {
 
 }
 
-void KunrealEngine::CylinderCollider::Initialize()
+KunrealEngine::MeshCollider::~MeshCollider()
+{
+
+}
+
+void KunrealEngine::MeshCollider::Initialize()
 {
 	this->_ownerObj = this->GetOwner();
 	this->_ownerObj->SetCollider(this);
 	this->_transform = this->_ownerObj->GetComponent<Transform>();
 	this->_position = this->_transform->GetPosition();
 
-	PhysicsSystem::GetInstance().CreateCylinderCollider(this);
-
 	_debugObject = GRAPHICS->CreateDebugCube(this->GetOwner()->GetObjectName().c_str(), this->_scale.x, this->_scale.y, this->_scale.z);
-	SetColliderScale(this->_transform->GetScale());
+
 }
 
-void KunrealEngine::CylinderCollider::Release()
+void KunrealEngine::MeshCollider::Release()
 {
 	_debugObject->Delete();
 }
 
-void KunrealEngine::CylinderCollider::FixedUpdate()
+void KunrealEngine::MeshCollider::FixedUpdate()
 {
 	// 부모 오브젝트가 존재하는 경우
 	if (this->GetOwner()->GetParent() != nullptr)
@@ -58,32 +61,32 @@ void KunrealEngine::CylinderCollider::FixedUpdate()
 	}
 }
 
-void KunrealEngine::CylinderCollider::Update()
+void KunrealEngine::MeshCollider::Update()
 {
 	SetDebugMeshData();
 }
 
-void KunrealEngine::CylinderCollider::LateUpdate()
+void KunrealEngine::MeshCollider::LateUpdate()
 {
-	
+
 }
 
-void KunrealEngine::CylinderCollider::OnTriggerEnter()
+void KunrealEngine::MeshCollider::OnTriggerEnter()
 {
-	
+
 }
 
-void KunrealEngine::CylinderCollider::OnTriggerStay()
+void KunrealEngine::MeshCollider::OnTriggerStay()
 {
-	
+
 }
 
-void KunrealEngine::CylinderCollider::OnTriggerExit()
+void KunrealEngine::MeshCollider::OnTriggerExit()
 {
-	
+
 }
 
-void KunrealEngine::CylinderCollider::SetActive(bool active)
+void KunrealEngine::MeshCollider::SetActive(bool active)
 {
 	PhysicsSystem::GetInstance().SetActorState(this, active);
 	this->_debugObject->SetActive(active);
@@ -109,30 +112,31 @@ void KunrealEngine::CylinderCollider::SetActive(bool active)
 	}
 }
 
-KunrealEngine::CylinderCollider::~CylinderCollider()
+void KunrealEngine::MeshCollider::CreateMeshCollider(std::string meshName)
 {
-
+	PhysicsSystem::GetInstance().CreateMeshCollider(this, meshName);
+	this->_meshName = meshName;
 }
 
-void KunrealEngine::CylinderCollider::SetColliderScale(float x, float y, float z)
+void KunrealEngine::MeshCollider::SetColliderScale(float x, float y, float z)
 {
 	this->_scale.x = x;
 	this->_scale.y = y;
 	this->_scale.z = z;
 
 	this->_debugObject->SetScale(x, y, z);
-	PhysicsSystem::GetInstance().SetCylinderSize(this);
+	PhysicsSystem::GetInstance().SetMeshSize(this, this->_meshName);
 }
 
-void KunrealEngine::CylinderCollider::SetColliderScale(const DirectX::XMFLOAT3& scale)
+void KunrealEngine::MeshCollider::SetColliderScale(const DirectX::XMFLOAT3& scale)
 {
 	this->_scale = scale;
 
 	this->_debugObject->SetScale(scale.x, scale.y, scale.z);
-	PhysicsSystem::GetInstance().SetCylinderSize(this);
+	PhysicsSystem::GetInstance().SetMeshSize(this, this->_meshName);
 }
 
-void KunrealEngine::CylinderCollider::SetDebugMeshData()
+void KunrealEngine::MeshCollider::SetDebugMeshData()
 {
 	if (!_transform->_haveParentBone)
 	{
