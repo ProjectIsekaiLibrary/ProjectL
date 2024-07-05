@@ -70,6 +70,8 @@ namespace KunrealEngine
 		void CheckMousePosition();
 		void MakeObstacle();
 		void RemoveObstacle();
+
+		void CreateTitleScene();
 	
 	private: // 파티클 테스트
 		void ParticleTest();

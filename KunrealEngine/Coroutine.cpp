@@ -226,7 +226,10 @@ namespace KunrealEngine
 				if (coroutine != coro) ismember = false;
 				else ismember = true;
 			}
-			if(!ismember) continue;
+			if (!ismember)
+			{
+				continue;
+			}
 
 			bool isready = coroutine->coro_handle.promise().await_ready();
 			bool isdone = coroutine->coro_handle.done();

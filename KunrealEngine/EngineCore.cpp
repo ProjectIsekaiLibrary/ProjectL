@@ -216,8 +216,6 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	soundInstance.Initialize(hwnd);
 
 	navigationInstance.Initialize();
-	navigationInstance.HandleBuild(0, "bossmap.obj");
-	navigationInstance.HandleBuild(1, "bossmap.obj");
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "Texture6.dds", true);
@@ -237,6 +235,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ParticleTest();
 	/// 니들 맘대로 해
 	PlayGround();
+	//CreateTitleScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -329,6 +328,9 @@ void KunrealEngine::EngineCore::SetEditorMousePos(POINT position)
 
 void KunrealEngine::EngineCore::PlayGround()
 {
+	navigationInstance.HandleBuild(0, "bossmap.obj");
+	navigationInstance.HandleBuild(1, "bossmap.obj");
+
 	// Camera
 	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
 	// KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
@@ -2237,4 +2239,57 @@ void KunrealEngine::EngineCore::UpdateParticleTest()
 	_particlePointList.clear(); // 파티클 포인트 초기화 반드시 해줘야함
 	_particleSwordSoulPointList.clear();
 	_particleTelepotyPointList.clear();
+}
+
+void KunrealEngine::EngineCore::CreateTitleScene()
+{
+	Scene* titleScene = sceneInstance.CreateScene("Title");
+	sceneInstance.ChangeScene("Title");
+
+	navigationInstance.HandleBuild(0, "bridge.obj");
+
+	// Camera
+	GameObject* titleCamera = sceneInstance.GetCurrentScene()->CreateObject("TitleCamera");
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
+
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
+	titleCamera->AddComponent<Camera>();
+	titleCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+	titleCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+
+	titleCamera->GetComponent<Camera>()->SetMainCamera();
+
+	titleCamera->GetComponent<Transform>()->SetPosition({ -155.0f, 128.0f, -130.0f });
+	titleCamera->GetComponent<Transform>()->SetRotation(-80.f, 180.f, 0.f);
+
+	EventManager::GetInstance().SetCamera("TitleCamera");
+
+	// light test
+	DirectX::XMFLOAT4 diffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
+	DirectX::XMFLOAT4 ambient = { 0.2f, 0.2f, 0.2f, 0.2f };
+	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 direction = { 0.9f, -1.0f, -1.0f };
+
+	GameObject* titleLight = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
+	titleLight->AddComponent<Light>();
+	Light* light = titleLight->GetComponent<Light>();
+	light->CreateDirectionalLight(ambient, diffuse, specular, direction);
+	light->SetActive(true);
+	titleLight->SetActive(true);
+
+	GameObject* bridge = sceneInstance.GetCurrentScene()->CreateObject("Bridge");
+	bridge->GetComponent<Transform>()->SetPosition(-155.0f, 66.0f, 0.0f);
+	bridge->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	bridge->GetComponent<Transform>()->SetRotation(0.0f, 90.0f, 0.0f);
+	bridge->AddComponent<MeshRenderer>();
+
+	MeshRenderer* bridgeMesh = bridge->GetComponent<MeshRenderer>();
+
+	bridgeMesh->SetMeshObject("Bridge/Bridge", true);
+
+	//// cube map test
+	GRAPHICS->CreateCubeMap("TitleBackground", "DarkMoon.dds", true);
+	GRAPHICS->SetMainCubeMap("TitleBackground");
+	
+	GameObject* titleUIpack = MakeTitleUIPack();
 }
