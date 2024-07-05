@@ -324,7 +324,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     float3 toneMappedColor = ToneMapReinhard(finalColor.xyz);
     
-    return float4(toneMappedColor, diffuseAlbedo.a);
+    return float4(toneMappedColor, 1.0f);
     
     //return finalColor;
    
