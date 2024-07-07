@@ -29,7 +29,8 @@ KunrealEngine::Kamen::Kamen()
 	_egoInsideWarning(nullptr), _egoInsideAttack(nullptr), _donutAttack(nullptr), _donutSize(0.0f), _bossCircleWarningSize(0.0f), _randomPos(),
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
-	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0)
+	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr)
 {
 	BossBasicInfo info;
 
@@ -99,7 +100,7 @@ void KunrealEngine::Kamen::Update()
 	_kamenSwordParticle[0]->GetComponent<Particle>()->SetParticleDirection(particleOriginDir.x, particleOriginDir.y, particleOriginDir.z);
 	_kamenSwordParticle[0]->GetComponent<Particle>()->SetOffSet(vec.m128_f32[0], vec.m128_f32[1], vec.m128_f32[2]);
 
-	
+
 	_kamenSwordAfterImageParticle[0]->GetComponent<Particle>()->SetOffSet(vec2.m128_f32[0], vec2.m128_f32[1], vec2.m128_f32[2]);
 	_kamenSwordAfterImageParticle[1]->GetComponent<Particle>()->SetOffSet(vec3.m128_f32[0], vec3.m128_f32[1], vec3.m128_f32[2]);
 	_kamenSwordAfterImageParticle[2]->GetComponent<Particle>()->SetOffSet(vec4.m128_f32[0], vec4.m128_f32[1], vec4.m128_f32[2]);
@@ -215,12 +216,17 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateSwordSwingTwice();
 	CreateSwordSwingTwiceHard();
 	CreateSwordSwingHorizontal();
+	CreateSwordMultipleAttack();
 
 	CreateSwordLookPlayer();
 	CreateSwordLinearReady();
 	CreateSwordLinearAttack();
 
 	CreateSwordChopAttack();
+
+
+	// 코어
+	CreateSwordMultipleAttack();
 
 	// 실제 사용중인 패턴들 모아놓음
 	GamePattern();
@@ -254,8 +260,6 @@ void KunrealEngine::Kamen::GamePattern()
 	//BasicSwordAttackPattern();
 
 	//CoreEmmergencePattern();
-
-
 }
 
 
@@ -1045,7 +1049,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 	}
 	{
 		std::string name = "verticalParticleSide1";
-		auto verticalParticleside = _boss ->GetObjectScene()->CreateObject(name);
+		auto verticalParticleside = _boss->GetObjectScene()->CreateObject(name);
 
 		verticalParticleside->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
 		verticalParticleside->AddComponent<Particle>();
@@ -1060,7 +1064,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 		_verticalParticleSide.emplace_back(verticalParticleside);
 	}
-	{	
+	{
 		std::string name = "verticalParticleSide2";
 		auto verticalParticleside = _boss->GetObjectScene()->CreateObject(name);
 
@@ -1183,8 +1187,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				case 8:
 					verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.4f);
 					break;
-			default:
-				break;
+				default:
+					break;
 			}
 
 			_kamenSwordAfterImageParticle.emplace_back(verticalParticle);
@@ -1482,9 +1486,6 @@ void KunrealEngine::Kamen::CreateSubObject()
 			auto blade = _boss->GetObjectScene()->CreateObject("Blade");
 			blade->AddComponent<MeshRenderer>();
 			blade->GetComponent<MeshRenderer>()->SetMeshObject("Blade/Blade");
-			// 텍스쳐 필요함
-			blade->SetTotalComponentState(false);
-			blade->SetActive(false);
 
 			auto texSize = blade->GetComponent<MeshRenderer>()->GetTextures().size();
 			for (int i = 0; i < texSize; i++)
@@ -1502,6 +1503,25 @@ void KunrealEngine::Kamen::CreateSubObject()
 			_blade.emplace_back(blade);
 		}
 
+		// 큰 검기
+		{
+			_largeBlade = _boss->GetObjectScene()->CreateObject("LargeBlade");
+			_largeBlade->AddComponent<MeshRenderer>();
+			_largeBlade->GetComponent<MeshRenderer>()->SetMeshObject("Blade/Blade");
+
+			auto texSize = _largeBlade->GetComponent<MeshRenderer>()->GetTextures().size();
+			for (int i = 0; i < texSize; i++)
+			{
+				_largeBlade->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Blade/Diffuse.png");
+				_largeBlade->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Blade/Normal.png");
+			}
+			_largeBlade->GetComponent<MeshRenderer>()->SetAlpha(0.6f);
+
+			_largeBlade->GetComponent<Transform>()->SetScale(28.0f, 20.0f, 21.0f);
+
+			_largeBlade->SetTotalComponentState(false);
+			_largeBlade->SetActive(false);
+		}
 	}
 
 	/// 분신 서브 오브젝트들
@@ -1726,65 +1746,103 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 	}
 
 	auto initLogic = [pattern, this]()
+	{
+		for (int i = 0; i < 5; i++)
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				for (int i = 0; i < 5; i++)
-				{
-					pattern->DeleteSubObject(_egoHandFire[i]);
-				}
-
-				_handFireReady[i] = true;
+				pattern->DeleteSubObject(_egoHandFire[i]);
 			}
 
-			if (_isEgoAttackReady)
+			_handFireReady[i] = true;
+		}
+
+		if (_isEgoAttackReady)
+		{
+			for (int i = 0; i < 5; i++)
 			{
-				for (int i = 0; i < 5; i++)
-				{
-					pattern->SetSubObject(_egoHandFire[i]);
+				pattern->SetSubObject(_egoHandFire[i]);
 
-					_egoHandFireReady[i] = true;
-				}
-
-				_isEgoAttackReady = false;
+				_egoHandFireReady[i] = true;
 			}
-		};
+
+			_isEgoAttackReady = false;
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
+		auto fireSpeed = 0.05f;
+
+		// 분신용
+		if (_isEgoAttack)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+			auto egoAnimator = _alterEgo->GetComponent<Animator>();
+			egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+		}
 
-			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
-			auto fireSpeed = 0.05f;
-
-			// 분신용
-			if (_isEgoAttack)
+		for (int i = 0; i < 5; i++)
+		{
+			if (animator->GetCurrentFrame() >= 14 + i)
 			{
-				auto egoAnimator = _alterEgo->GetComponent<Animator>();
-				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
-			}
-
-			for (int i = 0; i < 5; i++)
-			{
-				if (animator->GetCurrentFrame() >= 14 + i)
+				if (_handFireReady[i] == true)
 				{
-					if (_handFireReady[i] == true)
-					{
-						_handFireReady[i] = false;
+					_handFireReady[i] = false;
 
-						auto mat = _leftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
+					auto mat = _leftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
+					auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+					auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+
+					_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+					auto childs = _handFire[i]->GetChilds();
+
+					for (auto& index : childs)
+					{
+						index->GetComponent<Particle>()->SetActive(true);
+					}
+
+					// 콜라이더 키기
+					auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
+					pattern->_isColliderActive[objectIndex] = true;
+				}
+				else
+				{
+					auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
+					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+				}
+
+				// 분신용
+				if (_isEgoAttack)
+				{
+					if (_egoHandFireReady[i] == true)
+					{
+						_egoHandFireReady[i] = false;
+
+						auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
+						auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 30.0f, egoPosTransform.z);
+
+						auto mat = _egoLeftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
 						auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
 
-						auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+						auto direction = ToolBox::GetDirectionVec(egoPos, firePos);
 
-						_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+						_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
 
-						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+						_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-						auto childs = _handFire[i]->GetChilds();
+						auto childs = _egoHandFire[i]->GetChilds();
 
 						for (auto& index : childs)
 						{
@@ -1792,75 +1850,37 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 						}
 
 						// 콜라이더 키기
-						auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
+						auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
 						pattern->_isColliderActive[objectIndex] = true;
 					}
 					else
 					{
-						auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
-						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
+						auto firePos = _egoHandFire[i]->GetComponent<Transform>()->GetPosition();
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
 
-						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-					}
-
-					// 분신용
-					if (_isEgoAttack)
-					{
-						if (_egoHandFireReady[i] == true)
-						{
-							_egoHandFireReady[i] = false;
-
-							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
-							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 30.0f, egoPosTransform.z);
-
-							auto mat = _egoLeftHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_L");
-							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
-
-							auto direction = ToolBox::GetDirectionVec(egoPos, firePos);
-
-							_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
-
-							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
-
-							auto childs = _egoHandFire[i]->GetChilds();
-
-							for (auto& index : childs)
-							{
-								index->GetComponent<Particle>()->SetActive(true);
-							}
-
-							// 콜라이더 키기
-							auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
-							pattern->_isColliderActive[objectIndex] = true;
-						}
-						else
-						{
-							auto firePos = _egoHandFire[i]->GetComponent<Transform>()->GetPosition();
-							DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
-
-							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-						}
+						_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 					}
 				}
 			}
+		}
 
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 
-			if (pattern->_colliderOnCount > 0)
+		if (pattern->_colliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
 			{
-				if (animator->GetCurrentFrame() >= 10)
-				{
 
-				}
 			}
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -1909,85 +1929,123 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 	}
 
 	auto initLogic = [pattern, this]()
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			_handFireReady[i] = true;
+
+			auto childs = _handFire[i]->GetChilds();
+
+			for (auto& index : childs)
+			{
+				index->GetComponent<Particle>()->SetActive(false);
+			}
+
+			pattern->DeleteSubObject(_egoHandFire[i]);
+		}
+
+		if (_isEgoAttackReady)
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				_handFireReady[i] = true;
+				_egoHandFireReady[i] = true;
 
-				auto childs = _handFire[i]->GetChilds();
+				auto childs = _egoHandFire[i]->GetChilds();
 
 				for (auto& index : childs)
 				{
 					index->GetComponent<Particle>()->SetActive(false);
 				}
 
-				pattern->DeleteSubObject(_egoHandFire[i]);
+				pattern->SetSubObject(_egoHandFire[i]);
 			}
 
-			if (_isEgoAttackReady)
-			{
-				for (int i = 0; i < 5; i++)
-				{
-					_egoHandFireReady[i] = true;
-
-					auto childs = _egoHandFire[i]->GetChilds();
-
-					for (auto& index : childs)
-					{
-						index->GetComponent<Particle>()->SetActive(false);
-					}
-
-					pattern->SetSubObject(_egoHandFire[i]);
-				}
-
-				_isEgoAttackReady = false;
-			}
-		};
+			_isEgoAttackReady = false;
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
+		auto fireSpeed = 0.05f;
+
+		// 분신용
+		if (_isEgoAttack)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+			auto egoAnimator = _alterEgo->GetComponent<Animator>();
+			egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+		}
 
-			auto bossPos = DirectX::XMFLOAT3(_bossTransform->GetPosition().x, 30.0f, _bossTransform->GetPosition().z);
-			auto fireSpeed = 0.05f;
-
-			// 분신용
-			if (_isEgoAttack)
+		for (int i = 0; i < 5; i++)
+		{
+			int index = i;
+			if (i == 3)
 			{
-				auto egoAnimator = _alterEgo->GetComponent<Animator>();
-				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+				index++;
 			}
-
-			for (int i = 0; i < 5; i++)
+			else if (i == 4)
 			{
-				int index = i;
-				if (i == 3)
+				index += 2;
+			}
+			if (animator->GetCurrentFrame() >= 24 + index)
+			{
+				if (_handFireReady[i] == true)
 				{
-					index++;
-				}
-				else if (i == 4)
-				{
-					index += 2;
-				}
-				if (animator->GetCurrentFrame() >= 24 + index)
-				{
-					if (_handFireReady[i] == true)
-					{
-						_handFireReady[i] = false;
+					_handFireReady[i] = false;
 
-						auto mat = _rightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
+					auto mat = _rightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
+					auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
+
+					auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+
+					_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+
+					auto childs = _handFire[i]->GetChilds();
+
+					for (auto& index : childs)
+					{
+						index->GetComponent<Particle>()->SetActive(true);
+					}
+
+					// 콜라이더 키기
+					auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
+					pattern->_isColliderActive[objectIndex] = true;
+				}
+				else
+				{
+					auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
+					DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
+
+					_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+				}
+
+				// 분신용
+				if (_isEgoAttack)
+				{
+					if (_egoHandFireReady[i] == true)
+					{
+						_egoHandFireReady[i] = false;
+
+						auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
+						auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 30.0f, egoPosTransform.z);
+
+						auto mat = _egoRightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
 						auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
 
-						auto direction = ToolBox::GetDirectionVec(bossPos, firePos);
+						auto direction = ToolBox::GetDirectionVec(egoPos, firePos);
 
-						_handFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
+						_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
 
-						_handFire[i]->GetComponent<Transform>()->SetPosition(firePos);
+						_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
 
-						auto childs = _handFire[i]->GetChilds();
+						auto childs = _egoHandFire[i]->GetChilds();
 
 						for (auto& index : childs)
 						{
@@ -1995,76 +2053,38 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 						}
 
 						// 콜라이더 키기
-						auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
+						auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
 						pattern->_isColliderActive[objectIndex] = true;
 					}
 					else
 					{
-						auto firePos = _handFire[i]->GetComponent<Transform>()->GetPosition();
-						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
+						auto firePos = _egoHandFire[i]->GetComponent<Transform>()->GetPosition();
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
 
-						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-					}
-
-					// 분신용
-					if (_isEgoAttack)
-					{
-						if (_egoHandFireReady[i] == true)
-						{
-							_egoHandFireReady[i] = false;
-
-							auto egoPosTransform = _alterEgo->GetComponent<Transform>()->GetPosition();
-							auto egoPos = DirectX::XMFLOAT3(egoPosTransform.x, 30.0f, egoPosTransform.z);
-
-							auto mat = _egoRightHandBone->GetComponent<MeshRenderer>()->GetParentBoneOriginalTransform("MiddleFinger1_R");
-							auto firePos = DirectX::XMFLOAT3(mat._41, mat._42, mat._43);
-
-							auto direction = ToolBox::GetDirectionVec(egoPos, firePos);
-
-							_egoHandFireDir[i] = DirectX::XMFLOAT3(direction.m128_f32[0], direction.m128_f32[1], direction.m128_f32[2]);
-
-							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(firePos);
-
-							auto childs = _egoHandFire[i]->GetChilds();
-
-							for (auto& index : childs)
-							{
-								index->GetComponent<Particle>()->SetActive(true);
-							}
-
-							// 콜라이더 키기
-							auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
-							pattern->_isColliderActive[objectIndex] = true;
-						}
-						else
-						{
-							auto firePos = _egoHandFire[i]->GetComponent<Transform>()->GetPosition();
-							DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
-
-							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-						}
+						_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 					}
 				}
 			}
+		}
 
 
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 
-			if (pattern->_colliderOnCount > 0)
+		if (pattern->_colliderOnCount > 0)
+		{
+			if (animator->GetCurrentFrame() >= 10)
 			{
-				if (animator->GetCurrentFrame() >= 10)
-				{
 
-				}
 			}
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -2080,25 +2100,25 @@ void KunrealEngine::Kamen::CreateTurn180()
 	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(200.0f);
 
 	auto turn180 = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		animator->Play("Idle", pattern->_speed, false);
+
+		// 회전 시킴
+		auto rotateFinish = Rotate(180, pattern->_speed);
+
+		// 회전 끝나지 않았다면
+		if (rotateFinish == false)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-
-			animator->Play("Idle", pattern->_speed, false);
-
-			// 회전 시킴
-			auto rotateFinish = Rotate(180, pattern->_speed);
-
-			// 회전 끝나지 않았다면
-			if (rotateFinish == false)
-			{
-				// 계속 회전시키기 위함
-				return true;
-			}
-			else
-			{
-				return false;
-			}
-		};
+			// 계속 회전시키기 위함
+			return true;
+		}
+		else
+		{
+			return false;
+		}
+	};
 
 
 	pattern->SetLogic(turn180);
@@ -2129,18 +2149,18 @@ void KunrealEngine::Kamen::CreateTeleportToCenter()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
 
 	auto teleport = [pattern, this]()
+	{
+		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
+
+		if (isTeleportFinish)
 		{
-			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
+			RotateByAngle(0.0f);
 
-			if (isTeleportFinish)
-			{
-				RotateByAngle(0.0f);
+			return false;
+		}
 
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(teleport);
@@ -2158,16 +2178,16 @@ void KunrealEngine::Kamen::CreateTeleportToCenterWithLook()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
 
 	auto teleport = [pattern, this]()
+	{
+		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
+
+		if (isTeleportFinish)
 		{
-			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_centerPos.x, _centerPos.y, _centerPos.z), true, 1.0f);
+			return false;
+		}
 
-			if (isTeleportFinish)
-			{
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(teleport);
@@ -2184,30 +2204,30 @@ void KunrealEngine::Kamen::CreateTeleportRandomWithLook()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(0);
 
 	auto initLogic = [pattern, this]()
-		{
-			auto bossPos = _bossTransform->GetPosition();
+	{
+		auto bossPos = _bossTransform->GetPosition();
 
-			auto ranX = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
-			auto ranZ = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
+		auto ranX = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
+		auto ranZ = ToolBox::GetRandomFloat(bossPos.x - 40.0f, bossPos.x + 40.0f);
 
-			_randomPos.x = ranX;
-			_randomPos.y = _bossTransform->GetPosition().y;
-			_randomPos.z = ranZ;
-		};
+		_randomPos.x = ranX;
+		_randomPos.y = _bossTransform->GetPosition().y;
+		_randomPos.z = ranZ;
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto teleport = [pattern, this]()
+	{
+		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_randomPos.x, _randomPos.y, _randomPos.z), true, 1.0f);
+
+		if (isTeleportFinish)
 		{
-			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_randomPos.x, _randomPos.y, _randomPos.z), true, 1.0f);
+			return false;
+		}
 
-			if (isTeleportFinish)
-			{
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(teleport);
@@ -2222,55 +2242,55 @@ void KunrealEngine::Kamen::CreateTeleportWithSwordSwing()
 	pattern->SetAnimName("SwordIdle").SetMaxColliderCount(0).SetSpeed(20.0f);
 
 	auto initLogic = [pattern, this]()
+	{
+		auto index = ToolBox::GetRandomNum(3);
+
+		auto bossRotation = _bossTransform->GetRotation().y;
+
+		switch (index)
 		{
-			auto index = ToolBox::GetRandomNum(3);
-
-			auto bossRotation = _bossTransform->GetRotation().y;
-
-			switch (index)
+			case 0:
 			{
-				case 0:
-				{
-					_randomPos = { -65.0f, _centerPos.y, 0.0f };
-					_bossTransform->SetRotation(0.0f, -90.0f, 0.0f);
-					break;
-				}
-				case 1:
-				{
-					_randomPos = { 0.0f, _centerPos.y, 75.0f };
-					_bossTransform->SetRotation(0.0f, 0.0f, 0.0f);
-					break;
-				}
-				case 2:
-				{
-					_randomPos = { 67.0f, _centerPos.y, 0.0f };
-					_bossTransform->SetRotation(0.0f, 90.0f, 0.0f);
-					break;
-				}
-				case 3:
-				{
-					_randomPos = { 0.0f, _centerPos.y, -90.0f };
-					_bossTransform->SetRotation(0.0f, 180.0f, 0.0f);
-					break;
-				}
-				default:
-					break;
+				_randomPos = { -65.0f, _centerPos.y, 0.0f };
+				_bossTransform->SetRotation(0.0f, -90.0f, 0.0f);
+				break;
 			}
-		};
+			case 1:
+			{
+				_randomPos = { 0.0f, _centerPos.y, 75.0f };
+				_bossTransform->SetRotation(0.0f, 0.0f, 0.0f);
+				break;
+			}
+			case 2:
+			{
+				_randomPos = { 67.0f, _centerPos.y, 0.0f };
+				_bossTransform->SetRotation(0.0f, 90.0f, 0.0f);
+				break;
+			}
+			case 3:
+			{
+				_randomPos = { 0.0f, _centerPos.y, -90.0f };
+				_bossTransform->SetRotation(0.0f, 180.0f, 0.0f);
+				break;
+			}
+			default:
+				break;
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto teleport = [pattern, this]()
+	{
+		auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_randomPos.x, _randomPos.y, _randomPos.z), false, 1.0f);
+
+		if (isTeleportFinish)
 		{
-			auto isTeleportFinish = Teleport(DirectX::XMFLOAT3(_randomPos.x, _randomPos.y, _randomPos.z), false, 1.0f);
+			return false;
+		}
 
-			if (isTeleportFinish)
-			{
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(teleport);
 
@@ -2285,38 +2305,38 @@ void KunrealEngine::Kamen::CreateTurnClockWise()
 	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(50.0f);
 
 	auto initializeLogic = [pattern, this]()
-		{
-			_boss->GetComponent<BoxCollider>()->SetActive(true);
-			_boss->GetComponent<MeshRenderer>()->SetActive(true);
-		};
+	{
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto turn = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		// 회전 진행 안됐다면
+		if (_isRotateFinish == false)
 		{
-			auto animator = _boss->GetComponent<Animator>();
+			animator->Play("Idle", pattern->_speed, true);
 
-			// 회전 진행 안됐다면
-			if (_isRotateFinish == false)
+			// 회전 시킴
+			auto rotateFinish = RotateClockWise(4 * pattern->_speed, false);
+
+			// 회전 끝나지 않았다면
+			if (rotateFinish == false)
 			{
-				animator->Play("Idle", pattern->_speed, true);
-
-				// 회전 시킴
-				auto rotateFinish = RotateClockWise(4 * pattern->_speed, false);
-
-				// 회전 끝나지 않았다면
-				if (rotateFinish == false)
-				{
-					// 계속 회전시키기 위함
-					return true;
-				}
-				else
-				{
-					_isRotateFinish = false;
-					return false;
-				}
+				// 계속 회전시키기 위함
+				return true;
 			}
-		};
+			else
+			{
+				_isRotateFinish = false;
+				return false;
+			}
+		}
+	};
 
 	pattern->SetLogic(turn);
 
@@ -2333,38 +2353,38 @@ void KunrealEngine::Kamen::CreateTurnAntiClockWise()
 	pattern->SetAnimName("Idle").SetMaxColliderCount(0).SetSpeed(50.0f);
 
 	auto initializeLogic = [pattern, this]()
-		{
-			_boss->GetComponent<BoxCollider>()->SetActive(true);
-			_boss->GetComponent<MeshRenderer>()->SetActive(true);
-		};
+	{
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto turn = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		// 회전 진행 안됐다면
+		if (_isRotateFinish == false)
 		{
-			auto animator = _boss->GetComponent<Animator>();
+			animator->Play("Idle", pattern->_speed, true);
 
-			// 회전 진행 안됐다면
-			if (_isRotateFinish == false)
+			// 회전 시킴
+			auto rotateFinish = RotateClockWise(4 * pattern->_speed, true);
+
+			// 회전 끝나지 않았다면
+			if (rotateFinish == false)
 			{
-				animator->Play("Idle", pattern->_speed, true);
-
-				// 회전 시킴
-				auto rotateFinish = RotateClockWise(4 * pattern->_speed, true);
-
-				// 회전 끝나지 않았다면
-				if (rotateFinish == false)
-				{
-					// 계속 회전시키기 위함
-					return true;
-				}
-				else
-				{
-					_isRotateFinish = false;
-					return false;
-				}
+				// 계속 회전시키기 위함
+				return true;
 			}
-		};
+			else
+			{
+				_isRotateFinish = false;
+				return false;
+			}
+		}
+	};
 
 	pattern->SetLogic(turn);
 
@@ -2381,31 +2401,31 @@ void KunrealEngine::Kamen::CreateReverseEmergence()
 	pattern->SetAnimName("ReverseEmergence").SetMaxColliderCount(0).SetSpeed(20.0f);
 
 	auto initializeLogic = [pattern, this]()
-		{
-			_boss->GetComponent<BoxCollider>()->SetActive(true);
-			_boss->GetComponent<MeshRenderer>()->SetActive(true);
-		};
+	{
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto reverseEmergence = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		auto isPlaying = animator->Play(pattern->_animName, pattern->_speed);
+
+		if (isPlaying)
 		{
-			auto animator = _boss->GetComponent<Animator>();
+			return true;
+		}
+		else
+		{
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
 
-			auto isPlaying = animator->Play(pattern->_animName, pattern->_speed);
-
-			if (isPlaying)
-			{
-				return true;
-			}
-			else
-			{
-				_boss->GetComponent<BoxCollider>()->SetActive(false);
-				_boss->GetComponent<MeshRenderer>()->SetActive(false);
-
-				return false;
-			}
-		};
+			return false;
+		}
+	};
 
 	pattern->SetLogic(reverseEmergence);
 
@@ -2425,106 +2445,106 @@ void KunrealEngine::Kamen::CreateEmergence()
 	pattern->SetSubObject(_egoInsideAttack);
 
 	auto initializeLogic = [pattern, this]()
+	{
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+		_boss->GetComponent<Transform>()->SetPosition(_emergencePos);
+
+		auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
+		_bossTransform->SetRotation(_bossTransform->GetRotation().x, angle, _bossTransform->GetRotation().z);
+
+		_bossInsideAttack->GetComponent<Transform>()->SetPosition(_emergencePos.x, _bossTransform->GetPosition().y, _emergencePos.z);
+
+		_timer = 0.0f;
+
+		for (auto& index : _particleEmergenceAttack)
 		{
-			_boss->GetComponent<BoxCollider>()->SetActive(true);
-			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+			index->GetComponent<Particle>()->SetActive(true);
+			index->GetComponent<Particle>()->SetParticleSize(80, 80);
 
-			_boss->GetComponent<Transform>()->SetPosition(_emergencePos);
+			auto objectIndex = pattern->GetSubObjectIndex(_bossInsideAttack);
+			pattern->_isColliderActive[objectIndex] = true;
 
-			auto angle = CalculateAngle(_bossTransform->GetPosition(), _playerTransform->GetPosition());
-			_bossTransform->SetRotation(_bossTransform->GetRotation().x, angle, _bossTransform->GetRotation().z);
+			_bossInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f);
+		}
 
-			_bossInsideAttack->GetComponent<Transform>()->SetPosition(_emergencePos.x, _bossTransform->GetPosition().y, _emergencePos.z);
+		if (_isEgoAttack)
+		{
+			auto egoPos = _alterEgo->GetComponent<Transform>()->GetPosition();
+			_egoInsideAttack->GetComponent<Transform>()->SetPosition(egoPos.x, egoPos.y, egoPos.z);
 
-			_timer = 0.0f;
+			auto objectIndex = pattern->GetSubObjectIndex(_egoInsideAttack);
+			pattern->_isColliderActive[objectIndex] = true;
 
-			for (auto& index : _particleEmergenceAttack)
+			_egoInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f);
+
+			for (auto& index : _particleEgoEmergenceAttack)
 			{
 				index->GetComponent<Particle>()->SetActive(true);
 				index->GetComponent<Particle>()->SetParticleSize(80, 80);
-
-				auto objectIndex = pattern->GetSubObjectIndex(_bossInsideAttack);
-				pattern->_isColliderActive[objectIndex] = true;
-
-				_bossInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f);
 			}
-
-			if (_isEgoAttack)
-			{
-				auto egoPos = _alterEgo->GetComponent<Transform>()->GetPosition();
-				_egoInsideAttack->GetComponent<Transform>()->SetPosition(egoPos.x, egoPos.y, egoPos.z);
-
-				auto objectIndex = pattern->GetSubObjectIndex(_egoInsideAttack);
-				pattern->_isColliderActive[objectIndex] = true;
-
-				_egoInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f, _bossCircleWarningSize * 1.5f);
-
-				for (auto& index : _particleEgoEmergenceAttack)
-				{
-					index->GetComponent<Particle>()->SetActive(true);
-					index->GetComponent<Particle>()->SetParticleSize(80, 80);
-				}
-			}
-		};
+		}
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto emergence = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		auto isPlaying = animator->Play(pattern->_animName, pattern->_speed);
+
+		_timer += TimeManager::GetInstance().GetDeltaTime(); // 어디선가 더해지고있다
+
+		if (_isEgoAttack)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-
-			auto isPlaying = animator->Play(pattern->_animName, pattern->_speed);
-
-			_timer += TimeManager::GetInstance().GetDeltaTime(); // 어디선가 더해지고있다
-
-			if (_isEgoAttack)
+			for (int i = 0; i < _particleEgoEmergenceAttack.size(); i++)
 			{
-				for (int i = 0; i < _particleEgoEmergenceAttack.size(); i++)
+				if (_timer >= 1.3f)
 				{
-					if (_timer >= 1.3f)
-					{
-						auto objectIndex = pattern->GetSubObjectIndex(_egoInsideAttack);
-						pattern->_isColliderActive[objectIndex] = false;
+					auto objectIndex = pattern->GetSubObjectIndex(_egoInsideAttack);
+					pattern->_isColliderActive[objectIndex] = false;
 
-						if (_timer < 2.6f)
-						{
-							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
-						}
-						else
-						{
-							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
-						}
+					if (_timer < 2.6f)
+					{
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
+					}
+					else
+					{
+						_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
 					}
 				}
 			}
+		}
 
-			if (isPlaying)
+		if (isPlaying)
+		{
+			for (int i = 0; i < _particleEmergenceAttack.size(); i++)
 			{
-				for (int i = 0; i < _particleEmergenceAttack.size(); i++)
+				if (_timer >= 1.3f)
 				{
-					if (_timer >= 1.3f)
-					{
-						auto objectIndex = pattern->GetSubObjectIndex(_bossInsideAttack);
-						pattern->_isColliderActive[objectIndex] = false;
+					auto objectIndex = pattern->GetSubObjectIndex(_bossInsideAttack);
+					pattern->_isColliderActive[objectIndex] = false;
 
-						if (_timer < 2.6f)
-						{
-							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
-						}
-						else
-						{
-							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
-						}
+					if (_timer < 2.6f)
+					{
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
+					}
+					else
+					{
+						_particleEmergenceAttack[i]->GetComponent<Particle>()->SetActive(false);
 					}
 				}
-				return true;
 			}
-			else
-			{
-				return false;
-			}
+			return true;
+		}
+		else
+		{
+			return false;
+		}
 
-		};
+	};
 
 	pattern->SetLogic(emergence);
 
@@ -2548,57 +2568,57 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_swordInsideWarning);
-			pattern->SetSubObject(_swordInsideAttack);
+	{
+		pattern->SetSubObject(_swordInsideWarning);
+		pattern->SetSubObject(_swordInsideAttack);
 
-			_swordInsideWarning->GetComponent<TransparentMesh>()->Reset();
-			_swordInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordInsideWarning->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y, _swordOriginPos.z);
-			_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y, _swordOriginPos.z);
+		_swordInsideWarning->GetComponent<TransparentMesh>()->Reset();
+		_swordInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordInsideWarning->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y, _swordOriginPos.z);
+		_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y, _swordOriginPos.z);
 
-			_swordTimer = 0.0f;
+		_swordTimer = 0.0f;
 
-			_swordInsideWarning->GetComponent<Transform>()->SetScale(_swordCircleWarningSize, _swordCircleWarningSize, _swordCircleWarningSize);
-			_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_swordCircleWarningSize * 1.5f, _swordCircleWarningSize * 1.5f, _swordCircleWarningSize * 1.5f);
-		};
+		_swordInsideWarning->GetComponent<Transform>()->SetScale(_swordCircleWarningSize, _swordCircleWarningSize, _swordCircleWarningSize);
+		_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_swordCircleWarningSize * 1.5f, _swordCircleWarningSize * 1.5f, _swordCircleWarningSize * 1.5f);
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto outsideSafe = [pattern, this]()
+	{
+		// 장판 실행
+		auto isPlayed = _swordInsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+
+		// 장판 실행이 완료되면
+		if (isPlayed)
 		{
-			// 장판 실행
-			auto isPlayed = _swordInsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+			// 콜라이더 키기
+			auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
+			pattern->_isColliderActive[objectIndex] = true;
 
-			// 장판 실행이 완료되면
-			if (isPlayed)
+			// n초동안 콜라이더 실행
+			_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+			//_swordInsideAttack->GetComponent<Particle>()->SetActive(true);
+
+			auto particleScaleUp = (_swordCircleWarningSize) / 100.0f;
+			particleScaleUp += 1.0f;
+
+			//_swordInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+			for (auto& pillarParticle : _swordInsideAttack->GetChilds())
 			{
-				// 콜라이더 키기
-				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
-				pattern->_isColliderActive[objectIndex] = true;
-
-				// n초동안 콜라이더 실행
-				_swordTimer += TimeManager::GetInstance().GetDeltaTime();
-				//_swordInsideAttack->GetComponent<Particle>()->SetActive(true);
-
-				auto particleScaleUp = (_swordCircleWarningSize) / 100.0f;
-				particleScaleUp += 1.0f;
-
-				//_swordInsideAttack->GetComponent<Particle>()->SetParticleSize(100.f * particleScaleUp * ToolBox::GetRandomFloat(0.3f, 1.0f), 40.0f * particleScaleUp * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-				for (auto& pillarParticle : _swordInsideAttack->GetChilds())
-				{
-					pillarParticle->GetComponent<Particle>()->SetActive(true);
-				}
-
-				if (_swordTimer >= 2.0f)
-				{
-					return false;
-				}
+				pillarParticle->GetComponent<Particle>()->SetActive(true);
 			}
 
-			return true;
-		};
+			if (_swordTimer >= 2.0f)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(outsideSafe);
@@ -2619,71 +2639,71 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_swordOutsideWarning);
-			pattern->SetSubObject(_swordInsideAttack);
+	{
+		pattern->SetSubObject(_swordOutsideWarning);
+		pattern->SetSubObject(_swordInsideAttack);
 
-			_swordOutsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _swordCircleWarningSize);
-			_swordOutsideWarning->GetComponent<TransparentMesh>()->Reset();
-			_swordOutsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y, _swordOriginPos.z);
-			_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_swordCircleWarningSize * 1.8f, _swordCircleWarningSize * 1.8f, _swordCircleWarningSize * 1.8f);
+		_swordOutsideWarning->GetComponent<TransparentMesh>()->SetExceptRange(_swordOriginPos, _swordCircleWarningSize);
+		_swordOutsideWarning->GetComponent<TransparentMesh>()->Reset();
+		_swordOutsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordInsideAttack->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, _bossTransform->GetPosition().y, _swordOriginPos.z);
+		_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_swordCircleWarningSize * 1.8f, _swordCircleWarningSize * 1.8f, _swordCircleWarningSize * 1.8f);
 
-			_swordTimer = 0.0f;
+		_swordTimer = 0.0f;
 
-			//for (auto& object : _particleSwordOutsideAttack)
-			//{
-			//	object->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
-			//	//object->GetComponent<Particle>()->SetActive(true);
-			//}
+		//for (auto& object : _particleSwordOutsideAttack)
+		//{
+		//	object->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+		//	//object->GetComponent<Particle>()->SetActive(true);
+		//}
 
-			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
-			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetActive(true);
-		};
+		_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+		_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetActive(true);
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto outsideSafe = [pattern, this]()
+	{
+		// 장판 실행
+		auto isPlayed = _swordOutsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+
+		// 장판 실행이 완료되면
+		if (isPlayed)
 		{
-			// 장판 실행
-			auto isPlayed = _swordOutsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+			// 콜라이더 키기
+			auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
+			pattern->_isColliderActive[objectIndex] = true;
 
-			// 장판 실행이 완료되면
-			if (isPlayed)
-			{
-				// 콜라이더 키기
-				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
-				pattern->_isColliderActive[objectIndex] = true;
+			_swordTimer += TimeManager::GetInstance().GetDeltaTime();
 
-				_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+			const float delays[] = { 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f };
 
-				const float delays[] = { 0.1f, 0.15f, 0.2f, 0.25f, 0.3f, 0.35f, 0.4f, 0.45f, 0.5f, 0.55f };
-
-				for (int i = 0; i < 10; ++i) {
-					if (_swordTimer > delays[i])
-					{
-						auto particle = _particleSwordOutsideAttack[i + 1]->GetComponent<Particle>();
-						particle->SetActive(true);
-						float adjustedTime = _swordTimer - delays[i];
-						float newSize = 60.0f + adjustedTime * 600.0f;
-						particle->SetParticleSize(newSize, newSize);
-					}
-				}
-
-
-				//for (int i = 1; i < _particleSwordOutsideAttack.size(); i++)
-				//{
-				//	_particleSwordOutsideAttack[i]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 300 *i, 60 + _timer * 300*i);
-				//}
-
-				if (_swordTimer >= 1.5f)
+			for (int i = 0; i < 10; ++i) {
+				if (_swordTimer > delays[i])
 				{
-					return false;
+					auto particle = _particleSwordOutsideAttack[i + 1]->GetComponent<Particle>();
+					particle->SetActive(true);
+					float adjustedTime = _swordTimer - delays[i];
+					float newSize = 60.0f + adjustedTime * 600.0f;
+					particle->SetParticleSize(newSize, newSize);
 				}
 			}
 
-			return true;
-		};
+
+			//for (int i = 1; i < _particleSwordOutsideAttack.size(); i++)
+			//{
+			//	_particleSwordOutsideAttack[i]->GetComponent<Particle>()->SetParticleSize(60 + _timer * 300 *i, 60 + _timer * 300*i);
+			//}
+
+			if (_swordTimer >= 1.5f)
+			{
+				return false;
+			}
+		}
+
+		return true;
+	};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(outsideSafe);
@@ -2701,68 +2721,68 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f);
 
 	auto initializeLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_swordDonutWarning1);
-			pattern->SetSubObject(_swordDonutWarning2);
-			pattern->SetSubObject(_swordDonutWarning3);
+	{
+		pattern->SetSubObject(_swordDonutWarning1);
+		pattern->SetSubObject(_swordDonutWarning2);
+		pattern->SetSubObject(_swordDonutWarning3);
 
-			pattern->SetSubObject(_freeSword);
+		pattern->SetSubObject(_freeSword);
 
-			auto swordPos = _freeSword->GetComponent<Transform>()->GetPosition();
+		auto swordPos = _freeSword->GetComponent<Transform>()->GetPosition();
 
-			_swordDonutWarning1->GetComponent<TransparentMesh>()->Reset();
-			_swordDonutWarning1->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordDonutWarning1->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
+		_swordDonutWarning1->GetComponent<TransparentMesh>()->Reset();
+		_swordDonutWarning1->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordDonutWarning1->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
 
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->Reset();
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordDonutWarning2->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _swordCircleWarningSize);
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->Reset();
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordDonutWarning2->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _swordCircleWarningSize);
 
-			_swordDonutWarning3->GetComponent<TransparentMesh>()->Reset();
-			_swordDonutWarning3->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordDonutWarning3->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
-			_swordDonutWarning3->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _swordCircleWarningSize * 2);
+		_swordDonutWarning3->GetComponent<TransparentMesh>()->Reset();
+		_swordDonutWarning3->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordDonutWarning3->GetComponent<Transform>()->SetPosition(swordPos.x, _centerPos.y, swordPos.z);
+		_swordDonutWarning3->GetComponent<TransparentMesh>()->SetExceptRange(swordPos, _swordCircleWarningSize * 2);
 
-			_swordTimer = 0.0f;
-		};
+		_swordTimer = 0.0f;
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto donutSafe = [pattern, this]()
+	{
+		_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+
+		auto warningInterval = 0.3f;
+		auto playSecondTime = warningInterval;
+		auto playThirdTime = playSecondTime + warningInterval;
+
+		auto particleInterval = 0.5f;
+
+		// 첫번째 장판 실행
+		auto isPlayed1 = _swordDonutWarning1->GetComponent<TransparentMesh>()->PlayOnce();
+
+		if (_swordTimer >= playSecondTime)
 		{
-			_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+			// 두번째 장판 실행
+			auto isPlayed2 = _swordDonutWarning2->GetComponent<TransparentMesh>()->PlayOnce();
+		}
 
-			auto warningInterval = 0.3f;
-			auto playSecondTime = warningInterval;
-			auto playThirdTime = playSecondTime + warningInterval;
+		if (_swordTimer >= playThirdTime)
+		{
+			auto isPlayed3 = _swordDonutWarning3->GetComponent<TransparentMesh>()->PlayOnce();
 
-			auto particleInterval = 0.5f;
-
-			// 첫번째 장판 실행
-			auto isPlayed1 = _swordDonutWarning1->GetComponent<TransparentMesh>()->PlayOnce();
-
-			if (_swordTimer >= playSecondTime)
+			// 장판 실행이 완료되면
+			if (isPlayed3)
 			{
-				// 두번째 장판 실행
-				auto isPlayed2 = _swordDonutWarning2->GetComponent<TransparentMesh>()->PlayOnce();
-			}
-
-			if (_swordTimer >= playThirdTime)
-			{
-				auto isPlayed3 = _swordDonutWarning3->GetComponent<TransparentMesh>()->PlayOnce();
-
-				// 장판 실행이 완료되면
-				if (isPlayed3)
 				{
-					{
-						pattern->DeleteSubObject(_freeSword);
-						return false;
-					}
+					pattern->DeleteSubObject(_freeSword);
+					return false;
 				}
 			}
-			return true;
-		};
+		}
+		return true;
+	};
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(donutSafe);
@@ -2783,113 +2803,113 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 
 
 	auto initializeLogic = [pattern, this]()
+	{
+		_swordTimer = 0.0f;
+
+		auto initPos = _swordStartPos;
+
+		initPos.y = _centerPos.y;
+
+		for (auto& index : _particleSwordDonut1)
 		{
-			_swordTimer = 0.0f;
+			index->GetComponent<Transform>()->SetPosition(initPos);
 
-			auto initPos = _swordStartPos;
+			pattern->SetSubObject(index);
+		}
 
-			initPos.y = _centerPos.y;
+		for (auto& index : _particleSwordDonut2)
+		{
+			index->GetComponent<Transform>()->SetPosition(initPos);
 
-			for (auto& index : _particleSwordDonut1)
-			{
-				index->GetComponent<Transform>()->SetPosition(initPos);
+			pattern->SetSubObject(index);
+		}
 
-				pattern->SetSubObject(index);
-			}
+		for (auto& index : _particleSwordDonut3)
+		{
+			index->GetComponent<Transform>()->SetPosition(initPos);
 
-			for (auto& index : _particleSwordDonut2)
-			{
-				index->GetComponent<Transform>()->SetPosition(initPos);
+			pattern->SetSubObject(index);
+		}
 
-				pattern->SetSubObject(index);
-			}
+		for (auto& index : _swordDonutAttack)
+		{
+			index->GetComponent<Transform>()->SetPosition(initPos);
 
-			for (auto& index : _particleSwordDonut3)
-			{
-				index->GetComponent<Transform>()->SetPosition(initPos);
+			pattern->SetSubObject(index);
+		}
 
-				pattern->SetSubObject(index);
-			}
-
-			for (auto& index : _swordDonutAttack)
-			{
-				index->GetComponent<Transform>()->SetPosition(initPos);
-
-				pattern->SetSubObject(index);
-			}
-
-			auto donut1Size = _swordDonutWarning1->GetComponent<Transform>()->GetScale();
-			_swordDonutAttack[0]->GetComponent<CylinderCollider>()->SetColliderScale(donut1Size.x * 2.0f, donut1Size.y * 2.0f, donut1Size.z * 2.0f);
-			auto donut2Size = _swordDonutWarning2->GetComponent<Transform>()->GetScale();
-			_swordDonutAttack[1]->GetComponent<CylinderCollider>()->SetColliderScale(donut2Size.x * 2.0f, donut2Size.y * 2.0f, donut2Size.z * 2.0f);
-			auto donut3Size = _swordDonutWarning3->GetComponent<Transform>()->GetScale();
-			_swordDonutAttack[2]->GetComponent<CylinderCollider>()->SetColliderScale(donut3Size.x * 2.0f, donut3Size.y * 2.0f, donut3Size.z * 2.0f);
-		};
+		auto donut1Size = _swordDonutWarning1->GetComponent<Transform>()->GetScale();
+		_swordDonutAttack[0]->GetComponent<CylinderCollider>()->SetColliderScale(donut1Size.x * 2.0f, donut1Size.y * 2.0f, donut1Size.z * 2.0f);
+		auto donut2Size = _swordDonutWarning2->GetComponent<Transform>()->GetScale();
+		_swordDonutAttack[1]->GetComponent<CylinderCollider>()->SetColliderScale(donut2Size.x * 2.0f, donut2Size.y * 2.0f, donut2Size.z * 2.0f);
+		auto donut3Size = _swordDonutWarning3->GetComponent<Transform>()->GetScale();
+		_swordDonutAttack[2]->GetComponent<CylinderCollider>()->SetColliderScale(donut3Size.x * 2.0f, donut3Size.y * 2.0f, donut3Size.z * 2.0f);
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto objectIndex0 = pattern->GetSubObjectIndex(_swordDonutAttack[0]);
+		auto objectIndex1 = pattern->GetSubObjectIndex(_swordDonutAttack[1]);
+		auto objectIndex2 = pattern->GetSubObjectIndex(_swordDonutAttack[2]);
+
+		auto donutInterval = 0.3f;
+
+		_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+
+		if (_swordTimer <= donutInterval)
 		{
-			auto objectIndex0 = pattern->GetSubObjectIndex(_swordDonutAttack[0]);
-			auto objectIndex1 = pattern->GetSubObjectIndex(_swordDonutAttack[1]);
-			auto objectIndex2 = pattern->GetSubObjectIndex(_swordDonutAttack[2]);
+			_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(true);
+			_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(true);
+			_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(true);
+			//_swordDonutAttack[0]->GetComponent<BoxCollider>()->SetActive(true);
+			pattern->_isColliderActive[objectIndex0] = true;
 
-			auto donutInterval = 0.3f;
+			_donutSize = 0.0f;
+		}
 
-			_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+		else if (_swordTimer > donutInterval && _swordTimer <= 2 * donutInterval)
+		{
+			_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(false);
+			_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(false);
+			_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(false);
+			//_swordDonutAttack[0]->GetComponent<BoxCollider>()->SetActive(false);
+			pattern->_isColliderActive[objectIndex0] = false;
 
-			if (_swordTimer <= donutInterval)
-			{
-				_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(true);
-				_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(true);
-				_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(true);
-				//_swordDonutAttack[0]->GetComponent<BoxCollider>()->SetActive(true);
-				pattern->_isColliderActive[objectIndex0] = true;
+			_particleSwordDonut1[1]->GetComponent<Particle>()->SetActive(true);
+			_particleSwordDonut2[1]->GetComponent<Particle>()->SetActive(true);
+			_particleSwordDonut3[1]->GetComponent<Particle>()->SetActive(true);
+			//_swordDonutAttack[1]->GetComponent<BoxCollider>()->SetActive(true);
+			pattern->_isColliderActive[objectIndex1] = true;
 
-				_donutSize = 0.0f;
-			}
+			_donutSize = _swordDonutAttack[0]->GetComponent<CylinderCollider>()->GetColliderScale().x;
+		}
 
-			else if (_swordTimer > donutInterval && _swordTimer <= 2 * donutInterval)
-			{
-				_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(false);
-				_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(false);
-				_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(false);
-				//_swordDonutAttack[0]->GetComponent<BoxCollider>()->SetActive(false);
-				pattern->_isColliderActive[objectIndex0] = false;
+		else if (_swordTimer > 2 * donutInterval)
+		{
+			_particleSwordDonut1[1]->GetComponent<Particle>()->SetActive(false);
+			_particleSwordDonut2[1]->GetComponent<Particle>()->SetActive(false);
+			_particleSwordDonut3[1]->GetComponent<Particle>()->SetActive(false);
+			//_swordDonutAttack[1]->GetComponent<BoxCollider>()->SetActive(false);
+			pattern->_isColliderActive[objectIndex1] = false;
 
-				_particleSwordDonut1[1]->GetComponent<Particle>()->SetActive(true);
-				_particleSwordDonut2[1]->GetComponent<Particle>()->SetActive(true);
-				_particleSwordDonut3[1]->GetComponent<Particle>()->SetActive(true);
-				//_swordDonutAttack[1]->GetComponent<BoxCollider>()->SetActive(true);
-				pattern->_isColliderActive[objectIndex1] = true;
+			_particleSwordDonut1[2]->GetComponent<Particle>()->SetActive(true);
+			_particleSwordDonut2[2]->GetComponent<Particle>()->SetActive(true);
+			_particleSwordDonut2[2]->GetComponent<Particle>()->SetActive(true);
+			//_swordDonutAttack[2]->GetComponent<BoxCollider>()->SetActive(true);
+			pattern->_isColliderActive[objectIndex2] = true;
 
-				_donutSize = _swordDonutAttack[0]->GetComponent<CylinderCollider>()->GetColliderScale().x;
-			}
+			_donutSize = _swordDonutAttack[1]->GetComponent<CylinderCollider>()->GetColliderScale().x;
+		}
 
-			else if (_swordTimer > 2 * donutInterval)
-			{
-				_particleSwordDonut1[1]->GetComponent<Particle>()->SetActive(false);
-				_particleSwordDonut2[1]->GetComponent<Particle>()->SetActive(false);
-				_particleSwordDonut3[1]->GetComponent<Particle>()->SetActive(false);
-				//_swordDonutAttack[1]->GetComponent<BoxCollider>()->SetActive(false);
-				pattern->_isColliderActive[objectIndex1] = false;
-
-				_particleSwordDonut1[2]->GetComponent<Particle>()->SetActive(true);
-				_particleSwordDonut2[2]->GetComponent<Particle>()->SetActive(true);
-				_particleSwordDonut2[2]->GetComponent<Particle>()->SetActive(true);
-				//_swordDonutAttack[2]->GetComponent<BoxCollider>()->SetActive(true);
-				pattern->_isColliderActive[objectIndex2] = true;
-
-				_donutSize = _swordDonutAttack[1]->GetComponent<CylinderCollider>()->GetColliderScale().x;
-			}
-
-			if (_swordTimer >= 3 * donutInterval)
-			{
-				_donutSize = 0.0f;
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-		};
+		if (_swordTimer >= 3 * donutInterval)
+		{
+			_donutSize = 0.0f;
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -2909,119 +2929,148 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 	pattern->SetWithEgo(true);
 
 	auto initLogic = [pattern, this]()
+	{
+		_boss->GetComponent<BoxCollider>()->SetActive(true);
+		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+		_timer = 0.0;
+		_spellDel = 0.0f;
+		_spellWaveDel = 0.0f;
+		auto lazerPosOffset = 20.0f;
+		auto lazerScaleOffset = 80.0f;
+
+		auto direction = GetDirection();
+
+		auto lazerScaleDir = DirectX::XMVectorScale(direction, lazerPosOffset);
+		_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 25.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
+		_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+		_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+
+		pattern->SetSpeed(20.0f);
+
+		auto lazerColliderScaleDir = DirectX::XMVectorScale(direction, lazerScaleOffset);
+
+		_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerColliderScaleDir.m128_f32[0], 25.0f, _bossTransform->GetPosition().z + lazerColliderScaleDir.m128_f32[2]);
+
+		_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
+
+		if (_isEgoAttackReady)
 		{
-			_boss->GetComponent<BoxCollider>()->SetActive(true);
-			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+			auto egoTransform = _alterEgo->GetComponent<Transform>();
+			auto egoPos = egoTransform->GetPosition();
+			auto egoLazerDirection = GetEgoDirection();
+			auto egoLazerScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerPosOffset);
 
-			_timer = 0.0;
-			_spellDel = 0.0f;
-			_spellWaveDel = 0.0f;
-			auto lazerPosOffset = 20.0f;
-			auto lazerScaleOffset = 80.0f;
+			_egoLazer->GetComponent<Transform>()->SetPosition(egoPos.x + egoLazerScaleDir.m128_f32[0], 25.0f, egoPos.z + egoLazerScaleDir.m128_f32[2]);
+			_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
+			_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
 
-			auto direction = GetDirection();
+			auto egolazerColliderScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerScaleOffset);
 
-			auto lazerScaleDir = DirectX::XMVectorScale(direction, lazerPosOffset);
-			_lazer->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerScaleDir.m128_f32[0], 25.0f, _bossTransform->GetPosition().z + lazerScaleDir.m128_f32[2]);
-			_lazer->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
-			_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
+			_egoLazerCollider->GetComponent<Transform>()->SetPosition(egoTransform->GetPosition().x + egolazerColliderScaleDir.m128_f32[0], 25.0f, egoTransform->GetPosition().z + egolazerColliderScaleDir.m128_f32[2]);
 
-			pattern->SetSpeed(20.0f);
+			_egoLazerCollider->GetComponent<Transform>()->SetRotation(egoTransform->GetRotation().x, egoTransform->GetRotation().y + 90.0f, egoTransform->GetRotation().z);
 
-			auto lazerColliderScaleDir = DirectX::XMVectorScale(direction, lazerScaleOffset);
+			_isEgoAttackReady = false;
 
-			_lazerCollider->GetComponent<Transform>()->SetPosition(_bossTransform->GetPosition().x + lazerColliderScaleDir.m128_f32[0], 25.0f, _bossTransform->GetPosition().z + lazerColliderScaleDir.m128_f32[2]);
-
-			_lazerCollider->GetComponent<Transform>()->SetRotation(_bossTransform->GetRotation().x, _bossTransform->GetRotation().y + 90.0f, _bossTransform->GetRotation().z);
-
-			if (_isEgoAttackReady)
-			{
-				auto egoTransform = _alterEgo->GetComponent<Transform>();
-				auto egoPos = egoTransform->GetPosition();
-				auto egoLazerDirection = GetEgoDirection();
-				auto egoLazerScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerPosOffset);
-
-				_egoLazer->GetComponent<Transform>()->SetPosition(egoPos.x + egoLazerScaleDir.m128_f32[0], 25.0f, egoPos.z + egoLazerScaleDir.m128_f32[2]);
-				_egoLazer->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
-				_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleRotation(90.0f, egoTransform->GetRotation().y, 0.0f);
-
-				auto egolazerColliderScaleDir = DirectX::XMVectorScale(egoLazerDirection, lazerScaleOffset);
-
-				_egoLazerCollider->GetComponent<Transform>()->SetPosition(egoTransform->GetPosition().x + egolazerColliderScaleDir.m128_f32[0], 25.0f, egoTransform->GetPosition().z + egolazerColliderScaleDir.m128_f32[2]);
-
-				_egoLazerCollider->GetComponent<Transform>()->SetRotation(egoTransform->GetRotation().x, egoTransform->GetRotation().y + 90.0f, egoTransform->GetRotation().z);
-
-				_isEgoAttackReady = false;
-
-				pattern->SetSubObject(_egoLazer);
-				pattern->SetSubObject(_egoLazerCollider);
-			}
-			else
-			{
-				pattern->DeleteSubObject(_egoLazer);
-				pattern->DeleteSubObject(_egoLazerCollider);
-			}
-		};
+			pattern->SetSubObject(_egoLazer);
+			pattern->SetSubObject(_egoLazerCollider);
+		}
+		else
+		{
+			pattern->DeleteSubObject(_egoLazer);
+			pattern->DeleteSubObject(_egoLazerCollider);
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto spellLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 분신
+		if (_isEgoAttack)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+			auto egoAnimator = _alterEgo->GetComponent<Animator>();
+			egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+		}
 
-			// 분신
-			if (_isEgoAttack)
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+
+		if (animator->GetCurrentFrame() >= 30.0f)
+		{
+			if (animator->GetCurrentFrame() >= 55.0f)
 			{
-				auto egoAnimator = _alterEgo->GetComponent<Animator>();
-				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
-			}
+				_lazer->GetComponent<Particle>()->SetActive(false);
+				_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
 
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+				auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+				pattern->_isColliderActive[objectIndex] = false;
 
-			if (animator->GetCurrentFrame() >= 30.0f)
-			{
-				if (animator->GetCurrentFrame() >= 55.0f)
+				if (_isEgoAttack)
 				{
-					_lazer->GetComponent<Particle>()->SetActive(false);
-					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
+					_egoLazer->GetComponent<Particle>()->SetActive(false);
+					_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
 
-					auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+					auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
 					pattern->_isColliderActive[objectIndex] = false;
-
-					if (_isEgoAttack)
-					{
-						_egoLazer->GetComponent<Particle>()->SetActive(false);
-						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
-
-						auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
-						pattern->_isColliderActive[objectIndex] = false;
-					}
-
 				}
-				else
+
+			}
+			else
+			{
+
+				pattern->SetSpeed(10.0f);
+				_lazer->GetComponent<Particle>()->SetActive(true);
+				_lazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.0f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+				_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
+				_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.0f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+				if (animator->GetCurrentFrame() >= 40)
 				{
-
-					pattern->SetSpeed(10.0f);
-					_lazer->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.0f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
-					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.0f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-					if (animator->GetCurrentFrame() >= 40)
+					_timer += TimeManager::GetInstance().GetDeltaTime();
+					if (_timer < 1.0f)
 					{
-						_timer += TimeManager::GetInstance().GetDeltaTime();
-						if (_timer < 1.0f)
+						_spellDel = _timer * 60;
+						_spellWaveDel = _timer * 40;
+					}
+				}
+
+				if (animator->GetCurrentFrame() >= 32.0f)
+				{
+					auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+
+					if (pattern->_isColliderHit[objectIndex] == false)
+					{
+						pattern->_isColliderActive[objectIndex] = true;
+					}
+					else
+					{
+						_timer2 += TimeManager::GetInstance().GetDeltaTime();
+
+						if (_timer2 >= 0.5f)
 						{
-							_spellDel = _timer * 60;
-							_spellWaveDel = _timer * 40;
+							pattern->_isColliderHit[objectIndex] = false;
+							_timer2 = 0.0f;
 						}
 					}
+				}
+
+
+				if (_isEgoAttack)
+				{
+					_egoLazer->GetComponent<Particle>()->SetActive(true);
+					_egoLazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
+
+					_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
+					_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
 					if (animator->GetCurrentFrame() >= 32.0f)
 					{
-						auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+						auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
 
 						if (pattern->_isColliderHit[objectIndex] == false)
 						{
@@ -3029,56 +3078,27 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 						}
 						else
 						{
-							_timer2 += TimeManager::GetInstance().GetDeltaTime();
+							_timer3 += TimeManager::GetInstance().GetDeltaTime();
 
-							if (_timer2 >= 0.5f)
+							if (_timer3 >= 0.5f)
 							{
 								pattern->_isColliderHit[objectIndex] = false;
-								_timer2 = 0.0f;
-							}
-						}
-					}
-
-
-					if (_isEgoAttack)
-					{
-						_egoLazer->GetComponent<Particle>()->SetActive(true);
-						_egoLazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
-						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
-
-						if (animator->GetCurrentFrame() >= 32.0f)
-						{
-							auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
-
-							if (pattern->_isColliderHit[objectIndex] == false)
-							{
-								pattern->_isColliderActive[objectIndex] = true;
-							}
-							else
-							{
-								_timer3 += TimeManager::GetInstance().GetDeltaTime();
-
-								if (_timer3 >= 0.5f)
-								{
-									pattern->_isColliderHit[objectIndex] = false;
-									_timer3 = 0.0f;
-								}
+								_timer3 = 0.0f;
 							}
 						}
 					}
 				}
 			}
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				_timer = 0.0F;
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			_timer = 0.0F;
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 
 	pattern->SetLogic(spellLogic);
@@ -3098,66 +3118,66 @@ void KunrealEngine::Kamen::CreateCallAttack()
 	pattern->SetSubObject(_call);
 
 	auto callLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (animator->GetCurrentFrame() >= 20)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (animator->GetCurrentFrame() >= 20)
+			if (pattern->_colliderOnCount > 0)
 			{
-				if (pattern->_colliderOnCount > 0)
-				{
-					// 콜라이더 키기
-					_call->GetComponent<BoxCollider>()->SetActive(true);
-					// 파티클 키기
-					_call->GetComponent<Particle>()->SetActive(true);
-					// 라이트 키기
-					_call->GetComponent<Light>()->SetActive(true);
-				}
-
-				// 보스가 바라보는 방향 가져옴
-				auto direction = GetDirection();
-
-				// 현재 보스의 포지션
-				auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
-
-				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
-
-				auto callNowPos = _call->GetComponent<Transform>()->GetPosition();
-				auto distance = ToolBox::GetDistance(nowPos, callNowPos);
-
-				if (distance < pattern->_range)
-				{
-					_callMoveDistance += (pattern->_speed * 1.5) * TimeManager::GetInstance().GetDeltaTime();
-				}
-				else
-				{
-					animator->Stop();
-					isAnimationPlaying = false;
-				}
-
-
-				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
-
-				_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+				// 콜라이더 키기
+				_call->GetComponent<BoxCollider>()->SetActive(true);
+				// 파티클 키기
+				_call->GetComponent<Particle>()->SetActive(true);
+				// 라이트 키기
+				_call->GetComponent<Light>()->SetActive(true);
 			}
 
-			if (isAnimationPlaying == false)
+			// 보스가 바라보는 방향 가져옴
+			auto direction = GetDirection();
+
+			// 현재 보스의 포지션
+			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+			auto callNowPos = _call->GetComponent<Transform>()->GetPosition();
+			auto distance = ToolBox::GetDistance(nowPos, callNowPos);
+
+			if (distance < pattern->_range)
 			{
-				return false;
+				_callMoveDistance += (pattern->_speed * 1.5) * TimeManager::GetInstance().GetDeltaTime();
+			}
+			else
+			{
+				animator->Stop();
+				isAnimationPlaying = false;
 			}
 
-			return true;
-		};
+
+			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, _callMoveDistance));
+
+			_call->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
 
 	pattern->SetLogic(callLogic, false);
 
 	_callInitLogic = [pattern, this]()
-		{
-			_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
-			_callMoveDistance = 0.0f;
-		};
+	{
+		_call->GetComponent<Transform>()->SetPosition(_boss->GetComponent<Transform>()->GetPosition().x, _boss->GetComponent<Transform>()->GetPosition().y, _boss->GetComponent<Transform>()->GetPosition().z);
+		_callMoveDistance = 0.0f;
+	};
 
 	// 이니셜라이즈 로직 함수 넣어주기
 	pattern->SetInitializeLogic(_callInitLogic);
@@ -3178,115 +3198,115 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 	pattern->SetSubObject(_call2);
 
 	auto initLogic = [pattern, this]()
+	{
+		if (!_isEgoAttackReady)
 		{
-			if (!_isEgoAttackReady)
-			{
-				pattern->DeleteSubObject(_egoCall2);
-			}
-			else
-			{
-				pattern->SetSubObject(_egoCall2);
-				_isEgoAttackReady = false;
-			}
-		};
+			pattern->DeleteSubObject(_egoCall2);
+		}
+		else
+		{
+			pattern->SetSubObject(_egoCall2);
+			_isEgoAttackReady = false;
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto callLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		if (_isEgoAttack)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+			auto egoAnimator = _alterEgo->GetComponent<Animator>();
+			egoAnimator->Play(pattern->_animName, pattern->_speed, false);
+		}
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (animator->GetCurrentFrame() >= 20)
+		{
+			if (pattern->_colliderOnCount > 0)
+			{
+				// 파티클 키기
+				for (auto& index : _call2->GetChilds())
+				{
+					index->GetComponent<Particle>()->SetActive(true);
+				}
+
+				// 콜라이더 키기
+				auto objectIndex = pattern->GetSubObjectIndex(_call2);
+				pattern->_isColliderActive[objectIndex] = true;
+			}
+
+			// 보스가 바라보는 방향 가져옴
+			auto direction = GetDirection();
+
+			// 현재 보스의 포지션
+			auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+
+			auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+
+			int step = (animator->GetCurrentFrame() - 20.0f) / 10.0f + 1;
+
+			if (step != _call2PrevStep)
+			{
+				pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+			}
+
+			_call2PrevStep = step;
+
+
+			// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 30.0f * step));
+
+			auto call2Pos = _call2->GetComponent<Transform>()->GetPosition();
+			_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], call2Pos.y, newPosition.m128_f32[2]);
 
 			if (_isEgoAttack)
 			{
-				auto egoAnimator = _alterEgo->GetComponent<Animator>();
-				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
-			}
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (animator->GetCurrentFrame() >= 20)
-			{
-				if (pattern->_colliderOnCount > 0)
+				// 파티클 키기
+				for (auto& index : _egoCall2->GetChilds())
 				{
-					// 파티클 키기
-					for (auto& index : _call2->GetChilds())
-					{
-						index->GetComponent<Particle>()->SetActive(true);
-					}
-
-					// 콜라이더 키기
-					auto objectIndex = pattern->GetSubObjectIndex(_call2);
-					pattern->_isColliderActive[objectIndex] = true;
+					index->GetComponent<Particle>()->SetActive(true);
 				}
 
-				// 보스가 바라보는 방향 가져옴
-				auto direction = GetDirection();
+				// 콜라이더 키기
+				auto objectIndex = pattern->GetSubObjectIndex(_egoCall2);
+				pattern->_isColliderActive[objectIndex] = true;
 
 				// 현재 보스의 포지션
-				auto nowPos = _boss->GetComponent<Transform>()->GetPosition();
+				auto egoNowPos = _alterEgo->GetComponent<Transform>()->GetPosition();
+				auto playerPos = _playerTransform->GetPosition();
 
-				auto nowPosVec = DirectX::XMLoadFloat3(&nowPos);
+				// 보스가 바라보는 방향 가져옴
+				auto egoDirection = GetEgoDirection();
 
-				int step = (animator->GetCurrentFrame() - 20.0f) / 10.0f + 1;
+				auto egoNowPosVec = DirectX::XMLoadFloat3(&egoNowPos);
 
-				if (step != _call2PrevStep)
-				{
-					pattern->_colliderOnCount = pattern->_maxColliderOnCount;
-				}
+				//if (step != _egoCall2PrevStep)
+				//{
+				//	pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+				//}g
 
-				_call2PrevStep = step;
+				//_egoCall2PrevStep = step;
 
 
 				// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(nowPosVec, DirectX::XMVectorScale(direction, 30.0f * step));
+				DirectX::XMVECTOR egoNewPosition = DirectX::XMVectorAdd(egoNowPosVec, DirectX::XMVectorScale(egoDirection, 20.0f * step));
 
-				auto call2Pos = _call2->GetComponent<Transform>()->GetPosition();
-				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], call2Pos.y, newPosition.m128_f32[2]);
-
-				if (_isEgoAttack)
-				{
-					// 파티클 키기
-					for (auto& index : _egoCall2->GetChilds())
-					{
-						index->GetComponent<Particle>()->SetActive(true);
-					}
-
-					// 콜라이더 키기
-					auto objectIndex = pattern->GetSubObjectIndex(_egoCall2);
-					pattern->_isColliderActive[objectIndex] = true;
-
-					// 현재 보스의 포지션
-					auto egoNowPos = _alterEgo->GetComponent<Transform>()->GetPosition();
-					auto playerPos = _playerTransform->GetPosition();
-
-					// 보스가 바라보는 방향 가져옴
-					auto egoDirection = GetEgoDirection();
-
-					auto egoNowPosVec = DirectX::XMLoadFloat3(&egoNowPos);
-
-					//if (step != _egoCall2PrevStep)
-					//{
-					//	pattern->_colliderOnCount = pattern->_maxColliderOnCount;
-					//}g
-
-					//_egoCall2PrevStep = step;
-
-
-					// 현재 보스의 포지션에서 바라보는 백터 방향으로 더해줌
-					DirectX::XMVECTOR egoNewPosition = DirectX::XMVectorAdd(egoNowPosVec, DirectX::XMVectorScale(egoDirection, 20.0f * step));
-
-					auto egopCall2Pos = _call2->GetComponent<Transform>()->GetPosition();
-					_egoCall2->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], egopCall2Pos.y, egoNewPosition.m128_f32[2]);
-				}
+				auto egopCall2Pos = _call2->GetComponent<Transform>()->GetPosition();
+				_egoCall2->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], egopCall2Pos.y, egoNewPosition.m128_f32[2]);
 			}
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(callLogic, false);
 
@@ -3304,60 +3324,60 @@ void KunrealEngine::Kamen::CreateBossRandomInsideWarning()
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
+	{
+		_bossCircleWarningSize = 40.0f;
+
+		auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
+		auto ranY = ToolBox::GetRandomFloat(-90.0f, 10.0f);
+
+		_emergencePos = { ranX , _bossTransform->GetPosition().y, ranY };
+
+		_bossInsideWarning->GetComponent<TransparentMesh>()->Reset();
+		_bossInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
+		_bossInsideWarning->GetComponent<Transform>()->SetPosition(_emergencePos.x, _bossTransform->GetPosition().y, _emergencePos.z);
+		_timer = 0.0f;
+
+		_bossInsideWarning->GetComponent<Transform>()->SetScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
+
+		if (_isEgoAttackReady)
 		{
-			_bossCircleWarningSize = 40.0f;
+			pattern->SetSubObject(_egoInsideWarning);
 
-			auto ranX = ToolBox::GetRandomFloat(-50.0f, 50.0f);
-			auto ranY = ToolBox::GetRandomFloat(-90.0f, 10.0f);
+			_egoInsideWarning->GetComponent<TransparentMesh>()->Reset();
+			_egoInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
+			_egoInsideWarning->GetComponent<Transform>()->SetPosition(_alterEgo->GetComponent<Transform>()->GetPosition().x, _alterEgo->GetComponent<Transform>()->GetPosition().y, _alterEgo->GetComponent<Transform>()->GetPosition().z);
 
-			_emergencePos = { ranX , _bossTransform->GetPosition().y, ranY };
+			_egoInsideWarning->GetComponent<Transform>()->SetScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
 
-			_bossInsideWarning->GetComponent<TransparentMesh>()->Reset();
-			_bossInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
-			_bossInsideWarning->GetComponent<Transform>()->SetPosition(_emergencePos.x, _bossTransform->GetPosition().y, _emergencePos.z);
-			_timer = 0.0f;
+			_isEgoAttackReady = false;
 
-			_bossInsideWarning->GetComponent<Transform>()->SetScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
-
-			if (_isEgoAttackReady)
-			{
-				pattern->SetSubObject(_egoInsideWarning);
-
-				_egoInsideWarning->GetComponent<TransparentMesh>()->Reset();
-				_egoInsideWarning->GetComponent<TransparentMesh>()->SetActive(true);
-				_egoInsideWarning->GetComponent<Transform>()->SetPosition(_alterEgo->GetComponent<Transform>()->GetPosition().x, _alterEgo->GetComponent<Transform>()->GetPosition().y, _alterEgo->GetComponent<Transform>()->GetPosition().z);
-
-				_egoInsideWarning->GetComponent<Transform>()->SetScale(_bossCircleWarningSize, _bossCircleWarningSize, _bossCircleWarningSize);
-
-				_isEgoAttackReady = false;
-
-			}
-			else
-			{
-				pattern->DeleteSubObject(_egoInsideWarning);
-			}
-		};
+		}
+		else
+		{
+			pattern->DeleteSubObject(_egoInsideWarning);
+		}
+	};
 
 	pattern->SetInitializeLogic(initializeLogic);
 
 	auto outsideSafe = [pattern, this]()
+	{
+		// 장판 실행
+		auto isPlayed = _bossInsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+
+		if (_isEgoAttack)
 		{
-			// 장판 실행
-			auto isPlayed = _bossInsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+			_egoInsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
+		}
 
-			if (_isEgoAttack)
-			{
-				_egoInsideWarning->GetComponent<TransparentMesh>()->PlayOnce();
-			}
+		// 장판 실행이 완료되면
+		if (isPlayed)
+		{
+			return false;
+		}
 
-			// 장판 실행이 완료되면
-			if (isPlayed)
-			{
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(outsideSafe);
 
@@ -3384,117 +3404,117 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 	}
 
 	auto initLogic = [pattern, this]()
+	{
+		_timer = 0.0f;
+
+		for (int i = 0; i < _fiveAttack.size(); i++)
 		{
-			_timer = 0.0f;
+			auto bossPos = _bossTransform->GetPosition();
+			auto angle = _bossTransform->GetRotation().y + (72.0f * i);
 
-			for (int i = 0; i < _fiveAttack.size(); i++)
-			{
-				auto bossPos = _bossTransform->GetPosition();
-				auto angle = _bossTransform->GetRotation().y + (72.0f * i);
+			_fiveAttack[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
 
-				_fiveAttack[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+			auto direction = DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f };
+			direction = ToolBox::RotateVector(direction, angle);
 
-				auto direction = DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f };
-				direction = ToolBox::RotateVector(direction, angle);
+			auto interval = 120.0f;
 
-				auto interval = 120.0f;
+			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), interval));
 
-				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), interval));
+			_fiveAttack[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], bossPos.y, newPosition.m128_f32[2]);
 
-				_fiveAttack[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], bossPos.y, newPosition.m128_f32[2]);
+			_fiveAttack[i]->GetComponent<TransparentMesh>()->Reset();
+			_fiveAttack[i]->GetComponent<TransparentMesh>()->SetActive(true);
 
-				_fiveAttack[i]->GetComponent<TransparentMesh>()->Reset();
-				_fiveAttack[i]->GetComponent<TransparentMesh>()->SetActive(true);
+			_fakeBoss[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
 
-				_fakeBoss[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+			DirectX::XMVECTOR fakePosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), 20.0f));
 
-				DirectX::XMVECTOR fakePosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), 20.0f));
+			_fakeBoss[i]->GetComponent<Transform>()->SetPosition(fakePosition.m128_f32[0], bossPos.y, fakePosition.m128_f32[2]);
+			_fakeBoss[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
 
-				_fakeBoss[i]->GetComponent<Transform>()->SetPosition(fakePosition.m128_f32[0], bossPos.y, fakePosition.m128_f32[2]);
-				_fakeBoss[i]->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+			_fakeDirVec[i] = direction;
 
-				_fakeDirVec[i] = direction;
+			DirectX::XMVECTOR targetPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), 1000.0f));
 
-				DirectX::XMVECTOR targetPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&direction), 1000.0f));
+			Navigation::GetInstance().SetSEpos(1, fakePosition.m128_f32[0], 0.0f, fakePosition.m128_f32[2],
+				targetPos.m128_f32[0], 0.0f, targetPos.m128_f32[2]);
 
-				Navigation::GetInstance().SetSEpos(1, fakePosition.m128_f32[0], 0.0f, fakePosition.m128_f32[2],
-					targetPos.m128_f32[0], 0.0f, targetPos.m128_f32[2]);
+			auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
-				auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
-
-				auto fakePos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
-				_fakeMoveDistance[i] = ToolBox::GetDistance(fakePos, targetPosition) - 5.0f;
-			}
-		};
+			auto fakePos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
+			_fakeMoveDistance[i] = ToolBox::GetDistance(fakePos, targetPosition) - 5.0f;
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto isPlaying = _boss->GetComponent<Animator>()->Play(pattern->_animName, pattern->_speed, true);
+
+		bool warningFinsh = false;
+
+		for (auto& index : _fiveAttack)
 		{
-			auto isPlaying = _boss->GetComponent<Animator>()->Play(pattern->_animName, pattern->_speed, true);
+			auto isPlayed = index->GetComponent<TransparentMesh>()->PlayOnce();
 
-			bool warningFinsh = false;
-
-			for (auto& index : _fiveAttack)
+			if (isPlayed)
 			{
-				auto isPlayed = index->GetComponent<TransparentMesh>()->PlayOnce();
+				warningFinsh = true;
 
-				if (isPlayed)
+				break;
+			}
+		}
+
+		if (warningFinsh)
+		{
+			auto fakeSpeed = 0.075f;
+
+			int sumGoal = 0;
+
+			for (int i = 0; i < _fakeBoss.size(); i++)
+			{
+				_fakeBoss[i]->GetComponent<Animator>()->Play("Run", pattern->_speed, true);
+
+				_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(true);
+
+				for (int j = 0; j < _fakeBoss[i]->GetChilds().size(); j++)
 				{
-					warningFinsh = true;
+					_fakeBoss[i]->GetChilds()[j]->GetComponent<Particle>()->SetActive(true);
+				}
 
-					break;
+				// 콜라이더 키기
+				auto objectIndex = pattern->GetSubObjectIndex(_fakeBoss[i]);
+				pattern->_isColliderActive[objectIndex] = true;
+
+				auto fakeBossPos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
+
+				auto moveSpeed = pattern->_speed * fakeSpeed;
+
+				DirectX::XMVECTOR fakePosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&fakeBossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_fakeDirVec[i]), moveSpeed));
+
+				_fakeMoveDistance[i] -= moveSpeed;
+
+				_fakeBoss[i]->GetComponent<Transform>()->SetPosition(fakePosition.m128_f32[0], fakeBossPos.y, fakePosition.m128_f32[2]);
+
+				if (_fakeMoveDistance[i] < 0.0f)
+				{
+					_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(false);
+					pattern->_isColliderActive[objectIndex] = false;
+
+					sumGoal++;
 				}
 			}
 
-			if (warningFinsh)
+			if (sumGoal == 5)
 			{
-				auto fakeSpeed = 0.075f;
-
-				int sumGoal = 0;
-
-				for (int i = 0; i < _fakeBoss.size(); i++)
-				{
-					_fakeBoss[i]->GetComponent<Animator>()->Play("Run", pattern->_speed, true);
-
-					_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(true);
-
-					for (int j = 0; j < _fakeBoss[i]->GetChilds().size(); j++)
-					{
-						_fakeBoss[i]->GetChilds()[j]->GetComponent<Particle>()->SetActive(true);
-					}
-
-					// 콜라이더 키기
-					auto objectIndex = pattern->GetSubObjectIndex(_fakeBoss[i]);
-					pattern->_isColliderActive[objectIndex] = true;
-
-					auto fakeBossPos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
-
-					auto moveSpeed = pattern->_speed * fakeSpeed;
-
-					DirectX::XMVECTOR fakePosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&fakeBossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_fakeDirVec[i]), moveSpeed));
-
-					_fakeMoveDistance[i] -= moveSpeed;
-
-					_fakeBoss[i]->GetComponent<Transform>()->SetPosition(fakePosition.m128_f32[0], fakeBossPos.y, fakePosition.m128_f32[2]);
-
-					if (_fakeMoveDistance[i] < 0.0f)
-					{
-						_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(false);
-						pattern->_isColliderActive[objectIndex] = false;
-
-						sumGoal++;
-					}
-				}
-
-				if (sumGoal == 5)
-				{
-					return false;
-				}
+				return false;
 			}
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -3512,58 +3532,58 @@ void KunrealEngine::Kamen::CreateSwordAttack()
 	pattern->SetSubObject(_freeSword);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
+		if (pattern->_colliderOnCount > 0)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-			if (pattern->_colliderOnCount > 0)
+			if (animator->GetCurrentFrame() >= 10.0f)
 			{
-				if (animator->GetCurrentFrame() >= 10.0f)
-				{
-					pattern->_speed = 15.0f;
-				}
-				else
-				{
-					pattern->_speed = 15 * 0.3f;
-				}
+				pattern->_speed = 15.0f;
 			}
-
-			if (_swordTimer < 0.5f)
+			else
 			{
-				_swordTimer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
-				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+				pattern->_speed = 15 * 0.3f;
 			}
+		}
 
-			if (isAnimationPlaying == false)
-			{
-				_freeSword->SetActive(true);
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
+		if (_swordTimer < 0.5f)
+		{
+			_swordTimer += TimeManager::GetInstance().GetDeltaTime() * 0.2f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+		}
 
-			return true;
-		};
+		if (isAnimationPlaying == false)
+		{
+			_freeSword->SetActive(true);
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
+
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			_freeSword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
-			_freeSword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
-			_freeSword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+	{
+		_freeSword->GetComponent<MeshRenderer>()->SetParentBone(_boss, "Wrist_L");
+		_freeSword->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		_freeSword->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
 
-			pattern->SetSubObject(_freeSword);
+		pattern->SetSubObject(_freeSword);
 
-			// 디졸브 이펙트 키기
-			_freeSword->SetActive(true);
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		// 디졸브 이펙트 키기
+		_freeSword->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-			_swordTimer = 0.0f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+		_swordTimer = 0.0f;
+		_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
 
-		};
+	};
 
 	// 이니셜라이즈 로직 함수 넣어주기
 	pattern->SetInitializeLogic(swordInitLogic);
@@ -3581,39 +3601,39 @@ void KunrealEngine::Kamen::CreateSwordEmergence()
 	pattern->SetAnimName("Idle").SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			auto swordTransform = _freeSword->GetComponent<Transform>();
-			swordTransform->SetPosition(_swordStartPos.x, _swordStartPos.y, _swordStartPos.z);
+		auto swordTransform = _freeSword->GetComponent<Transform>();
+		swordTransform->SetPosition(_swordStartPos.x, _swordStartPos.y, _swordStartPos.z);
 
-			// 디졸브 이펙트 키기
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		// 디졸브 이펙트 키기
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-			_swordTimer = 0.0f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+		_swordTimer = 0.0f;
+		_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
 
-			_freeSword->GetComponent<Transform>()->SetRotation(180.0f, _freeSword->GetComponent<Transform>()->GetRotation().y, 0.0f);
-		};
+		_freeSword->GetComponent<Transform>()->SetRotation(180.0f, _freeSword->GetComponent<Transform>()->GetRotation().y, 0.0f);
+	};
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	auto emmergenceLogic = [pattern, this]()
+	{
+		if (_swordTimer < 0.5f)
 		{
-			if (_swordTimer < 0.5f)
-			{
-				_swordTimer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
-				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
-			}
-			else
-			{
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
+			_swordTimer += TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+		}
+		else
+		{
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(emmergenceLogic);
 
@@ -3629,33 +3649,33 @@ void KunrealEngine::Kamen::CreateSwordHide()
 	pattern->SetAnimName("Idle").SetSpeed(20.0f).SetAfterDelay(0.5f).SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			// 디졸브 이펙트 키기
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		// 디졸브 이펙트 키기
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
-			_swordTimer = 0.5f;
-			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
-		};
+		_swordTimer = 0.5f;
+		_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+	};
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	auto hideLogic = [pattern, this]()
+	{
+		if (_swordTimer > 0)
 		{
-			if (_swordTimer > 0)
-			{
-				_swordTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
-				_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
-			}
-			else
-			{
-				return false;
-			}
+			_swordTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.3f;
+			_freeSword->GetComponent<MeshRenderer>()->SetDissolve(_swordTimer);
+		}
+		else
+		{
+			return false;
+		}
 
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(hideLogic);
 
@@ -3673,45 +3693,45 @@ void KunrealEngine::Kamen::CraeteSwordTurnClockWise()
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-			_freeSword->GetComponent<Transform>()->SetPosition(_swordStartPos.x, _freeSword->GetComponent<Transform>()->GetPosition().y, _swordStartPos.z);
+		_freeSword->GetComponent<Transform>()->SetPosition(_swordStartPos.x, _freeSword->GetComponent<Transform>()->GetPosition().y, _swordStartPos.z);
 
-			_swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
+		_swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
 
-			_swordRotateAngle = 0.0f;
-		};
+		_swordRotateAngle = 0.0f;
+	};
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	auto swordTurnLogic = [pattern, this]()
+	{
+		_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+
+		float x = _swordOriginPos.x - _swordCircleWarningSize * cos(_swordRotateAngle);
+		float z = _swordOriginPos.z + _swordCircleWarningSize * sin(_swordRotateAngle);
+
+		_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
+
+		auto goalAngle = ToolBox::GetAngleWithDirection(_swordOriginPos, _freeSword->GetComponent<Transform>()->GetPosition(), 0.0f) - 90.0f;
+
+		_freeSword->GetComponent<Transform>()->SetRotation(_swordRotation.x, _swordRotation.y + goalAngle, _swordRotation.z);
+
+		if (_swordRotateAngle >= 2 * DirectX::XM_PI)
 		{
-			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
 
-			float x = _swordOriginPos.x - _swordCircleWarningSize * cos(_swordRotateAngle);
-			float z = _swordOriginPos.z + _swordCircleWarningSize * sin(_swordRotateAngle);
-
-			_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
-
-			auto goalAngle = ToolBox::GetAngleWithDirection(_swordOriginPos, _freeSword->GetComponent<Transform>()->GetPosition(), 0.0f) - 90.0f;
-
-			_freeSword->GetComponent<Transform>()->SetRotation(_swordRotation.x, _swordRotation.y + goalAngle, _swordRotation.z);
-
-			if (_swordRotateAngle >= 2 * DirectX::XM_PI)
-			{
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(swordTurnLogic);
 
@@ -3729,45 +3749,45 @@ void KunrealEngine::Kamen::CreateSwordTurnAntiClock()
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-			_freeSword->GetComponent<Transform>()->SetPosition(_swordStartPos.x, _freeSword->GetComponent<Transform>()->GetPosition().y, _swordStartPos.z);
+		_freeSword->GetComponent<Transform>()->SetPosition(_swordStartPos.x, _freeSword->GetComponent<Transform>()->GetPosition().y, _swordStartPos.z);
 
-			_swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
+		_swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
 
-			_swordRotateAngle = 0.0f;
-		};
+		_swordRotateAngle = 0.0f;
+	};
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	auto swordTurnLogic = [pattern, this]()
+	{
+		_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+
+		float x = _swordOriginPos.x - _swordCircleWarningSize * cos(_swordRotateAngle);
+		float z = _swordOriginPos.z - _swordCircleWarningSize * sin(_swordRotateAngle);
+
+		_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
+
+		auto goalAngle = ToolBox::GetAngleWithDirection(_swordOriginPos, _freeSword->GetComponent<Transform>()->GetPosition(), 0.0f) - 90.0f;
+
+		_freeSword->GetComponent<Transform>()->SetRotation(_swordRotation.x, _swordRotation.y + goalAngle, _swordRotation.z);
+
+		if (_swordRotateAngle >= 2 * DirectX::XM_PI)
 		{
-			_swordRotateAngle += TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
 
-			float x = _swordOriginPos.x - _swordCircleWarningSize * cos(_swordRotateAngle);
-			float z = _swordOriginPos.z - _swordCircleWarningSize * sin(_swordRotateAngle);
-
-			_freeSword->GetComponent<Transform>()->SetPosition(x, _freeSword->GetComponent<Transform>()->GetPosition().y, z);
-
-			auto goalAngle = ToolBox::GetAngleWithDirection(_swordOriginPos, _freeSword->GetComponent<Transform>()->GetPosition(), 0.0f) - 90.0f;
-
-			_freeSword->GetComponent<Transform>()->SetRotation(_swordRotation.x, _swordRotation.y + goalAngle, _swordRotation.z);
-
-			if (_swordRotateAngle >= 2 * DirectX::XM_PI)
-			{
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(swordTurnLogic);
 
@@ -3785,38 +3805,38 @@ void KunrealEngine::Kamen::CreateSwordLinearReady()
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-			_swordRotateAngle = 0.0f;
-		};
+		_swordRotateAngle = 0.0f;
+	};
 
 	auto swordLinearReadyLogic = [pattern, this]()
+	{
+		auto translationSpeed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+
+		_swordRotateAngle -= TimeManager::GetInstance().GetDeltaTime() * pattern->_speed * 5;
+
+		auto position = _freeSword->GetComponent<Transform>()->GetPosition();
+		auto rotation = _freeSword->GetComponent<Transform>()->GetRotation();
+
+		_freeSword->GetComponent<Transform>()->SetPosition(position.x, position.y - translationSpeed, position.z);
+		_freeSword->GetComponent<Transform>()->SetRotation(rotation.x, rotation.y, _swordRotateAngle);
+
+		if (_swordRotateAngle <= -90.0f)
 		{
-			auto translationSpeed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
 
-			_swordRotateAngle -= TimeManager::GetInstance().GetDeltaTime() * pattern->_speed * 5;
-
-			auto position = _freeSword->GetComponent<Transform>()->GetPosition();
-			auto rotation = _freeSword->GetComponent<Transform>()->GetRotation();
-
-			_freeSword->GetComponent<Transform>()->SetPosition(position.x, position.y - translationSpeed, position.z);
-			_freeSword->GetComponent<Transform>()->SetRotation(rotation.x, rotation.y, _swordRotateAngle);
-
-			if (_swordRotateAngle <= -90.0f)
-			{
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(swordLinearReadyLogic);
 
@@ -3838,68 +3858,68 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 	pattern->SetSubObject(_freeSwordCollider);
 
 	auto lenearAttackInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-			_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-			_swordDirection = ToolBox::RotateVector(_swordDirection, _freeSword->GetComponent<Transform>()->GetRotation().y);
+		_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+		_swordDirection = ToolBox::RotateVector(_swordDirection, _freeSword->GetComponent<Transform>()->GetRotation().y);
 
-			auto direction = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&_swordDirection));
+		auto direction = DirectX::XMVector3Normalize(DirectX::XMLoadFloat3(&_swordDirection));
 
-			DirectX::XMStoreFloat3(&_swordDirection, direction);
+		DirectX::XMStoreFloat3(&_swordDirection, direction);
 
-			auto swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
+		auto swordRotation = _freeSword->GetComponent<Transform>()->GetRotation();
 
-			_freeSwordCollider->GetComponent<Transform>()->SetRotation(0.0f, swordRotation.y + 90.0f, 0.0f);
+		_freeSwordCollider->GetComponent<Transform>()->SetRotation(0.0f, swordRotation.y + 90.0f, 0.0f);
 
-			_freeSwordCollider->GetComponent<BoxCollider>()->SetActive(true);
+		_freeSwordCollider->GetComponent<BoxCollider>()->SetActive(true);
 
-			auto swordPos = _freeSword->GetComponent<Transform>()->GetPosition();
-			DirectX::XMVECTOR targetPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 1000.0F));
+		auto swordPos = _freeSword->GetComponent<Transform>()->GetPosition();
+		DirectX::XMVECTOR targetPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 1000.0F));
 
-			Navigation::GetInstance().SetSEpos(1, swordPos.x, 0.0f, swordPos.z,
-				targetPos.m128_f32[0], 0.0f, targetPos.m128_f32[2]);
+		Navigation::GetInstance().SetSEpos(1, swordPos.x, 0.0f, swordPos.z,
+			targetPos.m128_f32[0], 0.0f, targetPos.m128_f32[2]);
 
-			auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
+		auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
-			_swordMoveDistance = ToolBox::GetDistance(swordPos, targetPosition) - 10.0f;
-		};
+		_swordMoveDistance = ToolBox::GetDistance(swordPos, targetPosition) - 10.0f;
+	};
 
 	pattern->SetInitializeLogic(lenearAttackInitLogic);
 
 	auto swordLinearAttackLogic = [pattern, this]()
+	{
+		auto objectIndex = pattern->GetSubObjectIndex(_freeSwordCollider);
+		pattern->_isColliderActive[objectIndex] = true;
+
+		float moveSpeed = pattern->_speed * TimeManager::GetInstance().GetDeltaTime();
+
+		auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
+
+		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
+
+		_freeSword->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+
+		DirectX::XMVECTOR colliderNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 15.0F));
+
+		_freeSwordCollider->GetComponent<Transform>()->SetPosition(colliderNewPosition.m128_f32[0], colliderNewPosition.m128_f32[1], colliderNewPosition.m128_f32[2]);
+
+		_swordMoveDistance -= moveSpeed;
+
+		if (_swordMoveDistance <= 0.0f)
 		{
-			auto objectIndex = pattern->GetSubObjectIndex(_freeSwordCollider);
-			pattern->_isColliderActive[objectIndex] = true;
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
 
-			float moveSpeed = pattern->_speed * TimeManager::GetInstance().GetDeltaTime();
-
-			auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
-
-			DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
-
-			_freeSword->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
-
-			DirectX::XMVECTOR colliderNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 15.0F));
-
-			_freeSwordCollider->GetComponent<Transform>()->SetPosition(colliderNewPosition.m128_f32[0], colliderNewPosition.m128_f32[1], colliderNewPosition.m128_f32[2]);
-
-			_swordMoveDistance -= moveSpeed;
-
-			if (_swordMoveDistance <= 0.0f)
-			{
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(swordLinearAttackLogic);
 
@@ -3916,41 +3936,67 @@ void KunrealEngine::Kamen::CreateSwordChopAttack()
 	pattern->SetMaxColliderCount(0);
 
 	auto swordInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
+	{
+		pattern->SetSubObject(_freeSword);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
-		};
+		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+	};
 
 	auto swordChopAttackLogic = [pattern, this]()
+	{
+		auto position = _freeSword->GetComponent<Transform>()->GetPosition();
+
+		if (position.y > 15.0f)
 		{
-			auto position = _freeSword->GetComponent<Transform>()->GetPosition();
+			auto chopSpeed = TimeManager::GetInstance().GetDeltaTime() * _swordChopSpeed;
 
-			if (position.y > 15.0f)
-			{
-				auto chopSpeed = TimeManager::GetInstance().GetDeltaTime() * _swordChopSpeed;
+			_freeSword->GetComponent<Transform>()->SetPosition(position.x, position.y - chopSpeed, position.z);
+		}
 
-				_freeSword->GetComponent<Transform>()->SetPosition(position.x, position.y - chopSpeed, position.z);
-			}
+		else
+		{
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
 
-			else
-			{
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(swordChopAttackLogic);
 
 	pattern->SetInitializeLogic(swordInitLogic);
 
 	_swordChopAttack = pattern;
+}
+
+void KunrealEngine::Kamen::CreateSwordMultipleAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordMultipleAttack");
+
+	pattern->SetAnimName("Idle").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetColliderType(BossPattern::eColliderType::eBox).SetSkipChase(true);
+
+	auto initLogic = [pattern, this]()
+	{
+
+	};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+	{
+		return false;
+	};
+
+	pattern->SetLogic(attackLogic);
+
+	_swordMultipleAttack = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordSwingVertical()
@@ -3968,102 +4014,102 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 	pattern->SetSubObject(_kamenSwordCollider);
 
 	auto initLogic = [pattern, this]()
-		{
-			auto bossDir = GetDirection();
-			auto bossPos = _bossTransform->GetPosition();
+	{
+		auto bossDir = GetDirection();
+		auto bossPos = _bossTransform->GetPosition();
 
-			auto swordAttackPoint = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(bossDir, 62.0f));
+		auto swordAttackPoint = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(bossDir, 62.0f));
 
-			DirectX::XMFLOAT3 swordAttackFloat3;
+		DirectX::XMFLOAT3 swordAttackFloat3;
 
-			DirectX::XMStoreFloat3(&swordAttackFloat3, swordAttackPoint);
+		DirectX::XMStoreFloat3(&swordAttackFloat3, swordAttackPoint);
 
-			_swordCircleWarningSize = 50.0f;
-			auto outsideCircleSize = _swordCircleWarningSize * 2.0f;
+		_swordCircleWarningSize = 50.0f;
+		auto outsideCircleSize = _swordCircleWarningSize * 2.0f;
 
-			_swordDonutWarning1->GetComponent<TransparentMesh>()->Reset();
-			_swordDonutWarning1->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordDonutWarning2->GetComponent<Transform>()->SetScale(_swordCircleWarningSize, _swordCircleWarningSize, _swordCircleWarningSize);
-			_swordDonutWarning1->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_swordDonutWarning1->GetComponent<TransparentMesh>()->Reset();
+		_swordDonutWarning1->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordDonutWarning2->GetComponent<Transform>()->SetScale(_swordCircleWarningSize, _swordCircleWarningSize, _swordCircleWarningSize);
+		_swordDonutWarning1->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
 
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->Reset();
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->SetActive(true);
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->SetExceptRange(swordAttackFloat3, _swordCircleWarningSize);
-			_swordDonutWarning2->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
-			_swordDonutWarning2->GetComponent<Transform>()->SetScale(outsideCircleSize, outsideCircleSize, outsideCircleSize);
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->Reset();
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->SetExceptRange(swordAttackFloat3, _swordCircleWarningSize);
+		_swordDonutWarning2->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_swordDonutWarning2->GetComponent<Transform>()->SetScale(outsideCircleSize, outsideCircleSize, outsideCircleSize);
 
-			_verticalParticleSide[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
-			_verticalParticleSide[1]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
-			_verticalParticle[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
-			_verticalParticle[1]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_verticalParticleSide[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_verticalParticleSide[1]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_verticalParticle[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_verticalParticle[1]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
 
-			_swordDonutAttack[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
+		_swordDonutAttack[0]->GetComponent<Transform>()->SetPosition(swordAttackFloat3.x, _centerPos.y, swordAttackFloat3.z);
 
-			_swordDonutAttack[0]->GetComponent<CylinderCollider>()->SetColliderScale(outsideCircleSize * 2, outsideCircleSize * 2, outsideCircleSize * 2);
-		
-			_timer = 0.0;
-		};
+		_swordDonutAttack[0]->GetComponent<CylinderCollider>()->SetColliderScale(outsideCircleSize * 2, outsideCircleSize * 2, outsideCircleSize * 2);
+
+		_timer = 0.0;
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		_swordDonutWarning1->GetComponent<TransparentMesh>()->PlayOnce();
+		_swordDonutWarning2->GetComponent<TransparentMesh>()->PlayOnce();
+
+		auto nowFrame = animator->GetCurrentFrame();
+
+		//auto index = pattern->GetSubObjectIndex(_swordDonutAttack[0]);
+
+		SetKamenSwordCollider(21, 27, nowFrame);
+
+		if (28 <= nowFrame && nowFrame <= 40)
 		{
-			auto animator = _boss->GetComponent<Animator>();
+			auto outsideCircleSize = _swordCircleWarningSize * 2.0f;
+			_timer += TimeManager::GetInstance().GetDeltaTime();
+			//pattern->_isColliderActive[index] = true;
 
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			_swordDonutWarning1->GetComponent<TransparentMesh>()->PlayOnce();
-			_swordDonutWarning2->GetComponent<TransparentMesh>()->PlayOnce();
-
-			auto nowFrame = animator->GetCurrentFrame();
-
-			//auto index = pattern->GetSubObjectIndex(_swordDonutAttack[0]);
-
-			SetKamenSwordCollider(21, 27, nowFrame);
-
-			if (28 <= nowFrame && nowFrame <= 40)
+			for (auto& verticalParticle : _verticalParticleSide)
 			{
-				auto outsideCircleSize = _swordCircleWarningSize * 2.0f;
-				_timer += TimeManager::GetInstance().GetDeltaTime();
-				//pattern->_isColliderActive[index] = true;
-
-				for (auto& verticalParticle : _verticalParticleSide)
-				{
-					verticalParticle->SetActive(true);
-					verticalParticle->GetComponent<Particle>()->SetActive(true);
-					verticalParticle->GetComponent<Particle>()->SetParticleSize(outsideCircleSize + (_timer * 500 * ToolBox::GetRandomFloat(0.8f, 1.0f)), outsideCircleSize + (_timer * 500 * ToolBox::GetRandomFloat(0.8f, 1.0f)));
-				}
-
-				for (auto& verticalParticle : _verticalParticle)
-				{
-					verticalParticle->SetActive(true);
-					verticalParticle->GetComponent<Particle>()->SetActive(true);
-				}
-
-				_verticalParticle[0]->GetComponent<Particle>()->SetParticleSize((_timer * 30) * ToolBox::GetRandomFloat(0.8f, 1.0f), (_timer * 30) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				_verticalParticle[1]->GetComponent<Particle>()->SetParticleSize((_timer * 50) * ToolBox::GetRandomFloat(0.8f, 1.0f), (_timer * 50) * ToolBox::GetRandomFloat(0.8f, 1.0f));			
+				verticalParticle->SetActive(true);
+				verticalParticle->GetComponent<Particle>()->SetActive(true);
+				verticalParticle->GetComponent<Particle>()->SetParticleSize(outsideCircleSize + (_timer * 500 * ToolBox::GetRandomFloat(0.8f, 1.0f)), outsideCircleSize + (_timer * 500 * ToolBox::GetRandomFloat(0.8f, 1.0f)));
 			}
-			else
+
+			for (auto& verticalParticle : _verticalParticle)
 			{
-				//pattern->_isColliderActive[index] = false;
-				for (auto& verticalParticle : _verticalParticleSide)
-				{
-					verticalParticle->SetActive(false);
-				}
-				for (auto& verticalParticle : _verticalParticle)
-				{
-					verticalParticle->SetActive(false);
-				}
+				verticalParticle->SetActive(true);
+				verticalParticle->GetComponent<Particle>()->SetActive(true);
 			}
 
-			if (isAnimationPlaying == false)
-			{	
-				_timer = 0.0f;
-				return false;
+			_verticalParticle[0]->GetComponent<Particle>()->SetParticleSize((_timer * 30) * ToolBox::GetRandomFloat(0.8f, 1.0f), (_timer * 30) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+			_verticalParticle[1]->GetComponent<Particle>()->SetParticleSize((_timer * 50) * ToolBox::GetRandomFloat(0.8f, 1.0f), (_timer * 50) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+		}
+		else
+		{
+			//pattern->_isColliderActive[index] = false;
+			for (auto& verticalParticle : _verticalParticleSide)
+			{
+				verticalParticle->SetActive(false);
 			}
+			for (auto& verticalParticle : _verticalParticle)
+			{
+				verticalParticle->SetActive(false);
+			}
+		}
 
-			return true;
-		};
+		if (isAnimationPlaying == false)
+		{
+			_timer = 0.0f;
+			return false;
+		}
+
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -4082,57 +4128,57 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 	pattern->SetSubObject(_kamenSwordCollider);
 
 	auto initLogic = [pattern, this]()
-		{
-			pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
-			pattern->SetDamage(10.0f);
+	{
+		pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
+		pattern->SetDamage(10.0f);
 
-			_isSwordSecondAttackStart = false;
-		};
+		_isSwordSecondAttackStart = false;
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		auto nowFrame = animator->GetCurrentFrame();
+
+		if (19 <= nowFrame && nowFrame <= 36)
 		{
-			auto animator = _boss->GetComponent<Animator>();
-
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			auto nowFrame = animator->GetCurrentFrame();
-
-			if (19 <= nowFrame && nowFrame <= 36)
+			SetKamenSwordCollider();
+		}
+		else if (47 <= nowFrame && nowFrame <= 59)
+		{
+			if (!_isSwordSecondAttackStart)
 			{
-				SetKamenSwordCollider();
-			}
-			else if (47 <= nowFrame && nowFrame <= 59)
-			{
-				if (!_isSwordSecondAttackStart)
-				{
-					pattern->SetAttackState(BossPattern::eAttackState::ePush);
-					pattern->SetDamage(pattern->_damage * 1.5f);
+				pattern->SetAttackState(BossPattern::eAttackState::ePush);
+				pattern->SetDamage(pattern->_damage * 1.5f);
 
-					auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
-
-					pattern->_isColliderHit[index] = false;
-
-					_isSwordSecondAttackStart = true;
-				}
-
-				SetKamenSwordCollider();
-			}
-			else
-			{
 				auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
 
-				pattern->_isColliderActive[index] = false;
+				pattern->_isColliderHit[index] = false;
+
+				_isSwordSecondAttackStart = true;
 			}
 
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
+			SetKamenSwordCollider();
+		}
+		else
+		{
+			auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
 
-			return true;
-		};
+			pattern->_isColliderActive[index] = false;
+		}
+
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
+
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -4157,157 +4203,157 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 
 	auto initLogic = [pattern, this]()
+	{
+		pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
+		pattern->SetDamage(10.0f);
+
+		_isSwordSecondAttackStart = false;
+
+		for (int i = 0; i < _blade.size(); i++)
 		{
-			pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
-			pattern->SetDamage(10.0f);
+			auto bossDirection = GetDirection();
 
-			_isSwordSecondAttackStart = false;
+			_swordDirection = { bossDirection.m128_f32[0], bossDirection.m128_f32[1], bossDirection.m128_f32[2] };
 
-			for (int i = 0; i < _blade.size(); i++)
+			_swordDirection2 = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _bossTransform->GetRotation().y + 180.0f);
+
+			auto bossPos = _bossTransform->GetPosition();
+
+			auto bladeStartPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(bossDirection, 40.0f));
+
+			auto bladeStartPos2 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), 40.0f));
+
+			if (i == 0)
 			{
-				auto bossDirection = GetDirection();
-
-				_swordDirection = { bossDirection.m128_f32[0], bossDirection.m128_f32[1], bossDirection.m128_f32[2] };
-
-				_swordDirection2 = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _bossTransform->GetRotation().y + 180.0f);
-
-				auto bossPos = _bossTransform->GetPosition();
-
-				auto bladeStartPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(bossDirection, 40.0f));
-
-				auto bladeStartPos2 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), 40.0f));
-
-				if (i == 0)
-				{
-					_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos.m128_f32[0], 15.0f, bladeStartPos.m128_f32[2]);
-					_blade[i]->GetComponent<Transform>()->SetRotation(0.0f, _bossTransform->GetRotation().y, 0.0f);
-				}
-				else
-				{
-					_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos2.m128_f32[0], 30.0f, bladeStartPos2.m128_f32[2]);
-					_blade[i]->GetComponent<Transform>()->SetRotation(30.0f, _bossTransform->GetRotation().y + 180, -10.0f);
-				}
-
-				auto bladePos = _blade[0]->GetComponent<Transform>()->GetPosition();
-				auto bladePos2 = _blade[1]->GetComponent<Transform>()->GetPosition();
-
-				DirectX::XMVECTOR targetPos1 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 1000.0f));
-
-				Navigation::GetInstance().SetSEpos(1, bladePos.x, 0.0f, bladePos.z,
-					targetPos1.m128_f32[0], 0.0f, targetPos1.m128_f32[2]);
-
-				auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
-
-
-				DirectX::XMVECTOR targetPos2 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), 1000.0f));
-
-				Navigation::GetInstance().SetSEpos(1, bladePos2.x, 0.0f, bladePos.z,
-					targetPos2.m128_f32[0], 0.0f, targetPos2.m128_f32[2]);
-
-				auto targetPosition2 = Navigation::GetInstance().FindRaycastPath(1);
-
-				_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) - 5.0f;
-
-				_swordMoveDistance2 = ToolBox::GetDistance(bladePos2, targetPosition2) - 5.0f;
-
-				_isRotateFinish = false;
+				_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos.m128_f32[0], 15.0f, bladeStartPos.m128_f32[2]);
+				_blade[i]->GetComponent<Transform>()->SetRotation(0.0f, _bossTransform->GetRotation().y, 0.0f);
 			}
-		};
+			else
+			{
+				_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos2.m128_f32[0], 30.0f, bladeStartPos2.m128_f32[2]);
+				_blade[i]->GetComponent<Transform>()->SetRotation(30.0f, _bossTransform->GetRotation().y + 180, -10.0f);
+			}
+
+			auto bladePos = _blade[0]->GetComponent<Transform>()->GetPosition();
+			auto bladePos2 = _blade[1]->GetComponent<Transform>()->GetPosition();
+
+			DirectX::XMVECTOR targetPos1 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 1000.0f));
+
+			Navigation::GetInstance().SetSEpos(1, bladePos.x, 0.0f, bladePos.z,
+				targetPos1.m128_f32[0], 0.0f, targetPos1.m128_f32[2]);
+
+			auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
+
+
+			DirectX::XMVECTOR targetPos2 = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), 1000.0f));
+
+			Navigation::GetInstance().SetSEpos(1, bladePos2.x, 0.0f, bladePos.z,
+				targetPos2.m128_f32[0], 0.0f, targetPos2.m128_f32[2]);
+
+			auto targetPosition2 = Navigation::GetInstance().FindRaycastPath(1);
+
+			_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) - 5.0f;
+
+			_swordMoveDistance2 = ToolBox::GetDistance(bladePos2, targetPosition2) - 5.0f;
+
+			_isRotateFinish = false;
+		}
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		auto nowFrame = animator->GetCurrentFrame();
+
+		auto bladeMesh1 = _blade[0]->GetComponent<MeshRenderer>();
+		auto bladeMesh2 = _blade[1]->GetComponent<MeshRenderer>();
+
+		if (52 < nowFrame && nowFrame < 69)
 		{
-			auto animator = _boss->GetComponent<Animator>();
+			SetKamenSwordCollider();
 
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			auto nowFrame = animator->GetCurrentFrame();
-
-			auto bladeMesh1 = _blade[0]->GetComponent<MeshRenderer>();
-			auto bladeMesh2 = _blade[1]->GetComponent<MeshRenderer>();
-
-			if (52 < nowFrame && nowFrame < 69)
+			if (nowFrame > 64)
 			{
-				SetKamenSwordCollider();
-
-				if (nowFrame > 64)
-				{
-					bladeMesh1->SetActive(true);
-				}
+				bladeMesh1->SetActive(true);
 			}
-			else if (82 < nowFrame && nowFrame < 94)
-			{
-				SetKamenSwordCollider();
+		}
+		else if (82 < nowFrame && nowFrame < 94)
+		{
+			SetKamenSwordCollider();
 
-				if (nowFrame >= 91)
-				{
-					bladeMesh2->SetActive(true);
-				}
+			if (nowFrame >= 91)
+			{
+				bladeMesh2->SetActive(true);
+			}
+		}
+		else
+		{
+			auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
+
+			pattern->_isColliderActive[index] = false;
+		}
+
+		if (68 < nowFrame && nowFrame < 83)
+		{
+			if (!_isRotateFinish)
+			{
+				auto rotateFinish = RotateClockWise(180.0f, pattern->_speed * 13.0f, true);
+
+				_isRotateFinish = rotateFinish;
+			}
+		}
+
+		auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
+		auto moveSpeed = pattern->_speed * bladeSpeed;
+
+		if (bladeMesh1->GetActivated())
+		{
+			if (_swordMoveDistance < 0)
+			{
+				bladeMesh1->SetActive(false);
 			}
 			else
 			{
-				auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
+				_swordMoveDistance -= moveSpeed;
 
-				pattern->_isColliderActive[index] = false;
+				auto bladePos1 = _blade[0]->GetComponent<Transform>()->GetPosition();
+
+				auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos1), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
+
+				_blade[0]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos1.y, bladeMove.m128_f32[2]);
 			}
+		}
 
-			if (68 < nowFrame && nowFrame < 83)
+		if (bladeMesh2->GetActivated())
+		{
+			if (_swordMoveDistance2 < 0)
 			{
-				if (!_isRotateFinish)
-				{
-					auto rotateFinish = RotateClockWise(180.0f, pattern->_speed * 13.0f, true);
-
-					_isRotateFinish = rotateFinish;
-				}
+				bladeMesh2->SetActive(false);
 			}
-
-			auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
-			auto moveSpeed = pattern->_speed * bladeSpeed;
-
-			if (bladeMesh1->GetActivated())
+			else
 			{
-				if (_swordMoveDistance < 0)
-				{
-					bladeMesh1->SetActive(false);
-				}
-				else
-				{
-					_swordMoveDistance -= moveSpeed;
+				_swordMoveDistance2 -= moveSpeed;
 
-					auto bladePos1 = _blade[0]->GetComponent<Transform>()->GetPosition();
+				auto bladePos2 = _blade[1]->GetComponent<Transform>()->GetPosition();
 
-					auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos1), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
+				auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos2), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), moveSpeed));
 
-					_blade[0]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos1.y, bladeMove.m128_f32[2]);
-				}
+				_blade[1]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos2.y, bladeMove.m128_f32[2]);
 			}
+		}
 
-			if (bladeMesh2->GetActivated())
-			{
-				if (_swordMoveDistance2 < 0)
-				{
-					bladeMesh2->SetActive(false);
-				}
-				else
-				{
-					_swordMoveDistance2 -= moveSpeed;
+		if (isAnimationPlaying == false)
+		{
+			return false;
+		}
 
-					auto bladePos2 = _blade[1]->GetComponent<Transform>()->GetPosition();
-
-					auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos2), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), moveSpeed));
-
-					_blade[1]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos2.y, bladeMove.m128_f32[2]);
-				}
-			}
-
-			if (isAnimationPlaying == false)
-			{
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
@@ -4321,34 +4367,163 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 	pattern->SetPatternName("SwordSwingHorizontal");
 
 	pattern->SetAnimName("SwordSwingHorizontal").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox);
+	pattern->SetColliderType(BossPattern::eColliderType::eBox).SetSkipChase(true);
 
 	pattern->SetSubObject(_kamenSwordCollider);
+	pattern->SetSubObject(_largeBlade);
 
 	auto initLogic = [pattern, this]()
-		{
+	{
+		int random = ToolBox::GetRandomNum(3);
 
-		};
+		switch (random)
+		{
+			case 0:
+			{
+				// 왼쪽
+				_bossTransform->SetPosition(-70.0f, _centerPos.y, 0.0f);
+				_bossTransform->SetRotation(0.0f, -90.0f, 0.0f);
+				_largeBlade->GetComponent<Transform>()->SetRotation(0.0f, -90.0f, 0.0f);
+				break;
+			}
+			case 1:
+			{
+				// 오른쪽
+				_bossTransform->SetPosition(72.0f, _centerPos.y, 0.0f);
+				_bossTransform->SetRotation(0.0f, 90.0f, 0.0f);
+				_largeBlade->GetComponent<Transform>()->SetRotation(0.0f, 90.0f, 0.0f);
+				break;
+			}
+			case 2:
+			{
+				// 위
+				_bossTransform->SetPosition(0.0f, _centerPos.y, 85.0f);
+				_bossTransform->SetRotation(0.0f, 0.0f, 0.0f);
+				_largeBlade->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+				break;
+			}
+			case 3:
+			{
+				// 아래
+				_bossTransform->SetPosition(0.0f, _centerPos.y, -98.0f);
+				_bossTransform->SetRotation(0.0f, 180.0f, 0.0f);
+				_largeBlade->GetComponent<Transform>()->SetRotation(0.0f, 180.0f, 0.0f);
+				break;
+			}
+			default:
+				break;
+		}
+
+		auto bossDirection = GetDirection();
+
+		_swordDirection = { bossDirection.m128_f32[0], bossDirection.m128_f32[1], bossDirection.m128_f32[2] };
+
+		auto bossPos = _bossTransform->GetPosition();
+
+		auto bladeStartPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(bossDirection, 40.0f));
+
+		_largeBlade->GetComponent<Transform>()->SetPosition(bladeStartPos.m128_f32[0], 15.0f, bladeStartPos.m128_f32[2]);
+
+		DirectX::XMVECTOR targetPos = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bossPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 1000.0f));
+
+		auto bladePos = _largeBlade->GetComponent<Transform>()->GetPosition();
+
+		Navigation::GetInstance().SetSEpos(1, bladePos.x, 0.0f, bladePos.z,
+			targetPos.m128_f32[0], 0.0f, targetPos.m128_f32[2]);
+
+		auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
+
+		_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) - 5.0f;
+	};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
+	{
+		auto animator = _boss->GetComponent<Animator>();
+
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+		auto nowFrame = animator->GetCurrentFrame();
+
+		if (10 < nowFrame && nowFrame < 17)
 		{
-			auto animator = _boss->GetComponent<Animator>();
+			// 여기에 베지어 기 모으는 파티클 넣기
+			pattern->_speed = 3.0f;
+		}
+		else
+		{
+			pattern->_speed = 15.0f;
+		}
 
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+		if (16 < nowFrame && nowFrame < 38)
+		{
+			SetKamenSwordCollider();
+		}
 
-			if (!isAnimationPlaying)
+		if (35 < nowFrame)
+		{
+			auto largeBladeMesh = _largeBlade->GetComponent<MeshRenderer>();
+
+			largeBladeMesh->SetActive(true);
+
+			auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
+
+			auto moveSpeed = pattern->_speed * bladeSpeed;
+
+			if (_swordMoveDistance < 0)
 			{
-				return false;
+				largeBladeMesh->SetActive(false);
 			}
+			else
+			{
+				_swordMoveDistance -= moveSpeed;
 
-			return true;
-		};
+				auto bladePos = _largeBlade->GetComponent<Transform>()->GetPosition();
+
+				auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
+
+				_largeBlade->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos.y, bladeMove.m128_f32[2]);
+			}
+		}
+
+		if (!isAnimationPlaying)
+		{
+			return false;
+		}
+
+		return true;
+	};
 
 	pattern->SetLogic(attackLogic);
 
 	_swordSwingHorizontal = pattern;
+}
+
+void KunrealEngine::Kamen::CreateSwordRotationAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordRotationAttack");
+
+	pattern->SetAnimName("Idle").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetColliderType(BossPattern::eColliderType::eBox).SetSkipChase(true);
+
+	auto initLogic = [pattern, this]()
+	{
+
+	};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+	{
+		return false;
+	};
+
+	pattern->SetLogic(attackLogic);
+
+	_swordRotationAttack = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordLookPlayer()
@@ -4361,112 +4536,112 @@ void KunrealEngine::Kamen::CreateSwordLookPlayer()
 	pattern->SetMaxColliderCount(0);
 
 	auto swordLookInitLogic = [pattern, this]()
-		{
-			pattern->SetSubObject(_freeSword);
-			pattern->SetSubObject(_swordPath);
+	{
+		pattern->SetSubObject(_freeSword);
+		pattern->SetSubObject(_swordPath);
 
-			_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
+		_freeSword->GetComponent<MeshRenderer>()->DeleteParentBone();
 
-			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+		_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
-			_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+		_freeSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
-			_swordPath->GetComponent<TransparentMesh>()->SetActive(true);
+		_swordPath->GetComponent<TransparentMesh>()->SetActive(true);
 
-			_swordPath->GetComponent<TransparentMesh>()->Reset();
+		_swordPath->GetComponent<TransparentMesh>()->Reset();
 
-			_swordTimer = 0.0f;
+		_swordTimer = 0.0f;
 
-			auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
-			_swordPath->GetComponent<Transform>()->SetPosition(swordTransform.x, _bossTransform->GetPosition().y, swordTransform.z);
+		auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
+		_swordPath->GetComponent<Transform>()->SetPosition(swordTransform.x, _bossTransform->GetPosition().y, swordTransform.z);
 
-			auto swordPathTransform = _swordPath->GetComponent<Transform>();
-			swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
+		auto swordPathTransform = _swordPath->GetComponent<Transform>();
+		swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
 
-			_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-			_swordDirection = ToolBox::RotateVector(_swordDirection, swordPathTransform->GetRotation().y);
+		_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+		_swordDirection = ToolBox::RotateVector(_swordDirection, swordPathTransform->GetRotation().y);
 
-			DirectX::XMVECTOR swordNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 200.0f));
+		DirectX::XMVECTOR swordNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 200.0f));
 
-			_swordPath->GetComponent<Transform>()->SetPosition(swordNewPosition.m128_f32[0], _bossTransform->GetPosition().y, swordNewPosition.m128_f32[2]);
-		};
+		_swordPath->GetComponent<Transform>()->SetPosition(swordNewPosition.m128_f32[0], _bossTransform->GetPosition().y, swordNewPosition.m128_f32[2]);
+	};
 
 	pattern->SetInitializeLogic(swordLookInitLogic);
 
 	auto swordLookPlayerLogic = [pattern, this]()
+	{
+		_swordPath->GetComponent<TransparentMesh>()->PlayOnce();
+
+		// 일정 시간 까지 플레이어 따라다니다가 헤드 고정시킬 예정
+
+		auto goalAngle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f) - 90.0f;
+
+		auto swordTransform = _freeSword->GetComponent<Transform>();
+		auto rotation = swordTransform->GetRotation();
+
+		auto swordPathTransform = _swordPath->GetComponent<Transform>();
+		// 회전 속도
+		float speed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
+
+		_swordTimer += TimeManager::GetInstance().GetDeltaTime();
+
+		// 현재 각도가 목표로 하는 각도보다 작을 경우
+		if (_swordTimer < _warningMaxTimer)
 		{
-			_swordPath->GetComponent<TransparentMesh>()->PlayOnce();
-
-			// 일정 시간 까지 플레이어 따라다니다가 헤드 고정시킬 예정
-
-			auto goalAngle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f) - 90.0f;
-
-			auto swordTransform = _freeSword->GetComponent<Transform>();
-			auto rotation = swordTransform->GetRotation();
-
-			auto swordPathTransform = _swordPath->GetComponent<Transform>();
-			// 회전 속도
-			float speed = TimeManager::GetInstance().GetDeltaTime() * pattern->_speed;
-
-			_swordTimer += TimeManager::GetInstance().GetDeltaTime();
-
-			// 현재 각도가 목표로 하는 각도보다 작을 경우
-			if (_swordTimer < _warningMaxTimer)
+			auto errorRange = std::abs(goalAngle) - std::abs(rotation.y);
+			errorRange = std::abs(errorRange);
+			if (errorRange > 1.0f)
 			{
-				auto errorRange = std::abs(goalAngle) - std::abs(rotation.y);
-				errorRange = std::abs(errorRange);
-				if (errorRange > 1.0f)
+				if (goalAngle < rotation.y)
 				{
-					if (goalAngle < rotation.y)
-					{
-						// 회전 속도만큼 회전
-						swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y - speed, swordTransform->GetRotation().z);
+					// 회전 속도만큼 회전
+					swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y - speed, swordTransform->GetRotation().z);
 
-						auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
+					auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
 
-						auto swordPathTransform = _swordPath->GetComponent<Transform>();
-						swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
+					auto swordPathTransform = _swordPath->GetComponent<Transform>();
+					swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
 
-						_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-						_swordDirection = ToolBox::RotateVector(_swordDirection, swordPathTransform->GetRotation().y);
+					_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+					_swordDirection = ToolBox::RotateVector(_swordDirection, swordPathTransform->GetRotation().y);
 
-						DirectX::XMVECTOR swordNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 100.0f));
+					DirectX::XMVECTOR swordNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 100.0f));
 
-						_swordPath->GetComponent<Transform>()->SetPosition(swordNewPosition.m128_f32[0], _bossTransform->GetPosition().y, swordNewPosition.m128_f32[2]);
+					_swordPath->GetComponent<Transform>()->SetPosition(swordNewPosition.m128_f32[0], _bossTransform->GetPosition().y, swordNewPosition.m128_f32[2]);
 
-					}
-					else
-					{
-						// 회전 속도만큼 회전
-						swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y + speed, swordTransform->GetRotation().z);
+				}
+				else
+				{
+					// 회전 속도만큼 회전
+					swordTransform->SetRotation(swordTransform->GetRotation().x, swordTransform->GetRotation().y + speed, swordTransform->GetRotation().z);
 
-						auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
+					auto swordTransform = _freeSword->GetComponent<Transform>()->GetPosition();
 
-						auto swordPathTransform = _swordPath->GetComponent<Transform>();
-						swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
+					auto swordPathTransform = _swordPath->GetComponent<Transform>();
+					swordPathTransform->SetRotation(swordPathTransform->GetRotation().x, _freeSword->GetComponent<Transform>()->GetRotation().y, swordPathTransform->GetRotation().z);
 
-						_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
-						_swordDirection = ToolBox::RotateVector(_swordDirection, swordPathTransform->GetRotation().y);
+					_swordDirection = DirectX::XMFLOAT3(1.0f, 0.0f, 0.0f);
+					_swordDirection = ToolBox::RotateVector(_swordDirection, swordPathTransform->GetRotation().y);
 
-						DirectX::XMVECTOR swordNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 100.0f));
+					DirectX::XMVECTOR swordNewPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordTransform), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), 100.0f));
 
-						_swordPath->GetComponent<Transform>()->SetPosition(swordNewPosition.m128_f32[0], _bossTransform->GetPosition().y, swordNewPosition.m128_f32[2]);
+					_swordPath->GetComponent<Transform>()->SetPosition(swordNewPosition.m128_f32[0], _bossTransform->GetPosition().y, swordNewPosition.m128_f32[2]);
 
-					}
 				}
 			}
+		}
 
-			if (_swordTimer > _warningMaxTimer + 1.0f)
-			{
-				// 회전이 완료되었다고 반환
-				pattern->DeleteSubObject(_freeSword);
-				return false;
-			}
-			else
-			{
-				return true;
-			}
-		};
+		if (_swordTimer > _warningMaxTimer + 1.0f)
+		{
+			// 회전이 완료되었다고 반환
+			pattern->DeleteSubObject(_freeSword);
+			return false;
+		}
+		else
+		{
+			return true;
+		}
+	};
 
 	pattern->SetLogic(swordLookPlayerLogic);
 
@@ -4498,72 +4673,72 @@ void KunrealEngine::Kamen::CreateEmergenceAttack()
 	}
 
 	auto core1Logic = [pattern, this]()
+	{
+		// 9명의 분신 중 무엇이 사라질 지 인덱스 랜덤 설정
+		if (!_isRandomStart)
 		{
-			// 9명의 분신 중 무엇이 사라질 지 인덱스 랜덤 설정
-			if (!_isRandomStart)
-			{
-				_targetIndex = ToolBox::GetRandomNum(_fakeBoss.size() - 1);
+			_targetIndex = ToolBox::GetRandomNum(_fakeBoss.size() - 1);
 
-				_isRandomStart = true;
+			_isRandomStart = true;
+		}
+
+		// 패턴 시작 위해 중앙으로 텔레포트
+		if (!_isRotateFinish)
+		{
+			auto newPos = _fakeBoss[_targetIndex]->GetComponent<Transform>()->GetPosition();
+			auto isTeleportFinish = Teleport(newPos, false, 3.0f);
+
+			// 텔포 끝나면 패턴 시작
+			if (!isTeleportFinish)
+			{
+				return true;
 			}
-
-			// 패턴 시작 위해 중앙으로 텔레포트
-			if (!_isRotateFinish)
+			else
 			{
-				auto newPos = _fakeBoss[_targetIndex]->GetComponent<Transform>()->GetPosition();
-				auto isTeleportFinish = Teleport(newPos, false, 3.0f);
+				// 텔포 끝나면 다시 돌아오지 않도록
+				RotateByAngle(0.0f);
 
-				// 텔포 끝나면 패턴 시작
-				if (!isTeleportFinish)
+				_isRotateFinish = true;
+			}
+		}
+
+		/// emergence 역애니메이션 한번 재생시켜줌 아직 미구현
+
+		// 패턴 시작 전 초기화해줄것들
+		if (!_isCoreStart)
+		{
+			// 페이크 보스들 켜줌
+			for (int i = 0; i < _fakeBoss.size(); i++)
+			{
+				if (i != _targetIndex)
 				{
-					return true;
+					_fakeBoss[i]->SetActive(true);
+					_fakeBoss[i]->SetTotalComponentState(true);
 				}
+
 				else
 				{
-					// 텔포 끝나면 다시 돌아오지 않도록
-					RotateByAngle(0.0f);
-
-					_isRotateFinish = true;
+					_fakeBoss[i]->SetActive(false);
 				}
 			}
 
-			/// emergence 역애니메이션 한번 재생시켜줌 아직 미구현
+			_isCoreStart = true;
+		}
 
-			// 패턴 시작 전 초기화해줄것들
-			if (!_isCoreStart)
-			{
-				// 페이크 보스들 켜줌
-				for (int i = 0; i < _fakeBoss.size(); i++)
-				{
-					if (i != _targetIndex)
-					{
-						_fakeBoss[i]->SetActive(true);
-						_fakeBoss[i]->SetTotalComponentState(true);
-					}
+		auto animator = _boss->GetComponent<Animator>();
+		auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
-					else
-					{
-						_fakeBoss[i]->SetActive(false);
-					}
-				}
+		if (isAnimationPlaying == false)
+		{
+			_isCoreStart = false;
+			_isRotateFinish = false;
 
-				_isCoreStart = true;
-			}
+			_targetIndex = 0;
+			return false;
+		}
 
-			auto animator = _boss->GetComponent<Animator>();
-			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
-
-			if (isAnimationPlaying == false)
-			{
-				_isCoreStart = false;
-				_isRotateFinish = false;
-
-				_targetIndex = 0;
-				return false;
-			}
-
-			return true;
-		};
+		return true;
+	};
 
 	pattern->SetLogic(core1Logic, false);
 
@@ -4729,23 +4904,23 @@ void KunrealEngine::Kamen::SwordTurnClockPattern()
 	swordTurnClockPattern->SetRange(swordTurnClockPattern->_patternList[1]->_range);
 
 	auto swordInitLogic = [swordTurnClockPattern, this]()
-		{
-			_swordCircleWarningSize = 30.0f;
+	{
+		_swordCircleWarningSize = 30.0f;
 
-			auto ranX = ToolBox::GetRandomFloat(-90.0f, 100.0f);
-			auto ranZ = ToolBox::GetRandomFloat(-110.0f, 90.0f);
+		auto ranX = ToolBox::GetRandomFloat(-90.0f, 100.0f);
+		auto ranZ = ToolBox::GetRandomFloat(-110.0f, 90.0f);
 
-			_swordOriginPos = DirectX::XMFLOAT3{ ranX, _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, ranZ };
+		_swordOriginPos = DirectX::XMFLOAT3{ ranX, _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, ranZ };
 
-			float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
-			float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
+		float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
+		float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
 
-			_swordStartPos = DirectX::XMFLOAT3{ x , _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, z };
+		_swordStartPos = DirectX::XMFLOAT3{ x , _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, z };
 
-			_swordChopSpeed = 20.0f;
+		_swordChopSpeed = 20.0f;
 
-			_warningMaxTimer = 0.5f;
-		};
+		_warningMaxTimer = 0.5f;
+	};
 
 	swordTurnClockPattern->SetInitializeLogic(swordInitLogic);
 
@@ -4773,23 +4948,23 @@ void KunrealEngine::Kamen::SwordTurnAntiClockPattern()
 	swordTurnAntiClockPattern->SetRange(swordTurnAntiClockPattern->_patternList[1]->_range);
 
 	auto swordInitLogic = [swordTurnAntiClockPattern, this]()
-		{
-			_swordCircleWarningSize = 40.0f;
+	{
+		_swordCircleWarningSize = 40.0f;
 
-			auto ranX = ToolBox::GetRandomFloat(-90.0f, 100.0f);
-			auto ranZ = ToolBox::GetRandomFloat(-110.0f, 90.0f);
+		auto ranX = ToolBox::GetRandomFloat(-90.0f, 100.0f);
+		auto ranZ = ToolBox::GetRandomFloat(-110.0f, 90.0f);
 
-			_swordOriginPos = DirectX::XMFLOAT3{ ranX, _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, ranZ };
+		_swordOriginPos = DirectX::XMFLOAT3{ ranX, _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, ranZ };
 
-			float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
-			float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
+		float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
+		float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
 
-			_swordStartPos = DirectX::XMFLOAT3{ x , _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, z };
+		_swordStartPos = DirectX::XMFLOAT3{ x , _freeSword->GetComponent<Transform>()->GetPosition().y + 30.0f, z };
 
-			_swordChopSpeed = 20.0f;
+		_swordChopSpeed = 20.0f;
 
-			_warningMaxTimer = 0.5f;
-		};
+		_warningMaxTimer = 0.5f;
+	};
 
 	swordTurnAntiClockPattern->SetInitializeLogic(swordInitLogic);
 
@@ -4816,31 +4991,31 @@ void KunrealEngine::Kamen::SwordLinearAttackPattern()
 	swordLinearAttack->SetPattern(_swordHide);
 
 	auto swordLinearAttackInitLogic = [swordLinearAttack, this]()
+	{
+		auto random = ToolBox::GetRandomNum(3);
+
+		switch (random)
 		{
-			auto random = ToolBox::GetRandomNum(3);
+			case 0: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, 50.0f };
+				  break;
+			case 1: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, -50.0f };
+				  break;
+			case 2: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, 50.0f };
+				  break;
+			case 3: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, -50.0f };
+				  break;
+			default:
+				break;
+		}
 
-			switch (random)
-			{
-				case 0: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, 50.0f };
-					  break;
-				case 1: _swordStartPos = DirectX::XMFLOAT3{ 50.0f , 30.0f, -50.0f };
-					  break;
-				case 2: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, 50.0f };
-					  break;
-				case 3: _swordStartPos = DirectX::XMFLOAT3{ -50.0f , 30.0f, -50.0f };
-					  break;
-				default:
-					break;
-			}
+		auto swordTransform = _freeSword->GetComponent<Transform>();
 
-			auto swordTransform = _freeSword->GetComponent<Transform>();
+		auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
 
-			auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
+		swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
 
-			swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
-
-			_warningMaxTimer = 4.0f;
-		};
+		_warningMaxTimer = 4.0f;
+	};
 
 	swordLinearAttack->SetInitializeLogic(swordLinearAttackInitLogic);
 
@@ -4867,29 +5042,29 @@ void KunrealEngine::Kamen::SwordChopPattern()
 	swordChopAttack->SetPattern(_swordHide);
 
 	auto swordChopAttackInitLogic = [swordChopAttack, this]()
-		{
-			_swordCircleWarningSize = 40.0f;
+	{
+		_swordCircleWarningSize = 40.0f;
 
-			auto ranX = ToolBox::GetRandomFloat(-90.0f, 100.0f);
-			auto ranZ = ToolBox::GetRandomFloat(-110.0f, 90.0f);
+		auto ranX = ToolBox::GetRandomFloat(-90.0f, 100.0f);
+		auto ranZ = ToolBox::GetRandomFloat(-110.0f, 90.0f);
 
-			_swordOriginPos = DirectX::XMFLOAT3{ ranX, 0.0f, ranZ };
+		_swordOriginPos = DirectX::XMFLOAT3{ ranX, 0.0f, ranZ };
 
-			float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
-			float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
+		float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
+		float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
 
-			_swordStartPos = DirectX::XMFLOAT3{ x , 30.0f + 70.0f, z };
+		_swordStartPos = DirectX::XMFLOAT3{ x , 30.0f + 70.0f, z };
 
-			auto swordTransform = _freeSword->GetComponent<Transform>();
+		auto swordTransform = _freeSword->GetComponent<Transform>();
 
-			auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
+		auto angle = ToolBox::GetAngleWithDirection(_playerTransform->GetPosition(), _swordStartPos, 0.0f);
 
-			swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
+		swordTransform->SetRotation(swordTransform->GetRotation().x, angle - 90.0f, swordTransform->GetRotation().z);
 
-			_swordChopSpeed = 40.0f;
+		_swordChopSpeed = 40.0f;
 
-			_warningMaxTimer = 1.0f;
-		};
+		_warningMaxTimer = 1.0f;
+	};
 
 	swordChopAttack->SetInitializeLogic(swordChopAttackInitLogic);
 

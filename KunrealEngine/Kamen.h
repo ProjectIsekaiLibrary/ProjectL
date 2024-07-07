@@ -104,12 +104,17 @@ namespace KunrealEngine
 
 		void CreateSwordChopAttack();
 
+		//검 핵심 패턴
+	private:
+		void CreateSwordMultipleAttack();
+
 		// 3페이즈 with 검
 	private:
 		void CreateSwordSwingVertical();
 		void CreateSwordSwingTwice();
 		void CreateSwordSwingTwiceHard();
 		void CreateSwordSwingHorizontal();
+		void CreateSwordRotationAttack();
 
 		// 카멘 이동 관련
 	private:
@@ -188,11 +193,13 @@ namespace KunrealEngine
 		BossPattern* _swordSwingTwice;
 		BossPattern* _swordSwingTwiceHard;
 		BossPattern* _swordSwingHorizontal;
+		BossPattern* _swordRotationAttack;
 
 		BossPattern* _swordSwingTeleport;
 
 	private:
 		BossPattern* _emergence9Lich;
+		BossPattern* _swordMultipleAttack;
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -222,6 +229,7 @@ namespace KunrealEngine
 		GameObject* _kamenSword;
 		GameObject* _kamenSwordCollider;
 		std::vector<GameObject*> _blade;
+		GameObject* _largeBlade;
 
 		std::vector<GameObject*> _handFire;
 
