@@ -235,7 +235,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ParticleTest();
 	/// 니들 맘대로 해
 	PlayGround();
-	//CreateTitleScene();
+	CreateTitleScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -2297,11 +2297,12 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	DirectX::XMFLOAT4 titleDiffuse = { 0.0f, 1.0f, 0.0f, 1.0f };
 	DirectX::XMFLOAT4 titleSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+	// 부유물 1
 	GameObject* titleRock1 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock1");
 	titleRock1->AddComponent<MeshRenderer>();
 	titleRock1->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight1/FloatingLight1");
-	titleRock1->GetComponent<Transform>()->SetPosition(0.0f, 147.f, 270.f);
-	titleRock1->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	titleRock1->GetComponent<Transform>()->SetPosition(-96.0f, 95.f, -30.f);
+	titleRock1->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
 	titleRock1->AddComponent<Light>();
 	titleRock1->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f);
 	titleRock1->AddComponent<Particle>();
@@ -2314,7 +2315,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock1->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.0f);
 	titleRock1->GetComponent<Particle>()->SetActive(true);
 
-
+	// 부유물 2
 	GameObject* titleRock2 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock2");
 	titleRock2->AddComponent<MeshRenderer>();
 	titleRock2->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight2/FloatingLight2");
@@ -2334,8 +2335,25 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock2Par->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.f, 0.0f);
 	titleRock2Par->GetComponent<Particle>()->SetActive(true);
 
+	// 부유물 3
+	GameObject* titleRock3 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock3");
+	titleRock3->AddComponent<MeshRenderer>();
+	titleRock3->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight3/FloatingLight3");
+	titleRock3->GetComponent<Transform>()->SetScale(5.f, 5.f, 5.f);
+	titleRock3->GetComponent<Transform>()->SetPosition(-98.2f, 92.f, 183.6f);
+	titleRock3->GetComponent<Transform>()->SetRotation(180.f, 0.f, 0.f);
+	titleRock3->AddComponent<Light>();
+	titleRock3->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f);
+
+	// 부유물 4
+	GameObject* floatingObj = sceneInstance.GetCurrentScene()->CreateObject("FloatingObj");
+	floatingObj->AddComponent<MeshRenderer>();
+	floatingObj->GetComponent<MeshRenderer>()->SetMeshObject("FloatingObj/FloatingObj");
+	floatingObj->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	floatingObj->GetComponent<Transform>()->SetPosition(-41.5f, 33.f, 104.f);
+
 	GameObject* titlePlayer = sceneInstance.GetCurrentScene()->CreateObject("TitlePlayer");
 	titlePlayer->AddComponent<Player>();
 	titlePlayer->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
-	titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(68.0f);
+	titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
 }
