@@ -10,7 +10,7 @@ ArkEngine::IPointLight::IPointLight(unsigned int lightIndex)
 	SetActive(true);
 
 	std::string lightName = "PointLight";
-	//_debugObject = new ArkEngine::ArkDX11::DebugObject(lightName, 0, 2);
+	_debugObject = new ArkEngine::ArkDX11::DebugObject(lightName, 0, 2);
 }
 
 ArkEngine::IPointLight::~IPointLight()

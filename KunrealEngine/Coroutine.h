@@ -9,6 +9,12 @@
 // 사용 할 때는 이것만 기억해도 됨.
 // https://www.notion.so/60508ce780814fd2a9e449ea16831a17 사용법 정리해 두었으니 참고.
 
+// 코루틴 사용자에게 중요 안내 사항
+// 코루틴은 종료된 다음 프레임에 삭제됩니다. 코루틴이 종료되는 프레임에 불타입이 바뀌는 형태의 함수를 작성했다면,
+// 그리고 코루틴이 종료된 순간부터 다음프레임에 삭제되기 전까지 그 불타입을 확인하고 코루틴을 재실행 하는 함수가 있다면
+// 코루틴은 여전히 배열에 있으므로 이미 있는 코루틴으로 판단하고 넘어갑니다.
+// 이렇게 되면 코루틴이 영원히 동작하지 않게 되니 참고하시기 바랍니다.
+
 #define Waitforsecond(time) co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(time)
 //#define Checkbool(bool_param) co_await KunrealEngine::Coroutine::Coroutine_type::CheckBool(bool_param)
 #define Return_null co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(0.0000001);

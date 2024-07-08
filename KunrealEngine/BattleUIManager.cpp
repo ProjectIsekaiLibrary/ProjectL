@@ -168,7 +168,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_potion_cool->AddComponent<ImageRenderer>();
 	_potion_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
 	_potion_cool->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
-	_potion_cool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+	_potion_cool->GetComponent<Transform>()->SetScale(0.4f, 0.4f, 1.0f);
 
 	potion = scene.GetCurrentScene()->CreateObject("ui_skill5");
 	potion->SetParent(_battleuibox);
@@ -189,7 +189,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_dash_cool->AddComponent<ImageRenderer>();
 	_dash_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
 	_dash_cool->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
-	_dash_cool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+	_dash_cool->GetComponent<Transform>()->SetScale(0.4f, 0.4f, 1.0f);
 
 	dash = scene.GetCurrentScene()->CreateObject("ui_skill6");
 	dash->SetParent(_battleuibox);
@@ -296,6 +296,8 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill2_cool->SetActive(false);
 	_ui_skill3_cool->SetActive(false);
 	_ui_skill4_cool->SetActive(false);
+	_dash_cool->SetActive(false);
+	_potion_cool->SetActive(false);
 }
 
 void KunrealEngine::BattleUIManager::Release()
@@ -309,22 +311,22 @@ void KunrealEngine::BattleUIManager::FixedUpdate()
 void KunrealEngine::BattleUIManager::Update()
 {
 	auto  abill = _eventmanager->_playerAbill;
-	auto& boosinfo = _eventmanager->_bossComp->GetBossInfo();
+	auto& bossinfo = _eventmanager->_bossComp->GetBossInfo();
 	auto& playerinfo = _eventmanager->_playerComp->GetPlayerData();
 
 
 	// 이건 테스트 용으로 보스나 플레이어의 체력을 강제로 만질 수 있게 해둔 부분
 	if (InputSystem::GetInstance()->KeyDown(KEY::UP))
 	{
-		boosinfo._hp += 10;
+		bossinfo._hp += 10;
 	}
 
 	else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
 	{
-		boosinfo._hp -= 10;
-		if (boosinfo._hp <= 0)
+		bossinfo._hp -= 10;
+		if (bossinfo._hp <= 0)
 		{
-			boosinfo._hp = 1;
+			bossinfo._hp = 1;
 		}
 	}
 
@@ -339,7 +341,7 @@ void KunrealEngine::BattleUIManager::Update()
 	}
 	 
 	// 체력을 받아와서 게이지에 반영하는 부분
-	int bosshp = boosinfo._hp;
+	int bosshp = bossinfo._hp;
 	int playerhp = playerinfo._hp;
 
 	if (pre_bosshp != bosshp)
@@ -365,7 +367,7 @@ void KunrealEngine::BattleUIManager::Update()
 		SetSkillcool2();
 	}
 
-	if (abill->_isAreaDetected)
+	if (abill->_isLaserDetected)
 	{
 		SetSkillcool3();
 	}
@@ -374,6 +376,16 @@ void KunrealEngine::BattleUIManager::Update()
 	{
 		SetSkillcool4();
 	}
+
+	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
+	{
+		Setdashcool();
+	}
+
+//	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
+//	{
+//		Setpotioncool();
+//	}
 }
 
 void KunrealEngine::BattleUIManager::LateUpdate()
@@ -598,7 +610,7 @@ void KunrealEngine::BattleUIManager::SetSkillcool3()
 			Return_null;
 		}
 
-		control->_eventmanager->_playerAbill->_isAreaDetected = false;
+		control->_eventmanager->_playerAbill->_isLaserDetected = false;
 		skillcool->SetActive(false);
 		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
 	};
@@ -655,6 +667,7 @@ void KunrealEngine::BattleUIManager::Setdashcool()
 	{
 		auto control = this;
 		auto skillcool = _dash_cool;
+		float boxsize = 0.4f;
 		//auto ability = _eventmanager->_playerAbill->_abilityContainer[3];
 
 		// 스킬 쿨타임 동안 skillcool 오브젝트 활성화
@@ -664,7 +677,7 @@ void KunrealEngine::BattleUIManager::Setdashcool()
 		float maxcool = 8.0f;
 		float mincool = 0;
 
-		float _coolsize = _skillcoolsize;
+		float _coolsize = boxsize;
 		float coolgauge = 0;
 
 		float speed = 1.0f;
@@ -678,14 +691,14 @@ void KunrealEngine::BattleUIManager::Setdashcool()
 			}
 
 			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
-			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
+			skillcool->GetComponent<Transform>()->SetScale(boxsize, nowscale, 1.0f);
 
 			Return_null;
 		}
 
 		control->_eventmanager->_playerAbill->_isMeteorDetected = false;
 		skillcool->SetActive(false);
-		skillcool->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+		skillcool->GetComponent<Transform>()->SetScale(boxsize, boxsize, 1.0f);
 	};
 
 	Startcoroutine(dashgauge);
@@ -698,6 +711,7 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 		auto control = this;
 		auto skillcool = _potion_cool;
 		auto ability = _eventmanager->_playerAbill->_abilityContainer[3];
+		float boxsize = 0.4f;
 
 		// 스킬 쿨타임 동안 skillcool 오브젝트 활성화
 		skillcool->SetActive(true);
@@ -706,7 +720,7 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 		float maxcool = ability->_cooldown;
 		float mincool = 0;
 
-		float _coolsize = _skillcoolsize;
+		float _coolsize = boxsize;
 		float coolgauge = 0;
 
 		float speed = 1.0f;
@@ -720,14 +734,14 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 			}
 
 			float nowscale = ((currenttime - mincool) / (maxcool - mincool)) * (_coolsize - coolgauge) + coolgauge;
-			skillcool->GetComponent<Transform>()->SetScale(1.0f, nowscale, 1.0f);
+			skillcool->GetComponent<Transform>()->SetScale(boxsize, nowscale, 1.0f);
 
 			Return_null;
 		}
 
 		control->_eventmanager->_playerAbill->_isMeteorDetected = false;
 		skillcool->SetActive(false);
-		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
+		skillcool->GetComponent<Transform>()->SetScale(boxsize, boxsize, 0.4f);
 	};
 
 	Startcoroutine(potiongauge);

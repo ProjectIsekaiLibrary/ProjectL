@@ -8,6 +8,7 @@ namespace KunrealEngine
 	class GameObject;
 	class Component;
 	class PlayerAbility;
+	class Ability;
 	class Camera;
 	
 	class Player;
@@ -59,10 +60,11 @@ namespace KunrealEngine
 	private:
 		unsigned int _insideSafeCount;
 
-	private:
+	public:
 		// 플레이어가 보스에게 주는 데미지 계산
-		void CalculateDamageToBoss();
+		void CalculateDamageToBoss(Ability* abil);
 
+	private:
 		// 보스가 플레이어에게 주는 데미지 계산
 		void CalculateDamageToPlayer();
 
