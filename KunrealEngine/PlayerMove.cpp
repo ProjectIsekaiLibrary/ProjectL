@@ -124,8 +124,20 @@ void KunrealEngine::PlayerMove::SetActive(bool active)
 
 void KunrealEngine::PlayerMove::UpdateTargetPosition()
 {
+	//float upperY;
+
 	/// 에디터 마우스 기준
-	_targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
+	if (this->GetOwner()->GetObjectScene()->GetSceneName() == "Title")
+	{
+		_targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y, -66.0f);
+
+	}
+	else
+	{
+		_targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
+	}
+
+	//_targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
 }
 
 void KunrealEngine::PlayerMove::UpdateMoveNode()
@@ -165,6 +177,8 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 			_targetPos.x, _transform->GetPosition().y, _targetPos.z);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(0);
+
+		if (_stopover.size() == 0) break;
 	}
 	
 	_nodeCount = 0;

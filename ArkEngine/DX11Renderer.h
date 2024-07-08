@@ -147,6 +147,7 @@ namespace ArkEngine
 
 		public:
 			virtual const DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) override;
+			virtual const DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY, float planeD) override;
 
 		public:
 			// IMGUIZMO를 사용하기 위해 메인 카메라의 View행렬을 반환

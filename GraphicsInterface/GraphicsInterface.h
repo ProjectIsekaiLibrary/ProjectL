@@ -151,6 +151,8 @@ namespace GInterface
 		// screen 마우스 좌표를 world 좌표로 변환
 		virtual const DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY) abstract;
 
+		virtual const DirectX::XMFLOAT3 ScreenToWorldPoint(int mouseX, int mouseY, float planeD) abstract;
+
 		// IMGUIZMO를 사용하기 위해 메인 카메라의 View행렬을 반환
 		virtual const DirectX::XMFLOAT4X4& GetViewMatrix() abstract;
 

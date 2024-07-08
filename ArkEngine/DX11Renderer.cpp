@@ -1122,6 +1122,42 @@ const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::ScreenToWorldPoint(int
 	return DirectX::XMFLOAT3(intersectionPoint.m128_f32[0], intersectionPoint.m128_f32[1], intersectionPoint.m128_f32[2]);
 }
 
+const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::ScreenToWorldPoint(int mouseX, int mouseY, float planeD)
+{
+	// Screen coordinates to NDC
+	float normalizedX = ((float)mouseX / (float)_clientWidth) * 2 - 1;
+	float normalizedY = 1 - ((float)mouseY / (float)_clientHeight) * 2;
+
+	// NDC to view space
+	float viewX = normalizedX / _mainCamera->GetProjMatrix().r[0].m128_f32[0];
+	float viewY = normalizedY / _mainCamera->GetProjMatrix().r[1].m128_f32[1];
+
+	DirectX::XMVECTOR rayDir = DirectX::XMVectorSet(viewX, viewY, 1.0f, 0.0f);
+	rayDir = DirectX::XMVector3Normalize(rayDir);
+
+	DirectX::XMMATRIX invView = DirectX::XMMatrixInverse(nullptr, _mainCamera->GetViewMatrix());
+
+	DirectX::XMVECTOR rayOrigin = DirectX::XMVectorSet(_mainCamera->GetCameraPos().x, _mainCamera->GetCameraPos().y, _mainCamera->GetCameraPos().z, 1.0f);
+
+	// Transform ray direction from view space to world space
+	DirectX::XMVECTOR rayDirToWorld = DirectX::XMVector3TransformNormal(rayDir, invView);
+	rayDirToWorld = DirectX::XMVector3Normalize(rayDirToWorld);
+
+	// Define the plane equation (y = 66)
+	DirectX::XMVECTOR planeNormal = DirectX::XMVectorSet(0.0f, 1.0f, 0.0f, 0.0f);
+	//float planeD = -66.0f;
+	DirectX::XMVECTOR plane = DirectX::XMVectorSet(planeNormal.m128_f32[0], planeNormal.m128_f32[1], planeNormal.m128_f32[2], planeD);
+
+	// Find intersection point of ray and plane
+	DirectX::XMVECTOR intersectionPoint = DirectX::XMPlaneIntersectLine(
+		plane,
+		rayOrigin,
+		DirectX::XMVectorAdd(rayOrigin, DirectX::XMVectorScale(rayDirToWorld, 1000.0f)) // Large distance in ray direction
+	);
+
+	return DirectX::XMFLOAT3(intersectionPoint.m128_f32[0], intersectionPoint.m128_f32[1], intersectionPoint.m128_f32[2]);
+}
+
 const DirectX::XMFLOAT4X4& ArkEngine::ArkDX11::DX11Renderer::GetViewMatrix()
 {
 	DirectX::XMFLOAT4X4 viewMatrix;
