@@ -262,7 +262,7 @@ void KunrealEngine::PhysicsSystem::UpdateDynamics()
 	{
 		pair.first->Clear();
 
-		if (pair.first->GetOwnerObject()->GetObjectName() == "Player")
+		if (pair.first->GetOwnerObject()->GetObjectName() == "Player" || pair.first->GetOwnerObject()->GetTag() == "Boss")
 		{
 			pair.second->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, false);
 		}
@@ -521,7 +521,7 @@ void KunrealEngine::PhysicsSystem::PlayerForceUpdate()
 {
 	for (auto actor : _dynamicMap)
 	{
-		if (actor.first->GetOwnerObject()->GetObjectName() == "Player")
+		if (actor.first->GetOwnerObject()->GetObjectName() == "Player" || actor.first->GetOwnerObject()->GetTag() == "Boss")
 		{
 			actor.second->setActorFlag(physx::PxActorFlag::eDISABLE_SIMULATION, true);
 		}

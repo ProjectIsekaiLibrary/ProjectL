@@ -69,9 +69,8 @@ namespace KunrealEngine
 		bool _isLaserDetected;
 		bool _isMeteorDetected;
 
-	private:
-		Boss* _currentBoss;			// 현재 맵의 보스
-		float _currentDamage;		// 보스에 입힌 데미지
+		/// TestTestTestTestTestTestTest
+		int laserCount = 0;
 
 	/// 파티클 배치용 멤버변수
 	private:
@@ -139,11 +138,6 @@ namespace KunrealEngine
 	public:
 		void AddToContanier(Ability* abil);
 
-		// 맵이 바뀌었을 때 현재 보스를
-		void SetCurrentBossObject();
-
-		float GetDamage();
-
 	private:
 		/// 코루틴 타이머 함수들
 
@@ -208,7 +202,8 @@ namespace KunrealEngine
 		Coroutine_Func(LaserStandby)
 		{
 			auto* ability = this;
-			Waitforsecond(0.9f);		// 2초 뒤 실행
+			Waitforsecond(0.9f);		// 0.9초 뒤 실행
+			ability->_laser->GetComponent<BoxCollider>()->SetActive(true);
 
 			ability->_laser->SetActive(true);
 			_laserParticle1->SetActive(true);
@@ -226,7 +221,8 @@ namespace KunrealEngine
 		Coroutine_Func(laserDestroy)
 		{
 			auto* ability = this;
-			Waitforsecond(1.8f);
+			Waitforsecond(2.5f);
+			ability->_laser->GetComponent<BoxCollider>()->SetActive(false);
 
 			float delta = 0;
 			while (true)
@@ -300,6 +296,15 @@ namespace KunrealEngine
 			ability->_destroyLaser = true;
 			ability->_isLaserReady = false;
 			ability->_isLaserStarted = false;
+		};
+
+		Coroutine_Func(laserHit)
+		{
+			auto* ability = this;
+			Waitforsecond(0.4f);
+
+			ability->_isLaserHit = true;
+
 		};
 
 		// R스킬 쿨타임
