@@ -18,6 +18,8 @@ cbuffer cbPerFrame
     
     float4x4 gLightView;
     float4x4 gLightProj;
+    
+    float gAttenuation;
 };
 
 // 빛을 받는 객채의 포지션
@@ -285,7 +287,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
             float4 A, D, S;
         
             ComputePointLight(nowMat, gPointLights[j], position, normal, toEye,
-				A, D, S);
+				A, D, S, gAttenuation);
         
             ambient += A;
             diffuse += D;

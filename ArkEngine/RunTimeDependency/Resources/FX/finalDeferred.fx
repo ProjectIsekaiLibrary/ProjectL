@@ -18,6 +18,8 @@ cbuffer cbPerFrame
     
     float4x4 gLightView;
     float4x4 gLightProj;
+    
+    float gAttenuation;
 };
 
 Texture2D PositionTexture : register(t0);
@@ -179,7 +181,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
             float4 A, D, S;
         
             ComputePointLight(nowMat, gPointLights[j], position, normal, toEye,
-				A, D, S);
+				A, D, S, 32.0f);
         
             ambient += A;
             diffuse += D;

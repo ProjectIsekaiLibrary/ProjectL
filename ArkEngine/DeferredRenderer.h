@@ -59,6 +59,9 @@ namespace ArkEngine
 			void RenderForBloom(int index);
 			void Finalize();
 
+			// point light용 추가
+			void SetPointLightAttenuation(float att);
+
 		public:
 			ArkEngine::ArkDX11::deferredBuffer* GetDeferredBuffer();
 			ArkEngine::ArkDX11::ShadowBuffer* GetShadowBuffer();
@@ -78,7 +81,9 @@ namespace ArkEngine
 		private:
 			void SetDirLight();
 			void SetPointLight();
-
+			
+			// point Light 추가
+			void SetAttenuationW(float att);
 		private:
 			ID3DX11EffectTechnique* _tech;
 
@@ -107,6 +112,8 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _blurTexture;
 			ID3DX11EffectShaderResourceVariable* _blurGrayTexture;
 
+			// point light용 추가
+			ID3DX11EffectScalarVariable* _pointAttenuationFX;
 		private:
 			ArkEngine::ArkDX11::deferredBuffer* _deferredBuffer;
 			ArkEngine::ArkDX11::ShadowBuffer* _shadowBuffer;
@@ -126,6 +133,8 @@ namespace ArkEngine
 		private:
 			int _shadowWidth;
 			int _shadowHeight;
+
+			float _pointAttenuation;
 		};
 	}
 }

@@ -121,7 +121,7 @@ void ComputeDirectionalLight(Material mat, DirectionalLight L,
 // later we will modify the individual terms.
 //---------------------------------------------------------------------------------------
 void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, float3 toEye,
-				   out float4 ambient, out float4 diffuse, out float4 spec)
+				   out float4 ambient, out float4 diffuse, out float4 spec, float attnuation)
 {
 	// Initialize outputs.
 	ambient = float4(0.0f, 0.0f, 0.0f, 0.0f);
@@ -142,13 +142,14 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
 	lightVec /= d; 
 	
 	// Ambient term.
-	ambient = mat.Ambient * L.Ambient;	
+    //ambient = mat.Ambient;// * L.Ambient;
 
 	// Add diffuse and specular term, provided the surface is in 
 	// the line of site of the light.
-
 	float diffuseFactor = dot(lightVec, normal);
 
+    float att = 0.0f;
+	
 	// Flatten to avoid dynamic branching.
 	[flatten]
 	if( diffuseFactor > 0.0f )
@@ -161,12 +162,15 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
 	}
 
 	// Attenuate
-    float att = 1.0f / dot(L.Att, float3(1.0f, d, d * d));
+    att = 1.0f / dot(L.Att, float3(1.0f, d, d * d));
 
-    att = mul(att, 16);
+    //att = 1.0f / (L.Att.x + L.Att.y * d + L.Att.z * (d * d));
+    att = mul(att, attnuation);
+	
 	
 	diffuse *= att;
 	spec    *= att;
+    //ambient *= att;
 }
 
 //---------------------------------------------------------------------------------------
