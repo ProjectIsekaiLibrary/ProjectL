@@ -373,7 +373,11 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _kamenSwordAfterImageParticle;
 
+		std::vector<GameObject*> _bladeRParticle;
+		std::vector<GameObject*> _bladeRParticleWave;
 
+		std::vector<GameObject*> _bladeLParticle;
+		std::vector<GameObject*> _bladeLParticleWave;
 
 		// ½ºÆç ¼Ò¸ê°ªÀ» À§ÇÑ º¯¼ö
 
