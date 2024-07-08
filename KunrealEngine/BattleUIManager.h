@@ -30,12 +30,15 @@ namespace KunrealEngine
 	public:
 		void SetBossHpbar();
 		void SetPlayerHpBar();
+
 		void SetSkillcool1();
 		void SetSkillcool2();
 		void SetSkillcool3();
 		void SetSkillcool4();
 		void Setdashcool();
 		void Setpotioncool();
+
+		void ActiveDiedUI();
 
 	private:
 		// 이쪽 변수 확인시 참조.
@@ -63,6 +66,9 @@ namespace KunrealEngine
 		int pre_playerhp;
 		int pre_bosshp;
 
+		KunrealEngine::GameObject* _died1;
+		KunrealEngine::GameObject* _died2;
+
 	private:
 		EventManager* _eventmanager;
 		const float _bosshpsize;
@@ -71,11 +77,15 @@ namespace KunrealEngine
 
 		_Coroutine(bossdowngauge);
 		_Coroutine(playerdowngauge);
+
 		_Coroutine(skillgauge1);
 		_Coroutine(skillgauge2);
 		_Coroutine(skillgauge3);
 		_Coroutine(skillgauge4);
 		_Coroutine(dashgauge);
 		_Coroutine(potiongauge);
+
+		_Coroutine(diedcoro);
+		bool _isdied;
 	};
 }
