@@ -256,6 +256,8 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _fakeBoss;
 
+		GameObject* _kamenSwordLight;
+
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;

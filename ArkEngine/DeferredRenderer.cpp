@@ -27,7 +27,8 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
-	_blurTexture(nullptr), _blurGrayTexture(nullptr)
+	_blurTexture(nullptr), _blurGrayTexture(nullptr), 
+	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -38,6 +39,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
 
 	Initailize();
+
 }
 
 ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight, int shadowWidth, int shadowHeight)
@@ -49,7 +51,8 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
-	_blurTexture(nullptr), _blurGrayTexture(nullptr)
+	_blurTexture(nullptr), _blurGrayTexture(nullptr),
+	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -60,6 +63,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer = new deferredBuffer(clientWidth, clientHeight);
 
 	Initailize();
+
 }
 
 ArkEngine::ArkDX11::DeferredRenderer::~DeferredRenderer()
@@ -70,7 +74,6 @@ ArkEngine::ArkDX11::DeferredRenderer::~DeferredRenderer()
 void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
 {
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
-	
 	BuildQuadBuffers();
 }
 
@@ -149,6 +152,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture()
 {
 	SetFinalEffect();
+
+	SetAttenuationW(_pointAttenuation);
 
 	auto deviceContext = _arkDevice->GetDeviceContext();
 
@@ -268,6 +273,14 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 }
 
 
+void ArkEngine::ArkDX11::DeferredRenderer::SetPointLightAttenuation(float att)
+{
+	//_pointAttenuation = att;
+	att = _pointAttenuation;
+
+	SetAttenuationW(_pointAttenuation);
+}
+
 void ArkEngine::ArkDX11::DeferredRenderer::SetEffect()
 {
 	_arkEffect = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkEffect>("Resources/FX/DeferredWithBloom.fx");
@@ -308,6 +321,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_materialMap = effect->GetVariableByName("MaterialTexture")->AsShaderResource();
 	_additionalMap = effect->GetVariableByName("AdditionalTexture")->AsShaderResource();
 	_shadowDepthMap = effect->GetVariableByName("gShadowDepthMapTexture")->AsShaderResource();
+
+	_pointAttenuationFX = effect->GetVariableByName("gAttenuation")->AsScalar();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()
@@ -387,6 +402,11 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetPointLight()
 	{
 		_fxPointLightCount->SetInt(0);
 	}
+}
+
+void ArkEngine::ArkDX11::DeferredRenderer::SetAttenuationW(float att)
+{
+	_pointAttenuationFX->SetFloat(att);
 }
 
 ArkEngine::ArkDX11::deferredBuffer* ArkEngine::ArkDX11::DeferredRenderer::GetDeferredBuffer()

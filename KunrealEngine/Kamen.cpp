@@ -111,7 +111,9 @@ void KunrealEngine::Kamen::Update()
 	_kamenSwordAfterImageParticle[7]->GetComponent<Particle>()->SetOffSet(vec9.m128_f32[0], vec9.m128_f32[1], vec9.m128_f32[2]);
 	_kamenSwordAfterImageParticle[8]->GetComponent<Particle>()->SetOffSet(vec10.m128_f32[0], vec10.m128_f32[1], vec10.m128_f32[2]);
 
-
+	
+	auto SwordLightPos = DirectX::XMVectorAdd(trs, vec5);
+	_kamenSwordLight->GetComponent<Transform>()->SetPosition(SwordLightPos.m128_f32[0], SwordLightPos.m128_f32[1], SwordLightPos.m128_f32[2]);
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -1477,6 +1479,25 @@ void KunrealEngine::Kamen::CreateSubObject()
 		_kamenSwordCollider->GetComponent<BoxCollider>()->SetColliderScale(3.0f, 5.0f, 30.0f);
 		_kamenSwordCollider->SetTotalComponentState(false);
 		_kamenSwordCollider->SetActive(false);
+
+		//_kamenSword->AddComponent<Light>();
+		//_kamenSword->GetComponent<Light>()->CreatePointLight(DirectX::XMFLOAT4{ 1.0f, 1.0f, 1.0f, 1.0f }, DirectX::XMFLOAT4{ 0.0f, 1.0f, 0.0f, 1.0f });
+		//_kamenSword->GetComponent<Light>()->SetPointRange(300.f);
+		
+	}
+	
+	// Ä® ¶óÀÌÆ®
+	{
+
+		DirectX::XMFLOAT4 Ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+		DirectX::XMFLOAT4 Diffuse = { 0.0f, 1.0f, 0.0f, 1.0f };
+		DirectX::XMFLOAT4 Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		_kamenSwordLight = _boss->GetObjectScene()->CreateObject("KamenSwordLight");
+		_kamenSwordLight->AddComponent<Light>();
+		_kamenSwordLight->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular);
+		_kamenSwordLight->GetComponent<Light>()->SetPointRange(300.f);
+		_kamenSwordLight->SetParent(_kamenSword);
 	}
 
 	// Ä® °Ë±â
