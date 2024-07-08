@@ -63,7 +63,7 @@ $RECYCLE.BIN/
 Bin/
 
 # Except Physx Lib
-vcpkg PhysX/
+PhysXGpu_64.dll
 
 # Include Map Obj Folder
 !KunrealEngine/AfterBuild/MapObj/*.obj
