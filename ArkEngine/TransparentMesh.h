@@ -23,6 +23,7 @@ namespace ArkEngine
 		class ArkEffect;
 		class ArkDevice;
 		class Transform;
+		class deferredBuffer;
 	}
 }
 namespace ArkEngine
@@ -56,7 +57,7 @@ namespace ArkEngine
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);
-			void Render(float yOffset = 0.0f);
+			void Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer);
 			void Finalize();
 
 			float GetTransParency();
@@ -94,6 +95,8 @@ namespace ArkEngine
 
 			ID3DX11EffectShaderResourceVariable* _texture;
 			ID3D11ShaderResourceView* _diffuseMapSRV;
+
+			ID3DX11EffectShaderResourceVariable* _positionMap;
 
 			ID3DX11EffectScalarVariable* _fxTransParency;
 

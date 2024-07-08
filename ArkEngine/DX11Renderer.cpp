@@ -321,14 +321,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	BeginTransparentSet();
 
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-
-	ResourceManager::GetInstance()->SortTransParentMesh();
-	
-	for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	{
-		index->Render();
-	}
+	//_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+	//
+	//ResourceManager::GetInstance()->SortTransParentMesh();
+	//
+	//for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	//{
+	//	index->Render(_deferredRenderer->GetDeferredBuffer());
+	//}
 
 	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
 
@@ -342,14 +342,28 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	EndTransparentSet();
 
-	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
-	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+	//// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
+	//_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
 	BeginFinalRender();
 
 	BeginTransparentSet();
 
+	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+
 	_deferredRenderer->RenderForFinalTexture();
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+
+	ResourceManager::GetInstance()->SortTransParentMesh();
+
+	for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
+		index->Render(_deferredRenderer->GetDeferredBuffer());
+	}
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
 	auto bloomCount = _deferredRenderer->GetDeferredBuffer()->GetSRVForBloomVec().size();
 	for (int i = 0; i < bloomCount; i++)
