@@ -4,7 +4,7 @@
 #include "PlayerAbility.h"
 
 KunrealEngine::BattleUIManager::BattleUIManager()
-	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.0f)
+	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.0f), _isdied(false)
 {
 	_eventmanager = &KunrealEngine::EventManager::GetInstance();
 }
@@ -291,6 +291,21 @@ void KunrealEngine::BattleUIManager::Initialize()
 	bosshp_background2->GetComponent<ImageRenderer>()->SetPosition(1436.0f, 11.0f);
 	bosshp_background2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
+	// 플레이어가 죽었을때 쓸 UI
+	_died1 = scene.GetCurrentScene()->CreateObject("you_die1");
+	_died1->SetParent(_battleuibox);
+	_died1->AddComponent<ImageRenderer>();
+	_died1->GetComponent<ImageRenderer>()->SetImage("ui/you_die.png");
+	_died1->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
+	_died1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	_died2 = scene.GetCurrentScene()->CreateObject("you_die2");
+	_died2->SetParent(_battleuibox);
+	_died2->AddComponent<ImageRenderer>();
+	_died2->GetComponent<ImageRenderer>()->SetImage("ui/youdie_text.png");
+	_died2->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
+	_died2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
 	_battleuibox->SetActive(true);
 	_ui_skill1_cool->SetActive(false);
 	_ui_skill2_cool->SetActive(false);
@@ -298,6 +313,9 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_ui_skill4_cool->SetActive(false);
 	_dash_cool->SetActive(false);
 	_potion_cool->SetActive(false);
+
+	_died1->SetActive(false);
+	_died2->SetActive(false);
 }
 
 void KunrealEngine::BattleUIManager::Release()
@@ -355,6 +373,13 @@ void KunrealEngine::BattleUIManager::Update()
 
 	pre_bosshp = bosshp;
 	pre_playerhp = playerhp;
+
+	// 플레이어 체력이 0이 되었을 때?
+	if (playerhp < 0 && !_isdied)
+	{
+		_isdied = true;
+		ActiveDiedUI();
+	}
 
 	// 스킬 쿨타임 세팅
 	if (abill->_isShotDetected)
@@ -745,4 +770,43 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 	};
 
 	Startcoroutine(potiongauge);
+}
+
+void KunrealEngine::BattleUIManager::ActiveDiedUI()
+{
+
+	_CoroutineIs(diedcoro)
+	{
+		// UI연출? 일단 두가지로 분류
+		// 1단계는 백UI가 뜬다. 매우 미묘한 시간차로 textui 가 뜬다
+		// textui는 천천히 커진다 대충 백ui 보다 아슬아슬하게 커지면 될듯
+		// 빛나야 하는가? 고민중
+		auto uimanager = this;
+		float delta = 0;
+		float scale = 1.0f;
+
+		uimanager->_died1->SetActive(true);
+		Waitforsecond(0.2f);
+
+		uimanager->_died2->SetActive(true);
+		int loop = 0;
+		while (loop < 25)
+		{
+			scale += 0.01;
+			uimanager->_died2->GetComponent<Transform>()->SetScale(scale, scale, 1.0f);
+			auto preimgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
+			
+			Return_null;
+
+			DirectX::XMUINT2 imgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
+			auto nowpos = uimanager->_died2->GetComponent<Transform>()->GetPosition();
+
+			float a = nowpos.x - ((float)(imgsize.x - preimgsize.x)/2);
+			float b = nowpos.y - ((float)(imgsize.y - preimgsize.y)/2);
+			uimanager->_died2->GetComponent<Transform>()->SetPosition(a, b, 1.0f);
+			loop++;
+		}
+			//delta += TimeManager::GetInstance().GetDeltaTime();
+	};
+	Startcoroutine(diedcoro);
 }
