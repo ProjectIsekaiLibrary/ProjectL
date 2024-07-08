@@ -6,6 +6,7 @@
 #include "d3dx11effect.h"
 #include "ICamera.h"
 #include "Transform.h"
+#include "DeferredBuffer.h"
 #include "GeometryGenerator.h"
 #include "CommonStruct.h"
 #include "TransparentMesh.h"
@@ -54,7 +55,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 	}
 }
 
-void ArkEngine::ArkDX11::TransparentMesh::Render(float yOffset)
+void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer)
 {
 	if (!_isRenderFinsh && _isRenderStart)
 	{
@@ -80,11 +81,10 @@ void ArkEngine::ArkDX11::TransparentMesh::Render(float yOffset)
 		DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
 		DirectX::XMMATRIX WorldViewProj = world * view * proj;
 
-		world.r[3].m128_f32[1] += yOffset;
-
 		_fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
 		_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
 		_texture->SetResource(_diffuseMapSRV);
+		_positionMap->SetResource(defferedBuffer->GetSRV(0));
 
 		_fxTransParency->SetFloat(_transParency);
 
@@ -137,6 +137,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Finalize()
 	_fxWorldViewProj->Release();
 	_fxWorld->Release();
 
+	_positionMap->Release();
 	_texture->Release();
 
 	_fxTransParency->Release();
@@ -237,6 +238,7 @@ void ArkEngine::ArkDX11::TransparentMesh::SetEffect()
 	_fxWorldViewProj = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
 
 	_texture = _effect->GetVariableByName("gDiffuseMap")->AsShaderResource();
+	_positionMap = _effect->GetVariableByName("gPositionMap")->AsShaderResource();
 
 	_fxTransParency = _effect->GetVariableByName("gTransParency")->AsScalar();
 
