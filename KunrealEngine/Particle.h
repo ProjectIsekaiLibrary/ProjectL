@@ -74,6 +74,9 @@ namespace KunrealEngine
 		// 파티클 크기 설정
 		void SetParticleSize(float x, float y);
 
+		// 파티클 크기 반환
+		DirectX::XMFLOAT2 GetParticleSize();
+
 		// 파티클 방출 강도 및 방출각도를 무작위로 할것인지 여부
 		void SetParticleVelocity(float velocity, bool isRandom);
 

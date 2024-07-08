@@ -10,7 +10,8 @@
 
 KunrealEngine::PhysicsSystem::PhysicsSystem()
 	:_foundation(nullptr), _physics(nullptr), _dispatcher(nullptr), _pxScene(nullptr),
-	_material(nullptr), _pvd(nullptr), _convexMesh(nullptr), col1(nullptr), col2(nullptr)
+	_material(nullptr), _pvd(nullptr), _cylinderConvexMesh(nullptr), _swordAuraConvexMesh(nullptr),
+	col1(nullptr), col2(nullptr)
 {
 
 }
@@ -39,6 +40,8 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	// FBX cylinder 모양의 collider mesh 생성
 	CreateCylinderData();
 
+	// custom mesh 데이터 생성
+	CreateSwordAuraData();
 
 	///												// halfHeight가 0이면 sphere가 된다
 	//physx::PxCapsuleGeometry capsuleGeometry(3.0f, 0.0f); // Radius: 1.0, Half Height: 2.0 (total height = 4.0)
@@ -159,7 +162,7 @@ void KunrealEngine::PhysicsSystem::CreateCylinderCollider(Collider* collider)
 	physx::PxMeshScale scale(physx::PxVec3(
 		collider->GetColliderScale().x, collider->GetColliderScale().y, collider->GetColliderScale().z),
 		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// 실린더가 90도 누워서 출력되기 때문에 세워준다
-	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
+	physx::PxConvexMeshGeometry geom(_cylinderConvexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
 
 	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
@@ -197,6 +200,59 @@ void KunrealEngine::PhysicsSystem::CreateCylinderCollider(Collider* collider)
 void KunrealEngine::PhysicsSystem::CreateDynamicSphereCollider(SphereCollider* collider)
 {
 
+}
+
+
+void KunrealEngine::PhysicsSystem::CreateMeshCollider(Collider* collider, std::string meshName)
+{
+	physx::PxMeshScale scale(physx::PxVec3(
+		collider->GetColliderScale().x, collider->GetColliderScale().y, collider->GetColliderScale().z),
+		physx::PxQuat(physx::PxPi / 2, physx::PxVec3(1.0f, 0.0f, 0.0f)));		// mesh가 90도 누워서 출력되기 때문에 세워준다
+
+	physx::PxConvexMeshGeometry geom;
+
+	if (meshName == "Blade")
+	{
+		geom = { _swordAuraConvexMesh, scale };
+	}
+	else
+	{
+		std::cout << "Cannot find FBX" << std::endl;
+		return;
+	}
+
+	physx::PxShape* shape = _physics->createShape(geom, *_material);
+
+	physx::PxTransform trans(physx::PxVec3(collider->GetColliderPos().x, collider->GetColliderPos().y, collider->GetColliderPos().z));
+	physx::PxRigidDynamic* customActor = _physics->createRigidDynamic(trans);
+
+	// 충돌 관련 flag들
+	physx::PxRigidDynamicLockFlags flag =
+		physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_X |
+		physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Y |
+		physx::PxRigidDynamicLockFlag::eLOCK_ANGULAR_Z |
+		physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_X |
+		physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Y |
+		physx::PxRigidDynamicLockFlag::eLOCK_LINEAR_Z;
+
+	customActor->setRigidDynamicLockFlags(flag);
+
+	// UserData
+	PhysicsUserData data(collider->GetOwnerObject(), shape);
+	customActor->userData = &data;
+
+	// 다 만들었으면 shape 붙여주고
+	customActor->attachShape(*shape);
+
+	// collider 컴포넌트에 shape 전달
+	collider->_shape = shape;
+
+	// scene에 추가
+	_pxScene->addActor(*customActor);
+
+	// 관리를 위해 physicsSystem의 멤버로
+	_dynamicMap.insert(std::make_pair(collider, customActor));
+	_rigidDynamics.push_back(customActor);
 }
 
 void KunrealEngine::PhysicsSystem::UpdateDynamics()
@@ -268,7 +324,7 @@ void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
 	// box의 scale에 맞추기 위해 전체적인 scale을 절반으로
 	physx::PxMeshScale scale(physx::PxVec3(
 		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y /2.0f, collider->GetColliderScale().z / 2.0f));
-	physx::PxConvexMeshGeometry geom(_convexMesh, scale);
+	physx::PxConvexMeshGeometry geom(_cylinderConvexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
 
 	// 만들었던 shape를 다시 붙여준다
@@ -279,6 +335,37 @@ void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
 
 }
 
+
+void KunrealEngine::PhysicsSystem::SetMeshSize(Collider* collider, std::string meshName)
+{
+	// 붙여줬던 shape를 떼주고
+	this->_dynamicMap.at(collider)->detachShape(*collider->_shape);
+
+	// 크기에 맞게 새로운 shape 생성
+	// box의 scale에 맞추기 위해 전체적인 scale을 절반으로
+	physx::PxMeshScale scale(physx::PxVec3(
+		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y / 2.0f, collider->GetColliderScale().z / 2.0f));
+
+	physx::PxConvexMeshGeometry geom;
+
+	if (meshName == "Blade")
+	{
+		geom = { _swordAuraConvexMesh, scale };
+	}
+	else
+	{
+		std::cout << "Cannot find FBX" << std::endl;
+		return;
+	}
+
+	physx::PxShape* shape = _physics->createShape(geom, *_material);
+
+	// 만들었던 shape를 다시 붙여준다
+	this->_dynamicMap.at(collider)->attachShape(*shape);
+
+	// userData 업데이트
+	static_cast<PhysicsUserData*>(_dynamicMap.at(collider)->userData)->shape = shape;
+}
 
 void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active)
 {
@@ -339,13 +426,13 @@ void KunrealEngine::PhysicsSystem::TestFunc()
 void KunrealEngine::PhysicsSystem::CreateCylinderData()
 {
 	// 실린더 데이터 
-	_cylinderVertices = GRAPHICS->GetMeshVertexData("cylinder/cylinder");
+	std::vector<DirectX::XMFLOAT3> cylinderVertices = GRAPHICS->GetMeshVertexData("cylinder/cylinder");
 
 	// 정점 정보
 	physx::PxConvexMeshDesc convexDesc;
-	convexDesc.points.count = _cylinderVertices.size();
+	convexDesc.points.count = cylinderVertices.size();
 	convexDesc.points.stride = sizeof(DirectX::XMFLOAT3);
-	convexDesc.points.data = &_cylinderVertices[0];
+	convexDesc.points.data = &cylinderVertices[0];
 	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
 
 	const physx::PxCookingParams params(_physics->getTolerancesScale());
@@ -357,7 +444,32 @@ void KunrealEngine::PhysicsSystem::CreateCylinderData()
 
 	// mesh 생성
 	physx::PxDefaultMemoryInputData inputi(buf.getData(), buf.getSize());
-	_convexMesh = _physics->createConvexMesh(inputi);
+	_cylinderConvexMesh = _physics->createConvexMesh(inputi);
+}
+
+
+void KunrealEngine::PhysicsSystem::CreateSwordAuraData()
+{
+	// 검기 데이터 
+	std::vector<DirectX::XMFLOAT3> bladeVertices = GRAPHICS->GetMeshVertexData("Blade/Blade");
+
+	// 정점 정보
+	physx::PxConvexMeshDesc convexDesc;
+	convexDesc.points.count = bladeVertices.size();
+	convexDesc.points.stride = sizeof(DirectX::XMFLOAT3);
+	convexDesc.points.data = &bladeVertices[0];
+	convexDesc.flags = physx::PxConvexFlag::eCOMPUTE_CONVEX;
+
+	const physx::PxCookingParams params(_physics->getTolerancesScale());
+
+	// 정점 메모리 버퍼
+	physx::PxDefaultMemoryOutputStream buf;
+	physx::PxConvexMeshCookingResult::Enum result;
+	const bool status = PxCookConvexMesh(params, convexDesc, buf, &result);
+
+	// mesh 생성
+	physx::PxDefaultMemoryInputData inputi(buf.getData(), buf.getSize());
+	_swordAuraConvexMesh = _physics->createConvexMesh(inputi);
 }
 
 bool KunrealEngine::PhysicsSystem::IsTrigger(const physx::PxFilterData& data)
@@ -404,15 +516,6 @@ physx::PxQuat KunrealEngine::PhysicsSystem::EulerToQuaternion(float pitch, float
 
 	return qy * qx * qz;
 }
-
-
-void KunrealEngine::PhysicsSystem::ResizeBoxShape(physx::PxShape* shape, const physx::PxVec3& newDimension)
-{
-	physx::PxBoxGeometry newBoxGeometry(newDimension);
-
-	shape->setGeometry(newBoxGeometry);
-}
-
 
 void KunrealEngine::PhysicsSystem::PlayerForceUpdate()
 {

@@ -150,25 +150,27 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* title_image;
 		KunrealEngine::GameObject* button_Start;
 		KunrealEngine::GameObject* button_quit;
+		KunrealEngine::GameObject* button_quit_focus;
 
 		titleuibox = scene.GetCurrentScene()->CreateObject("titleuibox");
 		titleuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 
 		title_image = scene.GetCurrentScene()->CreateObject("Title_Image");
 		title_image->AddComponent<ImageRenderer>();
-		title_image->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-		title_image->GetComponent<ImageRenderer>()->SetPosition(525.f, 130.f);
-		title_image->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+		title_image->GetComponent<ImageRenderer>()->SetImage("ui/title_logo.png");
+		title_image->GetComponent<ImageRenderer>()->SetPosition(525.f, 20.f);
+		title_image->GetComponent<Transform>()->SetScale(0.4f, 0.4f, 1.0f);
 		title_image->SetParent(titleuibox);
-
+		
+		
 		// 게임 시작
 		// 페이드 아웃 된다던가, 위나 아래로 올라가며 사라진다던가 하는 연출은 전달받은게 없으므로 일단은 disable
 		button_Start = scene.GetCurrentScene()->CreateObject("button_Start");
 		button_Start->SetParent(titleuibox);
 		button_Start->AddComponent<ImageRenderer>();
-		button_Start->GetComponent<ImageRenderer>()->SetImage("backposition.png");
-		button_Start->GetComponent<ImageRenderer>()->SetPosition(747.0f, 605.0f);
-		button_Start->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+		button_Start->GetComponent<ImageRenderer>()->SetImage("ui/title.png");
+		button_Start->GetComponent<ImageRenderer>()->SetPosition(0.0f, 400.0f);
+		button_Start->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		button_Start->AddComponent<ButtonSystem>();
 		button_Start->GetComponent<ButtonSystem>()->SetImage(button_Start->GetComponent<ImageRenderer>());
 		button_Start->GetComponent<ButtonSystem>()->SetButtonFunc([titleuibox]()
@@ -183,13 +185,13 @@ namespace KunrealEngine
 						float		x = trans->GetPosition().x;
 						float		y = trans->GetPosition().y;
 						float		z = trans->GetPosition().z;
-						trans->SetPosition(x, y + 10, z);
+						trans->SetPosition(x, y + 20, z);
 
 						Transform* trans2 = titleobject->GetChild("Title_Image")->GetComponent<Transform>();
 						x = trans2->GetPosition().x;
 						y = trans2->GetPosition().y;
 						z = trans2->GetPosition().z;
-						trans2->SetPosition(x, y - 10, z);
+						trans2->SetPosition(x, y - 20, z);
 
 						if (trans->GetPosition().y > 1080 && trans2->GetPosition().y < 0)
 						{
@@ -204,25 +206,33 @@ namespace KunrealEngine
 			});
 
 		// 게임 종료
+		button_quit_focus = scene.GetCurrentScene()->CreateObject("button_Quit");
+		button_quit_focus->SetParent(titleuibox);
+		button_quit_focus->AddComponent<ImageRenderer>();
+		button_quit_focus->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
+		button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1845.0f, 1005.0f);
+		button_quit_focus->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+
 		button_quit = scene.GetCurrentScene()->CreateObject("button_Quit");
 		button_quit->SetParent(titleuibox);
 		button_quit->AddComponent<ImageRenderer>();
-		button_quit->GetComponent<ImageRenderer>()->SetImage("backposition.png");
+		button_quit->GetComponent<ImageRenderer>()->SetImage("ui/button-short.png");
 		button_quit->GetComponent<ImageRenderer>()->SetPosition(1845.0f, 1005.0f);
-		button_quit->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+		button_quit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		button_quit->AddComponent<ButtonSystem>();
 		button_quit->GetComponent<ButtonSystem>()->SetImage(button_quit->GetComponent<ImageRenderer>());
+		button_quit->GetComponent<ButtonSystem>()->Setfocused(button_quit_focus->GetComponent<ImageRenderer>());
 		button_quit->GetComponent<ButtonSystem>()->SetButtonFunc([titleuibox]()
 			{
 				titleuibox->SetActive(false);
-				//
+				// 
 				//  게임 종료되는 코드
 				//
 				//DestroyWindow();
 				PostQuitMessage(0);
 			});
 
-		titleuibox->SetActive(false);
+		titleuibox->SetActive(true);
 
 		return titleuibox;
 	}

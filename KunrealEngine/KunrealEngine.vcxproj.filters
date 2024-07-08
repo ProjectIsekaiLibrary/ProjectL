@@ -166,6 +166,9 @@
     <Filter Include="Source Files\Component\Collider\CylinderCollider">
       <UniqueIdentifier>{42fcbfd2-7535-4c09-8305-fbf8c9797d1e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Component\Collider\MeshCollider">
+      <UniqueIdentifier>{378e85b5-b9e6-4b4f-949a-b38dbe14354e}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -324,6 +327,9 @@
     <ClInclude Include="CylinderCollider.h">
       <Filter>Source Files\Component\Collider\CylinderCollider</Filter>
     </ClInclude>
+    <ClInclude Include="MeshCollider.h">
+      <Filter>Source Files\Component\Collider\MeshCollider</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -469,6 +475,9 @@
     </ClCompile>
     <ClCompile Include="CylinderCollider.cpp">
       <Filter>Source Files\Component\Collider\CylinderCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="MeshCollider.cpp">
+      <Filter>Source Files\Component\Collider\MeshCollider</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

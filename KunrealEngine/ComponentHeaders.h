@@ -16,6 +16,7 @@
 #include "BoxCollider.h"
 #include "CylinderCollider.h"
 #include "SphereCollider.h"
+#include "MeshCollider.h"
 #include "SoundPlayer.h"
 
 #include "Zeolight.h"

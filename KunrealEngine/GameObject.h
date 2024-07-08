@@ -56,6 +56,8 @@ namespace KunrealEngine
 		Collider* _collider;								// collider 객체
 
 	public:
+		bool _autoAwake;									// scene 이동 시 자동으로 켜질지
+		
 		// 오브젝트의 이름을 반환
 		std::string GetObjectName();
 

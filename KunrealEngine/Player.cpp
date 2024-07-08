@@ -11,6 +11,7 @@
 #include "ToolBox.h"
 
 #include "CylinderCollider.h"
+#include "MeshCollider.h"
 
 KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE), _owner(nullptr)
@@ -55,19 +56,21 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->GetComponent<MeshRenderer>()->SetCartoonState(true);
 	
 	this->_owner->AddComponent<BoxCollider>();
-	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
+	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(7.0f, 15.0f, 7.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 
 	//this->_owner->AddComponent<CylinderCollider>();
-	//this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(5.0f, 12.0f, 5.0f);
+	//this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(30.0f, 30.0f, 30.0f);
 	//this->_owner->GetComponent<CylinderCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
+
+	this->_owner->AddComponent<MeshCollider>();
+	this->_owner->GetComponent<MeshCollider>()->CreateMeshCollider("Blade");
+	this->_owner->GetComponent<MeshCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
+	this->_owner->GetComponent<MeshCollider>()->SetOffset(0.0f, 10.0f, 0.0f);
+
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
 
-	
-	// 잘들어가나
-	// this->_owner->AddComponent<CylinderCollider>();
-	//this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(2.0f, 4.0f, 2.0f);
 }
 
 void KunrealEngine::Player::Release()
@@ -150,7 +153,7 @@ void KunrealEngine::Player::AnimateByStatus()
 				}
 				else if (this->_abilityAnimationIndex == 3)
 				{
-					this->_owner->GetComponent<Animator>()->Play("Area", 40.0f * _playerInfo._speedScale, false);
+					this->_owner->GetComponent<Animator>()->Play("Beam_full", 40.0f * (_playerInfo._speedScale * 0.33f), false);
 				}
 				else if (this->_abilityAnimationIndex == 4)
 				{

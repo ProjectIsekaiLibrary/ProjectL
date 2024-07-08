@@ -5,7 +5,7 @@
 #include "ComponentHeaders.h"
 
 KunrealEngine::GameObject::GameObject()
-	:_isActivated(true), _objectName(""), _layer(0), _parent(nullptr), _transform(nullptr), _collider(nullptr)
+	:_isActivated(true), _objectName(""), _layer(0), _parent(nullptr), _transform(nullptr), _collider(nullptr), _autoAwake(false)
 {
 	SceneManager& smInstance = SceneManager::GetInstance();
 	int objectCount = 0;

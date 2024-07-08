@@ -1,7 +1,6 @@
 #pragma once
 
-#include <DirectXMath.h>
-#include "CommonHeader.h"
+#include "ToolBox.h"
 #include "Component.h"
 #include "GameObject.h"
 #include "Player.h"
@@ -11,6 +10,7 @@
 #include "Coroutine.h"
 #include "Particle.h"
 #include "Transform.h"
+#include "TimeManager.h"
 
 namespace KunrealEngine
 {
@@ -44,12 +44,12 @@ namespace KunrealEngine
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
 		GameObject* _ice;			// W 스킬 객체
-		GameObject* _area;			// E 스킬 객체
+		GameObject* _laser;			// E 스킬 객체
 		GameObject* _meteor;		// R 스킬 운석 객체
 
 		bool _isShotHit;			// 한 번만 데미지 받도록
 		bool _isIceHit;
-		bool _isAreaHit;
+		bool _isLaserHit;
 		bool _isMeteorHit;
 
 		/// coroutine을 활용한 타이머 변수들
@@ -58,15 +58,15 @@ namespace KunrealEngine
 		bool _isIceReady;			// W 쿨타임 조건
 		bool _destroyIce;			// W 소멸 조건을 위한 변수
 		
-		bool _isAreaReady;			// E 스킬 쿨타임 조건
-		bool _destroyArea;			// E 소멸 조건을 위한 변수
+		bool _isLaserReady;			// E 스킬 쿨타임 조건
+		bool _destroyLaser;			// E 소멸 조건을 위한 변수
 
 		bool _isMeteorReady;		// R 쿨타임 조건
 
 		/// BattleUIManager에 넘겨줄 쿨타임 체크 변수들
 		bool _isShotDetected;
 		bool _isIceDetected;
-		bool _isAreaDetected;
+		bool _isLaserDetected;
 		bool _isMeteorDetected;
 
 	private:
@@ -89,10 +89,10 @@ namespace KunrealEngine
 		GameObject* _iceParticleHit1;
 		GameObject* _iceParticleHit2;
 
-		GameObject* _lazerParticle1;
-		GameObject* _lazerParticle2;
-		GameObject* _lazerParticle3;
-		GameObject* _lazerParticle4;
+		GameObject* _laserParticle1;
+		GameObject* _laserParticle2;
+		GameObject* _laserParticle3;
+		GameObject* _laserParticle4;
 
 		GameObject* _meteorParticle2;
 		GameObject* _meteorParticle3;
@@ -113,9 +113,9 @@ namespace KunrealEngine
 		float _iceParticleTimer;
 
 		// e 스킬 체크용 변수
-		bool _isLazerStarted;
-		bool _isLazerEnded;
-		float _lazerParticleTimer;
+		bool _isLaserStarted;
+		bool _isLaserEnded;
+		float _laserParticleTimer;
 
 
 		// r 스킬 체크용 변수
@@ -130,7 +130,7 @@ namespace KunrealEngine
 		void ResetIcePos();
 		void CreateAbility2();
 		
-		void ResetAreaPos();
+		void ResetLaserPos();
 		void CreateAbility3();
 
 		void ResetMeteorPos();
@@ -197,27 +197,109 @@ namespace KunrealEngine
 		};
 
 		// E스킬 쿨타임
-		Coroutine_Func(AreaCoolDown)
+		Coroutine_Func(LaserCoolDown)
 		{
 			auto* ability = this;
 			Waitforsecond(ability->_abilityContainer[2]->_cooldown);
-			ability->_isAreaReady = true;
+			ability->_isLaserReady = true;
 		};
 
 		// E스킬 발동 대기
-		Coroutine_Func(AreaStandby)
+		Coroutine_Func(LaserStandby)
 		{
 			auto* ability = this;
-			Waitforsecond(0.8f);		// 2초 뒤 실행
+			Waitforsecond(0.9f);		// 2초 뒤 실행
 
-			//ability->_destroyIce = false;	// 소멸 조건 초기화
-			ability->_area->SetActive(true);
-			//ability->_area->GetComponent<Projectile>()->SetActive(true);
-			//ability->_area->GetComponent<Projectile>()->ResetCondition();
-			_lazerParticle1->SetActive(true);
-			_lazerParticle2->SetActive(true);
-			_lazerParticle3->SetActive(true);
-			_lazerParticle4->SetActive(true);
+			ability->_laser->SetActive(true);
+			_laserParticle1->SetActive(true);
+			_laserParticle2->SetActive(true);
+			//_laserParticle3->SetActive(true);
+			_laserParticle4->SetActive(true);
+
+			_laserParticle1->GetComponent<Particle>()->SetActive(true);
+			_laserParticle2->GetComponent<Particle>()->SetActive(true);
+			//_laserParticle3->GetComponent<Particle>()->SetActive(true);
+			_laserParticle4->GetComponent<Particle>()->SetActive(true);
+		};
+
+		// E스킬 소멸조건
+		Coroutine_Func(laserDestroy)
+		{
+			auto* ability = this;
+			Waitforsecond(1.8f);
+
+			float delta = 0;
+			while (true)
+			{
+				delta += TimeManager::GetInstance().GetDeltaTime();
+				ability->_laserParticle1->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				ability->_laserParticle2->GetComponent<Particle>()->SetParticleSize((20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				ability->_laserParticle3->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				ability->_laserParticle4->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+
+				if (delta > 2) break;
+				Return_null;
+			}
+			ability->_laserParticle1->SetActive(false);
+			ability->_laserParticle2->SetActive(false);
+			ability->_laserParticle3->SetActive(false);
+			ability->_laserParticle4->SetActive(false);
+			ability->_destroyLaser = true;
+			ability->_isLaserReady = false;
+			ability->_isLaserStarted = false;
+
+		};
+
+		//E스킬 취소 시 해당 크기로부터 줄어들도록
+		Coroutine_Func(LaserFadeOut)
+		{
+			auto* ability = this;
+			Particle* laserP1 = ability->_laserParticle1->GetComponent<Particle>();
+			Particle* laserP2 = ability->_laserParticle2->GetComponent<Particle>();
+			Particle* laserP3 = ability->_laserParticle3->GetComponent<Particle>();
+			Particle* laserP4 = ability->_laserParticle4->GetComponent<Particle>();
+
+			float half1 = laserP1->GetParticleSize().x * 0.5f;
+			float half2 = laserP2->GetParticleSize().x * 0.5f;
+			float half3 = laserP3->GetParticleSize().x * 0.5f;
+			float half4 = laserP4->GetParticleSize().x * 0.5f;
+
+			float delta = 0;
+			while (true)
+			{
+				/// 이 부분 상수말고 변수 써야함
+				delta += TimeManager::GetInstance().GetDeltaTime();
+
+				if (laserP1->GetParticleSize().x > 0.0f)
+				{
+					laserP1->SetParticleSize((laserP1->GetParticleSize().x - (delta * half1)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP1->GetParticleSize().y - (delta * half1)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				}
+				
+				if (laserP2->GetParticleSize().x > 0.0f)
+				{
+					laserP2->SetParticleSize((laserP2->GetParticleSize().x - (delta * half2)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP2->GetParticleSize().y - (delta * half2)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				}
+				
+				if (laserP3->GetParticleSize().x > 0.0f)
+				{
+					laserP3->SetParticleSize((laserP3->GetParticleSize().x - (delta * half3)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP3->GetParticleSize().y - (delta * half3)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				}
+
+				if (laserP4->GetParticleSize().x > 0.0f)
+				{
+					laserP4->SetParticleSize((laserP4->GetParticleSize().x - (delta * half4)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP4->GetParticleSize().x - (delta * half4)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				}
+
+				if (delta > 2) break;
+				Return_null;
+			}
+			ability->_laserParticle1->SetActive(false);
+			ability->_laserParticle2->SetActive(false);
+			ability->_laserParticle3->SetActive(false);
+			ability->_laserParticle4->SetActive(false);
+			ability->_destroyLaser = true;
+			ability->_isLaserReady = false;
+			ability->_isLaserStarted = false;
 		};
 
 		// R스킬 쿨타임

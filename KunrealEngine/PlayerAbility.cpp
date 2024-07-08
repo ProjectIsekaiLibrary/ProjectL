@@ -4,8 +4,6 @@
 #include "MeshRenderer.h"
 #include "BoxCollider.h"
 #include "Particle.h"
-#include "TimeManager.h"
-#include "ToolBox.h"
 #include "Animator.h"
 #include "Transform.h"
 
@@ -18,12 +16,12 @@
 #include "Scene.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
-	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr), _area(nullptr)
-	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isAreaReady(true)
-	, _isShotHit(false), _isIceHit(false), _isAreaHit(false), _isMeteorHit(false)
+	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr), _laser(nullptr)
+	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
+	, _isShotHit(false), _isIceHit(false), _isLaserHit(false), _isMeteorHit(false)
 	, _currentBoss(nullptr), _currentDamage(0.0f)
-	, _isShotDetected(false), _isIceDetected(false), _isAreaDetected(false), _isMeteorDetected(false), _isShotEnded(false) ,
-	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLazerEnded(false), _lazerParticleTimer(0), _isLazerStarted(false)
+	, _isShotDetected(false), _isIceDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false) ,
+	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false)
 {
 
 }
@@ -104,48 +102,19 @@ void KunrealEngine::PlayerAbility::Update()
 		Startcoroutine(iceDestroy);
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isAreaReady)
+	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isLaserReady)
 	{
-		ResetAreaPos();
-		_isAreaDetected = true;
-		_isAreaHit = true;
-		_isLazerStarted = true;
-		Startcoroutine(AreaCoolDown);
-		Startcoroutine(AreaStandby);
+		ResetLaserPos();
+		_isLaserDetected = true;
+		_isLaserHit = true;
+		_isLaserStarted = true;
+		Startcoroutine(LaserCoolDown);
+		Startcoroutine(LaserStandby);
+		_playerComp->_playerStatus = Player::Status::ABILITY;
+		_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
 		//_area->GetComponent<BoxCollider>()->SetActive(true);
-		//_playerComp->_playerStatus = Player::Status::ABILITY;
-		//_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
 
-
-		Coroutine_Func(AreaDestroy)
-		{
-			auto* ability = this;
-			Waitforsecond(3.0f);
-			//_lazerParticle1->GetComponent<Particle>()->SetActive(false);
-			//_lazerParticle2->GetComponent<Particle>()->SetActive(false);
-
-			float delta = 0;
-			while (true)
-			{
-				delta += TimeManager::GetInstance().GetDeltaTime();
-				ability->_lazerParticle1->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				ability->_lazerParticle2->GetComponent<Particle>()->SetParticleSize((20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				ability->_lazerParticle3->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				ability->_lazerParticle4->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-
-				if (delta > 2) break;
-				Return_null;
-			}
-			ability->_lazerParticle1->SetActive(false);
-			ability->_lazerParticle2->SetActive(false);
-			ability->_lazerParticle3->SetActive(false);
-			ability->_lazerParticle4->SetActive(false);
-			ability->_destroyArea = true;
-			ability->_isAreaReady = false;
-			ability->_isLazerStarted = false;
-
-		};
-		Startcoroutine(AreaDestroy);
+		Startcoroutine(laserDestroy);
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady)
@@ -173,7 +142,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
 	{
 		_playerComp->_playerStatus = Player::Status::IDLE;
-		this->_isAreaReady = false;
+		this->_isLaserReady = false;
 	}
 
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 4 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
@@ -211,7 +180,7 @@ void KunrealEngine::PlayerAbility::Update()
 		GRAPHICS->DrawDebugText(100, 600, 40, "W On CoolDown");
 	}
 
-	if (this->_isAreaReady)
+	if (this->_isLaserReady)
 	{
 		GRAPHICS->DrawDebugText(100, 700, 40, "E Ready");
 	}
@@ -337,7 +306,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	shotParticle->SetParticleVelocity(3.0f, true);
 	shotParticle->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	shotParticle->AddParticleColor(0.5f, 0.5f, 2.0f);
-	//shotParticle->SetParticleRotation(90.0f, _shot->GetComponent<Transform>()->GetRotation().y, 0.0f);
 	shotParticle->SetParticleDuration(0.7f, 0.05f);
 	shotParticle->SetActive(true);
 
@@ -387,7 +355,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticleHit1->GetComponent<Particle>()->SetActive(false);
 	_shotParticleHit1->SetActive(true);
-	//_shotParticleHit1->SetParent(_shot);
 
 	_shotParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit2");
 	_shotParticleHit2->AddComponent<Particle>();
@@ -399,7 +366,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticleHit2->GetComponent<Particle>()->SetActive(false);
 	_shotParticleHit2->SetActive(true);
-	//_shotParticleHit2->SetParent(_shot);
 
 	_shotParticleHit3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit3");
 	_shotParticleHit3->AddComponent<Particle>();
@@ -411,7 +377,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticleHit3->GetComponent<Particle>()->SetActive(false);
 	_shotParticleHit3->SetActive(true);
-	//_shotParticleHit3->SetParent(_shot);
 
 
 	shotProj->SetMeshObject("Meteor/Meteor");
@@ -454,9 +419,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				
 				if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
 				{
-					//_shotParticleHit1->GetComponent<Particle>()->SetActive(true);
-					//_shotParticleHit2->GetComponent<Particle>()->SetActive(true);
-					//_shotParticleHit3->GetComponent<Particle>()->SetActive(true);
 					_isShotEnded = true;
 				}
 			}
@@ -633,10 +595,10 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 			_iceParticle2->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
 			_iceParticle3->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
 
-			if (iceProj->GetCollider()->GetTargetObject() != nullptr && iceProj->GetCollider()->GetTargetObject()->GetTag() == "BOSS" && _isIceHit)
+			if (iceProj->GetCollider()->GetTargetObject() != nullptr && iceProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && _isIceHit)
 			{
-				_currentBoss->_info._hp -= 30.0f;
-				_isIceHit = false;
+				//_currentBoss->_info._hp -= 30.0f;
+				//_isIceHit = false;
 			}
 		});
 	
@@ -644,20 +606,69 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 }
 
 
-void KunrealEngine::PlayerAbility::ResetAreaPos()
+void KunrealEngine::PlayerAbility::ResetLaserPos()
 {
-	this->_area->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
-	_lazerParticle1->GetComponent<Particle>()->Update();
-	_lazerParticle2->GetComponent<Particle>()->Update();
+	this->_laser->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+
+	// 플레이어 방향조절
+	DirectX::XMFLOAT3 newPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
+
+	//플레이어 방향 돌리기
+	DirectX::XMFLOAT3 playerPos = this->GetOwner()->GetComponent<Transform>()->GetPosition();
+	DirectX::XMFLOAT3 playerRot = this->GetOwner()->GetComponent<Transform>()->GetRotation();
+	DirectX::XMVECTOR playerPosVec = DirectX::XMLoadFloat3(&playerPos);
+	DirectX::XMVECTOR rotPosVec = DirectX::XMLoadFloat3(&newPos);
+
+	DirectX::XMVECTOR playerForward = DirectX::XMVectorSet(0.0f, playerRot.y, -1.0f, 0.0f);
+	DirectX::XMVECTOR rotDirection = DirectX::XMVectorSubtract(rotPosVec, playerPosVec);
+	rotDirection.m128_f32[1] = 0.0f;
+	rotDirection = DirectX::XMVector3Normalize(rotDirection);
+
+	DirectX::XMVECTOR dotResult = DirectX::XMVector3Dot(playerForward, rotDirection);
+	float dotProduct = DirectX::XMVectorGetX(dotResult);
+
+	float angle = acos(dotProduct);
+	angle = DirectX::XMConvertToDegrees(angle);
+
+	if (rotPosVec.m128_f32[0] > playerPosVec.m128_f32[0])
+	{
+		angle *= -1;
+	}
+
+	this->GetOwner()->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+	// 파티클 위치조정 부분
+
+	float laserPosOffset = 15.0f;
+	float laserScaleOffset = 80.0f;
+
+	DirectX::XMFLOAT3 direction = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _playerComp->_transform->GetRotation().y);
+
+	DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&direction);
+
+	DirectX::XMVECTOR laserScaleDir = DirectX::XMVectorScale(dirVec, laserPosOffset);
+	_laserParticle1->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + laserScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + laserScaleDir.m128_f32[2]);
+	_laserParticle2->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + laserScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + laserScaleDir.m128_f32[2]);
+	_laserParticle3->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + laserScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + laserScaleDir.m128_f32[2]);
+	_laserParticle4->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + laserScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + laserScaleDir.m128_f32[2]);
+
+	_laserParticle1->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle2->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle3->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle4->GetComponent<Particle>()->SetParticleRotation(0.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+
+	_laserParticle1->GetComponent<Particle>()->Update();
+	_laserParticle2->GetComponent<Particle>()->Update();
+	_laserParticle3->GetComponent<Particle>()->Update();
+	_laserParticle4->GetComponent<Particle>()->Update();
 }
 
 void KunrealEngine::PlayerAbility::CreateAbility3()
 {
-	Ability* area = new Ability();
-	area->Initialize("Area");
+	Ability* laser = new Ability();
+	laser->Initialize("Laser");
 
-	area->SetTotalData(
-		"Area",			// 이름
+	laser->SetTotalData(
+		"Laser",			// 이름
 		40.0f,			// 데미지
 		20.0f,			// 마나
 		15.0f,			// 무력화 피해량
@@ -665,123 +676,101 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 		15.0f			// 사거리
 	);
 
-	_area = area->_projectile;
+	_laser = laser->_projectile;
 
 	// 크기 조정			/// 정밀 조정 필요
-	_area->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
-	_area->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
+	_laser->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
+	_laser->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
 
 	// 투사체 컴포넌트 추가
-	_area->AddComponent<BoxCollider>();
-	BoxCollider* areaCollider = _area->GetComponent<BoxCollider>();
-	areaCollider->SetColliderScale(20.0f, 20.0f, 20.0f);
+	_laser->AddComponent<BoxCollider>();
+	BoxCollider* laserCollider = _laser->GetComponent<BoxCollider>();
+	laserCollider->SetColliderScale(20.0f, 20.0f, 20.0f);
 		
-	_lazerParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE1");
-	_lazerParticle1->AddComponent<Particle>();
-	_lazerParticle1->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
-	_lazerParticle1->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
-	_lazerParticle1->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
-	_lazerParticle1->GetComponent<Particle>()->SetParticleSize(50.f, 50.0f);
-	_lazerParticle1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 1.0f);
-	_lazerParticle1->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-	_lazerParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_lazerParticle1->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
-	_lazerParticle1->SetTotalComponentState(false);
-	_lazerParticle1->SetActive(false);
+	_laserParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE1");
+	_laserParticle1->AddComponent<Particle>();
+	_laserParticle1->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
+	_laserParticle1->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
+	_laserParticle1->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+	_laserParticle1->GetComponent<Particle>()->SetParticleSize(50.f, 50.0f);
+	_laserParticle1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 1.0f);
+	_laserParticle1->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_laserParticle1->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
+	_laserParticle1->SetTotalComponentState(false);
+	_laserParticle1->SetActive(false);
 
-	_lazerParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE2");
-	_lazerParticle2->AddComponent<Particle>();
-	_lazerParticle2->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/fx_Dust2.dds", 1000);
-	_lazerParticle2->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
-	_lazerParticle2->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
-	_lazerParticle2->GetComponent<Particle>()->SetParticleSize(20.f, 20.f);
-	_lazerParticle2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.0f);
-	_lazerParticle2->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-	_lazerParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_lazerParticle2->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
-	_lazerParticle2->SetTotalComponentState(false);
-	_lazerParticle2->SetActive(false);
+	_laserParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE2");
+	_laserParticle2->AddComponent<Particle>();
+	_laserParticle2->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/fx_Dust2.dds", 1000);
+	_laserParticle2->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
+	_laserParticle2->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+	_laserParticle2->GetComponent<Particle>()->SetParticleSize(20.f, 20.f);
+	_laserParticle2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.0f);
+	_laserParticle2->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_laserParticle2->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
+	_laserParticle2->SetTotalComponentState(false);
+	_laserParticle2->SetActive(false);
 
-	_lazerParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE3");
-	_lazerParticle3->AddComponent<Particle>();
-	_lazerParticle3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-	_lazerParticle3->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
-	_lazerParticle3->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
-	_lazerParticle3->GetComponent<Particle>()->SetParticleSize(30.f, 30.f);
-	_lazerParticle3->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
-	_lazerParticle3->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-	_lazerParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_lazerParticle3->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
-	_lazerParticle3->SetTotalComponentState(false);
-	_lazerParticle3->SetActive(false);
+	_laserParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE3");
+	_laserParticle3->AddComponent<Particle>();
+	_laserParticle3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	_laserParticle3->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
+	_laserParticle3->GetComponent<Particle>()->SetParticleVelocity(84.f, false);
+	_laserParticle3->GetComponent<Particle>()->SetParticleSize(30.f, 30.f);
+	_laserParticle3->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+	_laserParticle3->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_laserParticle3->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
+	_laserParticle3->SetTotalComponentState(false);
+	_laserParticle3->SetActive(false);
 
-	_lazerParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE4");
-	_lazerParticle4->AddComponent<Particle>();
-	_lazerParticle4->GetComponent<Particle>()->SetParticleEffect("fx_Flare7", "Resources/Textures/Particles/fx_Flare7.dds", 1000);
-	_lazerParticle4->GetComponent<Particle>()->SetParticleDuration(3.0f, 0.1f);
-	_lazerParticle4->GetComponent<Particle>()->SetParticleVelocity(0.f, true);
-	_lazerParticle4->GetComponent<Particle>()->SetParticleSize(30.f, 30.f);
-	_lazerParticle4->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
-	_lazerParticle4->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-	_lazerParticle4->GetComponent<Particle>()->SetParticleCameraApply(true);
-	_lazerParticle4->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
-	_lazerParticle4->SetTotalComponentState(false);
-	_lazerParticle4->SetActive(false);
+	_laserParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE4");
+	_laserParticle4->AddComponent<Particle>();
+	_laserParticle4->GetComponent<Particle>()->SetParticleEffect("fx_Flare7", "Resources/Textures/Particles/fx_Flare7.dds", 1000);
+	_laserParticle4->GetComponent<Particle>()->SetParticleDuration(3.0f, 0.1f);
+	_laserParticle4->GetComponent<Particle>()->SetParticleVelocity(0.f, true);
+	_laserParticle4->GetComponent<Particle>()->SetParticleSize(30.f, 30.f);
+	_laserParticle4->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 1.0f);
+	_laserParticle4->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
+	_laserParticle4->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_laserParticle4->GetComponent<Particle>()->SetParticleAngle(339, 0.0f, 30);
+	_laserParticle4->SetTotalComponentState(false);
+	_laserParticle4->SetActive(false);
 
-	_area->SetActive(false);
+	_laser->SetActive(false);
 
-	area->SetLogic([area, areaCollider, this]()
-		{
-			if (_isLazerStarted == true)
+	laser->SetLogic([laser, laserCollider, this]()
+		{	
+			if (_isLaserStarted == true)
 			{
-				auto lazerPosOffset = 15.0f;
-				auto lazerScaleOffset = 80.0f;
+				//if (_playerComp->GetPlayerStatus() != Player::Status::ABILITY)
+				//{
+				//	Startcoroutine(LaserFadeOut);
+				//	return;
+				//}
 
-				auto direction = ToolBox::RotateVector(DirectX::XMFLOAT3(0, 0, -1.0f), _playerComp->_transform->GetRotation().y);
-
-				DirectX::XMVECTOR dirVec = DirectX::XMLoadFloat3(&direction);
-
-				auto lazerScaleDir = DirectX::XMVectorScale(dirVec, lazerPosOffset);
-				_lazerParticle1->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + lazerScaleDir.m128_f32[2]);
-				_lazerParticle2->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + lazerScaleDir.m128_f32[2]);
-				_lazerParticle3->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + lazerScaleDir.m128_f32[2]);
-				_lazerParticle4->GetComponent<Transform>()->SetPosition(_playerComp->_transform->GetPosition().x + lazerScaleDir.m128_f32[0], 16.0f, _playerComp->_transform->GetPosition().z + lazerScaleDir.m128_f32[2]);
-				
-				_lazerParticle1->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-				_lazerParticle2->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-				_lazerParticle3->GetComponent<Particle>()->SetParticleRotation(90.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-				_lazerParticle4->GetComponent<Particle>()->SetParticleRotation(0.0f, _playerComp->_transform->GetRotation().y, 0.0f);
-			
-				_lazerParticle1->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				_lazerParticle2->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 30.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				_lazerParticle3->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 60.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				_lazerParticle4->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
-
-				_lazerParticle1->GetComponent<Particle>()->Update();
-				_lazerParticle2->GetComponent<Particle>()->Update();
-				_lazerParticle3->GetComponent<Particle>()->Update();
-				_lazerParticle4->GetComponent<Particle>()->Update();
-
-				_lazerParticle1->GetComponent<Particle>()->SetActive(true);
-				_lazerParticle2->GetComponent<Particle>()->SetActive(true);
-				_lazerParticle3->GetComponent<Particle>()->SetActive(true);
-				_lazerParticle4->GetComponent<Particle>()->SetActive(true);
+				_laserParticle1->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				_laserParticle2->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 30.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				_laserParticle3->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 60.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				_laserParticle4->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 			}
 
-			if (areaCollider->GetTargetObject() != nullptr && areaCollider->GetActivated() && areaCollider->IsCollided() && areaCollider->GetTargetObject()->GetTag() == "BOSS" && this->_isAreaHit)
+			if (laserCollider->GetTargetObject() != nullptr && laserCollider->GetActivated() && laserCollider->IsCollided() && laserCollider->GetTargetObject()->GetTag() == "Boss" && this->_isLaserHit)
 			{
-				_currentBoss->_info._hp -= 20.0f;
-
-				this->_isAreaHit = false;
+				//_currentBoss->_info._hp -= 20.0f;
+				//
+				//this->_isLaserHit = false;
 			}
 		});
 
-	AddToContanier(area);
+	AddToContanier(laser);
 }
 
 void KunrealEngine::PlayerAbility::ResetMeteorPos()
 {
-	// 마우스 3D좌표로부터 20.0f 위에 위치시키도록
+	// 마우스 3D좌표로부터 80.0f 위에 위치시키도록
 	DirectX::XMFLOAT3 newPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
 
 	_meteor->GetComponent<Transform>()->SetPosition(newPos);
@@ -900,7 +889,6 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 400.0f, 0.0f);
 	_meteorParticleHit1->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit1->SetActive(true);
-	//_meteorParticleHit1->SetParent(_meteor);
 
 	_meteorParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit2");
 	_meteorParticleHit2->AddComponent<Particle>();
@@ -913,7 +901,6 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_meteorParticleHit2->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit2->SetActive(true);
-	//_meteorParticleHit2->SetParent(_meteor);
 
 	_meteorParticleHit3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit3");
 	_meteorParticleHit3->AddComponent<Particle>();
@@ -926,7 +913,6 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_meteorParticleHit3->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit3->SetActive(true);
-	//_meteorParticleHit3->SetParent(_meteor);
 
 	_meteorParticleHit4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit4");
 	_meteorParticleHit4->AddComponent<Particle>();
@@ -939,16 +925,15 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_meteorParticleHit4->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit4->SetActive(true);
-	//_meteorParticleHit4->SetParent(_meteor);
 
 
 	// 비활성화 조건		// 인게임에서는 소멸처럼
 	meteorProj->SetDestoryCondition([meteorProj, this]()->bool
 		{
-			if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "BOSS" && this->_isMeteorHit)
+			if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && this->_isMeteorHit)
 			{
-				_currentBoss->_info._hp -= 100.0f;
-				_isMeteorHit = false;
+				//_currentBoss->_info._hp -= 100.0f;
+				//_isMeteorHit = false;
 				
 			}
 
@@ -981,10 +966,6 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				// 실제로 끝나지 않았지만 로직상 문제 X
 				if (meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
 				{
-					//_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);
-					//_meteorParticleHit2->GetComponent<Particle>()->SetActive(true);
-					//_meteorParticleHit3->GetComponent<Particle>()->SetActive(true);
-					//_meteorParticleHit4->GetComponent<Particle>()->SetActive(true);
 					_isMeteorEnded = true;
 				}
 			}
@@ -1055,7 +1036,7 @@ void KunrealEngine::PlayerAbility::SetCurrentBossObject()
 
 		if (sceneName == "mapTest4.json")
 		{
-			this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("BOSS")->GetComponent<Kamen>()->GetBoss();
+			this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Boss")->GetComponent<Kamen>()->GetBoss();
 		}
 		else
 		{
@@ -1068,3 +1049,4 @@ float KunrealEngine::PlayerAbility::GetDamage()
 {
 	return this->_currentDamage;
 }
+
