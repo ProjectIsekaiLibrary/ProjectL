@@ -311,22 +311,22 @@ void KunrealEngine::BattleUIManager::FixedUpdate()
 void KunrealEngine::BattleUIManager::Update()
 {
 	auto  abill = _eventmanager->_playerAbill;
-	auto& boosinfo = _eventmanager->_bossComp->GetBossInfo();
+	auto& bossinfo = _eventmanager->_bossComp->GetBossInfo();
 	auto& playerinfo = _eventmanager->_playerComp->GetPlayerData();
 
 
 	// 이건 테스트 용으로 보스나 플레이어의 체력을 강제로 만질 수 있게 해둔 부분
 	if (InputSystem::GetInstance()->KeyDown(KEY::UP))
 	{
-		boosinfo._hp += 10;
+		bossinfo._hp += 10;
 	}
 
 	else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
 	{
-		boosinfo._hp -= 10;
-		if (boosinfo._hp <= 0)
+		bossinfo._hp -= 10;
+		if (bossinfo._hp <= 0)
 		{
-			boosinfo._hp = 1;
+			bossinfo._hp = 1;
 		}
 	}
 
@@ -341,7 +341,7 @@ void KunrealEngine::BattleUIManager::Update()
 	}
 	 
 	// 체력을 받아와서 게이지에 반영하는 부분
-	int bosshp = boosinfo._hp;
+	int bosshp = bossinfo._hp;
 	int playerhp = playerinfo._hp;
 
 	if (pre_bosshp != bosshp)

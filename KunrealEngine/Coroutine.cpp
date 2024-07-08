@@ -223,20 +223,6 @@ namespace KunrealEngine
 
 		for (auto coroutine : _coroutines)
 		{
-			//for (auto coro : _coroutines)
-			//{
-			//	if (coroutine != coro) ismember = false;
-			//	else if (coroutine == coro)
-			//	{
-			//		ismember = true;
-			//		break;
-			//	}
-			//}
-			//if (!ismember)
-			//{
-			//	continue;
-			//}
-
 			bool isready = coroutine->coro_handle.promise().await_ready();
 			bool isdone = coroutine->coro_handle.done();
 

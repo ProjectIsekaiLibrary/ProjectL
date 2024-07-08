@@ -43,7 +43,7 @@ void KunrealEngine::EventManager::Update()
 {
 	if (_eventStart)
 	{
-		CalculateDamageToBoss();
+		//CalculateDamageToBoss();
 
 		//CalculateDamageToPlayer();
 
@@ -51,10 +51,10 @@ void KunrealEngine::EventManager::Update()
 
 		CalculateDamageToPlayer2();
 
-		if (_bossComp->isDead())
-		{
-			Release();
-		}
+		//if (_bossComp->isDead())
+		//{
+		//	Release();
+		//}
 	}
 
 	if (_iscamfollow && _mainCamera != nullptr && _player != nullptr)
@@ -124,18 +124,24 @@ void KunrealEngine::EventManager::CamShake()
 	_camshakez = ToolBox::GetRandomFloat(0.0f, 2.0f);
 }
 
-void KunrealEngine::EventManager::CalculateDamageToBoss()
+//void KunrealEngine::EventManager::CalculateDamageToBoss()
+//{
+//	auto& bossInfo = _bossComp->GetBossInfo();
+//
+//	auto damage = _playerAbill->GetDamage();
+//
+//	if (damage > 0)
+//	{
+//		auto finalDamage = damage * (100.0f / 100 + bossInfo._armor);
+//
+//		_bossComp->GetBossInfo()._hp -= finalDamage;
+//	}
+//}
+
+
+void KunrealEngine::EventManager::CalculateDamageToBoss(Ability* abil)
 {
-	auto& bossInfo = _bossComp->GetBossInfo();
-
-	auto damage = _playerAbill->GetDamage();
-
-	if (damage > 0)
-	{
-		auto finalDamage = damage * (100.0f / 100 + bossInfo._armor);
-
-		_bossComp->GetBossInfo()._hp -= finalDamage;
-	}
+	this->_bossComp->GetBossInfo()._hp -= abil->GetDamage() * _playerComp->GetPlayerData()._spellPower;
 }
 
 void KunrealEngine::EventManager::CalculateDamageToPlayer()
