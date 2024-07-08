@@ -10,6 +10,7 @@
 #include "PlayerMove.h"
 #include "Boss.h"
 #include "Kamen.h"
+#include "EventManager.h"
 
 #include "SceneManager.h"
 #include "EventManager.h"
@@ -19,7 +20,6 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr), _laser(nullptr)
 	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
 	, _isShotHit(false), _isIceHit(false), _isLaserHit(false), _isMeteorHit(false)
-	, _currentBoss(nullptr), _currentDamage(0.0f)
 	, _isShotDetected(false), _isIceDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false) ,
 	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false)
 {
@@ -112,7 +112,6 @@ void KunrealEngine::PlayerAbility::Update()
 		Startcoroutine(LaserStandby);
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
-		//_area->GetComponent<BoxCollider>()->SetActive(true);
 
 		Startcoroutine(laserDestroy);
 	}
@@ -160,8 +159,6 @@ void KunrealEngine::PlayerAbility::Update()
 	_abilityContainer[2]->_abilityLogic();
 	_abilityContainer[3]->_abilityLogic();
 
-	SetCurrentBossObject();
-
 	if (this->_isShotReady)
 	{
 		GRAPHICS->DrawDebugText(100, 500, 40, "Q Ready");
@@ -197,6 +194,8 @@ void KunrealEngine::PlayerAbility::Update()
 	{
 		GRAPHICS->DrawDebugText(100, 800, 40, "R On CoolDown");
 	}
+
+	GRAPHICS->DrawDebugText(150, 500, 40, "LaserCount : %d", this->laserCount);
 }
 
 void KunrealEngine::PlayerAbility::LateUpdate()
@@ -286,7 +285,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		10.0f,			// 마나
 		5.0f,			// 무력화 피해량
 		2.0f,			// 쿨타임
-		10.0f			// 사거리
+		80.0f			// 사거리
 	);
 
 	// 객체 저장
@@ -389,12 +388,16 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		{
 			if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
 			{
-				//if (_isShotHit)
-				//{
-				//	_currentBoss->_info._hp -= 10.0f;
-				//	_isShotHit = false;
-				//}
+				if (_isShotHit)
+				{
+					EventManager::GetInstance().CalculateDamageToBoss(shot);
+					_isShotHit = false;
+				}
 
+				return true;
+			}
+			else if (shotProj->_movedRange > shot->GetRange())
+			{
 				return true;
 			}
 			else
@@ -597,8 +600,8 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 
 			if (iceProj->GetCollider()->GetTargetObject() != nullptr && iceProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && _isIceHit)
 			{
-				//_currentBoss->_info._hp -= 30.0f;
-				//_isIceHit = false;
+				EventManager::GetInstance().CalculateDamageToBoss(ice);
+				_isIceHit = false;
 			}
 		});
 	
@@ -636,6 +639,12 @@ void KunrealEngine::PlayerAbility::ResetLaserPos()
 	}
 
 	this->GetOwner()->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
+	this->_laser->GetComponent<Transform>()->SetRotation(this->GetOwner()->GetComponent<Transform>()->GetRotation());
+
+	DirectX::XMVECTOR newLaserPos = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, this->_laser->GetComponent<BoxCollider>()->GetColliderScale().z * 0.5f));
+
+	this->_laser->GetComponent<Transform>()->SetPosition(newLaserPos.m128_f32[0], 5.0f, newLaserPos.m128_f32[2]);
+
 	// 파티클 위치조정 부분
 
 	float laserPosOffset = 15.0f;
@@ -669,7 +678,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 
 	laser->SetTotalData(
 		"Laser",			// 이름
-		40.0f,			// 데미지
+		10.0f,			// 데미지
 		20.0f,			// 마나
 		15.0f,			// 무력화 피해량
 		7.0f,			// 쿨타임
@@ -679,13 +688,13 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laser = laser->_projectile;
 
 	// 크기 조정			/// 정밀 조정 필요
-	_laser->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
+	//_laser->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
 	_laser->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
 
 	// 투사체 컴포넌트 추가
 	_laser->AddComponent<BoxCollider>();
 	BoxCollider* laserCollider = _laser->GetComponent<BoxCollider>();
-	laserCollider->SetColliderScale(20.0f, 20.0f, 20.0f);
+	laserCollider->SetColliderScale(20.0f, 20.0f, 160.0f);
 		
 	_laserParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE1");
 	_laserParticle1->AddComponent<Particle>();
@@ -745,12 +754,6 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 		{	
 			if (_isLaserStarted == true)
 			{
-				//if (_playerComp->GetPlayerStatus() != Player::Status::ABILITY)
-				//{
-				//	Startcoroutine(LaserFadeOut);
-				//	return;
-				//}
-
 				_laserParticle1->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				_laserParticle2->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 30.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				_laserParticle3->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 60.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
@@ -759,9 +762,11 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 
 			if (laserCollider->GetTargetObject() != nullptr && laserCollider->GetActivated() && laserCollider->IsCollided() && laserCollider->GetTargetObject()->GetTag() == "Boss" && this->_isLaserHit)
 			{
-				//_currentBoss->_info._hp -= 20.0f;
-				//
-				//this->_isLaserHit = false;
+				EventManager::GetInstance().CalculateDamageToBoss(laser);
+				this->_isLaserHit = false;
+				this->laserCount++;
+
+				Startcoroutine(laserHit);
 			}
 		});
 
@@ -830,6 +835,9 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteor->AddComponent<Projectile>();
 	Projectile* meteorProj = _meteor->GetComponent<Projectile>();
 
+	// Mesh 및 크기 설정
+	_meteor->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
+
 	meteorProj->SetMeshObject("Meteor/Meteor");
 	meteorProj->GetCollider()->SetColliderScale(5.0f, 20.0f, 20.0f);
 
@@ -837,7 +845,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	Particle* meteorParticle = _meteor->AddComponent<Particle>();
 	//Particle* meteorParticle = _meteor->GetComponent<Particle>();
 	meteorParticle->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
-	meteorParticle->SetParticleSize(17.f, 20.0f);
+	//meteorParticle->SetParticleSize(17.f, 20.0f);
+	meteorParticle->SetParticleSize(25.0f, 30.0f);
 	meteorParticle->SetParticleVelocity(3.0f, true);
 	meteorParticle->SetParticleDuration(1.5f, 1.5f);
 	meteorParticle->AddParticleColor(6.0f, 0.2f, 0.1f);
@@ -849,7 +858,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	_meteorParticle2->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.4f);
 	_meteorParticle2->GetComponent<Particle>()->SetParticleVelocity(6.5f, true);
-	_meteorParticle2->GetComponent<Particle>()->SetParticleSize(17.f, 20.0f);
+	//_meteorParticle2->GetComponent<Particle>()->SetParticleSize(17.f, 20.0f);
+	_meteorParticle2->GetComponent<Particle>()->SetParticleSize(25.0f, 30.0f);
 	_meteorParticle2->GetComponent<Particle>()->AddParticleColor(2.0f, 1.0f, 0.0f);
 	_meteorParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 	_meteorParticle2->SetParent(_meteor);
@@ -861,7 +871,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticle3->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
 	_meteorParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
 	_meteorParticle3->GetComponent<Particle>()->SetParticleVelocity(6.0f, true);
-	_meteorParticle3->GetComponent<Particle>()->SetParticleSize(13.f, 13.0f);
+	//_meteorParticle3->GetComponent<Particle>()->SetParticleSize(13.f, 13.0f);
+	_meteorParticle3->GetComponent<Particle>()->SetParticleSize(19.0f, 19.0f);
 	_meteorParticle3->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
 	_meteorParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
 	_meteorParticle3->SetParent(_meteor);
@@ -872,7 +883,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticle4->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
 	_meteorParticle4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
 	_meteorParticle4->GetComponent<Particle>()->SetParticleVelocity(6.0f, true);
-	_meteorParticle4->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+	//_meteorParticle4->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+	_meteorParticle4->GetComponent<Particle>()->SetParticleSize(1.5f, 1.5f);
 	_meteorParticle4->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
 	_meteorParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
 	_meteorParticle4->SetParent(_meteor);
@@ -884,7 +896,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
-	_meteorParticleHit1->GetComponent<Particle>()->SetParticleSize(1.f, 1.f);
+	_meteorParticleHit1->GetComponent<Particle>()->SetParticleSize(1.0f, 1.f);
 	_meteorParticleHit1->GetComponent<Particle>()->AddParticleColor(1.f, 1.f, 1.f);
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDirection(0.0f, 400.0f, 0.0f);
 	_meteorParticleHit1->GetComponent<Particle>()->SetActive(false);
@@ -895,7 +907,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleDuration(8.0f, 0.5f);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+	_meteorParticleHit2->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
 	_meteorParticleHit2->GetComponent<Particle>()->AddParticleColor(2.0f, 0.5f, 0.0f);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleCameraApply(true);
@@ -907,7 +919,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
-	_meteorParticleHit3->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+	_meteorParticleHit3->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
 	_meteorParticleHit3->GetComponent<Particle>()->AddParticleColor(2.0f, 0.3f, 0.1f);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleCameraApply(true);
@@ -919,26 +931,32 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleDuration(4.0f, 0.5f);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-	_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+	_meteorParticleHit4->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->AddParticleColor(1.0f, 0.0f, 0.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleCameraApply(true);
 	_meteorParticleHit4->GetComponent<Particle>()->SetActive(false);
 	_meteorParticleHit4->SetActive(true);
 
+	// 운석에 point light 추가
+	DirectX::XMFLOAT4 ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT4 diffuse = { 1.0f, 0.0f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+	_meteor->AddComponent<Light>();
+	_meteor->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 300.0f);
 
 	// 비활성화 조건		// 인게임에서는 소멸처럼
-	meteorProj->SetDestoryCondition([meteorProj, this]()->bool
+	meteorProj->SetDestoryCondition([meteor, meteorProj, this]()->bool
 		{
-			if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && this->_isMeteorHit)
-			{
-				//_currentBoss->_info._hp -= 100.0f;
-				//_isMeteorHit = false;
-				
-			}
-
 			if (_meteor->GetComponent<Transform>()->GetPosition().y <= 2.0f)
 			{
+				if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && this->_isMeteorHit)
+				{
+					EventManager::GetInstance().CalculateDamageToBoss(meteor);
+					_isMeteorHit = false;
+				}
+
 				_isMeteorEnded = true;
 				return true;
 			}
@@ -959,7 +977,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				_meteor->GetComponent<Transform>()->SetPosition
 				(
 					_meteor->GetComponent<Transform>()->GetPosition().x,
-					_meteor->GetComponent<Transform>()->GetPosition().y - 40.0f * TimeManager::GetInstance().GetDeltaTime(),
+					_meteor->GetComponent<Transform>()->GetPosition().y - 30.0f * TimeManager::GetInstance().GetDeltaTime(),
 					_meteor->GetComponent<Transform>()->GetPosition().z
 				);
 
@@ -1026,27 +1044,5 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 void KunrealEngine::PlayerAbility::AddToContanier(Ability* abil)
 {
 	_abilityContainer.emplace_back(abil);
-}
-
-void KunrealEngine::PlayerAbility::SetCurrentBossObject()
-{
-	if (InputSystem::GetInstance()->KeyDown(KEY::I))
-	{
-		std::string sceneName = SceneManager::GetInstance().GetCurrentScene()->GetSceneName();
-
-		if (sceneName == "mapTest4.json")
-		{
-			this->_currentBoss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Boss")->GetComponent<Kamen>()->GetBoss();
-		}
-		else
-		{
-			int a = 10;
-		}
-	}
-}
-
-float KunrealEngine::PlayerAbility::GetDamage()
-{
-	return this->_currentDamage;
 }
 

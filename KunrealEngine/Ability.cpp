@@ -88,3 +88,28 @@ void KunrealEngine::Ability::SetLogic(std::function<void()> logic)
 {
 	this->_abilityLogic = logic;
 }
+
+float KunrealEngine::Ability::GetDamage()
+{
+	return this->_damage;
+}
+
+float KunrealEngine::Ability::GetStamina()
+{
+	return this->_stamina;
+}
+
+float KunrealEngine::Ability::GetStaggerDmg()
+{
+	return this->_staggerDamage;
+}
+
+float KunrealEngine::Ability::GetCooldown()
+{
+	return this->_cooldown;
+}
+
+float KunrealEngine::Ability::GetRange()
+{
+	return this->_range;
+}

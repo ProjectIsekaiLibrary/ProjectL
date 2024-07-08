@@ -64,7 +64,7 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 {
 	/// Win32 관련
 	// 윈도 클래스
-	wchar_t szAppName[] = L"ProjectL";
+	wchar_t szAppName[] = L"The Last Witch";
 	WNDCLASSEXW wcex{};
 
 	wcex.cbSize = sizeof(WNDCLASSEX);
@@ -106,10 +106,10 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 	engineInstance->Initialize(_hWnd, hInstance, _screenWidth, _screenHeight);
 	//KunrealEngine::ChangeScene("Main");
 
-	std::string testMap = "Resources/mapData/mapTest.json";
-
-	_deserialize = new Deserialize();
-	_deserialize->Initialize(testMap);
+	//std::string testMap = "Resources/mapData/mapTest.json";
+	//
+	//_deserialize = new Deserialize();
+	//_deserialize->Initialize(testMap);
 
 	return S_OK;
 }
@@ -118,7 +118,7 @@ void GameClient::GameClient::UpdateAll()
 {
 	//엔진의 업데이트 부분이 들어감
 	engineInstance->UpdateAll();
-	_deserialize->SetChangeSceneData();
+	//_deserialize->SetChangeSceneData();
 }
 
 LRESULT CALLBACK GameClient::GameClient::WndProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)

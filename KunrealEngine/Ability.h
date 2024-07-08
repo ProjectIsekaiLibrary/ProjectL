@@ -58,6 +58,13 @@ namespace KunrealEngine
 		// 스킬이 어떻게 작동할 것인가 설정
 		void SetLogic(std::function<void()> logic);
 
+		// 스킬 정보 반환
+		float GetDamage();
+		float GetStamina();
+		float GetStaggerDmg();
+		float GetCooldown();
+		float GetRange();
+
 	};
 }
 
