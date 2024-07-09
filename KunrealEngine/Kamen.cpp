@@ -247,11 +247,11 @@ void KunrealEngine::Kamen::GamePattern()
 	//TeleportSpellPattern();							// 텔포 후 spell	
 	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
 	//_basicPattern.emplace_back(_swordSwingVertical);
 	//_basicPattern.emplace_back(_swordSwingTwice);
-	//_basicPattern.emplace_back(_swordSwingTwiceHard);
+	_basicPattern.emplace_back(_swordSwingTwiceHard);
 	//_basicPattern.emplace_back(_swordSwingHorizontal);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
@@ -468,6 +468,9 @@ void KunrealEngine::Kamen::SpecialAttack2()
 void KunrealEngine::Kamen::CreateParticleObject()
 {
 	auto mapOffsetY = 5.0f;
+	DirectX::XMFLOAT4 Ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT4 Diffuse = { 0.0f, 1.0f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// hand fire1
 	for (int j = 0; j < 2; j++)
@@ -1216,6 +1219,10 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				bladePrticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 				bladePrticle->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
 				bladePrticle->GetComponent<Particle>()->SetActive(false);
+				bladePrticle->AddComponent<Light>();
+				bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 70);
+				bladePrticle->GetComponent<Light>()->SetDiffuse(0.3f, 1.0f, 0.1f, 1.0f);
+				bladePrticle->GetComponent<Light>()->SetActive(false);
 				bladePrticle->SetActive(false);
 
 				switch (j)
@@ -1371,6 +1378,10 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			bladePrticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			bladePrticle->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
 			bladePrticle->GetComponent<Particle>()->SetActive(false);
+			bladePrticle->AddComponent<Light>();
+			bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 70);
+			bladePrticle->GetComponent<Light>()->SetDiffuse(0.3f, 1.0f, 0.1f, 1.0f);
+			bladePrticle->GetComponent<Light>()->SetActive(false);
 			bladePrticle->SetActive(false);
 
 			switch (j)
@@ -1510,9 +1521,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		}
 	}
 	{
-		DirectX::XMFLOAT4 Ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
-		DirectX::XMFLOAT4 Diffuse = { 0.0f, 1.0f, 0.0f, 1.0f };
-		DirectX::XMFLOAT4 Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 		for (int i = 0; i < 5; i++)
 		{
@@ -4672,6 +4680,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 				for (auto& bladeParticle : _bladeRParticle)
 				{
 					bladeParticle->GetComponent<Particle>()->SetActive(true);
+					bladeParticle->GetComponent<Light>()->SetActive(true);
 				}
 				for (auto& bladeParticle : _bladeRParticleWave)
 				{
@@ -4690,6 +4699,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 				for (auto& bladeParticle : _bladeLParticle)
 				{
 					bladeParticle->GetComponent<Particle>()->SetActive(true);
+					bladeParticle->GetComponent<Light>()->SetActive(true);
 				}
 				for (auto& bladeParticle : _bladeLParticleWave)
 				{
@@ -4725,6 +4735,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 				for (auto& bladeParticle : _bladeRParticle)
 				{
 					bladeParticle->GetComponent<Particle>()->SetActive(false);
+					bladeParticle->GetComponent<Light>()->SetActive(false);
 				}
 				for (auto& bladeParticle : _bladeRParticleWave)
 				{
@@ -4751,6 +4762,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 				for (auto& bladeParticle : _bladeLParticle)
 				{
 					bladeParticle->GetComponent<Particle>()->SetActive(false);
+					bladeParticle->GetComponent<Light>()->SetActive(false);
 				}
 				for (auto& bladeParticle : _bladeLParticleWave)
 				{
@@ -4892,6 +4904,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 			for (auto& largeBladeParticle : _largeBladeParticle)
 			{
 				largeBladeParticle->GetComponent<Particle>()->SetActive(true);
+				largeBladeParticle->GetComponent<Light>()->SetActive(true);
 			}
 
 			auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
@@ -4904,6 +4917,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 				for (auto& largeBladeParticle : _largeBladeParticle)
 				{
 					largeBladeParticle->GetComponent<Particle>()->SetActive(false);
+					largeBladeParticle->GetComponent<Light>()->SetActive(false);
 				}
 			}
 			else
