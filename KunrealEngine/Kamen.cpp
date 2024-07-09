@@ -247,11 +247,11 @@ void KunrealEngine::Kamen::GamePattern()
 	//TeleportSpellPattern();							// 텔포 후 spell	
 	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
 	//_basicPattern.emplace_back(_swordSwingVertical);
 	//_basicPattern.emplace_back(_swordSwingTwice);
-	_basicPattern.emplace_back(_swordSwingTwiceHard);
+	//_basicPattern.emplace_back(_swordSwingTwiceHard);
 	//_basicPattern.emplace_back(_swordSwingHorizontal);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
@@ -1340,7 +1340,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				}
 
 				bladePrticleWave->SetParent(_blade[i]);
-				
+
 				if (i == 0)
 				{
 					_bladeRParticleWave.emplace_back(bladePrticleWave);
@@ -1351,7 +1351,162 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				}
 
 			}
+
+		}
+	}
+	{
+		for (int j = 0; j < 15; j++)
+		{
+
+			std::string name = "bladePrticle";
+			auto bladePrticle = _boss->GetObjectScene()->CreateObject(name);
+
+			bladePrticle->AddComponent<Particle>();
+			bladePrticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam4", "Resources/Textures/Particles/fx_Beam4.dds", 1000);
+			bladePrticle->GetComponent<Particle>()->SetParticleDuration(0.1f, 1.0f);
+			bladePrticle->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+			bladePrticle->GetComponent<Particle>()->SetParticleSize(30.f, 20.0f);
+			bladePrticle->GetComponent<Particle>()->AddParticleColor(0.3f, 6.0f, 0.0f);
+			bladePrticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			bladePrticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+			bladePrticle->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
+			bladePrticle->GetComponent<Particle>()->SetActive(false);
+			bladePrticle->SetActive(false);
+
+			switch (j)
+			{
+			case 0:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-70.0f, 0.0f, 21.0f);
+				break;
+			case 1:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-60.0f, 0.0f, 18.0f);
+				break;
+			case 2:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-50.0f, 0.0f, 15.0f);
+				break;
+			case 3:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-40.0f, 0.0f, 12.0f);
+				break;
+			case 4:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-30.0f, 0.0f, 9.0f);
+				break;
+			case 5:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-20.0f, 0.0f, 6.0f);
+				break;
+			case 6:
+				bladePrticle->GetComponent<Transform>()->SetPosition(-10.0f, 0.0f, 3.0f);
+				break;
+			case 7:
+				bladePrticle->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+				break;
+			case 8:
+				bladePrticle->GetComponent<Transform>()->SetPosition(10.0f, 0.0f, 3.0f);
+				break;
+			case 9:
+				bladePrticle->GetComponent<Transform>()->SetPosition(20.0f, 0.0f, 6.0f);
+				break;
+			case 10:
+				bladePrticle->GetComponent<Transform>()->SetPosition(30.0f, 0.0f, 9.0f);
+				break;
+			case 11:
+				bladePrticle->GetComponent<Transform>()->SetPosition(40.0f, 0.0f, 12.0f);
+				break;
+			case 12:
+				bladePrticle->GetComponent<Transform>()->SetPosition(50.0f, 0.0f, 15.0f);
+				break;
+			case 13:
+				bladePrticle->GetComponent<Transform>()->SetPosition(60.0f, 0.0f, 18.0f);
+				break;
+			case 14:
+				bladePrticle->GetComponent<Transform>()->SetPosition(70.0f, 0.0f, 21.0f);
+				break;
+			default:
+				break;
+			}
+
+			bladePrticle->SetParent(_largeBlade);
+
+			_largeBladeParticle.emplace_back(bladePrticle);
+
+		}
+		for (int w = 0; w < 15; w++)
+		{
+			std::string name = "bladePrticleWave";
+			auto bladePrticleWave = _boss->GetObjectScene()->CreateObject(name);
+
+			bladePrticleWave->AddComponent<Particle>();
+			bladePrticleWave->GetComponent<Particle>()->SetParticleEffect("fx_Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+			bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.3f, 1.0f);
+			bladePrticleWave->GetComponent<Particle>()->SetParticleVelocity(50.0f, true);
+			bladePrticleWave->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+			bladePrticleWave->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.0f);
+			bladePrticleWave->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			bladePrticleWave->GetComponent<Particle>()->SetParticleCameraApply(true);
+			bladePrticleWave->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
+			bladePrticleWave->GetComponent<Particle>()->SetActive(false);
+			bladePrticleWave->SetActive(false);
+
+
+			switch (w)
+			{
+			case 0:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-70.0f, 0.0f, 21.0f);
+				break;
+			case 1:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-60.0f, 0.0f, 18.0f);
+				bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.7f, 1.0f);
+				break;
+			case 2:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-50.0f, 0.0f, 15.0f);
+				break;
+			case 3:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-40.0f, 0.0f, 12.0f);
+				break;
+			case 4:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-30.0f, 0.0f, 9.0f);
+				break;
+			case 5:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-20.0f, 0.0f, 6.0f);
+				bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.7f, 1.0f);
+				break;
+			case 6:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(-10.0f, 0.0f, 3.0f);
+				break;
+			case 7:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+				break;
+			case 8:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(10.0f, 0.0f, 3.0f);
+				break;
+			case 9:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(20.0f, 0.0f, 6.0f);
+				bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.7f, 1.0f);
+				break;
+			case 10:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(30.0f, 0.0f, 9.0f);
+				break;
+			case 11:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(40.0f, 0.0f, 12.0f);
+				break;
+			case 12:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(50.0f, 0.0f, 15.0f);
+				break;
+			case 13:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(60.0f, 0.0f, 18.0f);
+				bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.7f, 1.0f);
+				break;
+			case 14:
+				bladePrticleWave->GetComponent<Transform>()->SetPosition(70.0f, 0.0f, 21.0f);
+				break;
+			default:
+				break;
+			}
+
+			bladePrticleWave->SetParent(_largeBlade);
+
+			_largeBladeParticle.emplace_back(bladePrticleWave);
 			
+
 		}
 	}
 }
@@ -3680,6 +3835,10 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 				if (_fakeMoveDistance[i] < 0.0f)
 				{
 					_fakeBoss[i]->GetComponent<MeshRenderer>()->SetActive(false);
+					for (int j = 0; j < _fakeBoss[i]->GetChilds().size(); j++)
+					{
+						_fakeBoss[i]->GetChilds()[j]->GetComponent<Particle>()->SetActive(false);
+					}
 					pattern->_isColliderActive[objectIndex] = false;
 
 					sumGoal++;
@@ -4678,6 +4837,11 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 			auto largeBladeMesh = _largeBlade->GetComponent<MeshRenderer>();
 
 			largeBladeMesh->SetActive(true);
+			
+			for (auto& largeBladeParticle : _largeBladeParticle)
+			{
+				largeBladeParticle->GetComponent<Particle>()->SetActive(true);
+			}
 
 			auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
 
@@ -4686,6 +4850,10 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 			if (_swordMoveDistance < 0)
 			{
 				largeBladeMesh->SetActive(false);
+				for (auto& largeBladeParticle : _largeBladeParticle)
+				{
+					largeBladeParticle->GetComponent<Particle>()->SetActive(false);
+				}
 			}
 			else
 			{
