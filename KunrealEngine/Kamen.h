@@ -381,6 +381,8 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _largeBladeParticle;
 
+		std::vector<GameObject*> _laserLight;
+
 		// ½ºÆç ¼Ò¸ê°ªÀ» À§ÇÑ º¯¼ö
 
 		float _spellDel;
