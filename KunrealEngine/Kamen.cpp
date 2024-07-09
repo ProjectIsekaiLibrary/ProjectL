@@ -1505,14 +1505,39 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			bladePrticleWave->SetParent(_largeBlade);
 
 			_largeBladeParticle.emplace_back(bladePrticleWave);
-			
+
 
 		}
+	}
+	{
+		DirectX::XMFLOAT4 Ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+		DirectX::XMFLOAT4 Diffuse = { 0.0f, 1.0f, 0.0f, 1.0f };
+		DirectX::XMFLOAT4 Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+
+		for (int i = 0; i < 5; i++)
+		{
+			// 레이저가 공통으로 사용하게 될 라이트용 오브젝트
+			std::string name = "laserLight";
+			auto laserLight = _boss->GetObjectScene()->CreateObject(name);
+
+			laserLight->AddComponent<Light>(); 
+			laserLight->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+			laserLight->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.3, 1.0f);
+			laserLight->GetComponent<Light>()->SetActive(false);
+
+
+			_laserLight.emplace_back(laserLight);
+		}
+
 	}
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
 {
+	DirectX::XMFLOAT4 Ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT4 Diffuse = { 0.0f, 1.0f, 0.0f, 1.0f };
+	DirectX::XMFLOAT4 Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+
 	//// 왼손
 	//_leftHand = _boss->GetObjectScene()->CreateObject("LeftHand");
 	//_leftHand->AddComponent<BoxCollider>();
@@ -1580,6 +1605,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 		auto handFire = _boss->GetObjectScene()->CreateObject(index);
 		handFire->AddComponent<BoxCollider>();
 		handFire->GetComponent<BoxCollider>()->SetColliderScale(10.0f, 10.0f, 10.0f);
+		handFire->AddComponent<Light>();
+		handFire->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular);
+		handFire->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.05f, 1.0f);
+		handFire->GetComponent<Light>()->SetPointRange(50.0f);
 		handFire->SetTotalComponentState(false);
 		handFire->SetActive(false);
 		_handFire.emplace_back(handFire);
@@ -1707,6 +1736,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_lazerCollider->AddComponent<BoxCollider>();
 	_lazerCollider->GetComponent<BoxCollider>()->SetColliderScale(140.0f, 40.0f, 10.0f);
 	_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
+	_lazerCollider->AddComponent<Light>();
+	_lazerCollider->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 1000);
+	_lazerCollider->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.3f, 1.0f);
 	_lazerCollider->SetTotalComponentState(false);
 	_lazerCollider->SetActive(false);
 
@@ -1905,7 +1937,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 		auto handFire = _boss->GetObjectScene()->CreateObject(index);
 		handFire->AddComponent<BoxCollider>();
 		handFire->GetComponent<BoxCollider>()->SetColliderScale(10.0f, 10.0f, 10.0f);
-
+		handFire->AddComponent<Light>();
+		handFire->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular);
+		handFire->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.05f, 1.0f);
+		handFire->GetComponent<Light>()->SetPointRange(50.0f);
 		_egoHandFire.emplace_back(handFire);
 
 		handFire->SetTotalComponentState(false);
@@ -1982,7 +2017,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 		boss->GetComponent<BoxCollider>()->SetOffset(0.0f, -6.0f, 0.0f);
 
 		boss->GetComponent<MeshRenderer>()->SetAlpha(0.5f);
-
+		boss->AddComponent<Light>();
+		boss->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 100);
+		boss->GetComponent<Light>()->SetDiffuse(0.3f, 1.0f, 0.1f, 1.0f);
 		boss->SetTotalComponentState(false);
 		boss->SetActive(false);
 
@@ -2085,7 +2122,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 		{
 			for (int i = 0; i < 5; i++)
 			{
-				pattern->DeleteSubObject(_egoHandFire[i]);
+				//pattern->DeleteSubObject(_egoHandFire[i]);
 			}
 
 			_handFireReady[i] = true;
@@ -2145,6 +2182,8 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 						index->GetComponent<Particle>()->SetActive(true);
 					}
 
+					_handFire[i]->GetComponent<Light>()->SetActive(true);
+
 					// 콜라이더 키기
 					auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
 					pattern->_isColliderActive[objectIndex] = true;
@@ -2182,6 +2221,8 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 						{
 							index->GetComponent<Particle>()->SetActive(true);
 						}
+
+						_egoHandFire[i]->GetComponent<Light>()->SetActive(true);
 
 						// 콜라이더 키기
 						auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
@@ -2348,6 +2389,8 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 						index->GetComponent<Particle>()->SetActive(true);
 					}
 
+					_handFire[i]->GetComponent<Light>()->SetActive(true);
+
 					// 콜라이더 키기
 					auto objectIndex = pattern->GetSubObjectIndex(_handFire[i]);
 					pattern->_isColliderActive[objectIndex] = true;
@@ -2385,6 +2428,8 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 						{
 							index->GetComponent<Particle>()->SetActive(true);
 						}
+
+						_handFire[i]->GetComponent<Light>()->SetActive(true);
 
 						// 콜라이더 키기
 						auto objectIndex = pattern->GetSubObjectIndex(_egoHandFire[i]);
@@ -3376,6 +3421,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				if (animator->GetCurrentFrame() >= 32.0f)
 				{
 					auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
+					// 라이트 고민중
+					_lazerCollider->GetComponent<Light>()->SetActive(true);
 
 					if (pattern->_isColliderHit[objectIndex] == false)
 					{
@@ -3818,6 +3865,8 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 					_fakeBoss[i]->GetChilds()[j]->GetComponent<Particle>()->SetActive(true);
 				}
 
+				_fakeBoss[i]->GetComponent<Light>()->SetActive(true);
+
 				// 콜라이더 키기
 				auto objectIndex = pattern->GetSubObjectIndex(_fakeBoss[i]);
 				pattern->_isColliderActive[objectIndex] = true;
@@ -3839,6 +3888,8 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 					{
 						_fakeBoss[i]->GetChilds()[j]->GetComponent<Particle>()->SetActive(false);
 					}
+					_fakeBoss[i]->GetComponent<Light>()->SetActive(false);
+
 					pattern->_isColliderActive[objectIndex] = false;
 
 					sumGoal++;
