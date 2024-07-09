@@ -86,63 +86,63 @@ void ArkEngine::ArkDX11::GeometryGenerator::Create3dQuad()
 	vertexList.resize(totalVertexCount);
 
 	// 앞면 정점 설정
-	vertexList[0].pos = { -1.0f, -1.0f, -1.0f }; // 왼쪽 아래
+	vertexList[0].pos = { -0.5f, -0.5f, -0.5f }; // 왼쪽 아래
 	vertexList[0].tex = { 0.0f, 1.0f };
-	vertexList[1].pos = { -1.0f, 1.0f, -1.0f };  // 왼쪽 위
+	vertexList[1].pos = { -0.5f, 0.5f, -0.5f };  // 왼쪽 위
 	vertexList[1].tex = { 0.0f, 0.0f };
-	vertexList[2].pos = { 1.0f, 1.0f, -1.0f };   // 오른쪽 위
+	vertexList[2].pos = { 0.5f, 0.5f, -0.5f };   // 오른쪽 위
 	vertexList[2].tex = { 1.0f, 0.0f };
-	vertexList[3].pos = { 1.0f, -1.0f, -1.0f };  // 오른쪽 아래
+	vertexList[3].pos = { 0.5f, -0.5f, -0.5f };  // 오른쪽 아래
 	vertexList[3].tex = { 1.0f, 1.0f };
 
 	// 뒷면 정점 설정
-	vertexList[4].pos = { -1.0f, -1.0f, 1.0f };  // 왼쪽 아래
+	vertexList[4].pos = { -0.5f, -0.5f, 0.5f };  // 왼쪽 아래
 	vertexList[4].tex = { 0.0f, 1.0f };
-	vertexList[5].pos = { -1.0f, 1.0f, 1.0f };   // 왼쪽 위
+	vertexList[5].pos = { -0.5f, 0.5f, 0.5f };   // 왼쪽 위
 	vertexList[5].tex = { 0.0f, 0.0f };
-	vertexList[6].pos = { 1.0f, 1.0f, 1.0f };    // 오른쪽 위
+	vertexList[6].pos = { 0.5f, 0.5f, 0.5f };    // 오른쪽 위
 	vertexList[6].tex = { 1.0f, 0.0f };
-	vertexList[7].pos = { 1.0f, -1.0f, 1.0f };   // 오른쪽 아래
+	vertexList[7].pos = { 0.5f, -0.5f, 0.5f };   // 오른쪽 아래
 	vertexList[7].tex = { 1.0f, 1.0f };
 
 	// 왼쪽 면 정점 설정
-	vertexList[8].pos = { -1.0f, -1.0f, -1.0f }; // 아래
+	vertexList[8].pos = { -0.5f, -0.5f, -0.5f }; // 아래
 	vertexList[8].tex = { 0.0f, 1.0f };
-	vertexList[9].pos = { -1.0f, 1.0f, -1.0f };  // 위
+	vertexList[9].pos = { -0.5f, 0.5f, -0.5f };  // 위
 	vertexList[9].tex = { 0.0f, 0.0f };
-	vertexList[10].pos = { -1.0f, 1.0f, 1.0f };  // 위
+	vertexList[10].pos = { -0.5f, 0.5f, 0.5f };  // 위
 	vertexList[10].tex = { 1.0f, 0.0f };
-	vertexList[11].pos = { -1.0f, -1.0f, 1.0f }; // 아래
+	vertexList[11].pos = { -0.5f, -0.5f, 0.5f }; // 아래
 	vertexList[11].tex = { 1.0f, 1.0f };
 
 	// 오른쪽 면 정점 설정
-	vertexList[12].pos = { 1.0f, -1.0f, -1.0f };  // 아래
+	vertexList[12].pos = { 0.5f, -0.5f, -0.5f };  // 아래
 	vertexList[12].tex = { 0.0f, 1.0f };
-	vertexList[13].pos = { 1.0f, 1.0f, -1.0f };   // 위
+	vertexList[13].pos = { 0.5f, 0.5f, -0.5f };   // 위
 	vertexList[13].tex = { 0.0f, 0.0f };
-	vertexList[14].pos = { 1.0f, 1.0f, 1.0f };    // 위
+	vertexList[14].pos = { 0.5f, 0.5f, 0.5f };    // 위
 	vertexList[14].tex = { 1.0f, 0.0f };
-	vertexList[15].pos = { 1.0f, -1.0f, 1.0f };   // 아래
+	vertexList[15].pos = { 0.5f, -0.5f, 0.5f };   // 아래
 	vertexList[15].tex = { 1.0f, 1.0f };
 
 	// 위 면 정점 설정
-	vertexList[16].pos = { -1.0f, 1.0f, -1.0f };  // 왼쪽
+	vertexList[16].pos = { -0.5f, 0.5f, -0.5f };  // 왼쪽
 	vertexList[16].tex = { 0.0f, 1.0f };
-	vertexList[17].pos = { -1.0f, 1.0f, 1.0f };   // 왼쪽
+	vertexList[17].pos = { -0.5f, 0.5f, 0.5f };   // 왼쪽
 	vertexList[17].tex = { 0.0f, 0.0f };
-	vertexList[18].pos = { 1.0f, 1.0f, 1.0f };    // 오른쪽
+	vertexList[18].pos = { 0.5f, 0.5f, 0.5f };    // 오른쪽
 	vertexList[18].tex = { 1.0f, 0.0f };
-	vertexList[19].pos = { 1.0f, 1.0f, -1.0f };   // 오른쪽
+	vertexList[19].pos = { 0.5f, 0.5f, -0.5f };   // 오른쪽
 	vertexList[19].tex = { 1.0f, 1.0f };
 
 	// 아래 면 정점 설정
-	vertexList[20].pos = { -1.0f, -1.0f, -1.0f }; // 왼쪽
+	vertexList[20].pos = { -0.5f, -0.5f, -0.5f }; // 왼쪽
 	vertexList[20].tex = { 0.0f, 1.0f };
-	vertexList[21].pos = { -1.0f, -1.0f, 1.0f };  // 왼쪽
+	vertexList[21].pos = { -0.5f, -0.5f, 0.5f };  // 왼쪽
 	vertexList[21].tex = { 0.0f, 0.0f };
-	vertexList[22].pos = { 1.0f, -1.0f, 1.0f };   // 오른쪽
+	vertexList[22].pos = { 0.5f, -0.5f, 0.5f };   // 오른쪽
 	vertexList[22].tex = { 1.0f, 0.0f };
-	vertexList[23].pos = { 1.0f, -1.0f, -1.0f };  // 오른쪽
+	vertexList[23].pos = { 0.5f, -0.5f, -0.5f };  // 오른쪽
 	vertexList[23].tex = { 1.0f, 1.0f };
 
 	indexList.resize(totalIndexCount);

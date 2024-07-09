@@ -112,6 +112,8 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _blurTexture;
 			ID3DX11EffectShaderResourceVariable* _blurGrayTexture;
 
+			ID3DX11EffectShaderResourceVariable* _decalTexture;
+
 			// point light¿ë Ãß°¡
 			ID3DX11EffectScalarVariable* _pointAttenuationFX;
 		private:

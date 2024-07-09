@@ -329,7 +329,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
 	{
-		index->Render(_deferredRenderer->GetDeferredBuffer(), _decalWorldVec);
+		index->Render(_decalWorldVec);
 	}
 	
 	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);

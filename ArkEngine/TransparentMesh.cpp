@@ -7,7 +7,6 @@
 #include "FBXMesh.h"
 #include "ICamera.h"
 #include "Transform.h"
-#include "DeferredBuffer.h"
 #include "GeometryGenerator.h"
 #include "CommonStruct.h"
 #include "TransparentMesh.h"
@@ -20,7 +19,7 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
 	_renderTime(0.0f), _isRenderFinsh(true), _isRenderStart(false),
-	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false)
+	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(true)
 {
 	Initialize();
 }
@@ -56,7 +55,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 	}
 }
 
-void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer, std::vector<DirectX::XMFLOAT4X4>& worldVec)
+void ArkEngine::ArkDX11::TransparentMesh::Render(std::vector<DirectX::XMFLOAT4X4>& worldVec)
 {
 	if (!_isRenderFinsh && _isRenderStart)
 	{
@@ -96,7 +95,6 @@ void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuf
 		_fxWorld->SetMatrix(reinterpret_cast<float*>(&world));
 		_fxWorldViewProj->SetMatrix(reinterpret_cast<float*>(&WorldViewProj));
 		_texture->SetResource(_diffuseMapSRV);
-		_positionMap->SetResource(defferedBuffer->GetSRV(0));
 
 		_fxTransParency->SetFloat(_transParency);
 
@@ -159,7 +157,6 @@ void ArkEngine::ArkDX11::TransparentMesh::Finalize()
 	_fxWorldViewProj->Release();
 	_fxWorld->Release();
 
-	_positionMap->Release();
 	_texture->Release();
 
 	_fxTransParency->Release();
@@ -193,6 +190,12 @@ void ArkEngine::ArkDX11::TransparentMesh::UpPosition(float up)
 	DirectX::XMStoreFloat4x4(&result, transform);
 
 	_meshTransform->SetTransformMatrix(result);
+}
+
+
+ID3D11ShaderResourceView* ArkEngine::ArkDX11::TransparentMesh::GetTexture()
+{
+	return _diffuseMapSRV;
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::SetTransform(const DirectX::XMFLOAT4X4& matrix)
@@ -284,7 +287,6 @@ void ArkEngine::ArkDX11::TransparentMesh::SetEffect()
 	_fxWorldViewProj = _effect->GetVariableByName("gWorldViewProj")->AsMatrix();
 
 	_texture = _effect->GetVariableByName("gDiffuseMap")->AsShaderResource();
-	_positionMap = _effect->GetVariableByName("gPositionMap")->AsShaderResource();
 
 	_fxTransParency = _effect->GetVariableByName("gTransParency")->AsScalar();
 
