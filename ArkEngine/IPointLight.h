@@ -39,7 +39,8 @@ namespace ArkEngine
 		virtual void SetPosition(DirectX::XMFLOAT3 position) override;
 		// ragne 값 설정
 		virtual void SetRange(float range) override;
-
+		// attenuation 값 설정
+		virtual void SetAttenuation(float att) override;
 	public:
 		virtual bool GetActive() override;
 

@@ -814,14 +814,14 @@ GInterface::GraphicsDirLight* ArkEngine::ArkDX11::DX11Renderer::CreateDirectiona
 	return LightManager::GetInstance()->GetDirLightInterface();
 }
 
-GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range)
+GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range, float attenuation)
 {
 	DirectX::XMFLOAT4 amb = ambient;
 	DirectX::XMFLOAT4 dif = diffuse;
 	DirectX::XMFLOAT4 spec = specular;
 	DirectX::XMFLOAT3 pos = position;
 
-	CreatePoLight(amb, dif, spec, pos, range);
+	CreatePoLight(amb, dif, spec, pos, range, attenuation);
 
 	return LightManager::GetInstance()->GetPointLightInterface();
 }
@@ -1883,7 +1883,7 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDirLight(const DirectX::XMFLOAT4& a
 	ArkEngine::LightManager::GetInstance()->AddDirectionalLight(ambient, diffuse, specular, direction);
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::CreatePoLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range)
+void ArkEngine::ArkDX11::DX11Renderer::CreatePoLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range, float attenuation)
 {
-	ArkEngine::LightManager::GetInstance()->AddPointLight(ambient, diffuse, specular, position, range);
+	ArkEngine::LightManager::GetInstance()->AddPointLight(ambient, diffuse, specular, position, range, attenuation);
 }

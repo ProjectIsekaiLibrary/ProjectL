@@ -116,6 +116,16 @@ void ArkEngine::IPointLight::SetRange(float range)
 	}
 }
 
+void ArkEngine::IPointLight::SetAttenuation(float att)
+{
+	ArkEngine::LightManager::GetInstance()->GetAllPointLightList()[_index].SetAttenuation(att);
+
+	if (_activeIndex > -1)
+	{
+		ArkEngine::LightManager::GetInstance()->GetActivePointLightList()[_activeIndex].SetAttenuation(att);
+	}
+}
+
 bool ArkEngine::IPointLight::GetActive()
 {
 	return _isActive;
