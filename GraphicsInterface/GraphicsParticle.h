@@ -45,5 +45,11 @@ namespace GInterface
 
 		// 파티클을 다시 0부터 시작하게 만든다
 		virtual void Reset() abstract;
+
+		// 포워드 렌더링으로 렌더링할지 여부 설정
+		virtual void SetForwardRendering(bool tf) abstract;
+
+		// 포워드 렌더링으로 렌더링할지 여부 가져오기
+		virtual bool GetIsForwardRendering() abstract;
 	};
 }

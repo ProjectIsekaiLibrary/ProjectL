@@ -56,6 +56,9 @@ namespace ArkEngine
 		void Update(float deltaTime, float gameTime);
 		void Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera, int passIndex);
 
+		virtual bool GetIsForwardRendering() override;
+		virtual void SetForwardRendering(bool tf) override;
+
 	public:
 		virtual void Start() override;
 		virtual void Stop() override;
@@ -185,6 +188,7 @@ namespace ArkEngine
 		void SetParticleState(bool isStart);
 		bool _isStart;
 
+		bool _isForwardRendering;
 	};
 }
 

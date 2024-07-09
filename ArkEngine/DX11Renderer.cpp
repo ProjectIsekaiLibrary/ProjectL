@@ -318,7 +318,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
-		index->Draw(_mainCamera, _particleCamera, 0);
+		if (! index->GetIsForwardRendering())
+		{
+			index->Draw(_mainCamera, _particleCamera, 0);
+		}
 	}
 
 	BeginTransparentSet();
@@ -395,10 +398,14 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		_mainCubeMap->Render();
 	}
 
-	//for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-	//{
-	//	index->Draw(_mainCamera, _particleCamera, 1);
-	//}
+	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	{
+		if (index->GetIsForwardRendering())
+		{
+			index->Draw(_mainCamera, _particleCamera, 1);
+		}
+		
+	}
 
 	_font->RenderUI();
 

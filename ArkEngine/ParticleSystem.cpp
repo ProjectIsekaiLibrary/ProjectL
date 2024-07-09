@@ -21,7 +21,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_isRandom(false),
 	_particleFadeTime(5.0f), _particleLifeTime(5.0f),
 	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr), _particleRotateAngle(nullptr), _rotateAngle()
-	,_isParticleCameraApply(false)
+	, _isParticleCameraApply(false), _isForwardRendering(false)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
@@ -389,6 +389,17 @@ void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* mainCamera, ArkEngine::
 		//float blendFactor[] = { 0.0f, 0.0f, 0.0f, 0.0f };
 		//_arkDevice->GetDeviceContext()->OMSetBlendState(0, blendFactor, 0xffffffff); // restore default
 	}
+}
+
+
+bool ArkEngine::ParticleSystem::GetIsForwardRendering()
+{
+	return _isForwardRendering;
+}
+
+void ArkEngine::ParticleSystem::SetForwardRendering(bool tf)
+{
+	_isForwardRendering = true;
 }
 
 void ArkEngine::ParticleSystem::Start()
