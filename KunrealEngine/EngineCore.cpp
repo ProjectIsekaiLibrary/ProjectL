@@ -235,7 +235,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ParticleTest();
 	/// 니들 맘대로 해
 	PlayGround();
-	CreateTitleScene();
+	//CreateTitleScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -294,6 +294,7 @@ void KunrealEngine::EngineCore::Update()
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
+	MoveToMain();
 	Updatecoroutine();
 }
 
@@ -344,21 +345,25 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	testCamera->GetComponent<Transform>()->SetPosition({ 0.0f, 120.0f, -130.0f });
 	testCamera->GetComponent<Transform>()->SetRotation(-43.f, 180.f, 0.f);
+	testCamera->_autoAwake = true;
 
 	EventManager::GetInstance().SetCamera("testCamera");
 
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
 	player->AddComponent<Player>();
-
+	player->_autoAwake = true;
 
 	// Kamen
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
+	kamen->_autoAwake = true;
 
 	// UI의 부모가 될 0,0pos객체
 	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
 	battle_ui_box->AddComponent<BattleUIManager>();
+	battle_ui_box->_autoAwake = true;
+
 	pause_ui_box = MakeMenuUIPack();
 	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
 	option_ui_box->AddComponent<OptionUIManager>();
@@ -380,6 +385,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	lightTest->GetComponent<Light>()->CreateDirectionalLight(ambient, diffuse, specular, direction);
 	lightTest->GetComponent<Light>()->SetActive(true);
 	lightTest->SetActive(true);
+	lightTest->_autoAwake = true;
 
 	// PointLight 예시
 	auto pointLight = sceneInstance.GetCurrentScene()->CreateObject("pointLightTest");
@@ -403,6 +409,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	bossMap->AddComponent<MeshRenderer>();
 	bossMap->GetComponent<MeshRenderer>()->SetMeshObject("MapMesh/MapMesh");
 	bossMap->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+	bossMap->_autoAwake = true;
 
 	// 맵 꾸미기 파티클
 
@@ -416,6 +423,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle1->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 	mapParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	mapParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle1->_autoAwake = true;
 
 	mapParticle2 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle2");
 	mapParticle2->GetComponent<Transform>()->SetPosition(-38.6, 13.88, -140.8f);
@@ -427,6 +435,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle2->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
 	mapParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
 	mapParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle2->_autoAwake = true;
 
 	mapParticle3 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle3");
 	mapParticle3->GetComponent<Transform>()->SetPosition(39.18f, 13.88, -140.8f);
@@ -438,6 +447,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle3->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
 	mapParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
 	mapParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle3->_autoAwake = true;
 
 	mapParticle4 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle4");
 	mapParticle4->GetComponent<Transform>()->SetPosition(115.42, 20.31, -136.35f);
@@ -449,6 +459,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle4->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 	mapParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	mapParticle4->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle4->_autoAwake = true;
 
 	mapParticle5 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle5");
 	mapParticle5->GetComponent<Transform>()->SetPosition(115.42f, 21.316f, 124.14f);
@@ -460,6 +471,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle5->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 	mapParticle5->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	mapParticle5->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle5->_autoAwake = true;
 
 	mapParticle6 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle6");
 	mapParticle6->GetComponent<Transform>()->SetPosition(28.16f, 47.125f, 138.95f);
@@ -471,6 +483,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle6->GetComponent<Particle>()->AddParticleColor(1.0f, 10.0f, 0.0f);
 	mapParticle6->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	mapParticle6->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle6->_autoAwake = true;
 
 	mapParticle7 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle7");
 	mapParticle7->GetComponent<Transform>()->SetPosition(-27.11f, 47.125f, 138.95f);
@@ -482,6 +495,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle7->GetComponent<Particle>()->AddParticleColor(1.0f, 10.0f, 0.0f);
 	mapParticle7->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	mapParticle7->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle7->_autoAwake = true;
 
 	mapParticle8 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle8");
 	mapParticle8->GetComponent<Transform>()->SetPosition(-113.37f, 21.316f, 125.89f);
@@ -493,6 +507,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticle8->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 	mapParticle8->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 	mapParticle8->GetComponent<Particle>()->SetParticleCameraApply(true);
+	mapParticle8->_autoAwake = true;
 
 	mapParticleEye1 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye1");
 	mapParticleEye1->GetComponent<Transform>()->SetPosition(122.3f, 28.13f, -5.02f);
@@ -503,6 +518,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	mapParticleEye1->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	mapParticleEye1->_autoAwake = true;
 
 	mapParticleEye2 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye2");
 	mapParticleEye2->GetComponent<Transform>()->SetPosition(64.84f, 52.395f, 215.4f);
@@ -513,6 +529,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye2->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	mapParticleEye2->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	mapParticleEye2->_autoAwake = true;
 
 	mapParticleEye3 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye3");
 	mapParticleEye3->GetComponent<Transform>()->SetPosition(42.37f, 29, 144.6f);
@@ -524,6 +541,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye3->GetComponent<Particle>()->AddParticleColor(10.0f, 0.1f, 0.0f);
 	mapParticleEye3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye3->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
+	mapParticleEye3->_autoAwake = true;
 
 	mapParticleEye4 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye4");
 	mapParticleEye4->GetComponent<Transform>()->SetPosition(37.45f, 29, 144.6f);
@@ -535,6 +553,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye4->GetComponent<Particle>()->AddParticleColor(10.0f, 0.4f, 0.0f);
 	mapParticleEye4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye4->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
+	mapParticleEye4->_autoAwake = true;
 
 	mapParticleEye5 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye5");
 	mapParticleEye5->GetComponent<Transform>()->SetPosition(-63.866f, 52.395f, 215.93f);
@@ -545,6 +564,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye5->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	mapParticleEye5->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye5->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	mapParticleEye5->_autoAwake = true;
 
 	mapParticleEye6 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye6");
 	mapParticleEye6->GetComponent<Transform>()->SetPosition(-36.433f, 29, 144.6f);
@@ -556,6 +576,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye6->GetComponent<Particle>()->AddParticleColor(10.0f, 0.1f, 0.0f);
 	mapParticleEye6->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye6->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
+	mapParticleEye6->_autoAwake = true;
 
 	mapParticleEye7 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye7");
 	mapParticleEye7->GetComponent<Transform>()->SetPosition(-41.3f, 29, 144.6f);
@@ -567,6 +588,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye7->GetComponent<Particle>()->AddParticleColor(10.0f, 0.4f, 0.0f);
 	mapParticleEye7->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye7->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
+	mapParticleEye7->_autoAwake = true;
 
 	mapParticleEye8 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye8");
 	mapParticleEye8->GetComponent<Transform>()->SetPosition(-120.72f, 28.02f, -5.02f);
@@ -577,6 +599,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	mapParticleEye8->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 	mapParticleEye8->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye8->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	mapParticleEye8->_autoAwake = true;
 }
 
 void KunrealEngine::EngineCore::CheckMousePosition()
@@ -2241,6 +2264,20 @@ void KunrealEngine::EngineCore::UpdateParticleTest()
 	_particleTelepotyPointList.clear();
 }
 
+
+void KunrealEngine::EngineCore::MoveToMain()
+{
+	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Title")
+	{
+		if (sceneInstance.GetCurrentScene()->GetGameObject("BossPortal")->GetCollider()->IsCollided()
+			&& sceneInstance.GetCurrentScene()->GetGameObject("BossPortal")->GetCollider()->GetTargetObject() == sceneInstance.GetCurrentScene()->GetObjectWithTag("Player"))
+		{
+			sceneInstance.ChangeScene("Main");
+		}
+		
+	}
+}
+
 void KunrealEngine::EngineCore::CreateTitleScene()
 {
 	Scene* titleScene = sceneInstance.CreateScene("Title");
@@ -2356,4 +2393,9 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titlePlayer->AddComponent<Player>();
 	titlePlayer->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
 	titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
+
+	GameObject* bossPortal = sceneInstance.GetCurrentScene()->CreateObject("BossPortal");
+	bossPortal->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 220.0f);
+	bossPortal->AddComponent<BoxCollider>();
+	bossPortal->GetComponent<BoxCollider>()->SetColliderScale(30.0f, 70.0f, 30.0f);
 }

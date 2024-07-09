@@ -24,7 +24,7 @@ KunrealEngine::Player::Player()
 		8.0f,			// dashcooldown
 		1.0f,			// spellpower
 		1.0f,			// damageReduce
-		3.0f			// speedScale
+		1.5f			// speedScale
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 {
@@ -85,6 +85,8 @@ void KunrealEngine::Player::FixedUpdate()
 
 void KunrealEngine::Player::Update()
 {
+	BeforeStart();
+
 	AnimateByStatus();
 	AfterHit();
 	CheckDeath();
@@ -134,10 +136,10 @@ void KunrealEngine::Player::AnimateByStatus()
 		switch (_playerStatus)
 		{
 			case KunrealEngine::Player::Status::IDLE:
-				this->_owner->GetComponent<Animator>()->Play("Idle", 30.0f * _playerInfo._speedScale, true);
+				this->_owner->GetComponent<Animator>()->Play("StandingIdle", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::WALK:
-				this->_owner->GetComponent<Animator>()->Play("Run", 30.0f * _playerInfo._speedScale, true);
+				this->_owner->GetComponent<Animator>()->Play("FastRun", 15.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::DASH:
 				this->_owner->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
@@ -153,7 +155,7 @@ void KunrealEngine::Player::AnimateByStatus()
 				}
 				else if (this->_abilityAnimationIndex == 3)
 				{
-					this->_owner->GetComponent<Animator>()->Play("Beam_full", 40.0f * (_playerInfo._speedScale * 0.33f), false);
+					this->_owner->GetComponent<Animator>()->Play("Beam_full", 40.0f * (_playerInfo._speedScale * 0.66f), false);
 				}
 				else if (this->_abilityAnimationIndex == 4)
 				{
@@ -388,6 +390,32 @@ void KunrealEngine::Player::AfterHit()
 		if (GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
 		{
 			Startcoroutine(afterSweep);
+		}
+	}
+}
+
+
+void KunrealEngine::Player::BeforeStart()
+{
+	if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+	{
+		if (SceneManager::GetInstance().GetCurrentScene()->GetGameObject("titleuibox")->GetActivated())
+		{
+			this->_playerStatus = Status::BEFORESTART;
+			this->_owner->GetComponent<Animator>()->Play("StandingUp", 30.0f * _playerInfo._speedScale, false);
+			this->_owner->GetComponent<Animator>()->SetCurrentFrame(0);
+		}
+		else
+		{
+			if (this->_playerStatus == Status::BEFORESTART)
+			{
+				this->_owner->GetComponent<Animator>()->Play("StandingUp", 30.0f * _playerInfo._speedScale, false);
+			}
+		}
+
+		if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= this->_owner->GetComponent<Animator>()->GetMaxFrame())
+		{
+			this->_playerStatus = Status::IDLE;
 		}
 	}
 }
