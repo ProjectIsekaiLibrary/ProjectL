@@ -4,6 +4,7 @@
 #include "ArkBuffer.h"
 #include "ArkTexture.h"
 #include "d3dx11effect.h"
+#include "FBXMesh.h"
 #include "ICamera.h"
 #include "Transform.h"
 #include "DeferredBuffer.h"
@@ -213,15 +214,15 @@ void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 	}
 	else
 	{
-		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("FlatQuad");
+		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("3dQuad");
 
 		if (buffer == nullptr)
 		{
 			GeometryGenerator generator;
 
-			generator.CreateFlatQuad();
+			generator.Create3dQuad();
 
-			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("FlatQuad");
+			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("3dQuad");
 		}
 	}
 
