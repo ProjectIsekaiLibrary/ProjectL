@@ -33,7 +33,7 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	// 물리 씬을 생성
 	CreatePhysXScene();
 
-	
+
 	// 머티리얼 생성(임의)	/// 이게 0.5라서?
 	_material = _physics->createMaterial(0.5f, 0.5f, 0.5f);
 
@@ -55,7 +55,7 @@ void KunrealEngine::PhysicsSystem::Initialize()
 	//// Add the collider to a rigid body
 	//_pxScene->addActor(*capsuleActor);
 
-	
+
 	///
 
 
@@ -115,7 +115,7 @@ void KunrealEngine::PhysicsSystem::CreatePhysXScene()
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_CONTACTS, true);
 		pvdClient->setScenePvdFlag(physx::PxPvdSceneFlag::eTRANSMIT_SCENEQUERIES, true);
 	}
-	
+
 }
 
 physx::PxScene* KunrealEngine::PhysicsSystem::GetPxScene()
@@ -306,7 +306,7 @@ void KunrealEngine::PhysicsSystem::SetBoxSize(Collider* collider)
 		collider->GetColliderScale().x / 2.f,
 		collider->GetColliderScale().y / 2.f,
 		collider->GetColliderScale().z / 2.f), *_material);
-	
+
 	// 새롭게 만든 shape 추가
 	this->_dynamicMap.at(collider)->attachShape(*boxShape);
 	//
@@ -323,7 +323,7 @@ void KunrealEngine::PhysicsSystem::SetCylinderSize(Collider* collider)
 	// 크기에 맞게 새로운 shape 생성
 	// box의 scale에 맞추기 위해 전체적인 scale을 절반으로
 	physx::PxMeshScale scale(physx::PxVec3(
-		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y /2.0f, collider->GetColliderScale().z / 2.0f));
+		collider->GetColliderScale().x / 2.0f, collider->GetColliderScale().y / 2.0f, collider->GetColliderScale().z / 2.0f));
 	physx::PxConvexMeshGeometry geom(_cylinderConvexMesh, scale);
 	physx::PxShape* shape = _physics->createShape(geom, *_material);
 
@@ -530,17 +530,17 @@ void KunrealEngine::PhysicsSystem::PlayerForceUpdate()
 
 void KunrealEngine::PhysicsSystem::onConstraintBreak(physx::PxConstraintInfo* constraints, physx::PxU32 count)
 {
-	
+
 }
 
 void KunrealEngine::PhysicsSystem::onWake(physx::PxActor**, physx::PxU32)
 {
-	
+
 }
 
 void KunrealEngine::PhysicsSystem::onSleep(physx::PxActor** actors, physx::PxU32 count)
 {
-	
+
 }
 
 void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& pairHeader, const physx::PxContactPair* pairs, physx::PxU32 nbPairs)
@@ -624,5 +624,5 @@ void KunrealEngine::PhysicsSystem::onTrigger(physx::PxTriggerPair* pairs, physx:
 
 void KunrealEngine::PhysicsSystem::onAdvance(const physx::PxRigidBody* const* bodyBuffer, const physx::PxTransform* poseBuffer, const physx::PxU32 count)
 {
-	
+
 }

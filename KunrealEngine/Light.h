@@ -3,9 +3,7 @@
 #include "GraphicsSystem.h"
 
 /// <summary>
-/// Directional light, Point light, spotlight 종류가 다양하다
-/// 
-/// 개별 컴포넌트로 만들 것인가 아니면 하나의 컴포넌트로 전환이 가능하게 할 것인가..
+/// 빛
 /// </summary>
 
 #pragma warning(disable: 4251)
@@ -18,7 +16,6 @@ namespace KunrealEngine
 	{
 		DirectionalLight,
 		PointLight,
-		SpotLight,
 		None
 	};
 
@@ -72,15 +69,21 @@ namespace KunrealEngine
 		DirectX::XMFLOAT4 _specular;
 		DirectX::XMFLOAT3 _direction;
 
+		// 위치 여백
+		DirectX::XMFLOAT3 _offset;
+
+		// 부모 오브젝트 대응 변수
+		DirectX::XMFLOAT3 _decomposedPos;
+
 	private:
 		// PointLight에 필요한 정보들
 		float _rangeP;
 
 	public:
-	/// Light 공통 함수
-	/// Ambient, Diffuse, Specular는 모든 종류의 빛에 들어간다
-	/// Light 종류별로 캐스팅해서 사용
-	
+		/// Light 공통 함수
+		/// Ambient, Diffuse, Specular는 모든 종류의 빛에 들어간다
+		/// Light 종류별로 캐스팅해서 사용
+
 		void SetAmbient(float x, float y, float z, float w);
 		DirectX::XMFLOAT4 GetAmbient();
 
@@ -89,6 +92,10 @@ namespace KunrealEngine
 
 		void SetSpecular(float x, float y, float z, float w);
 		DirectX::XMFLOAT4 GetSpecular();
+
+		// 여백 설정
+		void SetOffSet(float x, float y, float z);
+		DirectX::XMFLOAT3 GetOffSet();
 
 	public:
 		/// Directional Light 관련
@@ -104,8 +111,8 @@ namespace KunrealEngine
 		// PointLight 생성
 		// 디폴트 매개변수로 모든 값은 0
 		// 포지션은 빛의 위치이므로 transform에서 가져오면 되니까 제외
-		void CreatePointLight(DirectX::XMFLOAT4 ambient = {0.f, 0.f, 0.f, 0.f}, DirectX::XMFLOAT4 diffuse = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 specular = { 0.f, 0.f, 0.f, 0.f }, float range = 0.f);
-	
+		void CreatePointLight(DirectX::XMFLOAT4 ambient = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 diffuse = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 specular = { 0.f, 0.f, 0.f, 0.f }, float range = 0.f);
+
 		void SetPointPosition();
 
 		void SetPointRange(float range);

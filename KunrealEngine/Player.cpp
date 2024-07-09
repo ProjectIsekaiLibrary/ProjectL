@@ -54,7 +54,7 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->GetComponent<MeshRenderer>()->SetNormalTexture(1, "PlayerWithCloak/M_Body_normal.png");
 	this->_owner->GetComponent<MeshRenderer>()->SetNormalTexture(2, "PlayerWithCloak/M_Hair_normal.png");
 	this->_owner->GetComponent<MeshRenderer>()->SetCartoonState(true);
-	
+
 	this->_owner->AddComponent<BoxCollider>();
 	this->_owner->GetComponent<BoxCollider>()->SetColliderScale(7.0f, 15.0f, 7.0f);
 	this->_owner->GetComponent<BoxCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
@@ -63,10 +63,10 @@ void KunrealEngine::Player::Initialize()
 	//this->_owner->GetComponent<CylinderCollider>()->SetColliderScale(30.0f, 30.0f, 30.0f);
 	//this->_owner->GetComponent<CylinderCollider>()->SetOffset(0.0f, 8.0f, 0.0f);
 
-	this->_owner->AddComponent<MeshCollider>();
-	this->_owner->GetComponent<MeshCollider>()->CreateMeshCollider("Blade");
-	this->_owner->GetComponent<MeshCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
-	this->_owner->GetComponent<MeshCollider>()->SetOffset(0.0f, 10.0f, 0.0f);
+	//this->_owner->AddComponent<MeshCollider>();
+	//this->_owner->GetComponent<MeshCollider>()->CreateMeshCollider("Blade");
+	//this->_owner->GetComponent<MeshCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
+	//this->_owner->GetComponent<MeshCollider>()->SetOffset(0.0f, 10.0f, 0.0f);
 
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
@@ -230,7 +230,7 @@ void KunrealEngine::Player::CalculateSweep(DirectX::XMVECTOR direction)
 	float dotX = DirectX::XMVectorGetX(dotResult);
 	float angle = acos(dotX);
 	angle = DirectX::XMConvertToDegrees(angle);
-	
+
 	// 플레이어 이동
 	DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
 	DirectX::XMVECTOR currentVector = DirectX::XMLoadFloat3(&currentPoint);
@@ -356,8 +356,8 @@ void KunrealEngine::Player::PlayerSweep()
 	// 목표지점으로 도착하면 
 	else if (this->_isSweep && this->_nodeCount == this->_sweepNode.size())
 	{
-// 		this->_playerStatus = Status::IDLE;
-// 		this->_isSweep = false;
+		// 		this->_playerStatus = Status::IDLE;
+		// 		this->_isSweep = false;
 		Startcoroutine(afterSweep);
 	}
 }

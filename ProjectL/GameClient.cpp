@@ -26,7 +26,7 @@ void GameClient::GameClient::SetWindowSize()
 
 	RECT newRect{};
 	newRect.left = 0;
-	newRect.top = 0; 
+	newRect.top = 0;
 	newRect.right = _screenWidth;
 	newRect.bottom = _screenHeight;
 
@@ -95,7 +95,7 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 		return S_FALSE;
 	}
 	// 생성된 윈도를 화면에 표시
-	ShowWindow(_hWnd, SW_SHOWNORMAL );
+	ShowWindow(_hWnd, SW_SHOWNORMAL);
 	UpdateWindow(_hWnd);
 
 	// 클라이언트의 영역이 원하는 게임 해상도가 되도록 리사이즈

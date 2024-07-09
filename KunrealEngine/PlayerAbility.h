@@ -57,7 +57,7 @@ namespace KunrealEngine
 
 		bool _isIceReady;			// W 쿨타임 조건
 		bool _destroyIce;			// W 소멸 조건을 위한 변수
-		
+
 		bool _isLaserReady;			// E 스킬 쿨타임 조건
 		bool _destroyLaser;			// E 소멸 조건을 위한 변수
 
@@ -72,7 +72,7 @@ namespace KunrealEngine
 		/// TestTestTestTestTestTestTest
 		int laserCount = 0;
 
-	/// 파티클 배치용 멤버변수
+		/// 파티클 배치용 멤버변수
 	private:
 		GameObject* _shotParticle2;
 		GameObject* _shotParticle3;
@@ -120,7 +120,7 @@ namespace KunrealEngine
 		// r 스킬 체크용 변수
 		bool _isMeteorEnded;
 		float _meteorParticleTimer;
-		 
+
 		// 비활성화 되었을 경우
 	private:
 		void ResetShotPos();
@@ -128,7 +128,7 @@ namespace KunrealEngine
 
 		void ResetIcePos();
 		void CreateAbility2();
-		
+
 		void ResetLaserPos();
 		void CreateAbility3();
 
@@ -203,17 +203,15 @@ namespace KunrealEngine
 		{
 			auto* ability = this;
 			Waitforsecond(0.9f);		// 0.9초 뒤 실행
+			ability->_laser->SetActive(true);
 			ability->_laser->GetComponent<BoxCollider>()->SetActive(true);
 
-			ability->_laser->SetActive(true);
 			_laserParticle1->SetActive(true);
 			_laserParticle2->SetActive(true);
-			//_laserParticle3->SetActive(true);
 			_laserParticle4->SetActive(true);
 
 			_laserParticle1->GetComponent<Particle>()->SetActive(true);
 			_laserParticle2->GetComponent<Particle>()->SetActive(true);
-			//_laserParticle3->GetComponent<Particle>()->SetActive(true);
 			_laserParticle4->GetComponent<Particle>()->SetActive(true);
 		};
 
@@ -223,6 +221,7 @@ namespace KunrealEngine
 			auto* ability = this;
 			Waitforsecond(2.5f);
 			ability->_laser->GetComponent<BoxCollider>()->SetActive(false);
+			ability->_laser->SetActive(false);
 
 			float delta = 0;
 			while (true)
@@ -270,12 +269,12 @@ namespace KunrealEngine
 				{
 					laserP1->SetParticleSize((laserP1->GetParticleSize().x - (delta * half1)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP1->GetParticleSize().y - (delta * half1)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				}
-				
+
 				if (laserP2->GetParticleSize().x > 0.0f)
 				{
 					laserP2->SetParticleSize((laserP2->GetParticleSize().x - (delta * half2)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP2->GetParticleSize().y - (delta * half2)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				}
-				
+
 				if (laserP3->GetParticleSize().x > 0.0f)
 				{
 					laserP3->SetParticleSize((laserP3->GetParticleSize().x - (delta * half3)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (laserP3->GetParticleSize().y - (delta * half3)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
@@ -304,6 +303,7 @@ namespace KunrealEngine
 			Waitforsecond(0.4f);
 
 			ability->_isLaserHit = true;
+			ability->laserCount++;
 
 		};
 

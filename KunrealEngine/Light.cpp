@@ -1,11 +1,12 @@
 #include "Light.h"
 #include "Transform.h"
 #include "GameObject.h"
+#include "ToolBox.h"
 
 KunrealEngine::Light::Light()
 	:_light(nullptr), _transform(nullptr), _type(LightType::None),
-	_ambient(0.f, 0.f, 0.f, 0.f), _diffuse(0.f, 0.f, 0.f, 0.f), _specular(0.f, 0.f, 0.f, 0.f), _direction(0.f, 0.f, 0.f),
-	_rangeP(0.f)
+	_ambient(0.0f, 0.0f, 0.0f, 0.0f), _diffuse(0.0f, 0.0f, 0.0f, 0.0f), _specular(0.0f, 0.0f, 0.0f, 0.0f), _direction(0.0f, 0.0f, 0.0f),
+	_rangeP(0.0f), _offset(0.0f, 0.0f, 0.0f), _decomposedPos(0.0f, 0.0f, 0.0f)
 {
 
 }
@@ -24,7 +25,7 @@ void KunrealEngine::Light::Release()
 {
 	if (_light != nullptr)
 	{
-		_light->Delete(); 
+		_light->Delete();
 	}
 }
 
@@ -59,7 +60,7 @@ void KunrealEngine::Light::OnTriggerExit()
 }
 
 void KunrealEngine::Light::SetActive(bool active)
-{ 
+{
 	if (_light != nullptr)
 	{
 		_light->SetActive(active);
@@ -158,10 +159,6 @@ void KunrealEngine::Light::SetAmbient(float x, float y, float z, float w)
 		auto _castedLight = dynamic_cast<GInterface::GraphicsPointLight*>(_light);
 		_castedLight->SetAmbient(ambient);
 	}
-	else if (_type == LightType::SpotLight)
-	{
-		// 현재 spotlight는 미구현
-	}
 
 	_ambient = ambient;
 }
@@ -192,10 +189,6 @@ void KunrealEngine::Light::SetDiffuse(float x, float y, float z, float w)
 	{
 		auto _castedLight = dynamic_cast<GInterface::GraphicsPointLight*>(_light);
 		_castedLight->SetDiffuse(diffuse);
-	}
-	else if (_type == LightType::SpotLight)
-	{
-		// 현재 spotlight는 미구현
 	}
 
 	_diffuse = diffuse;
@@ -228,10 +221,6 @@ void KunrealEngine::Light::SetSpecular(float x, float y, float z, float w)
 		auto _castedLight = dynamic_cast<GInterface::GraphicsPointLight*>(_light);
 		_castedLight->SetSpecular(specular);
 	}
-	else if (_type == LightType::SpotLight)
-	{
-		// 현재 spotlight는 미구현
-	}
 
 	_specular = specular;
 }
@@ -242,6 +231,20 @@ DirectX::XMFLOAT4 KunrealEngine::Light::GetSpecular()
 	{
 		return this->_specular;
 	}
+}
+
+
+void KunrealEngine::Light::SetOffSet(float x, float y, float z)
+{
+	this->_offset.x = x;
+	this->_offset.y = y;
+	this->_offset.z = z;
+}
+
+
+DirectX::XMFLOAT3 KunrealEngine::Light::GetOffSet()
+{
+	return this->_offset;
 }
 
 void KunrealEngine::Light::CreatePointLight(DirectX::XMFLOAT4 ambient /*= {0.f, 0.f, 0.f, 0.f}*/, DirectX::XMFLOAT4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, float range /*= 0.f*/)
@@ -263,12 +266,32 @@ void KunrealEngine::Light::CreatePointLight(DirectX::XMFLOAT4 ambient /*= {0.f, 
 
 void KunrealEngine::Light::SetPointPosition()
 {
-	// 매 프레임 불리는게 맘에 안드는데..
 	if (_light != nullptr && _type == LightType::PointLight)
 	{
 		GInterface::GraphicsPointLight* _castedLight = dynamic_cast<GInterface::GraphicsPointLight*>(_light);
 
-		_castedLight->SetPosition(_transform->GetPosition());
+		// 부모가 있으면
+		if (this->GetOwner()->GetParent() != nullptr)
+		{
+			DirectX::XMFLOAT4X4 worldTM = this->GetOwner()->GetComponent<Transform>()->GetWorldTM();
+			DirectX::XMMATRIX worldMat = DirectX::XMLoadFloat4x4(&worldTM);
+
+			DirectX::XMVECTOR scale, quaternion, translation;
+
+			DirectX::XMMatrixDecompose(&scale, &quaternion, &translation, worldMat);
+			DirectX::XMStoreFloat3(&_decomposedPos, translation);;
+
+			DirectX::XMFLOAT3 newPointPos(this->_decomposedPos.x + _offset.x, this->_decomposedPos.y + _offset.y, this->_decomposedPos.z + _offset.z);
+
+			_castedLight->SetPosition(newPointPos);
+		}
+		// 없으면
+		else
+		{
+			DirectX::XMFLOAT3 newPointPos(this->_transform->GetPosition().x + _offset.x, this->_transform->GetPosition().y + _offset.y, this->_transform->GetPosition().z + _offset.z);
+
+			_castedLight->SetPosition(newPointPos);
+		}
 	}
 }
 
