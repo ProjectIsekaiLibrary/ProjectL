@@ -36,6 +36,8 @@ namespace GInterface
 		// 디버그 객체의 크기값 설정
 		virtual void SetScale(float x = 1.0f, float y = 1.0f) abstract;
 
+		virtual void SetAlpha(float alpha) abstract;
+
 		// 디버그 객체 삭제
 		virtual void Delete() abstract;
 

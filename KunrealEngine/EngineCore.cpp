@@ -2246,7 +2246,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	Scene* titleScene = sceneInstance.CreateScene("Title");
 	sceneInstance.ChangeScene("Title");
 
-	navigationInstance.HandleBuild(0, "bridge.obj");
+	navigationInstance.HandleBuild(0, "bridge_mapmesh.obj");
 
 	// Camera
 	GameObject* titleCamera = sceneInstance.GetCurrentScene()->CreateObject("TitleCamera");

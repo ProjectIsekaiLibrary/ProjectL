@@ -66,6 +66,9 @@ namespace KunrealEngine
 		// 이미지를 그릴 지 여부
 		void SetImageStatus(bool flag);
 
+		// 이미지의 알파 값을 조정
+		void SetAlpha(float alpha);
+
 		// 이미지가 그려지고 있는 상태인지 확인
 		bool GetImageStatus();
 

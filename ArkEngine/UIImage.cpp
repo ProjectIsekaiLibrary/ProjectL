@@ -11,7 +11,7 @@
 #include "UIImage.h"
 
 ArkEngine::ArkDX11::UIImage::UIImage(const std::string& imageName, unsigned int screenWidth, unsigned int screenHeight)
-	: _imageName("Resources/Textures/" + imageName), _isRendering(true), _textureSRV(nullptr)
+	: _imageName("Resources/Textures/" + imageName), _isRendering(true), _textureSRV(nullptr), _alpha(1.0f)
 {
 	Initialize();
 }
@@ -28,7 +28,8 @@ void ArkEngine::ArkDX11::UIImage::Render(DirectX::DX11::SpriteBatch* sp)
 	int posY = _texturePos.y;
 	RECT destRect = { _texturePos.x, _texturePos.y, _texturePos.x + _finalTextureSize.x, _texturePos.y + _finalTextureSize.y };
  
-	sp->Draw(_textureSRV, destRect, &sourceRect, DirectX::Colors::White, 0.0f);
+	DirectX::XMVECTORF32 color = { 1.0f, 1.0f, 1.0f, _alpha };
+	sp->Draw(_textureSRV, destRect, &sourceRect, color, 0.0f);
 }
 
 bool ArkEngine::ArkDX11::UIImage::GetRenderingState()
@@ -66,6 +67,11 @@ void ArkEngine::ArkDX11::UIImage::SetScale(float x, float y)
 {
 	_finalTextureSize.x = _originTextureSize.x * x;
 	_finalTextureSize.y = _originTextureSize.y * y;
+}
+
+void ArkEngine::ArkDX11::UIImage::SetAlpha(float alpha)
+{
+	_alpha = alpha;
 }
 
 void ArkEngine::ArkDX11::UIImage::Delete()
