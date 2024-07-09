@@ -23,7 +23,10 @@ struct PointLight
 	float Range;
 
 	float3 Att;
-	float pad;
+	
+	
+    float attenuation;
+    
 };
 
 struct SpotLight
@@ -165,8 +168,8 @@ void ComputePointLight(Material mat, PointLight L, float3 pos, float3 normal, fl
     att = 1.0f / dot(L.Att, float3(1.0f, d, d * d));
 
     //att = 1.0f / (L.Att.x + L.Att.y * d + L.Att.z * (d * d));
-    att = mul(att, attnuation);
-	
+    att = mul(att, L.attenuation);
+
 	
 	diffuse *= att;
 	spec    *= att;

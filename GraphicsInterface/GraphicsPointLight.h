@@ -25,5 +25,7 @@ namespace GInterface
 		virtual void SetPosition(DirectX::XMFLOAT3 position) abstract;
 		// ragne 값 설정
 		virtual void SetRange(float range) abstract;
+		// attenuation 값 설정
+		virtual void SetAttenuation(float att) abstract;
 	};
 }

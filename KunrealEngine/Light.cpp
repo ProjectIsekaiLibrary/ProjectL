@@ -247,14 +247,14 @@ DirectX::XMFLOAT3 KunrealEngine::Light::GetOffSet()
 	return this->_offset;
 }
 
-void KunrealEngine::Light::CreatePointLight(DirectX::XMFLOAT4 ambient /*= {0.f, 0.f, 0.f, 0.f}*/, DirectX::XMFLOAT4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, float range /*= 0.f*/)
+void KunrealEngine::Light::CreatePointLight(DirectX::XMFLOAT4 ambient /*= {0.f, 0.f, 0.f, 0.f}*/, DirectX::XMFLOAT4 diffuse /*= { 0.f, 0.f, 0.f, 0.f }*/, DirectX::XMFLOAT4 specular /*= { 0.f, 0.f, 0.f, 0.f }*/, float range /*= 0.f*/, float attenuation)
 {
 	if (_light != nullptr)
 	{
 		_light->Delete();
 	}
 
-	_light = GRAPHICS->CreatePointLight(ambient, diffuse, specular, _transform->GetPosition(), range);
+	_light = GRAPHICS->CreatePointLight(ambient, diffuse, specular, _transform->GetPosition(), range, attenuation);
 
 	_ambient = ambient;
 	_diffuse = diffuse;

@@ -87,9 +87,9 @@ GInterface::GraphicsPointLight* ArkEngine::LightManager::GetPointLightInterface(
 	return _iPointLightList.back();
 }
 
-void ArkEngine::LightManager::AddPointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range)
+void ArkEngine::LightManager::AddPointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range, float attenuation)
 {
-	_pointLightList.emplace_back(ArkEngine::ArkDX11::PointLight(ambient, diffuse, specular, position, range/2));
+	_pointLightList.emplace_back(ArkEngine::ArkDX11::PointLight(ambient, diffuse, specular, position, range/2, attenuation));
 	
 	unsigned index = (unsigned int)_pointLightList.size() - 1;
 	_iPointLightList.emplace_back(new ArkEngine::IPointLight(index));

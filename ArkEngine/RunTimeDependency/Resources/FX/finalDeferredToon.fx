@@ -12,14 +12,14 @@ cbuffer cbPerFrame
     DirectionalLight gDirLights[3];
 
     int gPointLightCount;
-    PointLight gPointLights[10];
+    PointLight gPointLights[30];
 
     float3 gEyePosW;
     
     float4x4 gLightView;
     float4x4 gLightProj;
     
-    float gAttenuation;
+    float gAttenuation[30];
 };
 
 // 빛을 받는 객채의 포지션
@@ -256,18 +256,18 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 diffuse = float4(0.0f, 0.0f, 0.0f, 0.0f);
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
-    if (cartoon == 1.0f)
-    {
        	// 빛의 강도
         lightIntensity = smoothstep(0, 1.f, NdotL);
         
             //float lightIntensity = NdotL > 0 ? 1 : 0;
 	// 빛의 강도에 따라 색상 출력의 레이어를 정해준다 
         toonColor = ToonShade(lightIntensity);
-    
-        litColor = texColor * toonColor;
-    }
-    else
+    //if (cartoon == 1.0f)
+    //{
+    //
+    //    litColor = texColor * toonColor;
+    //}
+    //else
     { 
         for (int i = 0; i < gDirLightCount; ++i)
         {
@@ -287,14 +287,14 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
             float4 A, D, S;
         
             ComputePointLight(nowMat, gPointLights[j], position, normal, toEye,
-				A, D, S, gAttenuation);
+				A, D, S, gAttenuation[j]);
         
             ambient += A;
             diffuse += D;
             spec += S;
         }
 
-        litColor = texColor * (ambient + diffuse) + spec;
+        litColor = texColor * toonColor * (ambient + diffuse) + spec;
     }
     
 
