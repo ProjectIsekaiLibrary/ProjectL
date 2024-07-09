@@ -46,7 +46,7 @@ namespace KunrealEngine
 	public:
 		// 스킬 정보 통합 입력
 		void SetTotalData(std::string name, float damage, float stamina, float sDamage, float cooldown, float range);
-	
+
 		// 스킬 정보를 개별 입력
 		void SetAbilityName(std::string name);
 		void SetDamage(float damage);

@@ -116,11 +116,6 @@ void EpicTool::InspectorWindow::ComboControl<KunrealEngine::Light>(std::vector<s
 		{
 			ImGui::Text("%s", list[KunrealEngine::LightType::PointLight].c_str());
 		}
-		else if (_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetLightType() == KunrealEngine::LightType::SpotLight)
-		{
-			ImGui::Text("%s", list[KunrealEngine::LightType::SpotLight].c_str());
-		}
-
 	}
 
 
@@ -1125,7 +1120,6 @@ void EpicTool::InspectorWindow::Initialize()
 
     _lightList.push_back("DirectionalLight");
     _lightList.push_back("PointLight");
-    _lightList.push_back("SpotLight");
 
     ListToRemove(_meshList, _meshListEditor, _meshStringToRemove);
 

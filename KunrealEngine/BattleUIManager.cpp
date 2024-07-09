@@ -76,84 +76,84 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill1_icon->SetParent(_battleuibox);
 	ui_skill1_icon->AddComponent<ImageRenderer>();
 	ui_skill1_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill1_icon->GetComponent<ImageRenderer>()->SetPosition(708.0f, 970.f);
+	ui_skill1_icon->GetComponent<ImageRenderer>()->SetPosition(708.0f, 980.f);
 	ui_skill1_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill1_cool = scene.GetCurrentScene()->CreateObject("_ui_skill1_cool");
 	_ui_skill1_cool->SetParent(_battleuibox);
 	_ui_skill1_cool->AddComponent<ImageRenderer>();
 	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
-	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetPosition(708.f, 970.f);
+	_ui_skill1_cool->GetComponent<ImageRenderer>()->SetPosition(708.f, 980.f);
 	_ui_skill1_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill1 = scene.GetCurrentScene()->CreateObject("ui_skill1");
 	ui_skill1->SetParent(_battleuibox);
 	ui_skill1->AddComponent<ImageRenderer>();
 	ui_skill1->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill1->GetComponent<ImageRenderer>()->SetPosition(708.0f, 970.f);
+	ui_skill1->GetComponent<ImageRenderer>()->SetPosition(708.0f, 980.f);
 	ui_skill1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill2_icon = scene.GetCurrentScene()->CreateObject("ui_skill2_icon");
 	ui_skill2_icon->SetParent(_battleuibox);
 	ui_skill2_icon->AddComponent<ImageRenderer>();
 	ui_skill2_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill2_icon->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	ui_skill2_icon->GetComponent<ImageRenderer>()->SetPosition(820.f, 980.f);
 	ui_skill2_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill2_cool = scene.GetCurrentScene()->CreateObject("_ui_skill2_cool");
 	_ui_skill2_cool->SetParent(_battleuibox);
 	_ui_skill2_cool->AddComponent<ImageRenderer>();
 	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
-	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	_ui_skill2_cool->GetComponent<ImageRenderer>()->SetPosition(820.f, 980.f);
 	_ui_skill2_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill2 = scene.GetCurrentScene()->CreateObject("ui_skill2");
 	ui_skill2->SetParent(_battleuibox);
 	ui_skill2->AddComponent<ImageRenderer>();
 	ui_skill2->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill2->GetComponent<ImageRenderer>()->SetPosition(820.f, 970.f);
+	ui_skill2->GetComponent<ImageRenderer>()->SetPosition(820.f, 980.f);
 	ui_skill2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill3_icon = scene.GetCurrentScene()->CreateObject("ui_skill3_icon");
 	ui_skill3_icon->SetParent(_battleuibox);
 	ui_skill3_icon->AddComponent<ImageRenderer>();
 	ui_skill3_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill3_icon->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	ui_skill3_icon->GetComponent<ImageRenderer>()->SetPosition(935.f, 980.f);
 	ui_skill3_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill3_cool = scene.GetCurrentScene()->CreateObject("_ui_skill3_cool");
 	_ui_skill3_cool->SetParent(_battleuibox);
 	_ui_skill3_cool->AddComponent<ImageRenderer>();
 	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
-	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	_ui_skill3_cool->GetComponent<ImageRenderer>()->SetPosition(935.f, 980.f);
 	_ui_skill3_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill3 = scene.GetCurrentScene()->CreateObject("ui_skill3");
 	ui_skill3->SetParent(_battleuibox);
 	ui_skill3->AddComponent<ImageRenderer>();
 	ui_skill3->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill3->GetComponent<ImageRenderer>()->SetPosition(935.f, 970.f);
+	ui_skill3->GetComponent<ImageRenderer>()->SetPosition(935.f, 980.f);
 	ui_skill3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill4_icon = scene.GetCurrentScene()->CreateObject("ui_skill4");
 	ui_skill4_icon->SetParent(_battleuibox);
 	ui_skill4_icon->AddComponent<ImageRenderer>();
 	ui_skill4_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill4_icon->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	ui_skill4_icon->GetComponent<ImageRenderer>()->SetPosition(1050.f, 980.f);
 	ui_skill4_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	_ui_skill4_cool = scene.GetCurrentScene()->CreateObject("_ui_skill4_cool");
 	_ui_skill4_cool->SetParent(_battleuibox);
 	_ui_skill4_cool->AddComponent<ImageRenderer>();
 	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetImage("ui/skill_backspace.png");
-	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	_ui_skill4_cool->GetComponent<ImageRenderer>()->SetPosition(1050.f, 980.f);
 	_ui_skill4_cool->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill4 = scene.GetCurrentScene()->CreateObject("ui_skill4_icon");
 	ui_skill4->SetParent(_battleuibox);
 	ui_skill4->AddComponent<ImageRenderer>();
 	ui_skill4->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
-	ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1050.f, 970.f);
+	ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1050.f, 980.f);
 	ui_skill4->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	potion_icon = scene.GetCurrentScene()->CreateObject("ui_skill5");
@@ -299,6 +299,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_died1->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
 	_died1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
+	_died3 = scene.GetCurrentScene()->CreateObject("you_die3");
+	_died3->SetParent(_battleuibox);
+	_died3->AddComponent<ImageRenderer>();
+	_died3->GetComponent<ImageRenderer>()->SetImage("ui/youdied_light.png");
+	_died3->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
+	_died3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
 	_died2 = scene.GetCurrentScene()->CreateObject("you_die2");
 	_died2->SetParent(_battleuibox);
 	_died2->AddComponent<ImageRenderer>();
@@ -316,6 +323,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 
 	_died1->SetActive(false);
 	_died2->SetActive(false);
+	_died3->SetActive(false);
 }
 
 void KunrealEngine::BattleUIManager::Release()
@@ -342,10 +350,6 @@ void KunrealEngine::BattleUIManager::Update()
 	else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
 	{
 		bossinfo._hp -= 10;
-		if (bossinfo._hp <= 0)
-		{
-			bossinfo._hp = 1;
-		}
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::PGUP))
@@ -355,7 +359,7 @@ void KunrealEngine::BattleUIManager::Update()
 
 	else if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
 	{
-		playerinfo._hp -= 10;
+		playerinfo._hp -= 100;
 	}
 	 
 	// 체력을 받아와서 게이지에 반영하는 부분
@@ -375,7 +379,7 @@ void KunrealEngine::BattleUIManager::Update()
 	pre_playerhp = playerhp;
 
 	// 플레이어 체력이 0이 되었을 때?
-	if (playerhp < 0 && !_isdied)
+	if (playerhp <= 0 && !_isdied)
 	{
 		_isdied = true;
 		ActiveDiedUI();
@@ -774,7 +778,6 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 
 void KunrealEngine::BattleUIManager::ActiveDiedUI()
 {
-
 	_CoroutineIs(diedcoro)
 	{
 		// UI연출? 일단 두가지로 분류
@@ -786,14 +789,15 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		float scale = 1.0f;
 
 		uimanager->_died1->SetActive(true);
-		Waitforsecond(0.2f);
-
 		uimanager->_died2->SetActive(true);
+		uimanager->_died3->SetActive(true);
+
 		int loop = 0;
-		while (loop < 25)
+		while (loop < 50)
 		{
-			scale += 0.01;
+			scale += 0.005;
 			uimanager->_died2->GetComponent<Transform>()->SetScale(scale, scale, 1.0f);
+			uimanager->_died3->GetComponent<Transform>()->SetScale(scale, scale, 1.0f);
 			auto preimgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
 			
 			Return_null;
@@ -804,9 +808,23 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 			float a = nowpos.x - ((float)(imgsize.x - preimgsize.x)/2);
 			float b = nowpos.y - ((float)(imgsize.y - preimgsize.y)/2);
 			uimanager->_died2->GetComponent<Transform>()->SetPosition(a, b, 1.0f);
+			uimanager->_died3->GetComponent<Transform>()->SetPosition(a, b, 1.0f);
+			
+
 			loop++;
 		}
-			//delta += TimeManager::GetInstance().GetDeltaTime();
+		float alpha = 1.0f;
+		
+		for (; alpha > 0 ; alpha -= 0.1f)
+		{
+			uimanager->_died3->GetComponent<ImageRenderer>()->SetAlpha(alpha);
+			Waitforsecond(0.1f);
+		}
+
+		uimanager->_died3->SetActive(false);
+		//
+		// 여기에 타이틀 씬으로 돌아가는 코드를 넣을 것
+		//
 	};
 	Startcoroutine(diedcoro);
 }

@@ -140,6 +140,11 @@ void KunrealEngine::ImageRenderer::SetImageStatus(bool flag)
  	_image->SetRenderingState(flag);
 }
 
+void KunrealEngine::ImageRenderer::SetAlpha(float alpha)
+{
+	_image->SetAlpha(alpha);
+}
+
 bool KunrealEngine::ImageRenderer::GetImageStatus()
 {
 	if (_image != nullptr)

@@ -20,7 +20,7 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr), _laser(nullptr)
 	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
 	, _isShotHit(false), _isIceHit(false), _isLaserHit(false), _isMeteorHit(false)
-	, _isShotDetected(false), _isIceDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false) ,
+	, _isShotDetected(false), _isIceDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false),
 	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false)
 {
 
@@ -51,7 +51,7 @@ void KunrealEngine::PlayerAbility::Release()
 
 void KunrealEngine::PlayerAbility::FixedUpdate()
 {
-	
+
 }
 
 void KunrealEngine::PlayerAbility::Update()
@@ -84,7 +84,7 @@ void KunrealEngine::PlayerAbility::Update()
 		_isIceHit = true;
 		Startcoroutine(iceCoolDown);
 		Startcoroutine(iceStandby);								// 얼음 출현 대기	
-		
+
 		_iceParticle1->GetComponent<Particle>()->SetActive(true);
 		_iceParticle2->GetComponent<Particle>()->SetActive(true);
 		_iceParticle3->GetComponent<Particle>()->SetActive(true);
@@ -108,6 +108,7 @@ void KunrealEngine::PlayerAbility::Update()
 		_isLaserDetected = true;
 		_isLaserHit = true;
 		_isLaserStarted = true;
+		this->laserCount = 0;
 		Startcoroutine(LaserCoolDown);
 		Startcoroutine(LaserStandby);
 		_playerComp->_playerStatus = Player::Status::ABILITY;
@@ -159,63 +160,72 @@ void KunrealEngine::PlayerAbility::Update()
 	_abilityContainer[2]->_abilityLogic();
 	_abilityContainer[3]->_abilityLogic();
 
-	if (this->_isShotReady)
+	//if (this->_isShotReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 500, 40, "Q Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 500, 40, "Q On CoolDown");
+	//}
+	//
+	//if (this->_isIceReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 600, 40, "W Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 600, 40, "W On CoolDown");
+	//}
+	//
+	//if (this->_isLaserReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 700, 40, "E Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 700, 40, "E On CoolDown");
+	//}
+	//
+	//if (this->_isMeteorReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 800, 40, "R Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 800, 40, "R On CoolDown");
+	//}
+
+	GRAPHICS->DrawDebugText(100, 500, 40, "LaserCount : %d", this->laserCount);
+
+	if (this->_laser->GetCollider()->GetTargetObject() != nullptr)
 	{
-		GRAPHICS->DrawDebugText(100, 500, 40, "Q Ready");
+		GRAPHICS->DrawDebugText(100, 800, 40, this->_laser->GetCollider()->GetTargetObject()->GetObjectName().c_str());
 	}
 	else
 	{
-		GRAPHICS->DrawDebugText(100, 500, 40, "Q On CoolDown");
+		GRAPHICS->DrawDebugText(100, 800, 40, "Laser Not Collided");
 	}
-
-	if (this->_isIceReady)
-	{
-		GRAPHICS->DrawDebugText(100, 600, 40, "W Ready");
-	}
-	else
-	{
-		GRAPHICS->DrawDebugText(100, 600, 40, "W On CoolDown");
-	}
-
-	if (this->_isLaserReady)
-	{
-		GRAPHICS->DrawDebugText(100, 700, 40, "E Ready");
-	}
-	else
-	{
-		GRAPHICS->DrawDebugText(100, 700, 40, "E On CoolDown");
-	}
-
-	if (this->_isMeteorReady)
-	{
-		GRAPHICS->DrawDebugText(100, 800, 40, "R Ready");
-	}
-	else
-	{
-		GRAPHICS->DrawDebugText(100, 800, 40, "R On CoolDown");
-	}
-
-	GRAPHICS->DrawDebugText(150, 500, 40, "LaserCount : %d", this->laserCount);
 }
 
 void KunrealEngine::PlayerAbility::LateUpdate()
 {
-	
+
 }
 
 void KunrealEngine::PlayerAbility::OnTriggerEnter()
 {
-	
+
 }
 
 void KunrealEngine::PlayerAbility::OnTriggerStay()
 {
-	
+
 }
 
 void KunrealEngine::PlayerAbility::OnTriggerExit()
 {
-	
+
 }
 
 void KunrealEngine::PlayerAbility::SetActive(bool active)
@@ -229,7 +239,7 @@ void KunrealEngine::PlayerAbility::ResetShotPos()
 	// 플레이어 위치에서 발사되도록
 	_shot->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
 	_shot->GetComponent<Transform>()->SetRotation(
-		this->GetOwner()->GetComponent<Transform>()->GetRotation().x, 
+		this->GetOwner()->GetComponent<Transform>()->GetRotation().x,
 		this->GetOwner()->GetComponent<Transform>()->GetRotation().y,
 		this->GetOwner()->GetComponent<Transform>()->GetRotation().z
 	);
@@ -418,16 +428,16 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(shotProj->GetDirection(), 50.0f * TimeManager::GetInstance().GetDeltaTime()));
 
 				_shot->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 5.0f, newPosition.m128_f32[2]);
-				shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec))); 
-				
+				shotProj->_movedRange += DirectX::XMVectorGetX(DirectX::XMVector3Length(DirectX::XMVectorSubtract(newPosition, currentPosVec)));
+
 				if (shotProj->GetCollider()->IsCollided() && shotProj->GetCollider()->GetTargetObject()->GetTag() == "Boss")
 				{
 					_isShotEnded = true;
 				}
 			}
-			
-			
-			if(!(_shot->GetActivated()) && _isShotEnded == true)
+
+
+			if (!(_shot->GetActivated()) && _isShotEnded == true)
 			{
 				_shotParticleTimer += TimeManager::GetInstance().GetDeltaTime();
 				_shotParticleHit1->GetComponent<Particle>()->SetActive(true);
@@ -499,7 +509,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 {
 	Ability* ice = new Ability();
 	ice->Initialize("Ice");
-	
+
 	ice->SetTotalData(
 		"Ice",			// 이름
 		20.0f,			// 데미지
@@ -508,13 +518,13 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 		5.0f,			// 쿨타임
 		12.0f			// 사거리
 	);
-	
+
 	_ice = ice->_projectile;
-	
+
 	// 크기 조정
 	_ice->GetComponent<Transform>()->SetScale(30.0f, 30.0f, 30.0f);
 	_ice->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
-	
+
 	_iceParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle1");
 	_iceParticle1->AddComponent<Particle>();
 	_iceParticle1->GetComponent<Particle>()->SetParticleEffect("Blast3", "Resources/Textures/Particles/fx_Blast3.dds", 1000);
@@ -575,7 +585,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	// 투사체 컴포넌트 추가
 	_ice->AddComponent<Projectile>();
 	Projectile* iceProj = _ice->GetComponent<Projectile>();
-	
+
 	iceProj->SetMeshObject("Ice/Ice", "Ice/Ice.png");
 	iceProj->GetCollider()->SetColliderScale(15.0f, 15.0f, 15.0f);
 	iceProj->SetDestoryCondition([iceProj, this]()->bool
@@ -589,9 +599,9 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 				return false;
 			}
 		});
-	
+
 	_ice->SetActive(false);
-	
+
 	ice->SetLogic([ice, iceProj, this]()
 		{
 			_iceParticle1->GetComponent<Transform>()->SetPosition(_ice->GetComponent<Transform>()->GetPosition());
@@ -604,7 +614,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 				_isIceHit = false;
 			}
 		});
-	
+
 	AddToContanier(ice);
 }
 
@@ -641,7 +651,7 @@ void KunrealEngine::PlayerAbility::ResetLaserPos()
 	this->GetOwner()->GetComponent<Transform>()->SetRotation(0.0f, angle, 0.0f);
 	this->_laser->GetComponent<Transform>()->SetRotation(this->GetOwner()->GetComponent<Transform>()->GetRotation());
 
-	DirectX::XMVECTOR newLaserPos = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, this->_laser->GetComponent<BoxCollider>()->GetColliderScale().z * 0.5f));
+	DirectX::XMVECTOR newLaserPos = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, this->_laser->GetComponent<BoxCollider>()->GetColliderScale().z * 0.5f + 10.0f));
 
 	this->_laser->GetComponent<Transform>()->SetPosition(newLaserPos.m128_f32[0], 5.0f, newLaserPos.m128_f32[2]);
 
@@ -678,7 +688,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 
 	laser->SetTotalData(
 		"Laser",			// 이름
-		10.0f,			// 데미지
+		5.0f,			// 데미지
 		20.0f,			// 마나
 		15.0f,			// 무력화 피해량
 		7.0f,			// 쿨타임
@@ -695,7 +705,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laser->AddComponent<BoxCollider>();
 	BoxCollider* laserCollider = _laser->GetComponent<BoxCollider>();
 	laserCollider->SetColliderScale(20.0f, 20.0f, 160.0f);
-		
+
 	_laserParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE1");
 	_laserParticle1->AddComponent<Particle>();
 	_laserParticle1->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
@@ -751,7 +761,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laser->SetActive(false);
 
 	laser->SetLogic([laser, laserCollider, this]()
-		{	
+		{
 			if (_isLaserStarted == true)
 			{
 				_laserParticle1->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
@@ -760,12 +770,14 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 				_laserParticle4->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 			}
 
-			if (laserCollider->GetTargetObject() != nullptr && laserCollider->GetActivated() && laserCollider->IsCollided() && laserCollider->GetTargetObject()->GetTag() == "Boss" && this->_isLaserHit)
+			if (laserCollider->GetTargetObject() != nullptr && laserCollider->IsCollided() && laserCollider->GetTargetObject()->GetTag() == "Boss" && this->_isLaserHit)
 			{
 				EventManager::GetInstance().CalculateDamageToBoss(laser);
 				this->_isLaserHit = false;
-				this->laserCount++;
+			}
 
+			if (!this->_isLaserHit && this->_laser->GetActivated())
+			{
 				Startcoroutine(laserHit);
 			}
 		});
@@ -863,7 +875,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticle2->GetComponent<Particle>()->AddParticleColor(2.0f, 1.0f, 0.0f);
 	_meteorParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 	_meteorParticle2->SetParent(_meteor);
-	
+
 
 	_meteorParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR3");
 	_meteorParticle3->GetComponent<Transform>()->SetPosition(0, 10.0f, 0);
@@ -1006,7 +1018,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				_meteorParticleHit1->GetComponent<Particle>()->SetParticleSize(30 - (_meteorParticleTimer * 40), 30 - (_meteorParticleTimer * 40));
 
 				_meteorParticleHit3->GetComponent<Particle>()->SetParticleSize(120 - (_meteorParticleTimer * 150), 120 - (_meteorParticleTimer * 150));
-				
+
 
 				if (_meteorParticleTimer < 0.2f)
 				{

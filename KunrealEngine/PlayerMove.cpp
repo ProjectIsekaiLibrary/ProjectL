@@ -31,12 +31,12 @@ void KunrealEngine::PlayerMove::Initialize()
 
 void KunrealEngine::PlayerMove::Release()
 {
-	
+
 }
 
 void KunrealEngine::PlayerMove::FixedUpdate()
 {
-	
+
 }
 
 void KunrealEngine::PlayerMove::Update()
@@ -93,28 +93,28 @@ void KunrealEngine::PlayerMove::Update()
 
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
-	
+
 	ShowPlayerInfo();
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
 {
-	
+
 }
 
 void KunrealEngine::PlayerMove::OnTriggerEnter()
 {
-	
+
 }
 
 void KunrealEngine::PlayerMove::OnTriggerStay()
 {
-	
+
 }
 
 void KunrealEngine::PlayerMove::OnTriggerExit()
 {
-	
+
 }
 
 void KunrealEngine::PlayerMove::SetActive(bool active)
@@ -124,8 +124,6 @@ void KunrealEngine::PlayerMove::SetActive(bool active)
 
 void KunrealEngine::PlayerMove::UpdateTargetPosition()
 {
-	//float upperY;
-
 	/// 에디터 마우스 기준
 	if (this->GetOwner()->GetObjectScene()->GetSceneName() == "Title")
 	{
@@ -160,7 +158,8 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 		DirectX::XMFLOAT3 currentPoint = _transform->GetPosition();
 		DirectX::XMVECTOR currentVec = DirectX::XMLoadFloat3(&currentPoint);
 		DirectX::XMFLOAT3 targetPoint = _targetPos;
-		DirectX::XMFLOAT3 targetWithY = { targetPoint.x, targetPoint.y + _posY, targetPoint.z };
+		//DirectX::XMFLOAT3 targetWithY = { targetPoint.x, targetPoint.y + _posY, targetPoint.z };
+		DirectX::XMFLOAT3 targetWithY = { targetPoint.x, _posY, targetPoint.z };
 		DirectX::XMVECTOR targetPosVec = DirectX::XMLoadFloat3(&targetWithY);
 
 		// 목표지점으로부터 플레이어 위치로의 방향벡터
@@ -177,10 +176,8 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 			_targetPos.x, _transform->GetPosition().y, _targetPos.z);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(0);
-
-		if (_stopover.size() == 0) break;
 	}
-	
+
 	_nodeCount = 0;
 }
 
@@ -380,6 +377,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 	{
 		// 플레이어의 상태를 대시로
 		this->_playerComp->_playerStatus = Player::Status::DASH;
+		this->GetOwner()->GetComponent<MeshRenderer>()->SetActive(false);
 
 		// 오브젝트의 transform
 		DirectX::XMFLOAT3 trans(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
@@ -415,6 +413,10 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 			_playerComp->_playerStatus = Player::Status::IDLE;
 		}
 
+	}
+	else
+	{
+		this->GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
 	}
 }
 
@@ -540,7 +542,7 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 	GRAPHICS->DrawDebugText(420, 300, 20, "%.3f", _targetPos.z);
 	//GRAPHICS->DrawDebugText(300, 200, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetMaxFrame());
 	//GRAPHICS->DrawDebugText(300, 100, 20, "%.3f", GetOwner()->GetComponent<Animator>()->GetCurrentFrame());
-	
+
 	switch (_playerComp->_playerStatus)
 	{
 		case Player::Status::IDLE:

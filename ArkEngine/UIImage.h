@@ -50,6 +50,8 @@ namespace ArkEngine
 			virtual void SetRotation(float angle) override;
 			// 이미지 객체의 크기값 설정
 			virtual void SetScale(float x = 1.0f, float y = 1.0f) override;
+			// 이미지의 알파값
+			virtual void SetAlpha(float alpha) override;
 
 			// 이미지 객체 삭제
 			virtual void Delete() override;
@@ -69,6 +71,7 @@ namespace ArkEngine
 			std::string _imageName;
 
 			bool _isRendering;
+			float _alpha;
 
 			DirectX::XMUINT2 _texturePos;
 			DirectX::XMUINT2 _originTextureSize;

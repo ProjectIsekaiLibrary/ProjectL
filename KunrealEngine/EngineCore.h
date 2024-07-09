@@ -105,6 +105,8 @@ namespace KunrealEngine
 
 		void UpdateParticleTest();
 
+		void MapParticleSetting();
+
 	private:
 		// 인게임 마우스 포지션
 		int _ingameMouseX = 0;
