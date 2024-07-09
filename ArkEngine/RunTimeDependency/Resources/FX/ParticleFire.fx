@@ -90,6 +90,19 @@ BlendState AdditiveBlending
     RenderTargetWriteMask[1] = 0x0F;
 };
 
+BlendState AdditiveBlendingForFoward
+{
+    AlphaToCoverageEnable = FALSE;
+    BlendEnable[0] = TRUE;
+    SrcBlend = SRC_ALPHA;
+    DestBlend = ONE;
+    BlendOp = ADD;
+    SrcBlendAlpha = ZERO;
+    DestBlendAlpha = ONE;
+    BlendOpAlpha = ADD;
+    RenderTargetWriteMask[0] = 0x0F;
+};
+
 // 회전 행렬 계산 함수
 float3x3 RotateAxisAngle(float3 axis, float angle)
 {
@@ -379,6 +392,11 @@ float4 DrawPS(GeoOut pin) : SV_Target1
     return gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
 }
 
+float4 DrawPSForForward(GeoOut pin) : SV_Target0
+{
+    return gTexArray.Sample(samLinear, float3(pin.Tex, 0)) * pin.Color;
+}
+
 technique11 DrawTech
 {
     pass P0
@@ -388,6 +406,16 @@ technique11 DrawTech
         SetPixelShader(CompileShader(ps_5_0, DrawPS()));
 
         SetBlendState(AdditiveBlending, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
+        SetDepthStencilState(NoDepthWrites, 0);
+    }
+
+    pass P1
+    {
+        SetVertexShader(CompileShader(vs_5_0, DrawVS()));
+        SetGeometryShader(CompileShader(gs_5_0, DrawGS()));
+        SetPixelShader(CompileShader(ps_5_0, DrawPSForForward()));
+
+        SetBlendState(AdditiveBlendingForFoward, float4(0.0f, 0.0f, 0.0f, 0.0f), 0xffffffff);
         SetDepthStencilState(NoDepthWrites, 0);
     }
 }
