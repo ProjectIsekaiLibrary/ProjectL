@@ -235,7 +235,6 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ParticleTest();
 	/// 니들 맘대로 해
 	PlayGround();
-	CreateTitleScene();
 	//CreateTitleScene();
 }
 
