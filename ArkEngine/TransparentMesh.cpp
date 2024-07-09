@@ -19,7 +19,7 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
 	_renderTime(0.0f), _isRenderFinsh(true), _isRenderStart(false),
-	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(true)
+	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false)
 {
 	Initialize();
 }

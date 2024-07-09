@@ -284,7 +284,7 @@ void ArkEngine::ParticleSystem::Update(float deltaTime, float gameTime)
 	_timeStep = deltaTime;
 }
 
-void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera)
+void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera, int passIndex)
 {
 	if (_isStart == true)
 	{
@@ -370,12 +370,10 @@ void ArkEngine::ParticleSystem::Draw(ArkEngine::ICamera* mainCamera, ArkEngine::
 		dc->IASetVertexBuffers(0, 1, &_drawVB, &stride, &offset);
 
 		_drawTech->GetDesc(&techDesc);
-		for (unsigned int p = 0; p < techDesc.Passes; ++p)
-		{
-			_drawTech->GetPassByIndex(p)->Apply(0, dc);
 
-			dc->DrawAuto();
-		}
+		_drawTech->GetPassByIndex(passIndex)->Apply(0, dc);
+
+		dc->DrawAuto();
 
 		ResourceManager::GetInstance()->GetCameraList();
 

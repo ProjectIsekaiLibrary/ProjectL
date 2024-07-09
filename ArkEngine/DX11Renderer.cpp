@@ -318,21 +318,21 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
-		index->Draw(_mainCamera, _particleCamera);
+		index->Draw(_mainCamera, _particleCamera, 0);
 	}
 
 	BeginTransparentSet();
 
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-	
 	ResourceManager::GetInstance()->SortTransParentMesh();
 
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
+	
 	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
 	{
 		index->Render(_decalWorldVec);
 	}
 	
-	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
 	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
 	{
@@ -394,6 +394,11 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	{
 		_mainCubeMap->Render();
 	}
+
+	//for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	//{
+	//	index->Draw(_mainCamera, _particleCamera, 1);
+	//}
 
 	_font->RenderUI();
 

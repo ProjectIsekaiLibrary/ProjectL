@@ -54,7 +54,7 @@ namespace ArkEngine
 
 	public:
 		void Update(float deltaTime, float gameTime);
-		void Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera);
+		void Draw(ArkEngine::ICamera* mainCamera, ArkEngine::ICamera* particleCamera, int passIndex);
 
 	public:
 		virtual void Start() override;
