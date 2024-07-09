@@ -2,6 +2,7 @@
 #include  "GraphicsTransParentMesh.h"
 
 struct ID3DX11Effect;
+struct ID3D11ShaderResourceView;
 struct ID3DX11EffectTechnique;
 struct ID3DX11EffectMatrixVariable;
 struct ID3DX11EffectVectorVariable;
@@ -20,6 +21,7 @@ namespace ArkEngine
 
 	namespace ArkDX11
 	{
+		class ArkTexture;
 		class ArkEffect;
 		class ArkDevice;
 		class Transform;
@@ -54,14 +56,18 @@ namespace ArkEngine
 
 			virtual void Delete() override;
 
+			virtual void SetDecal(bool tf) override;
+
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);
-			void Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer);
+			void Render(std::vector<DirectX::XMFLOAT4X4>& worldVec);
 			void Finalize();
 
 			float GetTransParency();
 			void UpPosition(float up);
+
+			ID3D11ShaderResourceView* GetTexture();
 
 		private:
 			void BuildGeomtryBuffers();
@@ -96,11 +102,11 @@ namespace ArkEngine
 			ID3DX11EffectShaderResourceVariable* _texture;
 			ID3D11ShaderResourceView* _diffuseMapSRV;
 
-			ID3DX11EffectShaderResourceVariable* _positionMap;
-
 			ID3DX11EffectScalarVariable* _fxTransParency;
 
 			ID3DX11EffectScalarVariable* _fxTime;
+
+			ID3DX11EffectScalarVariable* _fxIndex;
 
 			ID3DX11EffectVectorVariable* _fxDonutCenter;
 
@@ -121,6 +127,10 @@ namespace ArkEngine
 			DirectX::XMFLOAT3 _donutCenter;
 
 			float _donutRange;
+
+			int _index;
+
+			bool _isApplyDecal;
 		};
 	}
 }

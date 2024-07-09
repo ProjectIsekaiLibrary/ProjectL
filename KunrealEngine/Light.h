@@ -111,7 +111,7 @@ namespace KunrealEngine
 		// PointLight 생성
 		// 디폴트 매개변수로 모든 값은 0
 		// 포지션은 빛의 위치이므로 transform에서 가져오면 되니까 제외
-		void CreatePointLight(DirectX::XMFLOAT4 ambient = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 diffuse = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 specular = { 0.f, 0.f, 0.f, 0.f }, float range = 0.f);
+		void CreatePointLight(DirectX::XMFLOAT4 ambient = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 diffuse = { 0.f, 0.f, 0.f, 0.f }, DirectX::XMFLOAT4 specular = { 0.f, 0.f, 0.f, 0.f }, float range = 0.f, float attenuation = 16.0f);
 
 		void SetPointPosition();
 

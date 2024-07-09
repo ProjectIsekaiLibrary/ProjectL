@@ -279,6 +279,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
 {
+	_decalWorldVec.clear();
+
 	int testCullingNum = 0;
 
 	// 광원의 위치에 카메라로 설정
@@ -321,15 +323,15 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	BeginTransparentSet();
 
-	//_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-	//
-	//ResourceManager::GetInstance()->SortTransParentMesh();
-	//
-	//for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	//{
-	//	index->Render(_deferredRenderer->GetDeferredBuffer());
-	//}
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+	
+	ResourceManager::GetInstance()->SortTransParentMesh();
 
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
+		index->Render(_decalWorldVec);
+	}
+	
 	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
 
 	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
@@ -343,7 +345,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	EndTransparentSet();
 
 	//// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
-	//_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
 	BeginFinalRender();
 
@@ -352,18 +354,18 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
-	_deferredRenderer->RenderForFinalTexture();
+	_deferredRenderer->RenderForFinalTexture(_decalWorldVec);
 
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
-
-	ResourceManager::GetInstance()->SortTransParentMesh();
-
-	for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	{
-		index->Render(_deferredRenderer->GetDeferredBuffer());
-	}
-
-	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
+	//_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+	//
+	//ResourceManager::GetInstance()->SortTransParentMesh();
+	//
+	//for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	//{
+	//	index->Render(_deferredRenderer->GetDeferredBuffer());
+	//}
+	//
+	//_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
 	auto bloomCount = _deferredRenderer->GetDeferredBuffer()->GetSRVForBloomVec().size();
 	for (int i = 0; i < bloomCount; i++)
@@ -812,14 +814,14 @@ GInterface::GraphicsDirLight* ArkEngine::ArkDX11::DX11Renderer::CreateDirectiona
 	return LightManager::GetInstance()->GetDirLightInterface();
 }
 
-GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range)
+GInterface::GraphicsPointLight* ArkEngine::ArkDX11::DX11Renderer::CreatePointLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range, float attenuation)
 {
 	DirectX::XMFLOAT4 amb = ambient;
 	DirectX::XMFLOAT4 dif = diffuse;
 	DirectX::XMFLOAT4 spec = specular;
 	DirectX::XMFLOAT3 pos = position;
 
-	CreatePoLight(amb, dif, spec, pos, range);
+	CreatePoLight(amb, dif, spec, pos, range, attenuation);
 
 	return LightManager::GetInstance()->GetPointLightInterface();
 }
@@ -1881,7 +1883,7 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateDirLight(const DirectX::XMFLOAT4& a
 	ArkEngine::LightManager::GetInstance()->AddDirectionalLight(ambient, diffuse, specular, direction);
 }
 
-void ArkEngine::ArkDX11::DX11Renderer::CreatePoLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range)
+void ArkEngine::ArkDX11::DX11Renderer::CreatePoLight(const DirectX::XMFLOAT4& ambient, const DirectX::XMFLOAT4& diffuse, const DirectX::XMFLOAT4& specular, const DirectX::XMFLOAT3& position, float range, float attenuation)
 {
-	ArkEngine::LightManager::GetInstance()->AddPointLight(ambient, diffuse, specular, position, range);
+	ArkEngine::LightManager::GetInstance()->AddPointLight(ambient, diffuse, specular, position, range, attenuation);
 }

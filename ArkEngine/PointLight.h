@@ -21,7 +21,7 @@ namespace ArkEngine
 		class PointLight
 		{
 		public:
-			PointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float radius);
+			PointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float radius, float att);
 			~PointLight();
 
 		public:
@@ -32,6 +32,7 @@ namespace ArkEngine
 
 			void SetPosition(DirectX::XMFLOAT3 position);
 			void SetRange(float radius);
+			void SetAttenuation(float attnuation);
 
 		private:
 			DirectX::XMFLOAT4 _ambient;
@@ -42,7 +43,10 @@ namespace ArkEngine
 			float _radius;
 
 			DirectX::XMFLOAT3 _att;
-			float _pad;
+			
+
+			float _attenuation;
+			
 		};
 	}
 }

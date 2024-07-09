@@ -15,8 +15,9 @@
 #include "ShadowBuffer.h"
 #include "deferredRenderer.h"
 #include "DeferredBuffer.h"
+#include "TransparentMesh.h"
+#include "ArkTexture.h"
 #include "ShadowMap.h"
-
 
 ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight)
 	: _tech(nullptr), _fxDirLightCount(nullptr),_fxPointLightCount(nullptr),
@@ -28,7 +29,8 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr), 
-	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f)
+	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
+	_decalTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -52,7 +54,8 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr),
-	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f)
+	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
+	_decalTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -149,7 +152,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Render()
 }
 
 
-void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture()
+void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<DirectX::XMFLOAT4X4>& decalWorldVec)
 {
 	SetFinalEffect();
 
@@ -191,6 +194,14 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture()
 	_emissionMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_EMISSIONMAP)));
 	_materialMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_MATERIAL)));
 	_additionalMap->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_ADDITIONALINFO)));
+
+	if (!decalWorldVec.empty())
+	{
+		_fxDecalWorld->SetMatrixArray(reinterpret_cast<float*>(&decalWorldVec[0]), 0, static_cast<uint32_t>(decalWorldVec.size()));
+
+		auto test = ResourceManager::GetInstance()->GetTransParentMeshList()[0]->GetTexture();
+		_decalTexture->SetResource(test);
+	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
 	_tech->GetDesc(&techDesc);
@@ -248,6 +259,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
 	
+	_decalTexture = nullptr;
 	_shadowDepthMap = nullptr;
 	_additionalMap = nullptr;
 	_materialMap = nullptr;
@@ -321,8 +333,11 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_materialMap = effect->GetVariableByName("MaterialTexture")->AsShaderResource();
 	_additionalMap = effect->GetVariableByName("AdditionalTexture")->AsShaderResource();
 	_shadowDepthMap = effect->GetVariableByName("gShadowDepthMapTexture")->AsShaderResource();
+	_decalTexture = effect->GetVariableByName("gDecalTexture")->AsShaderResource();
 
 	_pointAttenuationFX = effect->GetVariableByName("gAttenuation")->AsScalar();
+
+	_fxDecalWorld = effect->GetVariableByName("gDecalWorldInv")->AsMatrix();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()

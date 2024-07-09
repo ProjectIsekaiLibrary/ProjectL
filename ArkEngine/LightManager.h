@@ -64,7 +64,7 @@ namespace ArkEngine
 
 		GInterface::GraphicsPointLight* GetPointLightInterface();
 
-		void AddPointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range);
+		void AddPointLight(DirectX::XMFLOAT4 ambient, DirectX::XMFLOAT4 diffuse, DirectX::XMFLOAT4 specular, DirectX::XMFLOAT3 position, float range, float att);
 
 	private:
 		// directional Light

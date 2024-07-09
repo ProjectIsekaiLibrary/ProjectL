@@ -42,5 +42,7 @@ namespace GInterface
 		virtual void SetExceptRange(const DirectX::XMFLOAT3& center, float range) abstract;
 
 		virtual void SetStartFlag(bool tf) abstract;
+
+		virtual void SetDecal(bool tf) abstract;
 	};
 }

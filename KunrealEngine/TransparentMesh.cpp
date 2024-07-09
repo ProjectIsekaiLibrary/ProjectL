@@ -164,3 +164,8 @@ void KunrealEngine::TransparentMesh::SetExceptRange(const DirectX::XMFLOAT3& cen
 {
 	this->_tMesh->SetExceptRange(center, range);
 }
+
+void KunrealEngine::TransparentMesh::SetDecal(bool tf)
+{
+	this->_tMesh->SetDecal(tf);
+}

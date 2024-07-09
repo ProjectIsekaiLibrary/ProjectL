@@ -74,6 +74,131 @@ void ArkEngine::ArkDX11::GeometryGenerator::CreateFlatQuad()
 	ArkBuffer* newbuffer = new ArkBuffer("FlatQuad", totalVertexCount, vertexList, totalIndexCount, indexList);
 }
 
+
+void ArkEngine::ArkDX11::GeometryGenerator::Create3dQuad()
+{
+	std::vector<Postex> vertexList;
+	std::vector<unsigned int> indexList;
+
+	unsigned int totalVertexCount = 24; // 각 면의 정점 수
+	unsigned int totalIndexCount = 36; // 2개의 삼각형 * 3개의 인덱스
+
+	vertexList.resize(totalVertexCount);
+
+	// 앞면 정점 설정
+	vertexList[0].pos = { -0.5f, -0.5f, -0.5f }; // 왼쪽 아래
+	vertexList[0].tex = { 0.0f, 1.0f };
+	vertexList[1].pos = { -0.5f, 0.5f, -0.5f };  // 왼쪽 위
+	vertexList[1].tex = { 0.0f, 0.0f };
+	vertexList[2].pos = { 0.5f, 0.5f, -0.5f };   // 오른쪽 위
+	vertexList[2].tex = { 1.0f, 0.0f };
+	vertexList[3].pos = { 0.5f, -0.5f, -0.5f };  // 오른쪽 아래
+	vertexList[3].tex = { 1.0f, 1.0f };
+
+	// 뒷면 정점 설정
+	vertexList[4].pos = { -0.5f, -0.5f, 0.5f };  // 왼쪽 아래
+	vertexList[4].tex = { 0.0f, 1.0f };
+	vertexList[5].pos = { -0.5f, 0.5f, 0.5f };   // 왼쪽 위
+	vertexList[5].tex = { 0.0f, 0.0f };
+	vertexList[6].pos = { 0.5f, 0.5f, 0.5f };    // 오른쪽 위
+	vertexList[6].tex = { 1.0f, 0.0f };
+	vertexList[7].pos = { 0.5f, -0.5f, 0.5f };   // 오른쪽 아래
+	vertexList[7].tex = { 1.0f, 1.0f };
+
+	// 왼쪽 면 정점 설정
+	vertexList[8].pos = { -0.5f, -0.5f, -0.5f }; // 아래
+	vertexList[8].tex = { 0.0f, 1.0f };
+	vertexList[9].pos = { -0.5f, 0.5f, -0.5f };  // 위
+	vertexList[9].tex = { 0.0f, 0.0f };
+	vertexList[10].pos = { -0.5f, 0.5f, 0.5f };  // 위
+	vertexList[10].tex = { 1.0f, 0.0f };
+	vertexList[11].pos = { -0.5f, -0.5f, 0.5f }; // 아래
+	vertexList[11].tex = { 1.0f, 1.0f };
+
+	// 오른쪽 면 정점 설정
+	vertexList[12].pos = { 0.5f, -0.5f, -0.5f };  // 아래
+	vertexList[12].tex = { 0.0f, 1.0f };
+	vertexList[13].pos = { 0.5f, 0.5f, -0.5f };   // 위
+	vertexList[13].tex = { 0.0f, 0.0f };
+	vertexList[14].pos = { 0.5f, 0.5f, 0.5f };    // 위
+	vertexList[14].tex = { 1.0f, 0.0f };
+	vertexList[15].pos = { 0.5f, -0.5f, 0.5f };   // 아래
+	vertexList[15].tex = { 1.0f, 1.0f };
+
+	// 위 면 정점 설정
+	vertexList[16].pos = { -0.5f, 0.5f, -0.5f };  // 왼쪽
+	vertexList[16].tex = { 0.0f, 1.0f };
+	vertexList[17].pos = { -0.5f, 0.5f, 0.5f };   // 왼쪽
+	vertexList[17].tex = { 0.0f, 0.0f };
+	vertexList[18].pos = { 0.5f, 0.5f, 0.5f };    // 오른쪽
+	vertexList[18].tex = { 1.0f, 0.0f };
+	vertexList[19].pos = { 0.5f, 0.5f, -0.5f };   // 오른쪽
+	vertexList[19].tex = { 1.0f, 1.0f };
+
+	// 아래 면 정점 설정
+	vertexList[20].pos = { -0.5f, -0.5f, -0.5f }; // 왼쪽
+	vertexList[20].tex = { 0.0f, 1.0f };
+	vertexList[21].pos = { -0.5f, -0.5f, 0.5f };  // 왼쪽
+	vertexList[21].tex = { 0.0f, 0.0f };
+	vertexList[22].pos = { 0.5f, -0.5f, 0.5f };   // 오른쪽
+	vertexList[22].tex = { 1.0f, 0.0f };
+	vertexList[23].pos = { 0.5f, -0.5f, -0.5f };  // 오른쪽
+	vertexList[23].tex = { 1.0f, 1.0f };
+
+	indexList.resize(totalIndexCount);
+
+	// 앞면 인덱스 설정
+	indexList[0] = 0;
+	indexList[1] = 1;
+	indexList[2] = 2;
+	indexList[3] = 0;
+	indexList[4] = 2;
+	indexList[5] = 3;
+
+	// 뒷면 인덱스 설정
+	indexList[6] = 4;
+	indexList[7] = 6;
+	indexList[8] = 5;
+	indexList[9] = 4;
+	indexList[10] = 7;
+	indexList[11] = 6;
+
+	// 왼쪽 면 인덱스 설정
+	indexList[12] = 8;
+	indexList[13] = 9;
+	indexList[14] = 10;
+	indexList[15] = 8;
+	indexList[16] = 10;
+	indexList[17] = 11;
+
+	// 오른쪽 면 인덱스 설정
+	indexList[18] = 12;
+	indexList[19] = 13;
+	indexList[20] = 14;
+	indexList[21] = 12;
+	indexList[22] = 14;
+	indexList[23] = 15;
+
+	// 위 면 인덱스 설정
+	indexList[24] = 16;
+	indexList[25] = 17;
+	indexList[26] = 18;
+	indexList[27] = 16;
+	indexList[28] = 18;
+	indexList[29] = 19;
+
+	// 아래 면 인덱스 설정
+	indexList[30] = 20;
+	indexList[31] = 21;
+	indexList[32] = 22;
+	indexList[33] = 20;
+	indexList[34] = 22;
+	indexList[35] = 23;
+
+
+	ArkBuffer* newbuffer = new ArkBuffer("3dQuad", totalVertexCount, vertexList, totalIndexCount, indexList);
+}
+
 void ArkEngine::ArkDX11::GeometryGenerator::CreateBox(const char* geometryName, float width, float height, float depth)
 {
 	std::vector<Vertex> vertexList;
