@@ -5,9 +5,11 @@
 //***************************************************************************************
 
 Texture2D gDiffuseMap;
+Texture2D gPositionMap;
 
 float gTransParency;
 float gTime;
+int gIndex;
 float3 gDonutCenter;
 float gDonutRange;
 
@@ -49,6 +51,11 @@ struct VertexOut
     float2 Tex : TEXCOORD;
 };
 
+struct DecalOut
+{
+    float4 Diffuse : SV_Target5;
+};
+
 struct PSOut
 {
     float4 Diffuse : SV_Target1;
@@ -56,21 +63,31 @@ struct PSOut
 
 VertexOut VS(VertexIn vin)
 {
-	VertexOut vout;
-	
-	// Transform to homogeneous clip space.
-    vout.PosL = vin.PosL;
-    vout.PosH = mul(float4(vin.PosL, 1.0f), gWorldViewProj);
+    VertexOut vout;
+
+    vout.PosL = float3(vin.PosL);
+        
+    // Transform updated position to homogeneous clip space
+    vout.PosH = mul(float4(vout.PosL, 1.0f), gWorldViewProj);
     
     vout.Tex = vin.Tex;
-    
+
     return vout;
+}
+
+DecalOut PSDecal(VertexOut pin)
+{
+    DecalOut output;
+    
+    output.Diffuse = float4(0.0f, 1.0f, gIndex, 1.0f);
+    
+    return output;
 }
 
 PSOut PSBasic(VertexOut pin)
 {
     PSOut output;
-    
+        
     float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
     
     if (newPos.x < -100.0f || newPos.x > 110.0f)
@@ -83,7 +100,7 @@ PSOut PSBasic(VertexOut pin)
         output.Diffuse.a = 0.0f;
         return output;
     }
-   
+    
     // 텍스처 좌표를 사용하여 색상 샘플링
     output.Diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex);
     
@@ -352,5 +369,12 @@ technique11 Tech
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PsDonutInsideEmpty()));
+    }
+
+    pass P7
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PSDecal()));
     }
 }

@@ -55,7 +55,7 @@ namespace ArkEngine
 			void BeginRender();
 			void Update(ArkEngine::ICamera* pCamera);
 			void Render();
-			void RenderForFinalTexture();
+			void RenderForFinalTexture(std::vector<DirectX::XMFLOAT4X4>& decalWorldVec);
 			void RenderForBloom(int index);
 			void Finalize();
 
@@ -125,6 +125,9 @@ namespace ArkEngine
 			ArkEngine::ArkDX11::ArkDevice* _arkDevice;
 			ArkEngine::ArkDX11::ArkEffect* _arkEffect;
 			ArkEngine::ArkDX11::ArkBuffer* _arkBuffer;
+
+		private:
+			ID3DX11EffectMatrixVariable* _fxDecalWorld;
 
 
 		private:

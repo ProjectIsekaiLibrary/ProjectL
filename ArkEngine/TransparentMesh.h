@@ -54,10 +54,12 @@ namespace ArkEngine
 
 			virtual void Delete() override;
 
+			virtual void SetDecal(bool tf) override;
+
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);
-			void Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer);
+			void Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer, std::vector<DirectX::XMFLOAT4X4>& worldVec);
 			void Finalize();
 
 			float GetTransParency();
@@ -102,6 +104,8 @@ namespace ArkEngine
 
 			ID3DX11EffectScalarVariable* _fxTime;
 
+			ID3DX11EffectScalarVariable* _fxIndex;
+
 			ID3DX11EffectVectorVariable* _fxDonutCenter;
 
 			ID3DX11EffectScalarVariable* _fxDonutRange;
@@ -121,6 +125,10 @@ namespace ArkEngine
 			DirectX::XMFLOAT3 _donutCenter;
 
 			float _donutRange;
+
+			int _index;
+
+			bool _isApplyDecal;
 		};
 	}
 }

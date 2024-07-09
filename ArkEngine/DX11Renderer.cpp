@@ -279,6 +279,8 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 
 void ArkEngine::ArkDX11::DX11Renderer::Render()
 {
+	_decalWorldVec.clear();
+
 	int testCullingNum = 0;
 
 	// 광원의 위치에 카메라로 설정
@@ -324,12 +326,12 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 	
 	ResourceManager::GetInstance()->SortTransParentMesh();
-	
-	for (auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
-	{
-		index->Render(_deferredRenderer->GetDeferredBuffer());
-	}
 
+	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
+	{
+		index->Render(_deferredRenderer->GetDeferredBuffer(), _decalWorldVec);
+	}
+	
 	//_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
 
 	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
@@ -352,7 +354,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 	// UI, FONT 출력을 위해 기존 켜져있던 깊이 버퍼 끄기
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateDisable.Get(), 0);
 
-	_deferredRenderer->RenderForFinalTexture();
+	_deferredRenderer->RenderForFinalTexture(_decalWorldVec);
 
 	//_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 	//

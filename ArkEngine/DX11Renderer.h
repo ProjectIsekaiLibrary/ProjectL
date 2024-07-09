@@ -311,6 +311,9 @@ namespace ArkEngine
 
 		private:
 			DirectX::SpriteBatch* _spriteBatch;
+
+		private:
+			std::vector<DirectX::XMFLOAT4X4> _decalWorldVec;
 		};
 	}
 }

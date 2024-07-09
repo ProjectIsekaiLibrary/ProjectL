@@ -20,7 +20,7 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
 	_renderTime(0.0f), _isRenderFinsh(true), _isRenderStart(false),
-	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f)
+	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false)
 {
 	Initialize();
 }
@@ -56,7 +56,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 	}
 }
 
-void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer)
+void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuffer* defferedBuffer, std::vector<DirectX::XMFLOAT4X4>& worldVec)
 {
 	if (!_isRenderFinsh && _isRenderStart)
 	{
@@ -78,6 +78,17 @@ void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuf
 
 		DirectX::XMMATRIX world = XMLoadFloat4x4(&_world);
 
+		// µ¥Ä®À» À§ÇÔ
+		if (_isApplyDecal)
+		{
+			auto invWorldMat = DirectX::XMMatrixInverse(nullptr, world);
+			DirectX::XMFLOAT4X4 invWorld;
+			DirectX::XMStoreFloat4x4(&invWorld, invWorldMat);
+
+			worldVec.emplace_back(invWorld);
+			_index = worldVec.size() - 1;
+		}
+
 		DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
 		DirectX::XMMATRIX proj = XMLoadFloat4x4(&_proj);
 		DirectX::XMMATRIX WorldViewProj = world * view * proj;
@@ -91,13 +102,23 @@ void ArkEngine::ArkDX11::TransparentMesh::Render(ArkEngine::ArkDX11::deferredBuf
 
 		_fxTime->SetFloat(_renderTime);
 
-		if (_renderType >= 5)
+		_fxIndex->SetInt(_index);
+
+		if (_renderType >= 5 && _renderType < 7)
 		{
 			_fxDonutCenter->SetFloatVector(reinterpret_cast<float*>(&_donutCenter));
 			_fxDonutRange->SetFloat(_donutRange);
 		}
 
-		_tech->GetPassByIndex(_renderType)->Apply(0, deviceContext);
+		if (!_isApplyDecal)
+		{
+			_tech->GetPassByIndex(_renderType)->Apply(0, deviceContext);
+		}
+		else
+		{
+			_tech->GetPassByIndex(7)->Apply(0, deviceContext);
+		}
+
 		deviceContext->DrawIndexed(_totalIndexCount, 0, 0);
 	}
 }
@@ -142,6 +163,8 @@ void ArkEngine::ArkDX11::TransparentMesh::Finalize()
 	_texture->Release();
 
 	_fxTransParency->Release();
+
+	_fxIndex->Release();
 
 	_fxTime->Release();
 
@@ -194,6 +217,12 @@ void ArkEngine::ArkDX11::TransparentMesh::Delete()
 	ResourceManager::GetInstance()->DeleteTransParentMesh(this);
 }
 
+
+void ArkEngine::ArkDX11::TransparentMesh::SetDecal(bool tf)
+{
+	_isApplyDecal = tf;
+}
+
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 {
 	ArkBuffer* buffer = nullptr;
@@ -214,15 +243,31 @@ void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 	}
 	else
 	{
-		buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("3dQuad");
-
-		if (buffer == nullptr)
+		if (_isApplyDecal)
 		{
-			GeometryGenerator generator;
-
-			generator.Create3dQuad();
-
 			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("3dQuad");
+
+			if (buffer == nullptr)
+			{
+				GeometryGenerator generator;
+
+				generator.Create3dQuad();
+
+				buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("3dQuad");
+			}
+		}
+		else
+		{
+			buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("FlatQuad");
+
+			if (buffer == nullptr)
+			{
+				GeometryGenerator generator;
+
+				generator.CreateFlatQuad();
+
+				buffer = ResourceManager::GetInstance()->GetResource<ArkBuffer>("FlatQuad");
+			}
 		}
 	}
 
@@ -244,6 +289,8 @@ void ArkEngine::ArkDX11::TransparentMesh::SetEffect()
 	_fxTransParency = _effect->GetVariableByName("gTransParency")->AsScalar();
 
 	_fxTime = _effect->GetVariableByName("gTime")->AsScalar();
+
+	_fxIndex = _effect->GetVariableByName("gIndex")->AsScalar();
 
 	_fxDonutCenter = _effect->GetVariableByName("gDonutCenter")->AsVector();
 

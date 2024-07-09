@@ -20,6 +20,8 @@ cbuffer cbPerFrame
     float4x4 gLightProj;
     
     float gAttenuation;
+    
+    float4x4 gDecalWorldInv[10];
 };
 
 // ºûÀ» ¹Þ´Â °´Ã¤ÀÇ Æ÷Áö¼Ç
@@ -114,7 +116,7 @@ float ToonShade(float intensity)
 }
 
 
-void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float4 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon)
+void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float4 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon, out float2 decal)
 {
     position = PositionTexture.Sample(samAnisotropic, texCoord).xyz;
 
@@ -127,6 +129,8 @@ void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 positio
     material = MaterialTexture.Sample(samAnisotropic, texCoord);
     
     cartoon = AdditionalTexture.Sample(samAnisotropic, texCoord).x;
+    
+    decal = AdditionalTexture.Sample(samAnisotropic, texCoord).yz;
 }
 
 float4 WorldToLight(float3 position)
@@ -168,13 +172,14 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float3 emissive;
     float4 material;
     float cartoon;
+    float2 decalInfo;
     
 	// Specular Reflaction
     float _Glossiness;
     float4 _SpecularColor;
 
-    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon);
-   
+    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon, decalInfo);
+       
    //if (diffuseAlbedo.a == 0.f)
    //{
    //    return float4(diffuseAlbedo.xyz, 1.0f);
@@ -325,6 +330,27 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 finalColor = litColor; //+ outline + specular + rimLighting;
     
     float3 toneMappedColor = ToneMapReinhard(finalColor.xyz);
+    
+    if (decalInfo.x == 1)
+    {
+        //return float4(1.0f, 0.0f, 0.0f, 1.0f);
+        float4 toDecal = mul(float4(position, 1.0f), gDecalWorldInv[decalInfo.y]);
+        
+        float minPos = -1.0f;
+        float maxPos = 1.0f;
+        
+        if (minPos <= toDecal.x && toDecal.x <= maxPos)
+        {
+            if (minPos <= toDecal.y && toDecal.y <= maxPos)
+            {
+                if (minPos <= toDecal.z && toDecal.z <= maxPos)
+                {
+                    toneMappedColor.r += 0.5f;
+                }
+        
+            }
+        }
+    }
     
     return float4(toneMappedColor, 1.0f);
     
