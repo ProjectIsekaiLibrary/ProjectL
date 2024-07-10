@@ -151,6 +151,8 @@ namespace KunrealEngine
 		void SetKamenSwordCollider(int startFrame, int EndFrame, int nowFrame);
 		void SetKamenSwordCollider();
 
+		void HoldKamenSword();
+
 	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;

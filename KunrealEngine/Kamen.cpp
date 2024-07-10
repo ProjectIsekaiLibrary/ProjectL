@@ -34,8 +34,8 @@ KunrealEngine::Kamen::Kamen()
 {
 	BossBasicInfo info;
 
-	info.SetHp(100).SetPhase(3).SetArmor(10).SetDamage(100).SetMoveSpeed(20.0f).SetsStaggeredGauge(100.0f);
-	info.SetAttackRange(5.0f);
+	info.SetHp(100).SetArmor(10).SetDamage(100).SetMoveSpeed(20.0f).SetsStaggeredGauge(100.0f);
+	info.SetAttackRange(5.0f).SetMaxPhase(3);
 
 	SetInfo(info);
 
@@ -56,6 +56,8 @@ void KunrealEngine::Kamen::Initialize()
 
 	// 보스 타이머 설정
 	SetStartTime(0.0f);
+
+	SetSpecialPatternPlayPhase(2);
 }
 
 void KunrealEngine::Kamen::Release()
@@ -72,48 +74,7 @@ void KunrealEngine::Kamen::Update()
 	// 반드시 해야함
 	Boss::Update();
 
-	/// 일단 여기서 카멘 소드 파티클에 대한 업데이트 처리
-	auto originBoneTransform = _boss->GetComponent<MeshRenderer>()->GetBoneTransform("MiddleFinger1_R");
-
-	DirectX::XMVECTOR scl;
-	DirectX::XMVECTOR rot;
-	DirectX::XMVECTOR trs;
-
-	DirectX::XMMatrixDecompose(&scl, &rot, &trs, DirectX::XMLoadFloat4x4(&originBoneTransform));
-
-	DirectX::XMFLOAT3 originDir = { 0.0f, 0.0f, 1.0f };
-
-	originDir = ToolBox::RotateVector(originDir, rot);
-
-	auto vec = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 10.0f);
-	auto vec2 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 10.0f);
-	auto vec3 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 14.0f);
-	auto vec4 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 18.0f);
-	auto vec5 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 22.0f);
-	auto vec6 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 26.0f);
-	auto vec7 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 30.0f);
-	auto vec8 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 34.0f);
-	auto vec9 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 38.0f);
-	auto vec10 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 42.0f);
-
-	DirectX::XMFLOAT3 particleOriginDir = { originDir.x * 720.0f, originDir.y * 720.0f, originDir.z * 720.0f };
-	_kamenSwordParticle[0]->GetComponent<Particle>()->SetParticleDirection(particleOriginDir.x, particleOriginDir.y, particleOriginDir.z);
-	_kamenSwordParticle[0]->GetComponent<Particle>()->SetOffSet(vec.m128_f32[0], vec.m128_f32[1], vec.m128_f32[2]);
-
-
-	_kamenSwordAfterImageParticle[0]->GetComponent<Particle>()->SetOffSet(vec2.m128_f32[0], vec2.m128_f32[1], vec2.m128_f32[2]);
-	_kamenSwordAfterImageParticle[1]->GetComponent<Particle>()->SetOffSet(vec3.m128_f32[0], vec3.m128_f32[1], vec3.m128_f32[2]);
-	_kamenSwordAfterImageParticle[2]->GetComponent<Particle>()->SetOffSet(vec4.m128_f32[0], vec4.m128_f32[1], vec4.m128_f32[2]);
-	_kamenSwordAfterImageParticle[3]->GetComponent<Particle>()->SetOffSet(vec5.m128_f32[0], vec5.m128_f32[1], vec5.m128_f32[2]);
-	_kamenSwordAfterImageParticle[4]->GetComponent<Particle>()->SetOffSet(vec6.m128_f32[0], vec6.m128_f32[1], vec6.m128_f32[2]);
-	_kamenSwordAfterImageParticle[5]->GetComponent<Particle>()->SetOffSet(vec7.m128_f32[0], vec7.m128_f32[1], vec7.m128_f32[2]);
-	_kamenSwordAfterImageParticle[6]->GetComponent<Particle>()->SetOffSet(vec8.m128_f32[0], vec8.m128_f32[1], vec8.m128_f32[2]);
-	_kamenSwordAfterImageParticle[7]->GetComponent<Particle>()->SetOffSet(vec9.m128_f32[0], vec9.m128_f32[1], vec9.m128_f32[2]);
-	_kamenSwordAfterImageParticle[8]->GetComponent<Particle>()->SetOffSet(vec10.m128_f32[0], vec10.m128_f32[1], vec10.m128_f32[2]);
-
-	// 카멘 순간 이동 하면 라이트 위치 망가짐
-	auto SwordLightPos = DirectX::XMVectorAdd(trs, vec5);
-	_kamenSwordLight->GetComponent<Transform>()->SetPosition(SwordLightPos.m128_f32[0], SwordLightPos.m128_f32[1], SwordLightPos.m128_f32[2]);
+	HoldKamenSword();
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -242,22 +203,24 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	//_basicPattern.emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	//_basicPattern.emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
-	//_basicPattern.emplace_back(_swordSwingVertical);
-	//_basicPattern.emplace_back(_swordSwingTwice);
-	//_basicPattern.emplace_back(_swordSwingTwiceHard);
-	_basicPattern.emplace_back(_swordSwingHorizontal);
+	_basicPattern[1] = _basicPattern[0];
 
-	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
-	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
-	//SwordChopPattern();								// 도넛
-	//SwordLinearAttackPattern();						// 칼 직선 공격
+	_basicPattern[2].emplace_back(_swordSwingVertical);
+	_basicPattern[2].emplace_back(_swordSwingTwice);
+	_basicPattern[2].emplace_back(_swordSwingTwiceHard);
+	_basicPattern[2].emplace_back(_swordSwingHorizontal);
+
+	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
+	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
+	SwordChopPattern();								// 도넛
+	SwordLinearAttackPattern();						// 칼 직선 공격
 
 	//BasicSwordAttackPattern();
 
@@ -293,26 +256,26 @@ void KunrealEngine::Kamen::Idle()
 	if (_patternIndex == -1 && !_isCorePattern)
 	{
 		// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
-		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern[_info._phase-1].size() - 1);
 
-		if (_basicPattern.size() > 1)
+		if (_basicPattern[_info._phase - 1].size() > 1)
 		{
 			while (_patternIndex == _exPatternIndex)
 			{
 				// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
-				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern[_info._phase - 1].size() - 1);
 			}
 
 			// 가져온 랜덤 패턴이 활성화되어있지 않다면
-			while ((_basicPattern)[_patternIndex]->_isActive == false)
+			while ((_basicPattern[_info._phase - 1])[_patternIndex]->_isActive == false)
 			{
 				// 가져온 랜덤 패턴이 활성화 되어 있을때까지 다시 랜덤 인덱스를 추출
-				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern[_info._phase - 1].size() - 1);
 			}
 		}
 
 		// 여기서 patternindex가 1,2,3,4,5라면 분신을 소환
-		if (_isSpecial2Ready && (_basicPattern)[_patternIndex]->_withEgo)
+		if (_isSpecial2Ready && (_basicPattern[_info._phase - 1])[_patternIndex]->_withEgo)
 		{
 			_isSpecial2Playing = true;
 
@@ -324,7 +287,7 @@ void KunrealEngine::Kamen::Idle()
 		}
 	}
 
-	_nowTitlePattern = _basicPattern[_patternIndex];
+	_nowTitlePattern = _basicPattern[_info._phase - 1][_patternIndex];
 
 	// Chase로 상태 변환
 	if (!_isSpecial2Playing)
@@ -2052,7 +2015,7 @@ void KunrealEngine::Kamen::LeftRightPattern()
 
 	leftRightPattern->SetPattern(_rightAttack);
 
-	_basicPattern.emplace_back(leftRightPattern);
+	_basicPattern[0].emplace_back(leftRightPattern);
 }
 
 
@@ -2072,13 +2035,13 @@ void KunrealEngine::Kamen::RightLeftPattern()
 
 	rightLeftPattern->SetPattern(_leftAttack);
 
-	_basicPattern.emplace_back(rightLeftPattern);
+	_basicPattern[0].emplace_back(rightLeftPattern);
 }
 
 
 void KunrealEngine::Kamen::BasicPattern()
 {
-	_basicPattern.emplace_back(_spellAttack);
+	_basicPattern[0].emplace_back(_spellAttack);
 	//_basicPattern.emplace_back(_callAttack);
 }
 
@@ -5243,6 +5206,80 @@ void KunrealEngine::Kamen::SetKamenSwordCollider(int startFrame, int EndFrame, i
 	}
 }
 
+void KunrealEngine::Kamen::HoldKamenSword()
+{
+	if (_info._phase != 3)
+	{
+		if (_kamenSword->GetActivated())
+		{
+			_kamenSwordLight->SetActive(false);
+
+			_kamenSword->SetTotalComponentState(false);
+			_kamenSword->SetActive(false);
+		}
+	}
+	else
+	{
+		if (!_kamenSword->GetActivated())
+		{
+			_kamenSwordLight->SetActive(true);
+
+			_kamenSword->SetActive(true);
+			_kamenSword->GetComponent<MeshRenderer>()->SetActive(true);
+			auto swordChild = _kamenSword->GetChilds();
+			for (auto& object : swordChild)
+			{
+				object->SetActive(true);
+				object->SetTotalComponentState(true);
+			}
+		}
+
+
+		/// 일단 여기서 카멘 소드 파티클에 대한 업데이트 처리
+		auto originBoneTransform = _boss->GetComponent<MeshRenderer>()->GetBoneTransform("MiddleFinger1_R");
+
+		DirectX::XMVECTOR scl;
+		DirectX::XMVECTOR rot;
+		DirectX::XMVECTOR trs;
+
+		DirectX::XMMatrixDecompose(&scl, &rot, &trs, DirectX::XMLoadFloat4x4(&originBoneTransform));
+
+		DirectX::XMFLOAT3 originDir = { 0.0f, 0.0f, 1.0f };
+
+		originDir = ToolBox::RotateVector(originDir, rot);
+
+		auto vec = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 10.0f);
+		auto vec2 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 10.0f);
+		auto vec3 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 14.0f);
+		auto vec4 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 18.0f);
+		auto vec5 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 22.0f);
+		auto vec6 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 26.0f);
+		auto vec7 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 30.0f);
+		auto vec8 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 34.0f);
+		auto vec9 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 38.0f);
+		auto vec10 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 42.0f);
+
+		DirectX::XMFLOAT3 particleOriginDir = { originDir.x * 720.0f, originDir.y * 720.0f, originDir.z * 720.0f };
+		_kamenSwordParticle[0]->GetComponent<Particle>()->SetParticleDirection(particleOriginDir.x, particleOriginDir.y, particleOriginDir.z);
+		_kamenSwordParticle[0]->GetComponent<Particle>()->SetOffSet(vec.m128_f32[0], vec.m128_f32[1], vec.m128_f32[2]);
+
+
+		_kamenSwordAfterImageParticle[0]->GetComponent<Particle>()->SetOffSet(vec2.m128_f32[0], vec2.m128_f32[1], vec2.m128_f32[2]);
+		_kamenSwordAfterImageParticle[1]->GetComponent<Particle>()->SetOffSet(vec3.m128_f32[0], vec3.m128_f32[1], vec3.m128_f32[2]);
+		_kamenSwordAfterImageParticle[2]->GetComponent<Particle>()->SetOffSet(vec4.m128_f32[0], vec4.m128_f32[1], vec4.m128_f32[2]);
+		_kamenSwordAfterImageParticle[3]->GetComponent<Particle>()->SetOffSet(vec5.m128_f32[0], vec5.m128_f32[1], vec5.m128_f32[2]);
+		_kamenSwordAfterImageParticle[4]->GetComponent<Particle>()->SetOffSet(vec6.m128_f32[0], vec6.m128_f32[1], vec6.m128_f32[2]);
+		_kamenSwordAfterImageParticle[5]->GetComponent<Particle>()->SetOffSet(vec7.m128_f32[0], vec7.m128_f32[1], vec7.m128_f32[2]);
+		_kamenSwordAfterImageParticle[6]->GetComponent<Particle>()->SetOffSet(vec8.m128_f32[0], vec8.m128_f32[1], vec8.m128_f32[2]);
+		_kamenSwordAfterImageParticle[7]->GetComponent<Particle>()->SetOffSet(vec9.m128_f32[0], vec9.m128_f32[1], vec9.m128_f32[2]);
+		_kamenSwordAfterImageParticle[8]->GetComponent<Particle>()->SetOffSet(vec10.m128_f32[0], vec10.m128_f32[1], vec10.m128_f32[2]);
+
+		// 카멘 순간 이동 하면 라이트 위치 망가짐
+		auto SwordLightPos = DirectX::XMVectorAdd(trs, vec5);
+		_kamenSwordLight->GetComponent<Transform>()->SetPosition(SwordLightPos.m128_f32[0], SwordLightPos.m128_f32[1], SwordLightPos.m128_f32[2]);
+	}
+}
+
 void KunrealEngine::Kamen::SetKamenSwordCollider()
 {
 	auto originBoneTransform = _boss->GetComponent<MeshRenderer>()->GetBoneTransform("MiddleFinger1_R");
@@ -5302,7 +5339,7 @@ void KunrealEngine::Kamen::BackStepCallPattern()
 
 	backStepCallPattern->SetRange(backStepCallPattern->_patternList[2]->_range - backStepCallPattern->_patternList[1]->_range);
 
-	_basicPattern.emplace_back(backStepCallPattern);
+	_basicPattern[0].emplace_back(backStepCallPattern);
 }
 
 void KunrealEngine::Kamen::TeleportSpellPattern()
@@ -5318,7 +5355,7 @@ void KunrealEngine::Kamen::TeleportSpellPattern()
 	teleportSpellPattern->SetPattern(_spellAttack);
 
 
-	_basicPattern.emplace_back(teleportSpellPattern);
+	_basicPattern[0].emplace_back(teleportSpellPattern);
 }
 
 
@@ -5335,7 +5372,7 @@ void KunrealEngine::Kamen::EmergenceAttackPattern()
 	emergenceAttackPattern->SetPattern(_bossRandomInsideWarning);
 	emergenceAttackPattern->SetPattern(_emergence);
 
-	_basicPattern.emplace_back(emergenceAttackPattern);
+	_basicPattern[0].emplace_back(emergenceAttackPattern);
 }
 
 void KunrealEngine::Kamen::SwordTurnClockPattern()
@@ -5537,7 +5574,7 @@ void KunrealEngine::Kamen::BasicSwordAttackPattern()
 
 	basicSwordAttack->SetRange(basicSwordAttack->_patternList[1]->_range);
 
-	_basicPattern.emplace_back(basicSwordAttack);
+	_basicPattern[2].emplace_back(basicSwordAttack);
 }
 
 void KunrealEngine::Kamen::CoreEmmergencePattern()
@@ -5556,5 +5593,5 @@ void KunrealEngine::Kamen::CoreEmmergencePattern()
 
 	coreEmmergence->SetPattern(_leftAttack);
 
-	_basicPattern.emplace_back(coreEmmergence);
+	_corePattern.emplace_back(coreEmmergence);
 }

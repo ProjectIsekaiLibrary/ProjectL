@@ -29,12 +29,13 @@ enum class BossStatus
 struct BossBasicInfo
 {
 	BossBasicInfo()
-		: _hp(0.0f), _phase(0), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(20.0f), _rotationSpeed(100.0f), _baseAnimSpeed(30.0f),
+		: _hp(0.0f), _phase(1), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(20.0f), _rotationSpeed(100.0f), _baseAnimSpeed(30.0f),
 		_staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f)
 	{};
 
 	BossBasicInfo& SetHp(float hp) { _maxHp = hp; _hp = hp;   return *this; };
 	BossBasicInfo& SetPhase(unsigned int phase) { _phase = phase;  return *this; };
+	BossBasicInfo& SetMaxPhase(unsigned int phase) { _maxPhase = phase;  return *this; };
 	BossBasicInfo& SetArmor(float armor) { _armor = armor;  return *this; };
 	BossBasicInfo& SetDamage(float damage) { _damage = damage;  return *this; };
 	BossBasicInfo& SetAttackRange(float attackRange) { _attackRange = attackRange;  return *this; };
@@ -44,6 +45,7 @@ struct BossBasicInfo
 	BossBasicInfo& SetsStaggeredGauge(float staggeredGauge) { _maxStaggeredGauge = staggeredGauge; _staggeredGauge = staggeredGauge;  return *this; };
 
 	float GetMaxHP() { return _maxHp; };
+	unsigned int GetMaxPhase() { return _maxPhase; };
 	float GetMaxStaggeredGauage() { return _maxStaggeredGauge; };
 
 	float _hp;				// 체력
@@ -62,6 +64,7 @@ struct BossBasicInfo
 private:
 	float _maxHp;				// 최대 체력
 	float _maxStaggeredGauge;	// 무력화 게이지 최대치
+	unsigned int _maxPhase;			// 페이즈 몇개인지
 
 	// 데미지 감소율
 };

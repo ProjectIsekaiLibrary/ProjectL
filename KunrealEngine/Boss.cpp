@@ -29,15 +29,21 @@ KunrealEngine::Boss::Boss()
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
-	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr)
+	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1)
 {
 }
 
 KunrealEngine::Boss::~Boss()
 {
-	for (auto index : _basicPattern)
-	{
-		delete index;
+	for (auto& index : _basicPattern)
+	{	
+		for (auto& pattern : index)
+		{
+			if (pattern != nullptr)
+			{
+				delete pattern;
+			}
+		}
 	}
 
 	//auto collider = _boss->GetComponent<BoxCollider>();
@@ -134,6 +140,8 @@ void KunrealEngine::Boss::Initialize(GameObject* boss)
 
 	_boss->SetTag("Boss");
 
+	_basicPattern.resize(_info.GetMaxPhase());
+
 	_bossTransform = _boss->GetComponent<Transform>();
 	_playerTransform = _player->GetComponent<Transform>();
 
@@ -197,6 +205,7 @@ void KunrealEngine::Boss::Update()
 		}
 		case BossStatus::IDLE:
 		{
+			_info._phase = _goalPhase;
 			Idle();
 			break;
 		}
@@ -318,26 +327,26 @@ void KunrealEngine::Boss::Idle()
 	if (_patternIndex == -1 && !_isCorePattern)
 	{
 		// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
-		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+		_patternIndex = ToolBox::GetRandomNum(0, _basicPattern[_info._phase-1].size() - 1);
 
-		if (_basicPattern.size() > 1)
+		if (_basicPattern[_info._phase-1].size() > 1)
 		{
 			while (_patternIndex == _exPatternIndex)
 			{
 				// 랜덤 패턴을 위한 랜덤 인덱스를 가져옴
-				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern[_info._phase-1].size() - 1);
 			}
 
 			// 가져온 랜덤 패턴이 활성화되어있지 않다면
-			while ((_basicPattern)[_patternIndex]->_isActive == false)
+			while ((_basicPattern[_info._phase-1])[_patternIndex]->_isActive == false)
 			{
 				// 가져온 랜덤 패턴이 활성화 되어 있을때까지 다시 랜덤 인덱스를 추출
-				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern.size() - 1);
+				_patternIndex = ToolBox::GetRandomNum(0, _basicPattern[_info._phase-1].size() - 1);
 			}
 		}
 	}
 
-	_nowTitlePattern = _basicPattern[_patternIndex];
+	_nowTitlePattern = _basicPattern[_info._phase-1][_patternIndex];
 
 	// Chase로 상태 변환
 	_status = BossStatus::CHASE;
@@ -556,8 +565,8 @@ void KunrealEngine::Boss::PatternReady()
 
 void KunrealEngine::Boss::BasicAttack()
 {
-	auto index = _basicPattern[_patternIndex]->_index;
-	_nowPlayingPattern = _basicPattern[_patternIndex]->_patternList[index];
+	auto index = _basicPattern[_info._phase-1][_patternIndex]->_index;
+	_nowPlayingPattern = _basicPattern[_info._phase-1][_patternIndex]->_patternList[index];
 
 	// 패턴을 실행
 	auto isPatternPlaying = _nowTitlePattern->Play();
@@ -586,6 +595,36 @@ void KunrealEngine::Boss::CoreAttack()
 
 void KunrealEngine::Boss::SpecialAttack()
 {
+	if (_info._phase != _specialPatternPlayPhase)
+	{
+		if (_isSpecialPatternPlaying)
+		{
+			for (const auto& pattern : _specialPattern[_specialPatternIndex]->_patternList)
+			{
+				for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+				{
+					pattern->_isColliderHit[i] = false;
+					pattern->_isColliderActive[i] = false;
+				}
+
+				for (const auto& object : pattern->_subObject)
+				{
+					object->SetTotalComponentState(false);
+
+					object->SetActive(false);
+
+					_isSpecialPatternPlaying = false;
+
+					_specialPatternIndex = -1;
+					_specialPatternTimer = 0.0f;
+
+					_specialPatternEndLogicPlay = false;
+				}
+			}
+		}
+		return;
+	}
+
 	if (_specialPattern.empty())
 	{
 		return;
@@ -706,7 +745,7 @@ void KunrealEngine::Boss::PatternEnd()
 
 	else
 	{
-		for (const auto& pattern : _basicPattern[_patternIndex]->_patternList)
+		for (const auto& pattern : _basicPattern[_info._phase-1][_patternIndex]->_patternList)
 		{
 			for (int i = 0; i < pattern->_isColliderActive.size(); i++)
 			{
@@ -754,11 +793,17 @@ void KunrealEngine::Boss::PatternForceEnd()
 
 	else
 	{
-		for (const auto& object : _basicPattern[_patternIndex]->_subObject)
+		for (const auto& object : _basicPattern[_info._phase-1][_patternIndex]->_subObject)
 		{
 			object->SetActive(false);
 		}
 	}
+}
+
+
+void KunrealEngine::Boss::ChangePhase(unsigned int phase)
+{
+	_goalPhase = phase;
 }
 
 void KunrealEngine::Boss::SetInfo(BossBasicInfo& info)
@@ -884,6 +929,12 @@ float KunrealEngine::Boss::CalculateAngle(const DirectX::XMFLOAT3& bossPosition,
 			return angle - 360.0f;
 		}
 	}
+}
+
+
+void KunrealEngine::Boss::SetSpecialPatternPlayPhase(unsigned int phase)
+{
+	_specialPatternPlayPhase = phase;
 }
 
 bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)
@@ -1362,7 +1413,7 @@ void KunrealEngine::Boss::SetBossCollider()
 
 void KunrealEngine::Boss::SetSubObject(bool tf)
 {
-	for (const auto& pattern : _basicPattern)
+	for (const auto& pattern : _basicPattern[_info._phase-1])
 	{
 		for (const auto& subPattern : pattern->_patternList)
 		{
