@@ -307,7 +307,6 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_dash_cool->SetActive(false);
 	_potion_cool->SetActive(false);
 
-	_died1->SetActive(false);
 	_died2->SetActive(false);
 }
 
