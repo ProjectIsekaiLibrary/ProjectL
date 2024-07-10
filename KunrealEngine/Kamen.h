@@ -380,6 +380,7 @@ namespace KunrealEngine
 		std::vector<GameObject*> _bladeLParticleWave;
 
 		std::vector<GameObject*> _largeBladeParticle;
+		std::vector<GameObject*> _largeBladeParticleWave;
 
 		std::vector<GameObject*> _laserLight;
 

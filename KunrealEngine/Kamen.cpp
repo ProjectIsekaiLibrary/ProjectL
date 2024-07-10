@@ -247,12 +247,12 @@ void KunrealEngine::Kamen::GamePattern()
 	//TeleportSpellPattern();							// 텔포 후 spell	
 	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
 	//_basicPattern.emplace_back(_swordSwingVertical);
 	//_basicPattern.emplace_back(_swordSwingTwice);
 	//_basicPattern.emplace_back(_swordSwingTwiceHard);
-	//_basicPattern.emplace_back(_swordSwingHorizontal);
+	_basicPattern.emplace_back(_swordSwingHorizontal);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
@@ -1515,7 +1515,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			bladePrticleWave->SetParent(_largeBlade);
 
-			_largeBladeParticle.emplace_back(bladePrticleWave);
+			_largeBladeParticleWave.emplace_back(bladePrticleWave);
 
 
 		}
@@ -4907,6 +4907,11 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 				largeBladeParticle->GetComponent<Light>()->SetActive(true);
 			}
 
+			for (auto& largeBladeParticleWave : _largeBladeParticleWave)
+			{
+				largeBladeParticleWave->GetComponent<Particle>()->SetActive(true);
+			}
+
 			auto bladeSpeed = 10.0f * TimeManager::GetInstance().GetDeltaTime();
 
 			auto moveSpeed = pattern->_speed * bladeSpeed;
@@ -4918,6 +4923,11 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 				{
 					largeBladeParticle->GetComponent<Particle>()->SetActive(false);
 					largeBladeParticle->GetComponent<Light>()->SetActive(false);
+				}
+
+				for (auto& largeBladeParticleWave : _largeBladeParticleWave)
+				{
+					largeBladeParticleWave->GetComponent<Particle>()->SetActive(false);
 				}
 			}
 			else
