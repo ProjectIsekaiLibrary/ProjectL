@@ -344,11 +344,15 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     // 데칼 박스 내부에 있는지 확인
         if (inDecal.x >= 0 && inDecal.y >= 0 && inDecal.z >= 0)
-        {           
+        {
             float4 texSample = gDecalTexture.Sample(samAnisotropic, decalUV);
-            toneMappedColor.r = texSample.r * texSample.a;
-            toneMappedColor.g = texSample.g * texSample.a;
-            toneMappedColor.b = texSample.b * texSample.a;
+            
+            if (texSample.a > 0.0f)
+            {
+                toneMappedColor.r = texSample.r * texSample.a;
+                toneMappedColor.g = texSample.g * texSample.a;
+                toneMappedColor.b = texSample.b * texSample.a;
+            }
         }
     }
 
