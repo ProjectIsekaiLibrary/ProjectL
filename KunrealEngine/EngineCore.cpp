@@ -264,6 +264,7 @@ void KunrealEngine::EngineCore::Update()
 	CheckMousePosition();
 
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
+	soundInstance.Update();
 
 	// UI 실행,종료
 	if (inputInstance->KeyDown(KEY::ESCAPE))
@@ -274,21 +275,6 @@ void KunrealEngine::EngineCore::Update()
 	if (inputInstance->KeyDown(KEY::PERIOD))
 	{
 		EventManager::GetInstance()._iscamfollow = EventManager::GetInstance()._iscamfollow ? false : true;
-
-		//_Coroutine(camshake);
-		//_CoroutineIs(camshake)
-		//{
-		//	std::vector<DirectX::XMFLOAT2> campos = EventManager::GetInstance().CamShake(3,15);
-		//	for (auto pos : campos)
-		//	{
-		//		EventManager::GetInstance()._camshakex = pos.x;
-		//		EventManager::GetInstance()._camshakez = pos.y;
-		//		Return_null;
-		//	}
-		//	EventManager::GetInstance()._camshakex = 0;
-		//	EventManager::GetInstance()._camshakez = 0;
-		//};
-		//Startcoroutine(camshake);
 	}
 	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
@@ -2302,6 +2288,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.0f);
 			navigationInstance.HandleBuild(0, "bossmap.obj");
 			navigationInstance.HandleBuild(1, "bossmap.obj");
+			EventManager::GetInstance().SetCamera("testCamera");
 		}
 		
 	}

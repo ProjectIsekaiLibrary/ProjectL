@@ -378,10 +378,26 @@ void KunrealEngine::GameObject::SetActive(bool active)
 		return;
 	}
 
-	for (auto obj : this->_childContainer)
+	for (int i = 0; i < this->_childContainer.size(); i++)
 	{
-		obj->SetActive(active);
+		if (!active)
+		{
+			_childStatus.emplace_back(_childContainer[i]->GetActivated());
+			_childContainer[i]->SetActive(active);
+		}
+		else
+		{
+			if (!_childStatus.size() > 0)
+			{
+				break;
+			}
+
+			_childContainer[i]->SetActive(_childStatus[i]);
+		}
+
+		//_childContainer[i]->SetActive(active);
 	}
+
 }
 
 bool KunrealEngine::GameObject::GetActivated()

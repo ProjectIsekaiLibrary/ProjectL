@@ -53,6 +53,8 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _childContainer;			// 자식 오브젝트를 담을 벡터
 
+		std::vector<bool> _childStatus;						// 자식 오브젝트들의 active 상태
+
 		Collider* _collider;								// collider 객체
 
 	public:

@@ -21,7 +21,10 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
 	, _isShotHit(false), _isIceHit(false), _isLaserHit(false), _isMeteorHit(false)
 	, _isShotDetected(false), _isIceDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false),
-	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false)
+	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false), _destroyLaser(false),
+	_shotParticle2(nullptr), _shotParticle3(nullptr), _shotParticle4(nullptr), _shotParticleHit1(nullptr), _shotParticleHit2(nullptr), _shotParticleHit3(nullptr),
+	_iceParticle1(nullptr), _iceParticle2(nullptr), _iceParticle3(nullptr), _iceParticleHit1(nullptr), _iceParticleHit2(nullptr), _laserParticle1(nullptr), _laserParticle2(nullptr), _laserParticle3(nullptr), _laserParticle4(nullptr), _meteorParticle2(nullptr), _meteorParticle3(nullptr), _meteorParticle4(nullptr), _meteorParticleHit1(nullptr), _meteorParticleHit2(nullptr), _meteorParticleHit3(nullptr), _meteorParticleHit4(nullptr)
+
 {
 
 }
@@ -375,6 +378,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	shotParticle->SetActive(true);
 
 	_shotParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerQ2");
+	_shotParticle2->_autoAwake = true;
 	_shotParticle2->AddComponent<Particle>();
 	_shotParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	_shotParticle2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
@@ -387,6 +391,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticle2->SetParent(_shot);
 
 	_shotParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerQ3");
+	_shotParticle3->_autoAwake = true;
 	_shotParticle3->AddComponent<Particle>();
 	_shotParticle3->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
 	_shotParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
@@ -399,6 +404,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticle3->SetParent(_shot);
 
 	_shotParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerQ4");
+	_shotParticle4->_autoAwake = true;
 	_shotParticle4->AddComponent<Particle>();
 	_shotParticle4->GetComponent<Particle>()->SetParticleEffect("EnergyBolt1", "Resources/Textures/Particles/fx_EnergyBolt1.dds", 1000);
 	_shotParticle4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
@@ -411,6 +417,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticle4->SetParent(_shot);
 
 	_shotParticleHit1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit1");
+	_shotParticleHit1->_autoAwake = true;
 	_shotParticleHit1->AddComponent<Particle>();
 	_shotParticleHit1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
 	_shotParticleHit1->GetComponent<Particle>()->SetParticleDuration(0.1f, 0.1f);
@@ -422,6 +429,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit1->SetActive(true);
 
 	_shotParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit2");
+	_shotParticleHit2->_autoAwake = true;
 	_shotParticleHit2->AddComponent<Particle>();
 	_shotParticleHit2->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
 	_shotParticleHit2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
@@ -433,6 +441,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticleHit2->SetActive(true);
 
 	_shotParticleHit3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ShotParticleHit3");
+	_shotParticleHit3->_autoAwake = true;
 	_shotParticleHit3->AddComponent<Particle>();
 	_shotParticleHit3->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
 	_shotParticleHit3->GetComponent<Particle>()->SetParticleDuration(0.1f, 0.1f);
@@ -583,6 +592,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	_ice->GetComponent<Transform>()->SetRotation(90.0f, 0.0f, 0.0f);
 
 	_iceParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle1");
+	_iceParticle1->_autoAwake = true;
 	_iceParticle1->AddComponent<Particle>();
 	_iceParticle1->GetComponent<Particle>()->SetParticleEffect("Blast3", "Resources/Textures/Particles/fx_Blast3.dds", 1000);
 	_iceParticle1->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
@@ -595,6 +605,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	_iceParticle1->GetComponent<Particle>()->SetActive(false);
 
 	_iceParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle2");
+	_iceParticle2->_autoAwake = true;
 	_iceParticle2->AddComponent<Particle>();
 	_iceParticle2->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
 	_iceParticle2->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
@@ -607,6 +618,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	_iceParticle2->GetComponent<Particle>()->SetActive(false);
 
 	_iceParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticle3");
+	_iceParticle3->_autoAwake = true;
 	_iceParticle3->AddComponent<Particle>();
 	_iceParticle3->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
 	_iceParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
@@ -618,6 +630,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	_iceParticle3->GetComponent<Particle>()->SetActive(false);
 
 	_iceParticleHit1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticleHit1");
+	_iceParticleHit1->_autoAwake = true;
 	_iceParticleHit1->AddComponent<Particle>();
 	_iceParticleHit1->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 100);
 	_iceParticleHit1->GetComponent<Particle>()->SetParticleDuration(4.0f, 0.5f);
@@ -629,6 +642,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 	_iceParticleHit1->GetComponent<Particle>()->SetActive(false);
 
 	_iceParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("IceParticleHit2");
+	_iceParticleHit2->_autoAwake = true;
 	_iceParticleHit2->AddComponent<Particle>();
 	_iceParticleHit2->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 100);
 	_iceParticleHit2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
@@ -764,6 +778,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	laserCollider->SetColliderScale(20.0f, 20.0f, 160.0f);
 
 	_laserParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE1");
+	_laserParticle1->_autoAwake = true;
 	_laserParticle1->AddComponent<Particle>();
 	_laserParticle1->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
 	_laserParticle1->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
@@ -777,6 +792,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laserParticle1->SetActive(false);
 
 	_laserParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE2");
+	_laserParticle2->_autoAwake = true;
 	_laserParticle2->AddComponent<Particle>();
 	_laserParticle2->GetComponent<Particle>()->SetParticleEffect("Laser", "Resources/Textures/Particles/fx_Dust2.dds", 1000);
 	_laserParticle2->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
@@ -790,6 +806,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laserParticle2->SetActive(false);
 
 	_laserParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE3");
+	_laserParticle3->_autoAwake = true;
 	_laserParticle3->AddComponent<Particle>();
 	_laserParticle3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
 	_laserParticle3->GetComponent<Particle>()->SetParticleDuration(3.0f, 2.0f);
@@ -803,6 +820,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laserParticle3->SetActive(false);
 
 	_laserParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerE4");
+	_laserParticle4->_autoAwake = true;
 	_laserParticle4->AddComponent<Particle>();
 	_laserParticle4->GetComponent<Particle>()->SetParticleEffect("fx_Flare7", "Resources/Textures/Particles/fx_Flare7.dds", 1000);
 	_laserParticle4->GetComponent<Particle>()->SetParticleDuration(3.0f, 0.1f);
@@ -924,6 +942,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	meteorParticle->SetActive(true);
 
 	_meteorParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR2");
+	_meteorParticle2->_autoAwake = true;
 	_meteorParticle2->AddComponent<Particle>();
 	_meteorParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	_meteorParticle2->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.4f);
@@ -936,6 +955,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 
 	_meteorParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR3");
+	_meteorParticle3->_autoAwake = true;
 	_meteorParticle3->GetComponent<Transform>()->SetPosition(0, 10.0f, 0);
 	_meteorParticle3->AddComponent<Particle>();
 	_meteorParticle3->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
@@ -948,6 +968,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticle3->SetParent(_meteor);
 
 	_meteorParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("PlayerR4");
+	_meteorParticle4->_autoAwake = true;
 	_meteorParticle4->GetComponent<Transform>()->SetPosition(0, 10.f, 0.f);
 	_meteorParticle4->AddComponent<Particle>();
 	_meteorParticle4->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Fire1.dds", 1000);
@@ -962,6 +983,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	// ÂøÅº ÆÄÆ¼Å¬
 
 	_meteorParticleHit1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit1");
+	_meteorParticleHit1->_autoAwake = true;
 	_meteorParticleHit1->AddComponent<Particle>();
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 	_meteorParticleHit1->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
@@ -973,6 +995,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit1->SetActive(true);
 
 	_meteorParticleHit2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit2");
+	_meteorParticleHit2->_autoAwake = true;
 	_meteorParticleHit2->AddComponent<Particle>();
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
 	_meteorParticleHit2->GetComponent<Particle>()->SetParticleDuration(8.0f, 0.5f);
@@ -985,6 +1008,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit2->SetActive(true);
 
 	_meteorParticleHit3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit3");
+	_meteorParticleHit3->_autoAwake = true;
 	_meteorParticleHit3->AddComponent<Particle>();
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 	_meteorParticleHit3->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
@@ -997,6 +1021,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	_meteorParticleHit3->SetActive(true);
 
 	_meteorParticleHit4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MeteorParticleHit4");
+	_meteorParticleHit4->_autoAwake = true;
 	_meteorParticleHit4->AddComponent<Particle>();
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
 	_meteorParticleHit4->GetComponent<Particle>()->SetParticleDuration(4.0f, 0.5f);
