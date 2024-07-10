@@ -468,4 +468,8 @@ FodyWeavers.xsd
 !nfd/build/lib/Debug/x64/*
 
 # End of https://www.toptal.com/developers/gitignore/api/c++,windows,visualstudio
+/vcpkg PhysX/vcpkg/
 /vcpkg PhysX/vcpkg/vcpkg.zip
+/vcpkg PhysX.zip
+/vcpkg PhysX/vcpkg
+/vcpkg PhysX/vcpkg/*.zip

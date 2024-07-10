@@ -788,6 +788,10 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 		_pointSpecular[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetSpecular().y;
 		_pointSpecular[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetSpecular().z;
 		_pointSpecular[3] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetSpecular().w;
+
+		_lightOffset[0] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetOffSet().x;
+		_lightOffset[1] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetOffSet().y;
+		_lightOffset[2] = _gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->GetOffSet().z;
 	}
 
 
@@ -824,6 +828,9 @@ void EpicTool::InspectorWindow::DrawComponentInfo<KunrealEngine::Light>(KunrealE
 
 		ImGui::DragFloat("Range", &_pointRange, 1.0f, 0.0f);
 		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->SetPointRange(_pointRange);
+
+		ImGui::DragFloat3("LightOffset", _lightOffset, 1.0f);
+		_gameObjectlist[_selectedObjectIndex]->GetComponent<KunrealEngine::Light>()->SetOffSet(_lightOffset[0], _lightOffset[1], _lightOffset[2]);
 	}
 
 
