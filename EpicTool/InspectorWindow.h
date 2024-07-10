@@ -207,6 +207,8 @@ namespace EpicTool
 
        bool _lightGet;
 
+	   float _lightOffset[3];
+
        DirectX::XMFLOAT4 _quaternion;
 
     private:
