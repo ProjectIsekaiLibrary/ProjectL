@@ -34,6 +34,8 @@ Texture2D AdditionalTexture : register(t5);
 // 깊이 값 전달용(G-Buffer에 저장된 depth 정보를 가져와서 그림자)
 Texture2D gShadowDepthMapTexture;
 
+Texture2D gDecalTexture;
+
 TextureCube gCubeMap;
 
 //SamplerState samAnisotropic
@@ -262,11 +264,11 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 spec = float4(0.0f, 0.0f, 0.0f, 0.0f);
     
        	// 빛의 강도
-        lightIntensity = smoothstep(0, 1.f, NdotL);
+    lightIntensity = smoothstep(0, 1.f, NdotL);
         
             //float lightIntensity = NdotL > 0 ? 1 : 0;
 	// 빛의 강도에 따라 색상 출력의 레이어를 정해준다 
-        toonColor = ToonShade(lightIntensity);
+    toonColor = ToonShade(lightIntensity);
     //if (cartoon == 1.0f)
     //{
     //
@@ -333,25 +335,23 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     if (decalInfo.x == 1)
     {
-        //return float4(1.0f, 0.0f, 0.0f, 1.0f);
         float4 toDecal = mul(float4(position, 1.0f), gDecalWorldInv[decalInfo.y]);
-        
-        float minPos = -1.0f;
-        float maxPos = 1.0f;
-        
-        if (minPos <= toDecal.x && toDecal.x <= maxPos)
-        {
-            if (minPos <= toDecal.y && toDecal.y <= maxPos)
-            {
-                if (minPos <= toDecal.z && toDecal.z <= maxPos)
-                {
-                    toneMappedColor.r += 0.5f;
-                }
-        
-            }
+    
+    // 데칼 박스 내부 좌표를 텍스처 좌표로 변환
+        float2 decalUV = (toDecal.xz + 0.5f);
+    
+        float3 inDecal = 0.5f - abs(toDecal.xyz);
+    
+    // 데칼 박스 내부에 있는지 확인
+        if (inDecal.x >= 0 && inDecal.y >= 0 && inDecal.z >= 0)
+        {           
+            float4 texSample = gDecalTexture.Sample(samAnisotropic, decalUV);
+            toneMappedColor.r = texSample.r * texSample.a;
+            toneMappedColor.g = texSample.g * texSample.a;
+            toneMappedColor.b = texSample.b * texSample.a;
         }
     }
-    
+
     return float4(toneMappedColor, 1.0f);
     
     //return finalColor;
