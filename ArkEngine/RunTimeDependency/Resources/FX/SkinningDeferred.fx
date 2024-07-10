@@ -186,6 +186,20 @@ PSOut2 PS2(VertexOut pin)
     return output;
 }
 
+float4 PSForward(VertexOut pin) : SV_Target
+{
+    float3 diffuse = gDiffuseMap.Sample(samAnisotropic, pin.Tex).xyz;
+
+    float3 emissive = gEmissiveMap.Sample(samAnisotropic, pin.Tex).xyz;
+
+    float4 resultColor = float4(diffuse, gAlpha[pin.InstanceID]);
+    resultColor.x += emissive.x;
+    resultColor.y += emissive.y;
+    resultColor.z += emissive.z;
+    
+    return resultColor;
+}
+
 technique11 Light
 {
     pass P0
@@ -200,6 +214,13 @@ technique11 Light
         SetVertexShader(CompileShader(vs_5_0, VS()));
         SetGeometryShader(NULL);
         SetPixelShader(CompileShader(ps_5_0, PS2()));
+    }
+
+    pass P2
+    {
+        SetVertexShader(CompileShader(vs_5_0, VS()));
+        SetGeometryShader(NULL);
+        SetPixelShader(CompileShader(ps_5_0, PSForward()));
     }
 }
 

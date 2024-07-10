@@ -21,7 +21,7 @@ ArkEngine::ParticleSystem::ParticleSystem(const std::string& particleName, const
 	_isRandom(false),
 	_particleFadeTime(5.0f), _particleLifeTime(5.0f),
 	_particleColorEffect(nullptr), _isStart(true), _particleRotationEffect(nullptr), _particleRotateAngle(nullptr), _rotateAngle()
-	, _isParticleCameraApply(false), _isForwardRendering(false)
+	, _isParticleCameraApply(false), _isForwardRendering(true)
 {
 	_eyePosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 	_emitPosW = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);

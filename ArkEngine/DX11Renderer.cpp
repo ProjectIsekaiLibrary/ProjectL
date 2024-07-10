@@ -315,33 +315,25 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 		index->SetMainCamera(_mainCamera);
 		index->Render();
 	}
-	
-	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-	{
-		if (! index->GetIsForwardRendering())
-		{
-			index->Draw(_mainCamera, _particleCamera, 0);
-		}
-	}
 
 	BeginTransparentSet();
 
 	ResourceManager::GetInstance()->SortTransParentMesh();
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilStateNoWrite.Get(), 0);
-	
+
 	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
 	{
 		index->Render(_decalWorldVec);
 	}
-	
-	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
-	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
-	{
-		index->SetMainCamera(_mainCamera);
-		index->Render();
-	}
+	//_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+	//
+	//for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
+	//{
+	//	index->SetMainCamera(_mainCamera);
+	//	index->Render();
+	//}
 
 	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
 
@@ -400,12 +392,20 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
-		if (index->GetIsForwardRendering())
-		{
-			index->Draw(_mainCamera, _particleCamera, 1);
-		}
-		
+		index->Draw(_mainCamera, _particleCamera, 1);
 	}
+
+	BeginTransparentSet();
+
+	_deviceContext->OMSetDepthStencilState(_depthStencilState.Get(), 0);
+
+	for (const auto& index : ResourceManager::GetInstance()->GetAllTransParentRenderer())
+	{
+		index->SetMainCamera(_mainCamera);
+		index->RenderForward();
+	}
+
+	EndTransparentSet();
 
 	_font->RenderUI();
 
@@ -436,7 +436,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 		_font->RenderDebug();
 	}
-		
+
 	// 디버그용이지만 일단 분리
 	{
 		// 프러스텀 컬링용, 메쉬 크기만큼의 디버그용 오브젝트 렌더링
@@ -1080,7 +1080,7 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	}
 	else if (testdef > 10)
 	{
-		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForBloom(testdef-11));
+		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRVForBloom(testdef - 11));
 	}
 }
 

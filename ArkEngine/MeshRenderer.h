@@ -49,6 +49,8 @@ namespace ArkEngine
 	public:
 		void Render();
 
+		void RenderForward();
+
 		void ShadowRender();
 
 	public:
