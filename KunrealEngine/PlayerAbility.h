@@ -170,25 +170,7 @@ namespace KunrealEngine
 		};
 
 		// W스킬 소멸
-		Coroutine_Func(iceDestroy)
-		{
-			auto* ability = this;
-			Waitforsecond(3.0f);
-			_iceParticle1->GetComponent<Particle>()->SetActive(false);
-			_iceParticle2->GetComponent<Particle>()->SetActive(false);
-			_iceParticle3->GetComponent<Particle>()->SetActive(false);
-			_iceParticleHit1->GetComponent<Particle>()->SetActive(true);
-			_iceParticleHit2->GetComponent<Particle>()->SetActive(true);
-			_iceParticleHit1->SetActive(true);
-			_iceParticleHit2->SetActive(true);
-			ability->_destroyIce = true;
-			ability->_isIceReady = false;
-			Waitforsecond(0.5f);
-			_iceParticleHit1->GetComponent<Particle>()->SetActive(false);
-			_iceParticleHit2->GetComponent<Particle>()->SetActive(false);
-			_iceParticleHit1->SetActive(false);
-			_iceParticleHit2->SetActive(false);
-		};
+		_Coroutine(iceDestroy);
 
 		// E스킬 쿨타임
 		Coroutine_Func(LaserCoolDown)
@@ -216,34 +198,7 @@ namespace KunrealEngine
 		};
 
 		// E스킬 소멸조건
-		Coroutine_Func(laserDestroy)
-		{
-			auto* ability = this;
-			Waitforsecond(2.5f);
-			ability->_laser->GetComponent<BoxCollider>()->SetActive(false);
-			ability->_laser->SetActive(false);
-
-			float delta = 0;
-			while (true)
-			{
-				delta += TimeManager::GetInstance().GetDeltaTime();
-				ability->_laserParticle1->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				ability->_laserParticle2->GetComponent<Particle>()->SetParticleSize((20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				ability->_laserParticle3->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-				ability->_laserParticle4->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
-
-				if (delta > 2) break;
-				Return_null;
-			}
-			ability->_laserParticle1->SetActive(false);
-			ability->_laserParticle2->SetActive(false);
-			ability->_laserParticle3->SetActive(false);
-			ability->_laserParticle4->SetActive(false);
-			ability->_destroyLaser = true;
-			ability->_isLaserReady = false;
-			ability->_isLaserStarted = false;
-
-		};
+		_Coroutine(laserDestroy);
 
 		//E스킬 취소 시 해당 크기로부터 줄어들도록
 		Coroutine_Func(LaserFadeOut)

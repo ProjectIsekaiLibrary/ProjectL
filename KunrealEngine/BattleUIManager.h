@@ -66,9 +66,7 @@ namespace KunrealEngine
 		int pre_playerhp;
 		int pre_bosshp;
 
-		KunrealEngine::GameObject* _died1;
 		KunrealEngine::GameObject* _died2;
-		KunrealEngine::GameObject* _died3;
 
 	private:
 		EventManager* _eventmanager;

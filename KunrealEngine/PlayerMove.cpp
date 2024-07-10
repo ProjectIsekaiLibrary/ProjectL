@@ -27,6 +27,10 @@ void KunrealEngine::PlayerMove::Initialize()
 {
 	_transform = GetOwner()->GetComponent<Transform>();
 	_playerComp = GetOwner()->GetComponent<Player>();
+
+	_SoundComp = GetOwner()->GetComponent<SoundPlayer>();
+	_SoundComp->CreateSoundInfo("Resources/Sound/footstep-1-83098.mp3", true, false, 100);
+	_SoundComp->CreateSound(0, 1);
 }
 
 void KunrealEngine::PlayerMove::Release()
@@ -56,6 +60,11 @@ void KunrealEngine::PlayerMove::Update()
 			_playerComp->_playerStatus = Player::Status::WALK;
 			_isMoving = true;
 		}
+	}
+
+	if (_isMoving)
+	{
+		_SoundComp->Play(0);
 	}
 
 	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함

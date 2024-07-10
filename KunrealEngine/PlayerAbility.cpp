@@ -99,6 +99,33 @@ void KunrealEngine::PlayerAbility::Update()
 
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 2;				// 얼음 소환 애니메이션	
+		
+		_CoroutineIs(iceDestroy)
+		{
+			auto* ability = this;
+			Waitforsecond(3.0f);
+			_iceParticle1->GetComponent<Particle>()->SetActive(false);
+			_iceParticle2->GetComponent<Particle>()->SetActive(false);
+			_iceParticle3->GetComponent<Particle>()->SetActive(false);
+			_iceParticleHit1->GetComponent<Particle>()->SetActive(true);
+			_iceParticleHit2->GetComponent<Particle>()->SetActive(true);
+			_iceParticleHit1->SetActive(true);
+			_iceParticleHit2->SetActive(true);
+			ability->_destroyIce = true;
+			ability->_isIceReady = false;
+
+			float delta = 0.0f;
+			while (delta < 0.5f)
+			{
+				_iceParticleHit1->GetComponent<Particle>()->SetActive(false);
+				_iceParticleHit2->GetComponent<Particle>()->SetActive(false);
+				_iceParticleHit1->SetActive(false);
+				_iceParticleHit2->SetActive(false);
+				EventManager::GetInstance().CamShake(1.0f);
+				delta += TimeManager::GetInstance().GetDeltaTime();
+				Return_null;
+			}
+		};
 		Startcoroutine(iceDestroy);
 	}
 
@@ -113,7 +140,36 @@ void KunrealEngine::PlayerAbility::Update()
 		Startcoroutine(LaserStandby);
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
+		
+		_CoroutineIs(laserDestroy)
+		{
+			auto* ability = this;
+			Waitforsecond(2.5f);
 
+			ability->_laser->GetComponent<BoxCollider>()->SetActive(false);
+			ability->_laser->SetActive(false);
+
+			float delta = 0;
+			while (true)
+			{
+				delta += TimeManager::GetInstance().GetDeltaTime();
+				ability->_laserParticle1->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				ability->_laserParticle2->GetComponent<Particle>()->SetParticleSize((20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (20 - (delta * 10)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				ability->_laserParticle3->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+				ability->_laserParticle4->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
+
+				if (delta > 2) break;
+				Return_null;
+			}
+			ability->_laserParticle1->SetActive(false);
+			ability->_laserParticle2->SetActive(false);
+			ability->_laserParticle3->SetActive(false);
+			ability->_laserParticle4->SetActive(false);
+			ability->_destroyLaser = true;
+			ability->_isLaserReady = false;
+			ability->_isLaserStarted = false;
+
+		};
 		Startcoroutine(laserDestroy);
 	}
 
@@ -449,6 +505,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 
 				_shotParticleHit1->GetComponent<Particle>()->SetParticleSize(_shotParticleTimer * 40, _shotParticleTimer * 40);
 				_shotParticleHit3->GetComponent<Particle>()->SetParticleSize(_shotParticleTimer * 120, _shotParticleTimer * 120);
+				EventManager::GetInstance().CamShake(2.0f);
 
 				if (_shotParticleTimer > 0.2f)
 				{
@@ -778,6 +835,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 
 			if (!this->_isLaserHit && this->_laser->GetActivated())
 			{
+				EventManager::GetInstance().CamShake(0.5f);
 				Startcoroutine(laserHit);
 			}
 		});
@@ -1044,9 +1102,9 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 				if (_meteorParticleTimer < 0.3f)
 				{
-					EventManager::GetInstance().CamShake();
+					EventManager::GetInstance().CamShake(3.0f);
 				}
-			}
+			} 
 		});
 
 	// 다 만들었으면 컨테이너에 추가

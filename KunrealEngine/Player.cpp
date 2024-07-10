@@ -68,6 +68,8 @@ void KunrealEngine::Player::Initialize()
 	//this->_owner->GetComponent<MeshCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
 	//this->_owner->GetComponent<MeshCollider>()->SetOffset(0.0f, 10.0f, 0.0f);
 
+	this->_owner->AddComponent<SoundPlayer>();
+
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
 
