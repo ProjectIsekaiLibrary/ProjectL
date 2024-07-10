@@ -2517,7 +2517,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock1->GetComponent<Transform>()->SetPosition(-96.0f, 95.f, -30.f);
 	titleRock1->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
 	titleRock1->AddComponent<Light>();
-	titleRock1->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f);
+	titleRock1->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f, 32.f);
 	titleRock1->AddComponent<Particle>();
 	titleRock1->GetComponent<Particle>()->SetParticleEffect("FloatingFire1","Resources/Textures/Particles/flare.dds", 1000);
 	titleRock1->GetComponent<Particle>()->SetParticlePos(0.0f, 50.f, 0.0f);
@@ -2535,7 +2535,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock2->GetComponent<Transform>()->SetPosition(-230.0f, 100.f, 47.f);
 	titleRock2->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	titleRock2->AddComponent<Light>();
-	titleRock2->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f);
+	titleRock2->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f, 32.f);
 	GameObject* titleRock2Par = sceneInstance.GetCurrentScene()->CreateObject("TitleRock2Particle");
 	titleRock2Par->AddComponent<Particle>();
 	titleRock2Par->GetComponent<Particle>()->SetParticleEffect("FloatingFire2", "Resources/Textures/Particles/flare.dds", 1000);
@@ -2556,20 +2556,26 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock3->GetComponent<Transform>()->SetPosition(-98.2f, 92.f, 183.6f);
 	titleRock3->GetComponent<Transform>()->SetRotation(180.f, 0.f, 0.f);
 	titleRock3->AddComponent<Light>();
-	titleRock3->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f);
+	titleRock3->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f, 32.f);
 
 	// ºÎÀ¯¹° 4
 	GameObject* floatingObj = sceneInstance.GetCurrentScene()->CreateObject("FloatingObj");
 	floatingObj->AddComponent<MeshRenderer>();
 	floatingObj->GetComponent<MeshRenderer>()->SetMeshObject("FloatingObj/FloatingObj");
 	floatingObj->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	floatingObj->GetComponent<Transform>()->SetPosition(-41.5f, 33.f, 104.f);
+	floatingObj->GetComponent<Transform>()->SetPosition(-28.f, 95.5f, 156.f);
+	floatingObj->GetComponent<Transform>()->SetRotation(-63.f, 39.f, 17.f);
 
 	GameObject* titlePlayer = sceneInstance.GetCurrentScene()->CreateObject("TitlePlayer");
 	titlePlayer->AddComponent<Player>();
 	titlePlayer->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
 	titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
-
+	DirectX::XMFLOAT4 pdiffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
+	DirectX::XMFLOAT4 pambient = { 0.2f, 0.2f, 0.2f, 0.2f };
+	DirectX::XMFLOAT4 pspecular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	titlePlayer->AddComponent<Light>();
+	titlePlayer->GetComponent<Light>()->CreatePointLight(pambient, pdiffuse, pspecular, 300.f, 16.f);
+	titlePlayer->GetComponent<Light>()->SetOffSet(0.0f, 15.0f, -5.f);
 
 	GameObject* bossPortal = sceneInstance.GetCurrentScene()->CreateObject("BossPortal");
 	bossPortal->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 220.0f);
