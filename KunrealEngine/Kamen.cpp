@@ -111,7 +111,7 @@ void KunrealEngine::Kamen::Update()
 	_kamenSwordAfterImageParticle[7]->GetComponent<Particle>()->SetOffSet(vec9.m128_f32[0], vec9.m128_f32[1], vec9.m128_f32[2]);
 	_kamenSwordAfterImageParticle[8]->GetComponent<Particle>()->SetOffSet(vec10.m128_f32[0], vec10.m128_f32[1], vec10.m128_f32[2]);
 
-	
+	// 카멘 순간 이동 하면 라이트 위치 망가짐
 	auto SwordLightPos = DirectX::XMVectorAdd(trs, vec5);
 	_kamenSwordLight->GetComponent<Transform>()->SetPosition(SwordLightPos.m128_f32[0], SwordLightPos.m128_f32[1], SwordLightPos.m128_f32[2]);
 }
@@ -247,11 +247,11 @@ void KunrealEngine::Kamen::GamePattern()
 	//TeleportSpellPattern();							// 텔포 후 spell	
 	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	_basicPattern.emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
 	//_basicPattern.emplace_back(_swordSwingVertical);
 	//_basicPattern.emplace_back(_swordSwingTwice);
-	_basicPattern.emplace_back(_swordSwingTwiceHard);
+	//_basicPattern.emplace_back(_swordSwingTwiceHard);
 	//_basicPattern.emplace_back(_swordSwingHorizontal);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
@@ -1220,8 +1220,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				bladePrticle->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
 				bladePrticle->GetComponent<Particle>()->SetActive(false);
 				bladePrticle->AddComponent<Light>();
-				bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 70);
-				bladePrticle->GetComponent<Light>()->SetDiffuse(0.3f, 1.0f, 0.1f, 1.0f);
+				bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+				bladePrticle->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 				bladePrticle->GetComponent<Light>()->SetActive(false);
 				bladePrticle->SetActive(false);
 
@@ -1379,8 +1379,8 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			bladePrticle->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
 			bladePrticle->GetComponent<Particle>()->SetActive(false);
 			bladePrticle->AddComponent<Light>();
-			bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 70);
-			bladePrticle->GetComponent<Light>()->SetDiffuse(0.3f, 1.0f, 0.1f, 1.0f);
+			bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+			bladePrticle->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 			bladePrticle->GetComponent<Light>()->SetActive(false);
 			bladePrticle->SetActive(false);
 
@@ -1530,7 +1530,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			laserLight->AddComponent<Light>(); 
 			laserLight->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
-			laserLight->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.3, 1.0f);
+			laserLight->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 			laserLight->GetComponent<Light>()->SetActive(false);
 
 
@@ -1614,9 +1614,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 		handFire->AddComponent<BoxCollider>();
 		handFire->GetComponent<BoxCollider>()->SetColliderScale(10.0f, 10.0f, 10.0f);
 		handFire->AddComponent<Light>();
-		handFire->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular);
-		handFire->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.05f, 1.0f);
-		handFire->GetComponent<Light>()->SetPointRange(50.0f);
+		handFire->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		handFire->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 		handFire->SetTotalComponentState(false);
 		handFire->SetActive(false);
 		_handFire.emplace_back(handFire);
@@ -1745,7 +1744,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 	_lazerCollider->GetComponent<BoxCollider>()->SetColliderScale(140.0f, 40.0f, 10.0f);
 	_lazerCollider->GetComponent<BoxCollider>()->SetActive(false);
 	_lazerCollider->AddComponent<Light>();
-	_lazerCollider->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 1000);
+	_lazerCollider->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	_lazerCollider->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.3f, 1.0f);
 	_lazerCollider->SetTotalComponentState(false);
 	_lazerCollider->SetActive(false);
@@ -1848,9 +1847,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 		_kamenSwordLight = _boss->GetObjectScene()->CreateObject("KamenSwordLight");
 		_kamenSwordLight->AddComponent<Light>();
-		_kamenSwordLight->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular);
-		_kamenSwordLight->GetComponent<Light>()->SetPointRange(300.f);
-		_kamenSwordLight->SetParent(_kamenSword);
+		_kamenSwordLight->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		//_kamenSwordLight->SetParent(_kamenSword);
 	}
 
 	// 칼 검기
@@ -1946,9 +1944,8 @@ void KunrealEngine::Kamen::CreateSubObject()
 		handFire->AddComponent<BoxCollider>();
 		handFire->GetComponent<BoxCollider>()->SetColliderScale(10.0f, 10.0f, 10.0f);
 		handFire->AddComponent<Light>();
-		handFire->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular);
-		handFire->GetComponent<Light>()->SetDiffuse(0.1f, 1.0f, 0.05f, 1.0f);
-		handFire->GetComponent<Light>()->SetPointRange(50.0f);
+		handFire->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300.0f);
+		handFire->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 		_egoHandFire.emplace_back(handFire);
 
 		handFire->SetTotalComponentState(false);
@@ -2026,8 +2023,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 		boss->GetComponent<MeshRenderer>()->SetAlpha(0.5f);
 		boss->AddComponent<Light>();
-		boss->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 100);
+		boss->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		boss->GetComponent<Light>()->SetDiffuse(0.3f, 1.0f, 0.1f, 1.0f);
+		boss->GetComponent<Light>()->SetOffSet(0.0f, 15.0f, 0.0f);
 		boss->SetTotalComponentState(false);
 		boss->SetActive(false);
 
@@ -3392,6 +3390,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 			{
 				_lazer->GetComponent<Particle>()->SetActive(false);
 				_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
+				_lazerCollider->GetComponent<Light>()->SetActive(false);
 
 				auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
 				pattern->_isColliderActive[objectIndex] = false;
@@ -3416,6 +3415,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
 				_lazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.0f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
 
+				_lazerCollider->GetComponent<Light>()->SetActive(true);
+
 				if (animator->GetCurrentFrame() >= 40)
 				{
 					_timer += TimeManager::GetInstance().GetDeltaTime();
@@ -3430,7 +3431,6 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				{
 					auto objectIndex = pattern->GetSubObjectIndex(_lazerCollider);
 					// 라이트 고민중
-					_lazerCollider->GetComponent<Light>()->SetActive(true);
 
 					if (pattern->_isColliderHit[objectIndex] == false)
 					{

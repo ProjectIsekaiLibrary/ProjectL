@@ -24,7 +24,8 @@ namespace KunrealEngine
 			STAGGERED,			// 플레이어가 무력화 되었을 때		// 상태이상 등
 			PARALYSIS,			// 경직
 			SWEEP,				// 날아가는중
-			DEAD				// 사망
+			DEAD,				// 사망
+			BEFORESTART,		// 게임 시작 전 누워있는 상태
 		};
 
 		// 플레이어의 스탯 정보
@@ -94,6 +95,9 @@ namespace KunrealEngine
 
 		// 피격 이후 처리
 		void AfterHit();
+
+		// 게임 시작 전 누워있다 일어나기
+		void BeforeStart();
 
 		// 플레이어 상태 이상을 처리할 코루틴 함수
 		Coroutine_Func(afterSweep)
