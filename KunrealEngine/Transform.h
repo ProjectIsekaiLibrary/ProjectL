@@ -80,6 +80,10 @@ namespace KunrealEngine
 		void RecalculateTransform();
 
 		void RevertToOriginal();
+
+	public:
+		float _floatingFactor = 0.0f;
+		float _floatingHelper = 0.0f;
 	};
 }
 

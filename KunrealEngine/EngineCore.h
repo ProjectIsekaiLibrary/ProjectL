@@ -119,6 +119,10 @@ namespace KunrealEngine
 		POINT _finalMousePosition = { 0,0 };
 
 		bool _isEditor;			// 에디터 실행인지
+
+		void FloatingY(GameObject* name, float range);
+
+		void ShiveringLight(GameObject* name);
 	};
 }
 
