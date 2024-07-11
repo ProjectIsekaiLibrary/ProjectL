@@ -60,6 +60,7 @@ namespace KunrealEngine
 		// Scale°ª Á¶Á¤
 		void SetScale(float x, float y, float z);
 		void SetScale(const DirectX::XMFLOAT3& scale);
+		void SetTotalScale(float scale);
 
 		DirectX::XMFLOAT3 GetPosition();
 		DirectX::XMFLOAT3 GetRotation();
@@ -79,6 +80,10 @@ namespace KunrealEngine
 		void RecalculateTransform();
 
 		void RevertToOriginal();
+
+	public:
+		float _floatingFactor = 0.0f;
+		float _floatingHelper = 0.0f;
 	};
 }
 

@@ -314,3 +314,8 @@ float KunrealEngine::Light::GetPointRange()
 		return this->_rangeP;
 	}
 }
+
+DirectX::XMFLOAT3 KunrealEngine::Light::GetPointPos()
+{
+	return _decomposedPos;
+}

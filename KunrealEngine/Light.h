@@ -117,6 +117,8 @@ namespace KunrealEngine
 
 		void SetPointRange(float range);
 		float GetPointRange();
+
+		DirectX::XMFLOAT3 GetPointPos();
 	};
 }
 

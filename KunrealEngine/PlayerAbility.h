@@ -48,7 +48,6 @@ namespace KunrealEngine
 		GameObject* _meteor;		// R 스킬 운석 객체
 
 		bool _isShotHit;			// 한 번만 데미지 받도록
-		bool _isIceHit;
 		bool _isLaserHit;
 		bool _isMeteorHit;
 
@@ -81,12 +80,6 @@ namespace KunrealEngine
 		GameObject* _shotParticleHit1;
 		GameObject* _shotParticleHit2;
 		GameObject* _shotParticleHit3;
-
-		GameObject* _iceParticle1;
-		GameObject* _iceParticle2;
-		GameObject* _iceParticle3;
-		GameObject* _iceParticleHit1;
-		GameObject* _iceParticleHit2;
 
 		GameObject* _laserParticle1;
 		GameObject* _laserParticle2;
@@ -170,7 +163,21 @@ namespace KunrealEngine
 		};
 
 		// W스킬 소멸
-		_Coroutine(iceDestroy);
+
+		Coroutine_Func(CircleFadeOut)
+		{
+			auto* ability = this;
+			Waitforsecond(6.0f);
+
+			while (ability->_ice->GetComponent<Transform>()->GetScale().x > 0.0f)
+			{
+				ability->_ice->GetComponent<Transform>()->SetTotalScale(ability->_ice->GetComponent<Transform>()->GetScale().x - 0.01f);
+
+				Return_null;
+			}
+
+			ability->_ice->SetActive(false);
+		};
 
 		// E스킬 쿨타임
 		Coroutine_Func(LaserCoolDown)
