@@ -261,6 +261,7 @@ namespace KunrealEngine
 		GameObject* _kamenSwordLight;
 
 		std::vector<GameObject*> _multipleSwordVec;
+		std::vector<GameObject*> _multipleSwordWarningVec;
 
 	private:
 		// Call 거리 체크용

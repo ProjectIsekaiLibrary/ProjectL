@@ -2004,7 +2004,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 	// multiple sword
 	for (int i = 0; i < 20; i++)
 	{
-		std::string name = "MultiAttackSword" + std::to_string(i);
+		std::string name = "MultiAttackSword" + std::to_string(i + 1);
 		auto sword = _boss->GetObjectScene()->CreateObject(name);
 		sword->AddComponent<MeshRenderer>();
 		sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
@@ -2029,6 +2029,20 @@ void KunrealEngine::Kamen::CreateSubObject()
 		sword->SetActive(false);
 
 		_multipleSwordVec.emplace_back(sword);
+	}
+
+	for (int i = 0; i < 20; i++)
+	{
+		std::string objectName = "MultiAttackSwordWarning" + std::to_string(i + 1);
+		auto swordAttack = _boss->GetObjectScene()->CreateObject(objectName);
+		swordAttack->AddComponent<TransparentMesh>();
+		swordAttack->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+		swordAttack->GetComponent<TransparentMesh>()->SetTimer(2.0F);
+		swordAttack->GetComponent<TransparentMesh>()->SetRenderType(3);
+		swordAttack->GetComponent<Transform>()->SetScale(6.0f, 6.0f, 300.0f);
+		swordAttack->SetTotalComponentState(false);
+		swordAttack->SetActive(false);
+		_multipleSwordWarningVec.emplace_back(swordAttack);
 	}
 }
 
@@ -4379,6 +4393,11 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 		pattern->SetSubObject(index);
 	}
 
+	for (auto& index : _multipleSwordWarningVec)
+	{
+		pattern->SetSubObject(index);
+	}
+
 	auto initLogic = [pattern, this]()
 		{
 			for (auto& index : _multipleSwordVec)
@@ -4455,6 +4474,23 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 					auto distance = ToolBox::GetDistance(startPosition, targetPosition) - 5.0f;
 
 					_multipleSwordMoveDistance.back() = distance;
+
+					int index = _multipleSwordMoveDistance.size()-1;
+
+					if (index % 4 > 0)
+					{
+						auto interval = 200.0f;
+
+						_multipleSwordWarningVec[index]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y, 0.0f);
+
+
+						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&startPosition), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[index]), interval));
+
+						_multipleSwordWarningVec[index]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], _centerPos.y, newPosition.m128_f32[2]);
+
+						_multipleSwordWarningVec[index]->GetComponent<TransparentMesh>()->Reset();
+						_multipleSwordWarningVec[index]->GetComponent<TransparentMesh>()->SetActive(true);
+					}
 				}
 			}
 
@@ -4494,7 +4530,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 
 						if (index == 0)
 						{
-							if (_multipleSwordLookPlayer[(int)i*0.25f] == false)
+							if (_multipleSwordLookPlayer[(int)i * 0.25f] == false)
 							{
 								auto swordPos = _multipleSwordVec[i]->GetComponent<Transform>()->GetPosition();
 
@@ -4521,6 +4557,20 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 								_multipleSwordMoveDistance[i] = distance;
 
 								_multipleSwordLookPlayer[i * 0.25f] = true;
+
+
+
+								auto interval = 200.0f;
+
+								_multipleSwordWarningVec[i]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y, 0.0f);
+
+
+								DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[i]), interval));
+
+								_multipleSwordWarningVec[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], _centerPos.y, newPosition.m128_f32[2]);
+
+								_multipleSwordWarningVec[i]->GetComponent<TransparentMesh>()->Reset();
+								_multipleSwordWarningVec[i]->GetComponent<TransparentMesh>()->SetActive(true);
 							}
 						}
 
@@ -4534,14 +4584,19 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 
 							_multipleSwordMoveStart[i] == true;
 						}
-						
 
-						auto nowPos = _multipleSwordVec[i]->GetComponent<Transform>()->GetPosition();
-						DirectX::XMVECTOR swordPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&nowPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[i]), moveSpeed));
 
-						_multipleSwordMoveDistance[i] -= moveSpeed;
+						auto isPlayed = _multipleSwordWarningVec[i]->GetComponent<TransparentMesh>()->PlayOnce();
 
-						_multipleSwordVec[i]->GetComponent<Transform>()->SetPosition(swordPosition.m128_f32[0], 30.0f, swordPosition.m128_f32[2]);
+						if (isPlayed)
+						{
+							auto nowPos = _multipleSwordVec[i]->GetComponent<Transform>()->GetPosition();
+							DirectX::XMVECTOR swordPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&nowPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[i]), moveSpeed));
+
+							_multipleSwordMoveDistance[i] -= moveSpeed;
+
+							_multipleSwordVec[i]->GetComponent<Transform>()->SetPosition(swordPosition.m128_f32[0], 30.0f, swordPosition.m128_f32[2]);
+						}
 					}
 				}
 			}
