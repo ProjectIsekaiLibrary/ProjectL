@@ -108,6 +108,15 @@ void KunrealEngine::Transform::SetScale(float x, float y, float z)
 }
 
 
+void KunrealEngine::Transform::SetTotalScale(float scale)
+{
+	this->_scale.x = scale;
+	this->_scale.y = scale;
+	this->_scale.z = scale;
+
+	CreateWorldTransformMatrix();
+}
+
 void KunrealEngine::Transform::SetScale(const DirectX::XMFLOAT3& scale)
 {
 	this->_scale = scale;
