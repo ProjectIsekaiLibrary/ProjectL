@@ -260,6 +260,8 @@ namespace KunrealEngine
 
 		GameObject* _kamenSwordLight;
 
+		std::vector<GameObject*> _multipleSwordVec;
+
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
@@ -345,6 +347,14 @@ namespace KunrealEngine
 		bool _isEgoAttackReady;
 		bool _isEgoAttack;
 		float _egoTimer;
+
+		// 2페이즈 핵심패턴
+	private:
+		std::vector<DirectX::XMFLOAT3> _multipleSwordDirectionVec;
+		std::vector<float> _multipleSwordMoveDistance;
+		std::vector<bool> _multipleSwordLookPlayer;
+		std::vector<bool> _multipleSwordMoveStart;
+
 
 		// 파티클
 	private:

@@ -160,6 +160,8 @@ namespace KunrealEngine
 
 		void SetSpecialPatternPlayPhase(unsigned int phase);
 
+		void StopSpecialPattern();
+
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
@@ -255,6 +257,9 @@ namespace KunrealEngine
 		
 	private:
 		unsigned int _goalPhase;
+
+	private:
+		bool _stopSpecialPattern;
 
 	private:
 		Coroutine_Func(patternEnd)

@@ -152,6 +152,42 @@ DirectX::XMFLOAT3 KunrealEngine::ToolBox::RotateVector(const DirectX::XMFLOAT3& 
 }
 
 
+float KunrealEngine::ToolBox::CalculateAngleBetweenVectors(const DirectX::XMFLOAT3& vec1, const DirectX::XMFLOAT3& vec2)
+{
+	auto oneVec = DirectX::XMLoadFloat3(&vec1);
+	auto anotherVec = DirectX::XMLoadFloat3(&vec2);
+
+	// 벡터의 내적을 계산
+	float dotProduct = DirectX::XMVectorGetX(DirectX::XMVector3Dot(oneVec, anotherVec));
+
+	// 벡터의 크기를 계산
+	float magnitudeVec1 = DirectX::XMVectorGetX(DirectX::XMVector3Length(oneVec));
+	float magnitudeVec2 = DirectX::XMVectorGetX(DirectX::XMVector3Length(anotherVec));
+
+	// 내적과 크기를 사용하여 코사인 값을 계산
+	float cosTheta = dotProduct / (magnitudeVec1 * magnitudeVec2);
+
+	// 코사인 값을 -1과 1 사이로 클램프
+	cosTheta = std::max(-1.0f, std::min(1.0f, cosTheta));
+
+	// 라디안 단위의 각도를 구함
+	float angleInRadians = std::acos(cosTheta);
+
+	// 각도를 도 단위로 변환
+	float angleInDegrees = DirectX::XMConvertToDegrees(angleInRadians);
+
+	// 두 벡터의 외적을 계산하여 부호를 확인하고 부호를 적용
+	DirectX::XMVECTOR crossProduct = DirectX::XMVector3Cross(oneVec, anotherVec);
+	DirectX::XMFLOAT3 crossProductResult;
+	DirectX::XMStoreFloat3(&crossProductResult, crossProduct);
+
+	if (crossProductResult.y < 0) {
+		angleInDegrees = -angleInDegrees;
+	}
+
+	return angleInDegrees;
+}
+
 DirectX::XMFLOAT3 KunrealEngine::ToolBox::RotateVector(const DirectX::XMFLOAT3& direction, DirectX::XMVECTOR& quaternion)
 {
 	DirectX::XMVECTOR vec = XMLoadFloat3(&direction);

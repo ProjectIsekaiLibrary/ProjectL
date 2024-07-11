@@ -27,9 +27,9 @@ KunrealEngine::Boss::Boss()
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
-	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(), 
+	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(),
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
-	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1)
+	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern()
 {
 }
 
@@ -595,7 +595,7 @@ void KunrealEngine::Boss::CoreAttack()
 
 void KunrealEngine::Boss::SpecialAttack()
 {
-	if (_info._phase != _specialPatternPlayPhase)
+	if (_info._phase != _specialPatternPlayPhase || _stopSpecialPattern)
 	{
 		if (_isSpecialPatternPlaying)
 		{
@@ -935,6 +935,12 @@ float KunrealEngine::Boss::CalculateAngle(const DirectX::XMFLOAT3& bossPosition,
 void KunrealEngine::Boss::SetSpecialPatternPlayPhase(unsigned int phase)
 {
 	_specialPatternPlayPhase = phase;
+}
+
+
+void KunrealEngine::Boss::StopSpecialPattern()
+{
+	_stopSpecialPattern = true;
 }
 
 bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)
