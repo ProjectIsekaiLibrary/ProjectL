@@ -10,6 +10,8 @@ namespace DirectX
 
 namespace KunrealEngine
 {
+	class GameObject;
+
 	class _DECLSPEC PlayerMove : public Component
 	{
 	public:
@@ -57,6 +59,20 @@ namespace KunrealEngine
 		float _tempX;
 		float _tempY;
 		float _tempZ;
+
+		// 대시 파티클
+		std::vector<GameObject*> _playerDashParticleStart;
+		std::vector<GameObject*> _playerDashParticleEnd;
+
+		// 대시 파티클 초기화
+		void DashParticleSetting();
+
+		// 타이머 
+		float _timer;
+
+		// 파티클 출력 처리를 위한 변수
+		bool _isDashStart;
+		bool _isDashEnd;
 
 	public:
 		// 플레이어 이동

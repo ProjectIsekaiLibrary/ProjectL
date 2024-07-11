@@ -48,7 +48,7 @@ void EpicTool::DataControlWindow::ShowWindow(bool& close, int& selectedObjectInd
 	static ImGuiDockNodeFlags dockspace_flags = ImGuiDockNodeFlags_None;
 
 	
-	ChangeScene(selectedObjectIndex);
+	//ChangeScene(selectedObjectIndex);
 	
 
 	if (_show_save_editor)
