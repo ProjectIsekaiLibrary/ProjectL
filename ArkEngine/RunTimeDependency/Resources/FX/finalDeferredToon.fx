@@ -245,7 +245,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float rimThreshold = 0.2f;
     float rim = saturate(dot(normal, toLightDir)); // 시선 방향을 기준으로 Rim을 계산합니다
     rim = smoothstep(1.0f - rimThreshold, 1.0f, rim); // 임계값에 따라 Rim을 부드럽게 보정합니다
-    float3 rimColor = float3(1.0f, 0.0f, 0.0f); // Rim 빛의 색상을 지정합니다 (필요에 따라 조절 가능)
+    float3 rimColor = float3(0.0f, 0.0f, 0.0f); // Rim 빛의 색상을 지정합니다 (필요에 따라 조절 가능)
     float4 rimLighting = rim * rimIntensity * float4(rimColor, 1.0f);
 
 	// Toon Shading
@@ -318,8 +318,8 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 specular = specularIntensitySmooth * _SpecularColor;
 
 	// Emissive
-    float4 emissiveColor = float4(emissive, 1.0f);
-    litColor += emissiveColor;
+    //float4 emissiveColor = float4(emissive, 1.0f);
+    //litColor += emissiveColor;
 
 	// OutLine
     float outlineThreshold = 0.99f; // 외곽선 감지 임계값
@@ -329,7 +329,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
 	
 	// 원래 물체의 색상과 외곽선을 더함
-    float4 finalColor = litColor; //+ outline + specular + rimLighting;
+    float4 finalColor = litColor + outline + specular + rimLighting;
     
     float3 toneMappedColor = ToneMapReinhard(finalColor.xyz);
     
@@ -355,8 +355,8 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
             }
         }
     }
-
-    return float4(toneMappedColor, 1.0f);
+    float4 emissiveColor = float4(emissive, 0.0f);
+    return float4(toneMappedColor, 1.0f) + emissiveColor;
     
     //return finalColor;
    

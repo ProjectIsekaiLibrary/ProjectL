@@ -284,15 +284,17 @@ void KunrealEngine::EngineCore::Update()
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
-	FloatingY(titleRock1, 5);
-	FloatingY(titleRock2, 3);
-	FloatingY(titleRock3, 4);
-	FloatingY(floatingObj, 6);
+	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Title")
+	{
+		FloatingY(titleRock1, 5);
+		FloatingY(titleRock2, 3);
+		FloatingY(titleRock3, 4);
+		FloatingY(floatingObj, 6);
 
-	ShiveringLight(titleRock1);
-	ShiveringLight(titleRock2);
-	ShiveringLight(titleRock3);
-
+		ShiveringLight(titleRock1);
+		ShiveringLight(titleRock2);
+		ShiveringLight(titleRock3);
+	}
 	MoveToMain();
 	Updatecoroutine();
 }
@@ -515,13 +517,13 @@ void KunrealEngine::EngineCore::ParticleTest()
 	lightTest->GetComponent<Light>()->SetActive(true);
 	lightTest->SetActive(true);
 
-	// Player
-	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
-	player->AddComponent<Player>();
+	//// Player
+	//player = sceneInstance.GetCurrentScene()->CreateObject("Player");
+	//player->AddComponent<Player>();
 
-	// Kamen
-	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	kamen->AddComponent<Kamen>();
+	//// Kamen
+	//kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	//kamen->AddComponent<Kamen>();
 
 	particle = sceneInstance.GetCurrentScene()->CreateObject("Particle");
 	particle->GetComponent<Transform>()->SetPosition(-20, 0, 0);
@@ -1677,49 +1679,49 @@ void KunrealEngine::EngineCore::ParticleTest()
 	mapParticleEye8->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye8->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
-	bossEgoRush1 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush1");
-	bossEgoRush1->AddComponent<Particle>();
-	bossEgoRush1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
-	bossEgoRush1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
-	bossEgoRush1->SetParent(kamen);
-	bossEgoRush1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
+	//bossEgoRush1 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush1");
+	//bossEgoRush1->AddComponent<Particle>();
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+	//bossEgoRush1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+	//bossEgoRush1->SetParent(kamen);
+	//bossEgoRush1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
 
-	bossEgoRush2 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush2");
-	bossEgoRush2->AddComponent<Particle>();
-	bossEgoRush2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
-	bossEgoRush2->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	bossEgoRush2->SetParent(kamen);
-	bossEgoRush2->GetComponent<Transform>()->SetPosition(0, 13.0f, 0.0f);
+	//bossEgoRush2 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush2");
+	//bossEgoRush2->AddComponent<Particle>();
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
+	//bossEgoRush2->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//bossEgoRush2->SetParent(kamen);
+	//bossEgoRush2->GetComponent<Transform>()->SetPosition(0, 13.0f, 0.0f);
 
-	bossEgoRush3 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush3");
-	bossEgoRush3->AddComponent<Particle>();
-	bossEgoRush3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
-	bossEgoRush3->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	bossEgoRush3->SetParent(kamen);
-	bossEgoRush3->GetComponent<Transform>()->SetPosition(0, 10.0f, -2.0f);
+	//bossEgoRush3 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush3");
+	//bossEgoRush3->AddComponent<Particle>();
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
+	//bossEgoRush3->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//bossEgoRush3->SetParent(kamen);
+	//bossEgoRush3->GetComponent<Transform>()->SetPosition(0, 10.0f, -2.0f);
 
-	bossEgoRush4 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush4");
-	bossEgoRush4->AddComponent<Particle>();
-	bossEgoRush4->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleDuration(0.5f, 1.0f);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleSize(15.f, 40.0f);
-	bossEgoRush4->GetComponent<Particle>()->AddParticleColor(0.6f, 6.0f, 0.0f);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
-	bossEgoRush3->SetParent(kamen);
-	bossEgoRush4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
+	//bossEgoRush4 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush4");
+	//bossEgoRush4->AddComponent<Particle>();
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleDuration(0.5f, 1.0f);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleSize(15.f, 40.0f);
+	//bossEgoRush4->GetComponent<Particle>()->AddParticleColor(0.6f, 6.0f, 0.0f);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
+	//bossEgoRush3->SetParent(kamen);
+	//bossEgoRush4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
 
 	// 3페이즈 보스 이펙트, 링부분 앵글에 보스의 로테이션 Y값을 받아줘야함
 	// 뒷면에는 180을 더 한 값을 받아줘야함
