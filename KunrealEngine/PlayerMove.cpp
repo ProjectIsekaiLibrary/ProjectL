@@ -10,10 +10,12 @@
 #include "Camera.h"
 #include "Navigation.h"
 #include "ToolBox.h"
+#include "GameObject.h"
 
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
-	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(2.0f)
+	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(2.0f),/* _playerDashParticleStart{0}, _playerDashParticleEnd{0},*/
+	_timer(0), _isDashStart(false), _isDashEnd(false)
 {
 
 }
@@ -27,11 +29,10 @@ void KunrealEngine::PlayerMove::Initialize()
 {
 	_transform = GetOwner()->GetComponent<Transform>();
 	_playerComp = GetOwner()->GetComponent<Player>();
-
 	_SoundComp = GetOwner()->GetComponent<SoundPlayer>();
 	_SoundComp->CreateSoundInfo("Resources/Sound/footstep-1-83098.mp3", true, false, 100);
 	_SoundComp->CreateSound(0, 1);
-}
+	DashParticleSetting();}
 
 void KunrealEngine::PlayerMove::Release()
 {
@@ -75,12 +76,14 @@ void KunrealEngine::PlayerMove::Update()
 			)
 		{
 			this->_isDashReady = false;
+			this->_isDashStart = true;
 			Startcoroutine(dashReady);
 
 			// 이동 상태 해제
 			_isMoving = false;
 			_movedRange = 0.0f;
 			_movableRange = 0.0f;
+			_timer = 0.0f;
 
 			UpdateTargetPosition();
 			UpdateDashNode();
@@ -422,10 +425,69 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 			_playerComp->_playerStatus = Player::Status::IDLE;
 		}
 
+		if (_isDashStart == true)
+		{		
+			_isDashStart = false;
+			_isDashEnd = true;
+			for (auto& playerDashParticleStart : _playerDashParticleStart)
+			{
+				playerDashParticleStart->GetComponent<Transform>()->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
+			}
+		}
+
+		for (auto& playerDashParticleStart : _playerDashParticleStart)
+		{
+			if (playerDashParticleStart->GetComponent<Particle>()->GetParticleSize().x > 0)
+			{
+				playerDashParticleStart->GetComponent<Particle>()->SetActive(true);
+			}
+			else
+			{
+				playerDashParticleStart->GetComponent<Particle>()->SetActive(false);
+			}		
+		}
+
+		_timer += TimeManager::GetInstance().GetDeltaTime();
+		_playerDashParticleStart[0]->GetComponent<Particle>()->SetParticleSize(30 - (120 * _timer), 30 - (120 * _timer));
+		_playerDashParticleStart[1]->GetComponent<Particle>()->SetParticleSize(30 - (120 * _timer), 30 - (120 * _timer));
+		_playerDashParticleStart[2]->GetComponent<Particle>()->SetParticleSize(10 - (40 * _timer), 10 - (40 * _timer));
+		_playerDashParticleStart[3]->GetComponent<Particle>()->SetParticleSize(25 - (100 * _timer), 25 - (100 * _timer));
+
 	}
 	else
 	{
 		this->GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
+		if (this->GetOwner()->GetComponent<MeshRenderer>()->GetActivated() == true)
+		{
+			if (_isDashEnd == true)
+			{
+				_timer = 0;
+				_isDashEnd = false;
+				for (auto& playerDashParticleEnd : _playerDashParticleEnd)
+				{
+					playerDashParticleEnd->GetComponent<Transform>()->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);			
+				}
+			}
+
+			_timer += TimeManager::GetInstance().GetDeltaTime();
+			for (auto& playerDashParticleEnd : _playerDashParticleEnd)
+			{
+				if (playerDashParticleEnd->GetComponent<Particle>()->GetParticleSize().x > 0)
+				{
+					playerDashParticleEnd->GetComponent<Particle>()->SetActive(true);
+				}
+				else
+				{
+					playerDashParticleEnd->GetComponent<Particle>()->SetActive(false);
+				}
+			}
+
+			_playerDashParticleEnd[0]->GetComponent<Particle>()->SetParticleSize(30 - (120 * _timer), 30 - (120 * _timer));
+			_playerDashParticleEnd[1]->GetComponent<Particle>()->SetParticleSize(30 - (120 * _timer), 30 - (120 * _timer));
+			_playerDashParticleEnd[2]->GetComponent<Particle>()->SetParticleSize(10 - (40 * _timer), 10 - (40 * _timer));
+			_playerDashParticleEnd[3]->GetComponent<Particle>()->SetParticleSize(25 - (100 * _timer), 25 - (100 * _timer));
+			
+		}
 	}
 }
 
@@ -575,5 +637,101 @@ void KunrealEngine::PlayerMove::ShowPlayerInfo()
 		default:
 			GRAPHICS->DrawDebugText(360, 400, 20, "Player : IDK");
 			break;
+	}
+}
+
+void KunrealEngine::PlayerMove::DashParticleSetting()
+{
+	for (int i = 0; i < 2; i++)
+	{
+		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
+		dashParticle->AddComponent<Particle>();
+		dashParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+		dashParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		dashParticle->GetComponent<Particle>()->SetParticleSize(30.0f, 30.0f);
+		dashParticle->GetComponent<Particle>()->AddParticleColor(0.6f, 0.3f, 1.0f);
+		dashParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetOffSet(0.0f, 10.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetActive(false);
+
+
+		if (i == 0)
+		{
+			_playerDashParticleStart.emplace_back(dashParticle);
+		}
+		else if (i == 1)
+		{
+			_playerDashParticleEnd.emplace_back(dashParticle);
+		}
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
+		dashParticle->AddComponent<Particle>();
+		dashParticle->GetComponent<Particle>()->SetParticleEffect("fx_EnergyBolt7", "Resources/Textures/Particles/fx_EnergyBolt7.dds", 1000);
+		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+		dashParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		dashParticle->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+		dashParticle->GetComponent<Particle>()->AddParticleColor(0.3f, 0.15f, 0.5f);
+		dashParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetOffSet(0.0f, 10.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetActive(false);
+
+		if (i == 0)
+		{
+			_playerDashParticleStart.emplace_back(dashParticle);
+		}
+		else if (i == 1)
+		{
+			_playerDashParticleEnd.emplace_back(dashParticle);
+		}
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
+		dashParticle->AddComponent<Particle>();
+		dashParticle->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		dashParticle->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		dashParticle->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
+		dashParticle->GetComponent<Particle>()->AddParticleColor(0.6f, 0.3f, 1.0f);
+		dashParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetOffSet(0.0f, 10.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetActive(false);
+
+		if (i == 0)
+		{
+			_playerDashParticleStart.emplace_back(dashParticle);
+		}
+		else if (i == 1)
+		{
+			_playerDashParticleEnd.emplace_back(dashParticle);
+		}
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
+		dashParticle->AddComponent<Particle>();
+		dashParticle->GetComponent<Particle>()->SetParticleEffect("LightFlash2", "Resources/Textures/Particles/fx_LightFlash2.dds", 1000);
+		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+		dashParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		dashParticle->GetComponent<Particle>()->SetParticleSize(25.f, 25.0f);
+		dashParticle->GetComponent<Particle>()->AddParticleColor(0.6f, 0.3f, 1.0f);
+		dashParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetOffSet(0.0f, 10.0f, 0.0f);
+		dashParticle->GetComponent<Particle>()->SetActive(false);
+
+		if (i == 0)
+		{
+			_playerDashParticleStart.emplace_back(dashParticle);
+		}
+		else if (i == 1)
+		{
+			_playerDashParticleEnd.emplace_back(dashParticle);
+		}
 	}
 }
