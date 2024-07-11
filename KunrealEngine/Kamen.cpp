@@ -4492,7 +4492,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 					{
 						auto index = i % 4;
 
-						if (index == 1)
+						if (index == 0)
 						{
 							if (_multipleSwordLookPlayer[(int)i*0.25f] == false)
 							{
