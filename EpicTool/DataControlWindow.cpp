@@ -270,22 +270,6 @@ void EpicTool::DataControlWindow::ChangeScene(int& selectedObjectIndex)
 	}
 	else if (scene == "Main" && _scene1First == false)
 	{
-		 _scene1First = true;
-		 // _scene2First = false;
-		 // _scene3First = false;
-		 // _scene4First = false;
-		 // _scene5First = false;
-		 selectedObjectIndex = -1;
-
-		 // 파일명 설정
-		 std::string filename = "mapTest1.json"; // 예시 파일명
-
-		 // 파일의 절대 경로 생성
-		 std::string filePath = "Resources/mapData/" + filename;
-		 Deserialize* _deserialize = new Deserialize();
-		 _deserialize->Initialize(filePath);
-
-
 		 auto gameObjectList = KunrealEngine::GetCurrentScene()->GetObjectList();
 
 		 for (auto mainCamera : gameObjectList)
