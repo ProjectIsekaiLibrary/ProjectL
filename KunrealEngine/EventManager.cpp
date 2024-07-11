@@ -116,12 +116,12 @@ std::vector<float> KunrealEngine::EventManager::CamShakeLinear(float sigma, int 
 	return result;
 }
 
-void KunrealEngine::EventManager::CamShake()
+void KunrealEngine::EventManager::CamShake(float harder)
 {
 	// 무작위 카메라 흔들기. 
 	// 그냥 지정된 범위 내 랜덤값을 때려박는다.
-	_camshakex = ToolBox::GetRandomFloat(0.0f, 2.0f);
-	_camshakez = ToolBox::GetRandomFloat(0.0f, 2.0f);
+	_camshakex = ToolBox::GetRandomFloat(0.0f, harder);
+	_camshakez = ToolBox::GetRandomFloat(0.0f, harder);
 }
 
 //void KunrealEngine::EventManager::CalculateDamageToBoss()

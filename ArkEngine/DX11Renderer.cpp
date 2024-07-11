@@ -384,15 +384,15 @@ void ArkEngine::ArkDX11::DX11Renderer::Render()
 
 	EndTransparentSet();
 
+	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
+	{
+		index->Draw(_mainCamera, _particleCamera, 1);
+	}
+
 	// Å¥ºê¸Ê ·»´õ¸µ
 	if (_mainCubeMap != nullptr)
 	{
 		_mainCubeMap->Render();
-	}
-
-	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
-	{
-		index->Draw(_mainCamera, _particleCamera, 1);
 	}
 
 	BeginTransparentSet();
@@ -822,6 +822,14 @@ GInterface::GraphicsDirLight* ArkEngine::ArkDX11::DX11Renderer::CreateDirectiona
 		DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
 		CreateShadowCamera(GetMyPosition(direction, targetPos), targetPos);
 	}
+	else
+	{
+		auto iCamera = ResourceManager::GetInstance()->GetShadowCamera().back();
+
+		DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
+		iCamera->SetCameraPos(targetPos, direction, 200.0f);
+	}
+
 
 	return LightManager::GetInstance()->GetDirLightInterface();
 }

@@ -87,6 +87,9 @@ namespace KunrealEngine
 		FMOD::System* _fmodSystem;
 		std::vector<Sound> _soundBuffer;
 		std::vector<FMOD::Channel*> _channels;
+		std::vector<FMOD::Channel*> _channels2;
+
+		int played = 0;
 
 		const float DISTANCEFACTOR;
 	};

@@ -29,7 +29,7 @@ namespace KunrealEngine
 		void SetCamera(std::string name);
 		std::vector<DirectX::XMFLOAT2> CamShake(float radius, int numPoints);
 		std::vector<float> CamShakeLinear(float sigma, int numPoints);
-		void CamShake();
+		void CamShake(float harder);
 
 		// ΩÃ±€≈Ê
 	public:

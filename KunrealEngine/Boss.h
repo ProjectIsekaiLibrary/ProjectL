@@ -77,6 +77,7 @@ namespace KunrealEngine
 
 	public:
 		void PatternForceEnd();
+		void ChangePhase(unsigned int phase);
 
 	public:
 		// 보스의 정보 넣기
@@ -157,6 +158,10 @@ namespace KunrealEngine
 		// 보스와 플레이어 사이의 각도 계산
 		float CalculateAngle(const DirectX::XMFLOAT3& bossPosition, const DirectX::XMFLOAT3& playerPosition);
 
+		void SetSpecialPatternPlayPhase(unsigned int phase);
+
+		void StopSpecialPattern();
+
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
@@ -187,7 +192,7 @@ namespace KunrealEngine
 
 		GameObject* _player;
 
-		std::vector<BossPattern*> _basicPattern;
+		std::vector<std::vector<BossPattern*>> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
 		
 		// 보스의 움직임과 무관하게 일정 주기마다 실행
@@ -246,6 +251,15 @@ namespace KunrealEngine
 		bool _isSpecialPatternPlaying;
 		bool _canPlaySpecialPattern;
 		bool _specialPatternEndLogicPlay;
+
+	private:
+		unsigned int _specialPatternPlayPhase;
+		
+	private:
+		unsigned int _goalPhase;
+
+	private:
+		bool _stopSpecialPattern;
 
 	private:
 		Coroutine_Func(patternEnd)

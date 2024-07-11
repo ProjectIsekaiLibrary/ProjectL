@@ -270,7 +270,16 @@ namespace KunrealEngine
 
 		if (index >= 0 && index < _soundBuffer.size())
 		{
+ 			bool isplay = false;
+ 			auto result = _channels[index]->isPlaying(&isplay);
+ 			if (isplay) 
+ 			{
+ 				return;
+ 			}
+
 			fr = _fmodSystem->playSound(_soundBuffer[index].fmodSound, 0, false, &_channels[index]);
+			played++;
+			_channels2.push_back(_channels[index]);
 			if (fr != FMOD_OK)
 			{
 				std::cerr << "FMOD error! (" << fr << ") " << FMOD_ErrorString(fr) << std::endl;

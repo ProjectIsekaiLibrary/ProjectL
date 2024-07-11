@@ -292,20 +292,6 @@ void KunrealEngine::BattleUIManager::Initialize()
 	bosshp_background2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	// 플레이어가 죽었을때 쓸 UI
-	_died1 = scene.GetCurrentScene()->CreateObject("you_die1");
-	_died1->SetParent(_battleuibox);
-	_died1->AddComponent<ImageRenderer>();
-	_died1->GetComponent<ImageRenderer>()->SetImage("ui/you_die.png");
-	_died1->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
-	_died1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-
-	_died3 = scene.GetCurrentScene()->CreateObject("you_die3");
-	_died3->SetParent(_battleuibox);
-	_died3->AddComponent<ImageRenderer>();
-	_died3->GetComponent<ImageRenderer>()->SetImage("ui/youdied_light.png");
-	_died3->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
-	_died3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-
 	_died2 = scene.GetCurrentScene()->CreateObject("you_die2");
 	_died2->SetParent(_battleuibox);
 	_died2->AddComponent<ImageRenderer>();
@@ -321,9 +307,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_dash_cool->SetActive(false);
 	_potion_cool->SetActive(false);
 
-	_died1->SetActive(false);
 	_died2->SetActive(false);
-	_died3->SetActive(false);
 }
 
 void KunrealEngine::BattleUIManager::Release()
@@ -788,16 +772,13 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		float delta = 0;
 		float scale = 1.0f;
 
-		uimanager->_died1->SetActive(true);
 		uimanager->_died2->SetActive(true);
-		uimanager->_died3->SetActive(true);
 
 		int loop = 0;
 		while (loop < 50)
 		{
 			scale += 0.005;
 			uimanager->_died2->GetComponent<Transform>()->SetScale(scale, scale, 1.0f);
-			uimanager->_died3->GetComponent<Transform>()->SetScale(scale, scale, 1.0f);
 			auto preimgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
 			
 			Return_null;
@@ -808,20 +789,11 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 			float a = nowpos.x - ((float)(imgsize.x - preimgsize.x)/2);
 			float b = nowpos.y - ((float)(imgsize.y - preimgsize.y)/2);
 			uimanager->_died2->GetComponent<Transform>()->SetPosition(a, b, 1.0f);
-			uimanager->_died3->GetComponent<Transform>()->SetPosition(a, b, 1.0f);
 			
 
 			loop++;
 		}
-		float alpha = 1.0f;
-		
-		for (; alpha > 0 ; alpha -= 0.1f)
-		{
-			uimanager->_died3->GetComponent<ImageRenderer>()->SetAlpha(alpha);
-			Waitforsecond(0.1f);
-		}
 
-		uimanager->_died3->SetActive(false);
 		//
 		// 여기에 타이틀 씬으로 돌아가는 코드를 넣을 것
 		//

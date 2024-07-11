@@ -35,6 +35,7 @@ namespace KunrealEngine
 		Transform* _transform;					// 부모 오브젝트의 Transform
 		DirectX::XMFLOAT3 _targetPos;			// 이동할 위치
 		Player* _playerComp;					// 플레이어 컴포넌트
+		SoundPlayer* _SoundComp;
 		float _errorRange;						// 이 정도 오차범위 이내로 움직이면 움직임이 완료된 것으로 판단
 		int _nodeCount;							// 이동할 노드의 수
 		float _movedRange;						// 대시로 이동한 거리 체크용 변수

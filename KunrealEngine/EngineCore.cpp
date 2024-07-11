@@ -31,6 +31,10 @@ KunrealEngine::GameObject* bossMap;
 KunrealEngine::GameObject* tree2;
 KunrealEngine::GameObject* tree3;
 KunrealEngine::GameObject* tree4;
+KunrealEngine::GameObject* titleRock1;
+KunrealEngine::GameObject* titleRock2;
+KunrealEngine::GameObject* titleRock3;
+KunrealEngine::GameObject* floatingObj;
 
 KunrealEngine::GameObject* Title_ui_box;	// 타이틀UI
 KunrealEngine::GameObject* pause_ui_box;	// 일시정지
@@ -264,6 +268,7 @@ void KunrealEngine::EngineCore::Update()
 	CheckMousePosition();
 
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
+	soundInstance.Update();
 
 	// UI 실행,종료
 	if (inputInstance->KeyDown(KEY::ESCAPE))
@@ -274,26 +279,22 @@ void KunrealEngine::EngineCore::Update()
 	if (inputInstance->KeyDown(KEY::PERIOD))
 	{
 		EventManager::GetInstance()._iscamfollow = EventManager::GetInstance()._iscamfollow ? false : true;
-
-		//_Coroutine(camshake);
-		//_CoroutineIs(camshake)
-		//{
-		//	std::vector<DirectX::XMFLOAT2> campos = EventManager::GetInstance().CamShake(3,15);
-		//	for (auto pos : campos)
-		//	{
-		//		EventManager::GetInstance()._camshakex = pos.x;
-		//		EventManager::GetInstance()._camshakez = pos.y;
-		//		Return_null;
-		//	}
-		//	EventManager::GetInstance()._camshakex = 0;
-		//	EventManager::GetInstance()._camshakez = 0;
-		//};
-		//Startcoroutine(camshake);
 	}
 	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
 
+	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Title")
+	{
+		FloatingY(titleRock1, 5);
+		FloatingY(titleRock2, 3);
+		FloatingY(titleRock3, 4);
+		FloatingY(floatingObj, 6);
+
+		ShiveringLight(titleRock1);
+		ShiveringLight(titleRock2);
+		ShiveringLight(titleRock3);
+	}
 	MoveToMain();
 	Updatecoroutine();
 }
@@ -516,13 +517,13 @@ void KunrealEngine::EngineCore::ParticleTest()
 	lightTest->GetComponent<Light>()->SetActive(true);
 	lightTest->SetActive(true);
 
-	// Player
-	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
-	player->AddComponent<Player>();
+	//// Player
+	//player = sceneInstance.GetCurrentScene()->CreateObject("Player");
+	//player->AddComponent<Player>();
 
-	// Kamen
-	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	kamen->AddComponent<Kamen>();
+	//// Kamen
+	//kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	//kamen->AddComponent<Kamen>();
 
 	particle = sceneInstance.GetCurrentScene()->CreateObject("Particle");
 	particle->GetComponent<Transform>()->SetPosition(-20, 0, 0);
@@ -1678,49 +1679,49 @@ void KunrealEngine::EngineCore::ParticleTest()
 	mapParticleEye8->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye8->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
-	bossEgoRush1 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush1");
-	bossEgoRush1->AddComponent<Particle>();
-	bossEgoRush1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
-	bossEgoRush1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
-	bossEgoRush1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
-	bossEgoRush1->SetParent(kamen);
-	bossEgoRush1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
+	//bossEgoRush1 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush1");
+	//bossEgoRush1->AddComponent<Particle>();
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+	//bossEgoRush1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
+	//bossEgoRush1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+	//bossEgoRush1->SetParent(kamen);
+	//bossEgoRush1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
 
-	bossEgoRush2 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush2");
-	bossEgoRush2->AddComponent<Particle>();
-	bossEgoRush2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
-	bossEgoRush2->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
-	bossEgoRush2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	bossEgoRush2->SetParent(kamen);
-	bossEgoRush2->GetComponent<Transform>()->SetPosition(0, 13.0f, 0.0f);
+	//bossEgoRush2 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush2");
+	//bossEgoRush2->AddComponent<Particle>();
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
+	//bossEgoRush2->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
+	//bossEgoRush2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//bossEgoRush2->SetParent(kamen);
+	//bossEgoRush2->GetComponent<Transform>()->SetPosition(0, 13.0f, 0.0f);
 
-	bossEgoRush3 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush3");
-	bossEgoRush3->AddComponent<Particle>();
-	bossEgoRush3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
-	bossEgoRush3->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
-	bossEgoRush3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-	bossEgoRush3->SetParent(kamen);
-	bossEgoRush3->GetComponent<Transform>()->SetPosition(0, 10.0f, -2.0f);
+	//bossEgoRush3 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush3");
+	//bossEgoRush3->AddComponent<Particle>();
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleDuration(2.0f, 4.0f);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleSize(15.0f, 40.0f);
+	//bossEgoRush3->GetComponent<Particle>()->AddParticleColor(0.5f, 6.0f, 0.0f);
+	//bossEgoRush3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//bossEgoRush3->SetParent(kamen);
+	//bossEgoRush3->GetComponent<Transform>()->SetPosition(0, 10.0f, -2.0f);
 
-	bossEgoRush4 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush4");
-	bossEgoRush4->AddComponent<Particle>();
-	bossEgoRush4->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleDuration(0.5f, 1.0f);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleSize(15.f, 40.0f);
-	bossEgoRush4->GetComponent<Particle>()->AddParticleColor(0.6f, 6.0f, 0.0f);
-	bossEgoRush4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
-	bossEgoRush3->SetParent(kamen);
-	bossEgoRush4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
+	//bossEgoRush4 = sceneInstance.GetCurrentScene()->CreateObject("BossEgoRush4");
+	//bossEgoRush4->AddComponent<Particle>();
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleDuration(0.5f, 1.0f);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleSize(15.f, 40.0f);
+	//bossEgoRush4->GetComponent<Particle>()->AddParticleColor(0.6f, 6.0f, 0.0f);
+	//bossEgoRush4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
+	//bossEgoRush3->SetParent(kamen);
+	//bossEgoRush4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
 
 	// 3페이즈 보스 이펙트, 링부분 앵글에 보스의 로테이션 Y값을 받아줘야함
 	// 뒷면에는 180을 더 한 값을 받아줘야함
@@ -2302,9 +2303,55 @@ void KunrealEngine::EngineCore::MoveToMain()
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.0f);
 			navigationInstance.HandleBuild(0, "bossmap.obj");
 			navigationInstance.HandleBuild(1, "bossmap.obj");
+			EventManager::GetInstance().SetCamera("testCamera");
 		}
-		
+
 	}
+}
+
+void KunrealEngine::EngineCore::FloatingY(GameObject* name, float time)
+{
+	auto transform = name->GetComponent<Transform>();
+	float objectX = name->GetComponent<Transform>()->GetPosition().x;
+	float objectY = name->GetComponent<Transform>()->GetPosition().y;
+	float objectZ = name->GetComponent<Transform>()->GetPosition().z;
+
+
+	if (transform->_floatingFactor >= 0.0f && transform->_floatingFactor <= time)
+	{
+		transform->_floatingFactor += TimeManager::GetInstance().GetDeltaTime();
+		name->GetComponent<Transform>()->SetPosition(objectX, objectY + 0.03f, objectZ);
+
+		if (transform->_floatingFactor >= time - 1.0f || transform->_floatingFactor <= 1.0f)
+		{
+			name->GetComponent<Transform>()->SetPosition(objectX, objectY + 0.02f, objectZ);
+		}
+
+		if (transform->_floatingFactor >= time)
+		{
+			transform->_floatingHelper = 0.0f;
+		}
+	}
+	else if (transform->_floatingHelper >= 0.0f && transform->_floatingHelper <= time)
+	{
+		transform->_floatingHelper += TimeManager::GetInstance().GetDeltaTime();
+		name->GetComponent<Transform>()->SetPosition(objectX, objectY - 0.03f, objectZ);
+
+		if (transform->_floatingHelper >= time - 1.0f || transform->_floatingHelper <= 1.0f)
+		{
+			name->GetComponent<Transform>()->SetPosition(objectX, objectY - 0.02f, objectZ);
+		}
+
+		if (transform->_floatingHelper >= time)
+		{
+			transform->_floatingFactor = 0.0f;
+		}
+	}
+}
+
+void KunrealEngine::EngineCore::ShiveringLight(GameObject* name)
+{
+	name->GetComponent<Light>()->SetOffSet(ToolBox::GetRandomFloat(-3.0f, 3.0f), 15.f, 0.0f);
 }
 
 void KunrealEngine::EngineCore::CreateTitleScene()
@@ -2364,17 +2411,18 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	DirectX::XMFLOAT4 titleSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	// 부유물 1
-	GameObject* titleRock1 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock1");
+	titleRock1 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock1");
 	titleRock1->AddComponent<MeshRenderer>();
 	titleRock1->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight1/FloatingLight1");
 	titleRock1->GetComponent<Transform>()->SetPosition(-96.0f, 95.f, -30.f);
 	titleRock1->GetComponent<Transform>()->SetScale(0.05f, 0.05f, 0.05f);
 	titleRock1->AddComponent<Light>();
 	titleRock1->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f, 32.f);
+	titleRock1->GetComponent<Light>()->SetOffSet(0.0f, 20.f, 0.0f);
 	titleRock1->AddComponent<Particle>();
-	titleRock1->GetComponent<Particle>()->SetParticleEffect("FloatingFire1","Resources/Textures/Particles/flare.dds", 1000);
-	titleRock1->GetComponent<Particle>()->SetParticlePos(0.0f, 50.f, 0.0f);
-	titleRock1->GetComponent<Particle>()->SetParticleSize(8.0f, 8.0f);
+	titleRock1->GetComponent<Particle>()->SetParticleEffect("FloatingFire1", "Resources/Textures/Particles/flare.dds", 1000);
+	titleRock1->GetComponent<Particle>()->SetOffSet(0.0f, 10.f, 0.0f);
+	titleRock1->GetComponent<Particle>()->SetParticleSize(15.0f, 15.0f);
 	titleRock1->GetComponent<Particle>()->SetParticleVelocity(8, true);
 	titleRock1->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 	titleRock1->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.f, 0.0f);
@@ -2382,7 +2430,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock1->GetComponent<Particle>()->SetActive(true);
 
 	// 부유물 2
-	GameObject* titleRock2 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock2");
+	titleRock2 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock2");
 	titleRock2->AddComponent<MeshRenderer>();
 	titleRock2->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight2/FloatingLight2");
 	titleRock2->GetComponent<Transform>()->SetPosition(-230.0f, 100.f, 47.f);
@@ -2393,8 +2441,8 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock2Par->AddComponent<Particle>();
 	titleRock2Par->GetComponent<Particle>()->SetParticleEffect("FloatingFire2", "Resources/Textures/Particles/flare.dds", 1000);
 	//titleRock2Par->GetComponent<Particle>()->SetParticlePos(-230.0f, 110.f, 47.f);
-	titleRock2Par->GetComponent<Transform>()->SetPosition(-230.0f, 110.f, 47.f);
-	titleRock2Par->GetComponent<Particle>()->SetParticleSize(8.0f, 8.0f);
+	titleRock2Par->GetComponent<Transform>()->SetPosition(-230.0f, 115.f, 47.f);
+	titleRock2Par->GetComponent<Particle>()->SetParticleSize(15.0f, 15.0f);
 	titleRock2Par->GetComponent<Particle>()->SetParticleVelocity(8, true);
 	titleRock2Par->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
 	titleRock2Par->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.0f);
@@ -2402,7 +2450,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock2Par->GetComponent<Particle>()->SetActive(true);
 
 	// 부유물 3
-	GameObject* titleRock3 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock3");
+	titleRock3 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock3");
 	titleRock3->AddComponent<MeshRenderer>();
 	titleRock3->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight3/FloatingLight3");
 	titleRock3->GetComponent<Transform>()->SetScale(5.f, 5.f, 5.f);
@@ -2410,9 +2458,18 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleRock3->GetComponent<Transform>()->SetRotation(180.f, 0.f, 0.f);
 	titleRock3->AddComponent<Light>();
 	titleRock3->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f, 32.f);
+	titleRock3->AddComponent<Particle>();
+	titleRock3->GetComponent<Particle>()->SetParticleEffect("FloatingFire1", "Resources/Textures/Particles/flare.dds", 1000);
+	titleRock3->GetComponent<Particle>()->SetOffSet(0.0f, 10.f, 0.0f);
+	titleRock3->GetComponent<Particle>()->SetParticleSize(15.0f, 15.0f);
+	titleRock3->GetComponent<Particle>()->SetParticleVelocity(8, true);
+	titleRock3->GetComponent<Particle>()->SetParticleDuration(1.5f, 2.0f);
+	titleRock3->GetComponent<Particle>()->SetParticleDirection(0.0f, 10.f, 0.0f);
+	titleRock3->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.0f);
+	titleRock3->GetComponent<Particle>()->SetActive(true);
 
 	// 부유물 4
-	GameObject* floatingObj = sceneInstance.GetCurrentScene()->CreateObject("FloatingObj");
+	floatingObj = sceneInstance.GetCurrentScene()->CreateObject("FloatingObj");
 	floatingObj->AddComponent<MeshRenderer>();
 	floatingObj->GetComponent<MeshRenderer>()->SetMeshObject("FloatingObj/FloatingObj");
 	floatingObj->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
