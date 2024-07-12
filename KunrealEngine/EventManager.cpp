@@ -73,6 +73,7 @@ void KunrealEngine::EventManager::Update()
 void KunrealEngine::EventManager::SetCamera(std::string name)
 {
 	_mainCamera = SceneManager::GetInstance().GetCurrentScene()->GetGameObject(name);
+	_mainCamera->GetComponent<Camera>()->SetMainCamera();
 }
 
 std::vector<DirectX::XMFLOAT2> KunrealEngine::EventManager::CamShake(float radius, int numPoints)

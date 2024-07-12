@@ -67,7 +67,6 @@ void KunrealEngine::PlayerAbility::Update()
 		ResetShotPos();
 		Startcoroutine(shotCoolDown);
 		_isShotDetected = true;
-		_isShotReady = false;
 		_isShotHit = true;
 		_shot->SetActive(true);
 		_shot->GetComponent<Projectile>()->SetActive(true);
@@ -84,6 +83,7 @@ void KunrealEngine::PlayerAbility::Update()
 	{
 		ResetCirclePos();											// 투사체 위치 리셋
 		_isCircleDetected = true;
+		_isCircleHit = true;
 		_destroyCircle = false;
 		_circle->SetActive(true);
 		Startcoroutine(circleCoolDown);
@@ -142,7 +142,6 @@ void KunrealEngine::PlayerAbility::Update()
 		ResetMeteorPos();
 		_isMeteorDetected = true;
 		_isMeteorHit = true;
-		_isMeteorReady = false;
 		Startcoroutine(meteorCoolDown);
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 4;
@@ -513,22 +512,23 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 
 	circle->SetTotalData(
 		"Circle",		// 이름
-		0.0f,			// 데미지
+		10.0f,			// 데미지
 		15.0f,			// 마나
 		0.0f,			// 무력화 피해량
 		10.0f,			// 쿨타임
 		12.0f			// 사거리
 	);
 
+
 	_circle = circle->_projectile;
 
 	// 크기 조정
 	// 시작은 작게
 	_circle->GetComponent<Transform>()->SetTotalScale(0.01f);
-	_circle->AddComponent<MeshRenderer>();
-	_circle->GetComponent<MeshRenderer>()->SetMeshObject("MagicCircle/MagicCircle");
+	_circle->AddComponent<MeshRenderer>()->SetMeshObject("MagicCircle/MagicCircle");
 	_circle->AddComponent<CylinderCollider>();
-	_circle->GetCollider()->SetColliderScale(0.5f, 0.5, 0.5f);
+	_circle->GetCollider()->SetColliderScale(75.0f, 20.0f, 75.0f);
+	_circle->GetCollider()->SetOffset(0.0f, 10.0f, 0.0f);
 
 	_circle->SetActive(false);
 
@@ -536,6 +536,21 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 		{
 			if (_circle->GetActivated())
 			{
+				if (_circle->GetCollider()->IsCollided() && _circle->GetCollider()->GetTargetObject() == this->GetOwner())
+				{
+					this->_playerComp->_playerInfo._spellPower = 2.0f;
+				}
+				else
+				{
+					this->_playerComp->_playerInfo._spellPower = 1.0f;
+				}
+
+				if (this->_isCircleHit && _circle->GetCollider()->IsCollided() && _circle->GetCollider()->GetTargetObject()->GetTag() == "Boss")
+				{
+					EventManager::GetInstance().CalculateDamageToBoss(circle);
+					this->_isCircleHit = false;
+				}
+
 				// 회전시키기
 				if (_circle->GetComponent<Transform>()->GetRotation().y < 360.0f)
 				{

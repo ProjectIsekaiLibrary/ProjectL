@@ -48,6 +48,7 @@ namespace KunrealEngine
 		GameObject* _meteor;		// R 스킬 운석 객체
 
 		bool _isShotHit;			// 한 번만 데미지 받도록
+		bool _isCircleHit;
 		bool _isLaserHit;
 		bool _isMeteorHit;
 
@@ -138,6 +139,7 @@ namespace KunrealEngine
 		Coroutine_Func(shotCoolDown)
 		{
 			auto* ability = this;
+			_isShotReady = false;
 			Waitforsecond(ability->_abilityContainer[0]->_cooldown);
 			ability->_isShotReady = true;
 		};
@@ -146,6 +148,7 @@ namespace KunrealEngine
 		Coroutine_Func(circleCoolDown)
 		{
 			auto* ability = this;
+			ability->_isCircleReady = false;
 			Waitforsecond(ability->_abilityContainer[1]->_cooldown);
 			ability->_isCircleReady = true;
 		};
@@ -273,6 +276,7 @@ namespace KunrealEngine
 		Coroutine_Func(meteorCoolDown)
 		{
 			auto* ability = this;
+			_isMeteorReady = false;
 			Waitforsecond(ability->_abilityContainer[3]->_cooldown);
 			ability->_isMeteorReady = true;
 		};
