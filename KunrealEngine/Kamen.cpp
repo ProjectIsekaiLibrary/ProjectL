@@ -202,14 +202,14 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	TeleportSpellPattern();							// 텔포 후 spell	
-	BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
-	//
-	_basicPattern[1] = _basicPattern[0];
+	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	//TeleportSpellPattern();							// 텔포 후 spell	
+	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	////
+	//_basicPattern[1] = _basicPattern[0];
 	//   
 	//_basicPattern[2].emplace_back(_swordSwingVertical);
 	//_basicPattern[2].emplace_back(_swordSwingTwice);
@@ -221,7 +221,7 @@ void KunrealEngine::Kamen::GamePattern()
 	SwordChopPattern();								// 도넛
 	SwordLinearAttackPattern();						// 칼 직선 공격
 
-	//_basicPattern[0].emplace_back(_swordMultipleAttack);
+	_basicPattern[0].emplace_back(_swordMultipleAttack);
 
 	BasicSwordAttackPattern();
 
@@ -683,7 +683,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			else if (i == 1)
 			{
 				//donutParticle->SetParent(_swordDonutWarning2);
-				donutParticle->GetComponent<Particle>()->SetParticleSize(130.f, 130.f);
+				donutParticle->GetComponent<Particle>()->SetParticleSize(120.f, 120.f);
 			}
 			else
 			{
@@ -749,11 +749,11 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			}
 			else if (i == 1)
 			{
-				donutParticle3->GetComponent<Particle>()->SetParticleSize(120.f, 120.0f);
+				donutParticle3->GetComponent<Particle>()->SetParticleSize(110.f, 110.0f);
 			}
 			else
 			{
-				donutParticle3->GetComponent<Particle>()->SetParticleSize(215.f, 215.0f);
+				donutParticle3->GetComponent<Particle>()->SetParticleSize(205.f, 205.0f);
 			}
 
 			_particleSwordDonut3.emplace_back(donutParticle3);
@@ -975,6 +975,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			fakeBossParticle1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
 			fakeBossParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
 			fakeBossParticle1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
+			fakeBossParticle1->GetComponent<Particle>()->SetActive(false);
 
 			//std::string name2 = "fakeBossParticle2(" + std::to_string(i) + ")";
 			//auto fakeBossParticle2 = _boss->GetObjectScene()->CreateObject(name2);
@@ -1014,6 +1015,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			fakeBossParticle4->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
 			fakeBossParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
 			fakeBossParticle4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
+			fakeBossParticle4->GetComponent<Particle>()->SetActive(false);
 		}
 	}
 	{
@@ -1030,6 +1032,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticleside->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticleside->GetComponent<Particle>()->SetActive(false);
 
 		_verticalParticleSide.emplace_back(verticalParticleside);
 	}
@@ -1047,6 +1050,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticleside->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleCameraApply(true);
+		verticalParticleside->GetComponent<Particle>()->SetActive(false);
 
 		_verticalParticleSide.emplace_back(verticalParticleside);
 	}
@@ -1501,6 +1505,61 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			_laserLight.emplace_back(laserLight);
 		}
 
+	}
+	{
+		for (auto& multipleSwordVec : _multipleSwordVec)
+		{
+			GameObject* bossCoreBladeMove1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossCoreBladeMove1");
+			bossCoreBladeMove1->AddComponent<Particle>();
+			bossCoreBladeMove1->GetComponent<Particle>()->SetParticleEffect("fx_Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+			bossCoreBladeMove1->GetComponent<Particle>()->SetParticleDuration(7.0f, 3.0f);
+			bossCoreBladeMove1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+			bossCoreBladeMove1->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+			bossCoreBladeMove1->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			bossCoreBladeMove1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove1->GetComponent<Particle>()->SetParticleCameraApply(true);
+			bossCoreBladeMove1->SetParent(multipleSwordVec);
+			bossCoreBladeMove1->GetComponent<Transform>()->SetPosition(0, 18.0f, -1.2);
+
+			GameObject* bossCoreBladeMove2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossCoreBladeMove2");
+			bossCoreBladeMove2->AddComponent<Particle>();
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleEffect("fx_Lightning3", "Resources/Textures/Particles/fx_Lightning3.dds", 1000);
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleDuration(0.5f, 2.0f);
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+			bossCoreBladeMove2->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove2->GetComponent<Particle>()->SetParticleCameraApply(true);
+			bossCoreBladeMove2->SetParent(multipleSwordVec);
+			bossCoreBladeMove2->GetComponent<Transform>()->SetPosition(-0.1f, 19.0f, -3.0f);
+
+			GameObject* bossCoreBladeMove3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossCoreBladeMove3");
+			bossCoreBladeMove3->AddComponent<Particle>();
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleEffect("fx_Lightning3", "Resources/Textures/Particles/fx_Lightning3.dds", 1000);
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleDuration(0.5f, 2.0f);
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+			bossCoreBladeMove3->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove3->GetComponent<Particle>()->SetParticleCameraApply(true);
+			bossCoreBladeMove3->SetParent(multipleSwordVec);
+			bossCoreBladeMove3->GetComponent<Transform>()->SetPosition(-0.1f, 19.0f, -1.5f);
+
+			GameObject* bossCoreBladeMove4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossCoreBladeMove4");
+			bossCoreBladeMove4->AddComponent<Particle>();
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleEffect("fx_Lightning3", "Resources/Textures/Particles/fx_Lightning3.dds", 1000);
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleDuration(0.5f, 2.0f);
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+			bossCoreBladeMove4->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+			bossCoreBladeMove4->GetComponent<Particle>()->SetParticleCameraApply(true);
+			bossCoreBladeMove4->SetParent(multipleSwordVec);
+			bossCoreBladeMove4->GetComponent<Transform>()->SetPosition(-0.1f, 19.0f, -0.6);
+		}
 	}
 }
 
@@ -2954,10 +3013,10 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eCylinder);
 
-	for (auto& pillarParticle : _swordInsideAttack->GetChilds())
-	{
-		pattern->SetSubObject(pillarParticle);
-	}
+	//for (auto& pillarParticle : _swordInsideAttack->GetChilds())
+	//{
+	//	pattern->SetSubObject(pillarParticle);
+	//}
 
 	// 패턴 시작전에 초기화, 장판 켜줌
 	auto initializeLogic = [pattern, this]()
@@ -4513,6 +4572,10 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 				if (_multipleSwordMoveDistance[i] < 0)
 				{
 					_multipleSwordVec[i]->GetComponent<MeshRenderer>()->SetActive(false);
+					for (auto& multipleSwordParticleVec : _multipleSwordVec[i]->GetChilds())
+					{
+						multipleSwordParticleVec->GetComponent<Particle>()->SetActive(false);
+					}
 
 					auto objectIndex = pattern->GetSubObjectIndex(_multipleSwordVec[i]);
 					pattern->_isColliderActive[objectIndex] = false;
@@ -4577,7 +4640,10 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 						if (_multipleSwordMoveStart[i] == false)
 						{
 							_multipleSwordVec[i]->GetComponent<MeshRenderer>()->SetActive(true);
-
+							for (auto& multipleSwordParticleVec : _multipleSwordVec[i]->GetChilds())
+							{
+								multipleSwordParticleVec->GetComponent<Particle>()->SetActive(true);
+							}
 							auto objectIndex = pattern->GetSubObjectIndex(_multipleSwordVec[i]);
 							pattern->_isColliderActive[objectIndex] = true;
 
