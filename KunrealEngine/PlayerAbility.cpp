@@ -17,11 +17,11 @@
 #include "Scene.h"
 
 KunrealEngine::PlayerAbility::PlayerAbility()
-	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _ice(nullptr), _laser(nullptr)
-	, _isIceReady(true), _destroyIce(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
+	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _circle(nullptr), _laser(nullptr)
+	, _isCircleReady(true), _destroyCircle(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
 	, _isShotHit(false), _isLaserHit(false), _isMeteorHit(false)
-	, _isShotDetected(false), _isIceDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false),
-	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isIceEnded(false), _iceParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false), _destroyLaser(false),
+	, _isShotDetected(false), _isCircleDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false),
+	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isCircleEnded(false), _circleParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false), _destroyLaser(false),
 	_shotParticle2(nullptr), _shotParticle3(nullptr), _shotParticle4(nullptr), _shotParticleHit1(nullptr), _shotParticleHit2(nullptr), _shotParticleHit3(nullptr),
 	_laserParticle1(nullptr), _laserParticle2(nullptr), _laserParticle3(nullptr), _laserParticle4(nullptr), _meteorParticle2(nullptr), _meteorParticle3(nullptr), _meteorParticle4(nullptr), _meteorParticleHit1(nullptr), _meteorParticleHit2(nullptr), _meteorParticleHit3(nullptr), _meteorParticleHit4(nullptr)
 
@@ -80,13 +80,13 @@ void KunrealEngine::PlayerAbility::Update()
 		_playerComp->_abilityAnimationIndex = 1;				// 구체 투척 애니메이션
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isIceReady)
+	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isCircleReady)
 	{
-		ResetIcePos();											// 투사체 위치 리셋
-		_isIceDetected = true;
-		_destroyIce = false;
-		_ice->SetActive(true);
-		Startcoroutine(iceCoolDown);
+		ResetCirclePos();											// 투사체 위치 리셋
+		_isCircleDetected = true;
+		_destroyCircle = false;
+		_circle->SetActive(true);
+		Startcoroutine(circleCoolDown);
 
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 2;				// 얼음 소환 애니메이션	
@@ -492,27 +492,27 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 }
 
 
-void KunrealEngine::PlayerAbility::ResetIcePos()
+void KunrealEngine::PlayerAbility::ResetCirclePos()
 {
 	// 플레이어 위치에 생성되도록
-	_ice->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition().x, this->GetOwner()->GetComponent<Transform>()->GetPosition().y - 0.8f, this->GetOwner()->GetComponent<Transform>()->GetPosition().z);
+	_circle->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition().x, this->GetOwner()->GetComponent<Transform>()->GetPosition().y - 0.8f, this->GetOwner()->GetComponent<Transform>()->GetPosition().z);
 
 	// 크기 초기화
-	_ice->GetComponent<Transform>()->SetTotalScale(0.0f);
+	_circle->GetComponent<Transform>()->SetTotalScale(0.0f);
 
 	// 위치 조정
 	//_ice->GetComponent<BoxCollider>()->FixedUpdate();
-	_ice->GetComponent<MeshRenderer>()->Update();
+	_circle->GetComponent<MeshRenderer>()->Update();
 	//_ice->GetComponent<Particle>()->Update();
 }
 
 void KunrealEngine::PlayerAbility::CreateAbility2()
 {
-	Ability* ice = new Ability();
-	ice->Initialize("Ice");
+	Ability* circle = new Ability();
+	circle->Initialize("Circle");
 
-	ice->SetTotalData(
-		"Ice",			// 이름
+	circle->SetTotalData(
+		"Circle",		// 이름
 		0.0f,			// 데미지
 		15.0f,			// 마나
 		0.0f,			// 무력화 피해량
@@ -520,46 +520,46 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 		12.0f			// 사거리
 	);
 
-	_ice = ice->_projectile;
+	_circle = circle->_projectile;
 
 	// 크기 조정
 	// 시작은 작게
-	_ice->GetComponent<Transform>()->SetTotalScale(0.01f);
-	_ice->AddComponent<MeshRenderer>();
-	_ice->GetComponent<MeshRenderer>()->SetMeshObject("MagicCircle/MagicCircle");
-	_ice->AddComponent<CylinderCollider>();
-	_ice->GetCollider()->SetColliderScale(0.5f, 0.5, 0.5f);
+	_circle->GetComponent<Transform>()->SetTotalScale(0.01f);
+	_circle->AddComponent<MeshRenderer>();
+	_circle->GetComponent<MeshRenderer>()->SetMeshObject("MagicCircle/MagicCircle");
+	_circle->AddComponent<CylinderCollider>();
+	_circle->GetCollider()->SetColliderScale(0.5f, 0.5, 0.5f);
 
-	_ice->SetActive(false);
+	_circle->SetActive(false);
 
-	ice->SetLogic([ice, this]()
+	circle->SetLogic([circle, this]()
 		{
-			if (_ice->GetActivated())
+			if (_circle->GetActivated())
 			{
 				// 회전시키기
-				if (_ice->GetComponent<Transform>()->GetRotation().y < 360.0f)
+				if (_circle->GetComponent<Transform>()->GetRotation().y < 360.0f)
 				{
-					_ice->GetComponent<Transform>()->SetRotation(_ice->GetComponent<Transform>()->GetRotation().x, _ice->GetComponent<Transform>()->GetRotation().y + 0.1f, _ice->GetComponent<Transform>()->GetRotation().z);
+					_circle->GetComponent<Transform>()->SetRotation(_circle->GetComponent<Transform>()->GetRotation().x, _circle->GetComponent<Transform>()->GetRotation().y + 0.1f, _circle->GetComponent<Transform>()->GetRotation().z);
 				}
 				else
 				{
-					_ice->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+					_circle->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
 				}
 
-				if (_ice->GetComponent<Transform>()->GetScale().x < 0.5f && !_destroyIce)
+				if (_circle->GetComponent<Transform>()->GetScale().x < 0.5f && !_destroyCircle)
 				{
-					_ice->GetComponent<Transform>()->SetTotalScale(_ice->GetComponent<Transform>()->GetScale().x + 0.01f);
+					_circle->GetComponent<Transform>()->SetTotalScale(_circle->GetComponent<Transform>()->GetScale().x + 0.01f);
 				}
 				else
 				{
-					_destroyIce = true;
+					_destroyCircle = true;
 					Startcoroutine(CircleFadeOut);
 				}
 			}
 
 		});
 
-	AddToContanier(ice);
+	AddToContanier(circle);
 }
 
 

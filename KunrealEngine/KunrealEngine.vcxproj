@@ -199,6 +199,7 @@ xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
     <ClInclude Include="ComponentHeaders.h" />
     <ClInclude Include="Coroutine.h" />
     <ClInclude Include="CylinderCollider.h" />
+    <ClInclude Include="Dummy.h" />
     <ClInclude Include="EngineCore.h" />
     <ClInclude Include="EventManager.h" />
     <ClInclude Include="framework.h" />

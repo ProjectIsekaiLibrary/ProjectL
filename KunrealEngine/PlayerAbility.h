@@ -43,7 +43,7 @@ namespace KunrealEngine
 		Player* _playerComp;
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
-		GameObject* _ice;			// W 스킬 객체
+		GameObject* _circle;			// W 스킬 객체
 		GameObject* _laser;			// E 스킬 객체
 		GameObject* _meteor;		// R 스킬 운석 객체
 
@@ -54,8 +54,8 @@ namespace KunrealEngine
 		/// coroutine을 활용한 타이머 변수들
 		bool _isShotReady;			// Q 쿨타임 조건
 
-		bool _isIceReady;			// W 쿨타임 조건
-		bool _destroyIce;			// W 소멸 조건을 위한 변수
+		bool _isCircleReady;			// W 쿨타임 조건
+		bool _destroyCircle;			// W 소멸 조건을 위한 변수
 
 		bool _isLaserReady;			// E 스킬 쿨타임 조건
 		bool _destroyLaser;			// E 소멸 조건을 위한 변수
@@ -64,7 +64,7 @@ namespace KunrealEngine
 
 		/// BattleUIManager에 넘겨줄 쿨타임 체크 변수들
 		bool _isShotDetected;
-		bool _isIceDetected;
+		bool _isCircleDetected;
 		bool _isLaserDetected;
 		bool _isMeteorDetected;
 
@@ -101,8 +101,8 @@ namespace KunrealEngine
 		float _shotParticleTimer;
 
 		// w 스킬 체크용 변수
-		bool _isIceEnded;
-		float _iceParticleTimer;
+		bool _isCircleEnded;
+		float _circleParticleTimer;
 
 		// e 스킬 체크용 변수
 		bool _isLaserStarted;
@@ -119,7 +119,7 @@ namespace KunrealEngine
 		void ResetShotPos();
 		void CreateAbility1();
 
-		void ResetIcePos();
+		void ResetCirclePos();
 		void CreateAbility2();
 
 		void ResetLaserPos();
@@ -143,23 +143,23 @@ namespace KunrealEngine
 		};
 
 		// W스킬 쿨타임 
-		Coroutine_Func(iceCoolDown)
+		Coroutine_Func(circleCoolDown)
 		{
 			auto* ability = this;
 			Waitforsecond(ability->_abilityContainer[1]->_cooldown);
-			ability->_isIceReady = true;
+			ability->_isCircleReady = true;
 		};
 
 		// W스킬 발동대기
-		Coroutine_Func(iceStandby)
+		Coroutine_Func(circleStandby)
 		{
 			auto* ability = this;
 			Waitforsecond(0.8f);		// 2초 뒤 실행
 
-			ability->_destroyIce = false;	// 소멸 조건 초기화
-			ability->_ice->SetActive(true);
-			ability->_ice->GetComponent<Projectile>()->SetActive(true);
-			ability->_ice->GetComponent<Projectile>()->ResetCondition();
+			ability->_destroyCircle = false;	// 소멸 조건 초기화
+			ability->_circle->SetActive(true);
+			ability->_circle->GetComponent<Projectile>()->SetActive(true);
+			ability->_circle->GetComponent<Projectile>()->ResetCondition();
 		};
 
 		// W스킬 소멸
@@ -169,14 +169,14 @@ namespace KunrealEngine
 			auto* ability = this;
 			Waitforsecond(6.0f);
 
-			while (ability->_ice->GetComponent<Transform>()->GetScale().x > 0.0f)
+			while (ability->_circle->GetComponent<Transform>()->GetScale().x > 0.0f)
 			{
-				ability->_ice->GetComponent<Transform>()->SetTotalScale(ability->_ice->GetComponent<Transform>()->GetScale().x - 0.01f);
+				ability->_circle->GetComponent<Transform>()->SetTotalScale(ability->_circle->GetComponent<Transform>()->GetScale().x - 0.01f);
 
 				Return_null;
 			}
 
-			ability->_ice->SetActive(false);
+			ability->_circle->SetActive(false);
 		};
 
 		// E스킬 쿨타임

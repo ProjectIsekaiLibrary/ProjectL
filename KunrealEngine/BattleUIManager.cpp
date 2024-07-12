@@ -375,7 +375,7 @@ void KunrealEngine::BattleUIManager::Update()
 		SetSkillcool1();
 	}
 
-	if (abill->_isIceDetected)
+	if (abill->_isCircleDetected)
 	{
 		SetSkillcool2();
 	}
@@ -580,7 +580,7 @@ void KunrealEngine::BattleUIManager::SetSkillcool2()
 			Return_null;
 		}
 
-		control->_eventmanager->_playerAbill->_isIceDetected = false;
+		control->_eventmanager->_playerAbill->_isCircleDetected = false;
 		skillcool->SetActive(false);
 		skillcool->GetComponent<Transform>()->SetScale(1.0f, _skillcoolsize, 1.0f);
 	};

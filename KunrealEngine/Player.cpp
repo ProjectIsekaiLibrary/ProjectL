@@ -371,8 +371,8 @@ void KunrealEngine::Player::MoveToScene(std::string sceneName)
 	this->_owner->MoveToScene(sceneName);
 	this->_owner->GetComponent<PlayerAbility>()->_shot->SetActive(false);
 	this->_owner->GetComponent<PlayerAbility>()->_shot->MoveToScene(sceneName);
-	this->_owner->GetComponent<PlayerAbility>()->_ice->SetActive(false);
-	this->_owner->GetComponent<PlayerAbility>()->_ice->MoveToScene(sceneName);
+	this->_owner->GetComponent<PlayerAbility>()->_circle->SetActive(false);
+	this->_owner->GetComponent<PlayerAbility>()->_circle->MoveToScene(sceneName);
 	this->_owner->GetComponent<PlayerAbility>()->_meteor->SetActive(false);
 	this->_owner->GetComponent<PlayerAbility>()->_meteor->MoveToScene(sceneName);
 }
@@ -451,7 +451,7 @@ void KunrealEngine::Player::DebugFunc()
 	if (InputSystem::GetInstance()->KeyDown(KEY::O))
 	{
 		this->_owner->GetComponent<PlayerAbility>()->_shot->SetActive(false);
-		this->_owner->GetComponent<PlayerAbility>()->_ice->SetActive(false);
+		this->_owner->GetComponent<PlayerAbility>()->_circle->SetActive(false);
 		this->_owner->GetComponent<PlayerAbility>()->_meteor->SetActive(false);
 	}
 

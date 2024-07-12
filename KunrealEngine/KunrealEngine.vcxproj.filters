@@ -330,6 +330,9 @@
     <ClInclude Include="MeshCollider.h">
       <Filter>Source Files\Component\Collider\MeshCollider</Filter>
     </ClInclude>
+    <ClInclude Include="Dummy.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
