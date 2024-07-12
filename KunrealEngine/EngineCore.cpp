@@ -184,6 +184,11 @@ KunrealEngine::GameObject* boss3Phase3;
 KunrealEngine::GameObject* boss3Phase2_2;
 KunrealEngine::GameObject* boss3Phase3_2;
 
+KunrealEngine::GameObject* bossCoreBladeMove1;
+KunrealEngine::GameObject* bossCoreBladeMove2;
+KunrealEngine::GameObject* bossCoreBladeMove3;
+KunrealEngine::GameObject* bossCoreBladeMove4;
+
 
 DirectX::XMFLOAT3 targetPos;
 DirectX::XMFLOAT3 p0 = { 0, 0, 0 };
@@ -235,11 +240,11 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	_isBezierBoomSetting = false;
 	_isBezierTeleportSetting = false;
 
-	//ChangeScene("ParticleTest");
-	//ParticleTest();
+	ChangeScene("ParticleTest");
+	ParticleTest();
 	/// ´Ïµé ¸¾´ë·Î ÇØ
-	PlayGround();
-	CreateTitleScene();
+	//PlayGround();
+	//CreateTitleScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -608,7 +613,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle9 = sceneInstance.GetCurrentScene()->CreateObject("Particle9");
 	particle9->GetComponent<Transform>()->SetPosition(0, 0, -25.f);
 	particle9->AddComponent<Particle>();
-	particle9->GetComponent<Particle>()->SetParticleEffect("Lightning7", "Resources/Textures/Particles/fx_Lightning7.dds", 1000);
+	particle9->GetComponent<Particle>()->SetParticleEffect("fx_Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
 	particle9->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle9->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
 	particle9->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -721,7 +726,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle20 = sceneInstance.GetCurrentScene()->CreateObject("Particle20");
 	particle20->GetComponent<Transform>()->SetPosition(-10, 0, 70.f);
 	particle20->AddComponent<Particle>();
-	particle20->GetComponent<Particle>()->SetParticleEffect("Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 10);
+	particle20->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
 	particle20->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle20->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle20->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -731,7 +736,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle21 = sceneInstance.GetCurrentScene()->CreateObject("Particle21");
 	particle21->GetComponent<Transform>()->SetPosition(0, 0, 70.f);
 	particle21->AddComponent<Particle>();
-	particle21->GetComponent<Particle>()->SetParticleEffect("Dust4", "Resources/Textures/Particles/fx_Dust4.dds", 10);
+	particle21->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
 	particle21->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle21->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle21->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -741,7 +746,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle22 = sceneInstance.GetCurrentScene()->CreateObject("Particle22");
 	particle22->GetComponent<Transform>()->SetPosition(10, 0, 70.f);
 	particle22->AddComponent<Particle>();
-	particle22->GetComponent<Particle>()->SetParticleEffect("EnergyBolt9", "Resources/Textures/Particles/fx_EnergyBolt9.dds", 1000);
+	particle22->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 	particle22->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle22->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle22->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -751,7 +756,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle23 = sceneInstance.GetCurrentScene()->CreateObject("Particle23");
 	particle23->GetComponent<Transform>()->SetPosition(20, 0, 70.f);
 	particle23->AddComponent<Particle>();
-	particle23->GetComponent<Particle>()->SetParticleEffect("EnergyBolt4", "Resources/Textures/Particles/fx_EnergyBolt4.dds", 1000);
+	particle23->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave4", "Resources/Textures/Particles/fx_BlastWave4.dds", 1000);
 	particle23->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle23->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle23->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -761,7 +766,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle24 = sceneInstance.GetCurrentScene()->CreateObject("Particle24");
 	particle24->GetComponent<Transform>()->SetPosition(30, 0, 70.f);
 	particle24->AddComponent<Particle>();
-	particle24->GetComponent<Particle>()->SetParticleEffect("EnergyBolt6", "Resources/Textures/Particles/fx_EnergyBolt6.dds", 1000);
+	particle24->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
 	particle24->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle24->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle24->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
@@ -771,7 +776,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle25 = sceneInstance.GetCurrentScene()->CreateObject("Particle25");
 	particle25->GetComponent<Transform>()->SetPosition(-10, 0, 105.f);
 	particle25->AddComponent<Particle>();
-	particle25->GetComponent<Particle>()->SetParticleEffect("EnergyBolt7", "Resources/Textures/Particles/fx_Thrust1.dds", 1000);
+	particle25->GetComponent<Particle>()->SetParticleEffect("fx_Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
 	particle25->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle25->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle25->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -781,7 +786,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle26 = sceneInstance.GetCurrentScene()->CreateObject("Particle26");
 	particle26->GetComponent<Transform>()->SetPosition(0, 0, 105.f);
 	particle26->AddComponent<Particle>();
-	particle26->GetComponent<Particle>()->SetParticleEffect("Fire1", "Resources/Textures/Particles/fx_Thrust2.dds", 1000);
+	particle26->GetComponent<Particle>()->SetParticleEffect("fx_Halo1", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
 	particle26->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle26->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle26->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -789,9 +794,9 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle26->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle27 = sceneInstance.GetCurrentScene()->CreateObject("Particle27");
-	particle27->GetComponent<Transform>()->SetPosition(-60, 0, -30.f);
+	particle27->GetComponent<Transform>()->SetPosition(10, 0, 105.f);
 	particle27->AddComponent<Particle>();
-	particle27->GetComponent<Particle>()->SetParticleEffect("Fire3", "Resources/Textures/Particles/fx_Thrust3.dds", 1000);
+	particle27->GetComponent<Particle>()->SetParticleEffect("fx_Halo3", "Resources/Textures/Particles/fx_Halo3.dds", 1000);
 	particle27->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle27->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle27->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -799,9 +804,9 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle27->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle28 = sceneInstance.GetCurrentScene()->CreateObject("Particle28");
-	particle28->GetComponent<Transform>()->SetPosition(-45, 0, -30.f);
+	particle28->GetComponent<Transform>()->SetPosition(20, 0, 105.f);
 	particle28->AddComponent<Particle>();
-	particle28->GetComponent<Particle>()->SetParticleEffect("Fireball1", "Resources/Textures/Particles/fx_Twister1.dds", 1000);
+	particle28->GetComponent<Particle>()->SetParticleEffect("fx_EnergyBolt7", "Resources/Textures/Particles/fx_EnergyBolt7.dds", 1000);
 	particle28->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle28->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
 	particle28->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
@@ -809,14 +814,16 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particle28->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 	particle29 = sceneInstance.GetCurrentScene()->CreateObject("Particle29");
-	particle29->GetComponent<Transform>()->SetPosition(-45, 0, -30.f);
+	particle29->GetComponent<Transform>()->SetPosition(1.2, 40, 78.5f);
 	particle29->AddComponent<Particle>();
-	particle29->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+	particle29->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
 	particle29->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
 	particle29->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
-	particle29->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
-	particle29->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+	particle29->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+	particle29->GetComponent<Particle>()->AddParticleColor(0.0f, 0.6f, 1.0f);
 	particle29->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	particle29->GetComponent<Particle>()->SetParticleCameraApply(true);
+	particle29->GetComponent<Particle>()->SetParticleAngle(93.0f, 154.0f, 93.0f);
 
 	particle30 = sceneInstance.GetCurrentScene()->CreateObject("Particle30");
 	particle30->GetComponent<Transform>()->SetPosition(-30, 0, -30.f);
@@ -968,13 +975,6 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	// Æ÷Å» ÀÓ½Ã
 
-	GameObject* arch = sceneInstance.GetCurrentScene()->CreateObject("arch");
-	arch->GetComponent<Transform>()->SetPosition(68.8f, -2.4f, 48.7f);
-	arch->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
-	arch->GetComponent<Transform>()->SetRotation(0, 59, 0);
-	arch->AddComponent<MeshRenderer>();
-	arch->GetComponent<MeshRenderer>()->SetMeshObject("SM_arch_large_ruins/SM_arch_large_ruins");
-
 	particlePortal1 = sceneInstance.GetCurrentScene()->CreateObject("particlePortal1");
 	particlePortal1->GetComponent<Transform>()->SetPosition(70, 0, 50);
 	particlePortal1->AddComponent<Particle>();
@@ -1100,8 +1100,8 @@ void KunrealEngine::EngineCore::ParticleTest()
 	sword->GetComponent<MeshRenderer>()->SetNormalTexture(0, "KamenSword/KamenSword_Normal.png");
 	sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(0, "KamenSword/KamenSword_Emissive.png");
 
-	sword->GetComponent<Transform>()->SetPosition(-84.3, 0, -35.f);
-	sword->GetComponent<Transform>()->SetRotation(0, 135, 0);
+	sword->GetComponent<Transform>()->SetPosition(-84, 14, 0);
+	sword->GetComponent<Transform>()->SetRotation(180, 90, 0);
 
 	particleBossSword1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword1");
 	particleBossSword1->GetComponent<Transform>()->SetPosition(-82.6, 6.65, -31.9f);
@@ -1788,6 +1788,57 @@ void KunrealEngine::EngineCore::ParticleTest()
 	//boss3Phase3_2->GetComponent<Particle>()->SetParticleCameraApply(true);
 	//boss3Phase3_2->SetParent(kamen);
 	//boss3Phase3_2->GetComponent<Transform>()->SetPosition(0, 18.f, 3.f);
+
+	bossCoreBladeMove1 = sceneInstance.GetCurrentScene()->CreateObject("bossCoreBladeMove1");
+	bossCoreBladeMove1->AddComponent<Particle>();
+	bossCoreBladeMove1->GetComponent<Particle>()->SetParticleEffect("fx_Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	bossCoreBladeMove1->GetComponent<Particle>()->SetParticleDuration(7.0f, 3.0f);
+	bossCoreBladeMove1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	bossCoreBladeMove1->GetComponent<Particle>()->SetParticleSize(1.f, 1.0f);
+	bossCoreBladeMove1->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+	bossCoreBladeMove1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	bossCoreBladeMove1->SetParent(sword);
+	bossCoreBladeMove1->GetComponent<Transform>()->SetPosition(0, 21.9f, -1.2);
+	
+	bossCoreBladeMove2 = sceneInstance.GetCurrentScene()->CreateObject("bossCoreBladeMove2");
+	bossCoreBladeMove2->AddComponent<Particle>();
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleEffect("fx_Lightning3", "Resources/Textures/Particles/fx_Lightning3.dds", 1000);
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleDuration(0.5f, 2.0f);
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	bossCoreBladeMove2->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	bossCoreBladeMove2->SetParent(sword);
+	bossCoreBladeMove2->GetComponent<Transform>()->SetPosition(-0.1f, 23.0f, -8.0f);
+	
+	bossCoreBladeMove3 = sceneInstance.GetCurrentScene()->CreateObject("bossCoreBladeMove3");
+	bossCoreBladeMove3->AddComponent<Particle>();
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleEffect("fx_Lightning3", "Resources/Textures/Particles/fx_Lightning3.dds", 1000);
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleDuration(0.5f, 2.0f);
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	bossCoreBladeMove3->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove3->GetComponent<Particle>()->SetParticleCameraApply(true);
+	bossCoreBladeMove3->SetParent(sword);
+	bossCoreBladeMove3->GetComponent<Transform>()->SetPosition(-0.1f, 23.0f, -4.5f);
+	
+	bossCoreBladeMove4 = sceneInstance.GetCurrentScene()->CreateObject("bossCoreBladeMove4");
+	bossCoreBladeMove4->AddComponent<Particle>();
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleEffect("fx_Lightning3", "Resources/Textures/Particles/fx_Lightning3.dds", 1000);
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleDuration(0.5f, 2.0f);
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+	bossCoreBladeMove4->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+	bossCoreBladeMove4->GetComponent<Particle>()->SetParticleCameraApply(true);
+	bossCoreBladeMove4->SetParent(sword);
+	bossCoreBladeMove4->GetComponent<Transform>()->SetPosition(-0.1f, 23.0f, -0.6);
 
 }
 
