@@ -397,6 +397,9 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _laserLight;
 
+		std::vector<GameObject*> _kamenLastphaseParticle;
+		std::vector<GameObject*> _kamenLastphaseParticleBack;
+
 		// ½ºÆç ¼Ò¸ê°ªÀ» À§ÇÑ º¯¼ö
 
 		float _spellDel;

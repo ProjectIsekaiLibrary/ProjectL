@@ -74,6 +74,20 @@ void KunrealEngine::Kamen::Update()
 	// 반드시 해야함
 	Boss::Update();
 	HoldKamenSword();
+
+	//if (_info._phase == 3)
+	//{
+		//for (auto& kamenLastphaseParticle : _kamenLastphaseParticle)
+		//{
+		//	kamenLastphaseParticle->GetComponent<Particle>()->SetActive(true);
+		//	kamenLastphaseParticle->GetComponent<Particle>()->SetParticleAngle(90, (_boss->GetComponent<Transform>()->GetRotation().y), 0);
+		//}
+		//for (auto& kamenLastphaseParticleBack : _kamenLastphaseParticleBack)
+		//{
+		//	kamenLastphaseParticleBack->GetComponent<Particle>()->SetActive(true);
+		//	kamenLastphaseParticleBack->GetComponent<Particle>()->SetParticleAngle(270, -(_boss->GetComponent<Transform>()->GetRotation().y),0);
+		//}
+	//}
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -202,14 +216,14 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 	////
-	//_basicPattern[1] = _basicPattern[0];
+	_basicPattern[1] = _basicPattern[0];
 	//   
 	//_basicPattern[2].emplace_back(_swordSwingVertical);
 	//_basicPattern[2].emplace_back(_swordSwingTwice);
@@ -1560,6 +1574,75 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			bossCoreBladeMove4->SetParent(multipleSwordVec);
 			bossCoreBladeMove4->GetComponent<Transform>()->SetPosition(-0.1f, 19.0f, -0.6);
 		}
+	}
+	{
+		//GameObject* boss3Phase1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase1");
+		//boss3Phase1->AddComponent<Particle>();
+		//boss3Phase1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+		//boss3Phase1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
+		//boss3Phase1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		//boss3Phase1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
+		//boss3Phase1->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+		//boss3Phase1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+		//boss3Phase1->SetParent(_boss);
+		//boss3Phase1->GetComponent<Transform>()->SetPosition(-0.272f, 15.53f, -0.616f);
+		//_kamenLastphaseParticle.emplace_back(boss3Phase1);
+
+		GameObject* boss3Phase2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase2");
+		boss3Phase2->AddComponent<Particle>();
+		boss3Phase2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+		boss3Phase2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
+		boss3Phase2->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+		boss3Phase2->GetComponent<Particle>()->SetParticleSize(35.f, 35.0f);
+		boss3Phase2->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+		boss3Phase2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		boss3Phase2->GetComponent<Particle>()->SetParticleAngle(270.0f, 0.0f, 0.0f);
+		boss3Phase2->GetComponent<Particle>()->SetParticleCameraApply(true);
+		boss3Phase2->SetParent(_boss);
+		boss3Phase2->GetComponent<Transform>()->SetPosition(0.0f, 18.f, 3.f);
+		_kamenLastphaseParticle.emplace_back(boss3Phase2);
+
+		GameObject* boss3Phase2_2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase2_2");
+		boss3Phase2_2->AddComponent<Particle>();
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleSize(35.f, 35.0f);
+		boss3Phase2_2->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleAngle(270.0f, 180.0f, 0.0f);
+		boss3Phase2_2->GetComponent<Particle>()->SetParticleCameraApply(true);
+		boss3Phase2_2->SetParent(_boss);
+		boss3Phase2_2->GetComponent<Transform>()->SetPosition(0.0f, 18.f, 3.f);
+		_kamenLastphaseParticle.emplace_back(boss3Phase2_2);
+
+		GameObject* boss3Phase3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase3");
+		boss3Phase3->AddComponent<Particle>();
+		boss3Phase3->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+		boss3Phase3->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		boss3Phase3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		boss3Phase3->GetComponent<Particle>()->SetParticleSize(25.f, 25.0f);
+		boss3Phase3->GetComponent<Particle>()->AddParticleColor(6.0f, 0.2f, 0.0f);
+		boss3Phase3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		boss3Phase3->GetComponent<Particle>()->SetParticleAngle(270.0f, 0, 0);
+		boss3Phase3->GetComponent<Particle>()->SetParticleCameraApply(true);
+		boss3Phase3->SetParent(_boss);
+		boss3Phase3->GetComponent<Transform>()->SetPosition(0, 18.f, 3.f);
+		_kamenLastphaseParticle.emplace_back(boss3Phase3);
+
+		GameObject* boss3Phase3_2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase3_2");
+		boss3Phase3_2->AddComponent<Particle>();
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleSize(25.f, 25.0f);
+		boss3Phase3_2->GetComponent<Particle>()->AddParticleColor(6.0f, 0.2f, 0.0f);
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleAngle(270.0f, 180, 0);
+		boss3Phase3_2->GetComponent<Particle>()->SetParticleCameraApply(true);
+		boss3Phase3_2->SetParent(_boss);
+		boss3Phase3_2->GetComponent<Transform>()->SetPosition(0, 18.f, 3.f);
+		_kamenLastphaseParticle.emplace_back(boss3Phase3_2);
 	}
 }
 
