@@ -15,7 +15,7 @@
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
 	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(2.0f),/* _playerDashParticleStart{0}, _playerDashParticleEnd{0},*/
-	_timer(0), _isDashStart(false), _isDashEnd(false)
+	_timer(1), _isDashStart(false), _isDashEnd(false)
 {
 
 }
@@ -472,7 +472,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 			_timer += TimeManager::GetInstance().GetDeltaTime();
 			for (auto& playerDashParticleEnd : _playerDashParticleEnd)
 			{
-				if (playerDashParticleEnd->GetComponent<Particle>()->GetParticleSize().x > 0)
+				if (_timer < 0.22)
 				{
 					playerDashParticleEnd->GetComponent<Particle>()->SetActive(true);
 				}
@@ -482,10 +482,20 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 				}
 			}
 
-			_playerDashParticleEnd[0]->GetComponent<Particle>()->SetParticleSize(30 - (120 * _timer), 30 - (120 * _timer));
-			_playerDashParticleEnd[1]->GetComponent<Particle>()->SetParticleSize(30 - (120 * _timer), 30 - (120 * _timer));
-			_playerDashParticleEnd[2]->GetComponent<Particle>()->SetParticleSize(10 - (40 * _timer), 10 - (40 * _timer));
-			_playerDashParticleEnd[3]->GetComponent<Particle>()->SetParticleSize(25 - (100 * _timer), 25 - (100 * _timer));
+			if (_timer < 0.22)
+			{
+				_playerDashParticleEnd[0]->GetComponent<Particle>()->SetParticleSize(120 * _timer, 120 * _timer);
+				_playerDashParticleEnd[1]->GetComponent<Particle>()->SetParticleSize(120 * _timer, 120 * _timer);
+				_playerDashParticleEnd[2]->GetComponent<Particle>()->SetParticleSize(40 * _timer, 40 * _timer);
+				_playerDashParticleEnd[3]->GetComponent<Particle>()->SetParticleSize(100 * _timer, 100 * _timer);
+			}
+			else if (_timer > 0.22)
+			{
+				_playerDashParticleEnd[0]->GetComponent<Particle>()->SetParticleSize(30, 30);
+				_playerDashParticleEnd[1]->GetComponent<Particle>()->SetParticleSize(30, 30);
+				_playerDashParticleEnd[2]->GetComponent<Particle>()->SetParticleSize(10, 10);
+				_playerDashParticleEnd[3]->GetComponent<Particle>()->SetParticleSize(25, 25);
+			}
 			
 		}
 	}
@@ -646,6 +656,7 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 	{
 		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
 		dashParticle->AddComponent<Particle>();
+		dashParticle->_autoAwake = true;
 		dashParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
 		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		dashParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
@@ -670,6 +681,7 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 	{
 		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
 		dashParticle->AddComponent<Particle>();
+		dashParticle->_autoAwake = true;
 		dashParticle->GetComponent<Particle>()->SetParticleEffect("fx_EnergyBolt7", "Resources/Textures/Particles/fx_EnergyBolt7.dds", 1000);
 		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		dashParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
@@ -693,6 +705,7 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 	{
 		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
 		dashParticle->AddComponent<Particle>();
+		dashParticle->_autoAwake = true;
 		dashParticle->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
 		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
 		dashParticle->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
@@ -716,6 +729,7 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 	{
 		GameObject* dashParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("dashParticle");
 		dashParticle->AddComponent<Particle>();
+		dashParticle->_autoAwake = true;
 		dashParticle->GetComponent<Particle>()->SetParticleEffect("LightFlash2", "Resources/Textures/Particles/fx_LightFlash2.dds", 1000);
 		dashParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		dashParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);

@@ -56,7 +56,7 @@ void KunrealEngine::Kamen::Initialize()
 
 	// 보스 타이머 설정
 	SetStartTime(0.0f);
-
+	
 	SetSpecialPatternPlayPhase(2);
 }
 
@@ -73,7 +73,6 @@ void KunrealEngine::Kamen::Update()
 {
 	// 반드시 해야함
 	Boss::Update();
-
 	HoldKamenSword();
 }
 
@@ -203,15 +202,15 @@ void KunrealEngine::Kamen::GamePattern()
 
 	//LeftRightPattern();					// 전방 좌, 우 어택
 
-	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 	//
-	//_basicPattern[1] = _basicPattern[0];
-	//
+	_basicPattern[1] = _basicPattern[0];
+	//   
 	//_basicPattern[2].emplace_back(_swordSwingVertical);
 	//_basicPattern[2].emplace_back(_swordSwingTwice);
 	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
@@ -222,9 +221,9 @@ void KunrealEngine::Kamen::GamePattern()
 	SwordChopPattern();								// 도넛
 	SwordLinearAttackPattern();						// 칼 직선 공격
 
-	_basicPattern[0].emplace_back(_swordMultipleAttack);
+	//_basicPattern[0].emplace_back(_swordMultipleAttack);
 
-	//BasicSwordAttackPattern();
+	BasicSwordAttackPattern();
 
 	//CoreEmmergencePattern();
 }
@@ -453,6 +452,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 					index = "ParticleEgoHandFire1_" + std::to_string(i + 1);
 				}
 				auto handFire = _boss->GetObjectScene()->CreateObject(index);
+				handFire->_autoAwake = true;;
 				handFire->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
 				handFire->AddComponent<Particle>();
 				handFire->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
@@ -461,7 +461,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				handFire->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
 				handFire->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 				handFire->GetComponent<Particle>()->SetActive(false);
-				handFire->SetActive(false);
+				
 
 				if (j == 0)
 				{
@@ -485,6 +485,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		{
 			std::string index = "ParticleHandFire2_" + std::to_string(i + 1);
 			auto BossHandFire = _boss->GetObjectScene()->CreateObject(index);
+			BossHandFire->_autoAwake = true;
 			BossHandFire->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
 			BossHandFire->AddComponent<Particle>();
 			BossHandFire->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
@@ -493,7 +494,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			BossHandFire->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 			BossHandFire->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
 			BossHandFire->GetComponent<Particle>()->SetActive(false);
-			BossHandFire->SetActive(false);
 
 			BossHandFire->SetParent(_handFire[i]);
 
@@ -504,6 +504,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			// 분신용 hand fire2
 			std::string index = "ParticleEgoHandFire2_" + std::to_string(i + 1);
 			auto EgoHandFire = _boss->GetObjectScene()->CreateObject(index);
+			EgoHandFire->_autoAwake = true;
 			EgoHandFire->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
 			EgoHandFire->AddComponent<Particle>();
 			EgoHandFire->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
@@ -512,7 +513,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			EgoHandFire->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
 			EgoHandFire->GetComponent<Particle>()->AddParticleColor(1.5f, 7.5f, 0.4f);
 			EgoHandFire->GetComponent<Particle>()->SetActive(false);
-			EgoHandFire->SetActive(false);
 
 			EgoHandFire->SetParent(_egoHandFire[i]);
 
@@ -532,6 +532,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				name = "ParticleEgoCll2_1";
 			}
 			auto call2_1 = _boss->GetObjectScene()->CreateObject(name);
+			call2_1->_autoAwake = true;
 			call2_1->GetComponent<Transform>()->SetPosition(0, mapOffsetY, 0);
 			call2_1->AddComponent<Particle>();
 			call2_1->GetComponent<Particle>()->SetParticleEffect("fx_Halo3", "Resources/Textures/Particles/fx_Halo3.dds", 1000);
@@ -541,7 +542,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			call2_1->GetComponent<Particle>()->AddParticleColor(1.0f, 5.f, 0.0f);
 			call2_1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 			call2_1->GetComponent<Particle>()->SetActive(false);
-			call2_1->SetActive(false);
 
 			if (i == 0)
 			{
@@ -568,6 +568,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			}
 
 			auto call2_2 = _boss->GetObjectScene()->CreateObject(name);
+			call2_2->_autoAwake = true;
 			call2_2->GetComponent<Transform>()->SetPosition(0, mapOffsetY, 0.f);
 			call2_2->AddComponent<Particle>();
 			call2_2->GetComponent<Particle>()->SetParticleEffect("fx_Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
@@ -577,7 +578,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			call2_2->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 0.0f);
 			call2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 			call2_2->GetComponent<Particle>()->SetActive(false);
-			call2_2->SetActive(false);
 
 			if (i == 0)
 			{
@@ -604,6 +604,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			}
 
 			auto call2_3 = _boss->GetObjectScene()->CreateObject(name);
+			call2_3->_autoAwake = true;
 			call2_3->GetComponent<Transform>()->SetPosition(0.0f, mapOffsetY, 0.0f);
 			call2_3->AddComponent<Particle>();
 			call2_3->GetComponent<Particle>()->SetParticleEffect("fx_Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
@@ -613,7 +614,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			call2_3->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
 			call2_3->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
 			call2_3->GetComponent<Particle>()->SetActive(false);
-			call2_3->SetActive(false);
 
 			if (i == 0)
 			{
@@ -632,6 +632,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		{
 			std::string name = "swordCyllinder" + std::to_string(i + 1);
 			auto swordCylinder = _boss->GetObjectScene()->CreateObject(name);
+			swordCylinder->_autoAwake = true;
 			swordCylinder->SetParent(_swordInsideAttack);
 			swordCylinder->AddComponent<Particle>();
 			swordCylinder->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
@@ -642,7 +643,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			swordCylinder->GetComponent<Particle>()->SetParticleCameraApply(true);
 
 			swordCylinder->GetComponent<Particle>()->SetActive(false);
-			swordCylinder->SetActive(false);
 
 			if (i == 0)
 			{
@@ -663,6 +663,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name = "donutParticle" + std::to_string(i + 1);
 			auto donutParticle = _boss->GetObjectScene()->CreateObject(name);
 
+			donutParticle->_autoAwake = true;
 			donutParticle->AddComponent<Particle>();
 			donutParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
 			donutParticle->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
@@ -672,7 +673,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			donutParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			donutParticle->GetComponent<Particle>()->SetActive(false);
 			donutParticle->SetTotalComponentState(false);
-			donutParticle->SetActive(false);
 
 
 			if (i == 0)
@@ -700,6 +700,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name = "donutParticle2" + std::to_string(i + 1);
 			auto donutParticle2 = _boss->GetObjectScene()->CreateObject(name);
 
+			donutParticle2->_autoAwake = true;
 			donutParticle2->AddComponent<Particle>();
 			donutParticle2->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
 			donutParticle2->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
@@ -709,7 +710,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			donutParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
 			donutParticle2->GetComponent<Particle>()->SetActive(false);
 			donutParticle2->SetTotalComponentState(false);
-			donutParticle2->SetActive(false);
 
 			if (i == 0)
 			{
@@ -733,6 +733,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name = "donutParticle3" + std::to_string(i + 1);
 			auto donutParticle3 = _boss->GetObjectScene()->CreateObject(name);
 
+			donutParticle3->_autoAwake = true;
 			donutParticle3->AddComponent<Particle>();
 			donutParticle3->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
 			donutParticle3->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
@@ -741,7 +742,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			donutParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
 			donutParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
 			donutParticle3->SetTotalComponentState(false);
-			donutParticle3->SetActive(false);
 
 			if (i == 0)
 			{
@@ -766,6 +766,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto teleportParticle = _boss->GetObjectScene()->CreateObject(name);
 			teleportParticle->SetParent(_bossInsideAttack);
 
+			teleportParticle->_autoAwake = true;
 			teleportParticle->AddComponent<Particle>();
 			teleportParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
 			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
@@ -775,7 +776,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
 			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportParticle->SetTotalComponentState(false);
-			teleportParticle->SetActive(false);
 		}
 
 		for (int i = 0; i < 2; i++)
@@ -784,6 +784,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto teleportParticle = _boss->GetObjectScene()->CreateObject(name);
 			teleportParticle->SetParent(_bossInsideAttack);
 
+			teleportParticle->_autoAwake = true;
 			teleportParticle->AddComponent<Particle>();
 			teleportParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
@@ -793,7 +794,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
 			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportParticle->SetTotalComponentState(false);
-			teleportParticle->SetActive(false);
 
 			//if (i == 0)
 			//{
@@ -810,6 +810,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto teleportParticle = _boss->GetObjectScene()->CreateObject(name);
 			teleportParticle->SetParent(_bossInsideAttack);
 
+			teleportParticle->_autoAwake = true;
 			teleportParticle->AddComponent<Particle>();
 			teleportParticle->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
 			teleportParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
@@ -819,7 +820,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportParticle->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
 			teleportParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportParticle->SetTotalComponentState(false);
-			teleportParticle->SetActive(false);
 			_particleEmergenceAttack.emplace_back(teleportParticle);
 		}
 	}
@@ -829,6 +829,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto teleportEgoParticle = _boss->GetObjectScene()->CreateObject(name);
 			teleportEgoParticle->SetParent(_egoInsideAttack);
 
+			teleportEgoParticle->_autoAwake = true;
 			teleportEgoParticle->AddComponent<Particle>();
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
@@ -838,7 +839,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportEgoParticle->SetTotalComponentState(false);
-			teleportEgoParticle->SetActive(false);
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 
@@ -848,6 +848,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto teleportEgoParticle = _boss->GetObjectScene()->CreateObject(name);
 			teleportEgoParticle->SetParent(_egoInsideAttack);
 
+			teleportEgoParticle->_autoAwake = true;
 			teleportEgoParticle->AddComponent<Particle>();
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
@@ -857,8 +858,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportEgoParticle->SetTotalComponentState(false);
-			teleportEgoParticle->SetActive(false);
-
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 		{
@@ -866,6 +865,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto teleportEgoParticle = _boss->GetObjectScene()->CreateObject(name);
 			teleportEgoParticle->SetParent(_egoInsideAttack);
 
+			teleportEgoParticle->_autoAwake = true;
 			teleportEgoParticle->AddComponent<Particle>();
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
@@ -875,7 +875,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			teleportEgoParticle->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
 			teleportEgoParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 			teleportEgoParticle->SetTotalComponentState(false);
-			teleportEgoParticle->SetActive(false);
 			_particleEgoEmergenceAttack.emplace_back(teleportEgoParticle);
 		}
 	}
@@ -885,6 +884,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			auto particleBossPillar1 = _boss->GetObjectScene()->CreateObject(name);
 			particleBossPillar1->SetParent(_swordInsideAttack);
 
+			particleBossPillar1->_autoAwake = true;
 			particleBossPillar1->AddComponent<Particle>();
 			particleBossPillar1->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
 			particleBossPillar1->GetComponent<Particle>()->SetParticleDuration(2.1f, 1.f);
@@ -894,13 +894,13 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			particleBossPillar1->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
 			particleBossPillar1->GetComponent<Particle>()->SetParticleCameraApply(true);
 			particleBossPillar1->SetTotalComponentState(false);
-			particleBossPillar1->SetActive(false);
 		}
 		{
 			std::string name = "insidePillarBoss";
 			auto particleBossPillar2 = _boss->GetObjectScene()->CreateObject(name);
 			particleBossPillar2->SetParent(_swordInsideAttack);
 
+			particleBossPillar2->_autoAwake = true;
 			particleBossPillar2->AddComponent<Particle>();
 			particleBossPillar2->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
 			particleBossPillar2->GetComponent<Particle>()->SetParticleDuration(2.f, 1.2f);
@@ -910,13 +910,13 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			particleBossPillar2->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
 			particleBossPillar2->GetComponent<Particle>()->SetParticleCameraApply(true);
 			particleBossPillar2->SetTotalComponentState(false);
-			particleBossPillar2->SetActive(false);
 		}
 		{
 			std::string name = "insidePillarBoss";
 			auto particleBossPillar3 = _boss->GetObjectScene()->CreateObject(name);
 			particleBossPillar3->SetParent(_swordInsideAttack);
 
+			particleBossPillar3->_autoAwake = true;
 			particleBossPillar3->AddComponent<Particle>();
 			particleBossPillar3->GetComponent<Particle>()->SetParticleEffect("Blaster2", "Resources/Textures/Particles/fx_Blaster2.dds", 1000);
 			particleBossPillar3->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
@@ -926,7 +926,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			particleBossPillar3->GetComponent<Particle>()->SetParticleDirection(0.0f, 160.0f, 0.0f);
 			particleBossPillar3->GetComponent<Particle>()->SetParticleCameraApply(true);
 			particleBossPillar3->SetTotalComponentState(false);
-			particleBossPillar3->SetActive(false);
 		}
 	}
 	{
@@ -934,6 +933,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		auto lazerParticle = _boss->GetObjectScene()->CreateObject(name);
 		lazerParticle->SetParent(_lazer);
 
+		lazerParticle->_autoAwake = true;
 		lazerParticle->AddComponent<Particle>();
 		lazerParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 		lazerParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
@@ -943,13 +943,13 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		lazerParticle->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 		lazerParticle->SetTotalComponentState(false);
-		lazerParticle->SetActive(false);
 	}
 	{
 		std::string name = "egoLazerParticle";
 		auto lazerParticle = _boss->GetObjectScene()->CreateObject(name);
 		lazerParticle->SetParent(_egoLazer);
 
+		lazerParticle->_autoAwake = true;
 		lazerParticle->AddComponent<Particle>();
 		lazerParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
 		lazerParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 1.15f);
@@ -959,7 +959,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		lazerParticle->GetComponent<Particle>()->SetParticleRotation(90.0f, _bossTransform->GetRotation().y, 0.0f);
 		//lazerParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 		lazerParticle->SetTotalComponentState(false);
-		lazerParticle->SetActive(false);
 	}
 	{
 		for (int i = 0; i < _fakeBoss.size(); ++i)
@@ -967,6 +966,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name1 = "fakeBossParticle1(" + std::to_string(i) + ")";
 			auto fakeBossParticle1 = _boss->GetObjectScene()->CreateObject(name1);
 			fakeBossParticle1->SetParent(_fakeBoss[i]);
+			fakeBossParticle1->_autoAwake = true;
 			fakeBossParticle1->AddComponent<Particle>();
 			fakeBossParticle1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
 			fakeBossParticle1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
@@ -975,7 +975,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			fakeBossParticle1->GetComponent<Particle>()->AddParticleColor(1.0f, 6.f, 0.0f);
 			fakeBossParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
 			fakeBossParticle1->GetComponent<Transform>()->SetPosition(-0.272f, 18.527f, -3.0f);
-			fakeBossParticle1->SetActive(false);
 
 			//std::string name2 = "fakeBossParticle2(" + std::to_string(i) + ")";
 			//auto fakeBossParticle2 = _boss->GetObjectScene()->CreateObject(name2);
@@ -1006,6 +1005,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name4 = "fakeBossParticle4(" + std::to_string(i) + ")";
 			auto fakeBossParticle4 = _boss->GetObjectScene()->CreateObject(name4);
 			fakeBossParticle4->SetParent(_fakeBoss[i]);
+			fakeBossParticle4->_autoAwake = true;
 			fakeBossParticle4->AddComponent<Particle>();
 			fakeBossParticle4->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
 			fakeBossParticle4->GetComponent<Particle>()->SetParticleDuration(0.5f, 1.0f);
@@ -1014,13 +1014,13 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			fakeBossParticle4->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
 			fakeBossParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
 			fakeBossParticle4->GetComponent<Transform>()->SetPosition(0, 13.4, 0);
-			fakeBossParticle4->SetActive(false);
 		}
 	}
 	{
 		std::string name = "verticalParticleSide1";
 		auto verticalParticleside = _boss->GetObjectScene()->CreateObject(name);
 
+		verticalParticleside->_autoAwake = true;
 		verticalParticleside->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
 		verticalParticleside->AddComponent<Particle>();
 		verticalParticleside->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
@@ -1030,7 +1030,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticleside->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleCameraApply(true);
-		verticalParticleside->SetActive(false);
 
 		_verticalParticleSide.emplace_back(verticalParticleside);
 	}
@@ -1038,6 +1037,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		std::string name = "verticalParticleSide2";
 		auto verticalParticleside = _boss->GetObjectScene()->CreateObject(name);
 
+		verticalParticleside->_autoAwake = true;
 		verticalParticleside->GetComponent<Transform>()->SetPosition(-48, -4.4, -65.f);
 		verticalParticleside->AddComponent<Particle>();
 		verticalParticleside->GetComponent<Particle>()->SetParticleEffect("fx_Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
@@ -1047,7 +1047,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticleside->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 0.3f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 		verticalParticleside->GetComponent<Particle>()->SetParticleCameraApply(true);
-		verticalParticleside->SetActive(false);
 
 		_verticalParticleSide.emplace_back(verticalParticleside);
 	}
@@ -1055,6 +1054,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		std::string name = "verticalParticle1";
 		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
 
+		verticalParticle->_autoAwake = true;
 		verticalParticle->AddComponent<Particle>();
 		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
@@ -1063,7 +1063,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticle->GetComponent<Particle>()->AddParticleColor(1.f, 1.f, 1.f);
 		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 400.0f, 0.0f);
 		verticalParticle->GetComponent<Particle>()->SetActive(false);
-		verticalParticle->SetActive(false);
 
 		_verticalParticle.emplace_back(verticalParticle);
 	}
@@ -1071,6 +1070,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		std::string name = "verticalParticle2";
 		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
 
+		verticalParticle->_autoAwake = true;
 		verticalParticle->AddComponent<Particle>();
 		verticalParticle->GetComponent<Particle>()->SetParticleEffect("Flare6", "Resources/Textures/Particles/fx_Twister3.dds", 1000);
 		verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.4f, 2.0f);
@@ -1080,7 +1080,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 600.0f, 0.0f);
 		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
 		verticalParticle->GetComponent<Particle>()->SetActive(false);
-		verticalParticle->SetActive(false);
 
 		_verticalParticle.emplace_back(verticalParticle);
 	}
@@ -1089,6 +1088,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		std::string name = "verticalParticle2test";
 		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
 
+		verticalParticle->_autoAwake = true;
 		verticalParticle->AddComponent<Particle>();
 		verticalParticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam3", "Resources/Textures/Particles/fx_Beam3.dds", 1000);
 		verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.4f, 0.3f);
@@ -1098,8 +1098,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		verticalParticle->GetComponent<Particle>()->SetParticleAngle(300.0f, 0.0f, 0.0f);
 		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-		verticalParticle->GetComponent<Particle>()->SetActive(true);
-		verticalParticle->SetActive(true);
+		verticalParticle->GetComponent<Particle>()->SetActive(false);
 		verticalParticle->SetParent(_kamenSword);
 
 
@@ -1113,6 +1112,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name = "verticalParticle2test";
 			auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
 
+			verticalParticle->_autoAwake = true;
 			verticalParticle->AddComponent<Particle>();
 			verticalParticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam4", "Resources/Textures/Particles/fx_Beam4.dds", 1000);
 			verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.1f);
@@ -1122,8 +1122,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 			verticalParticle->GetComponent<Particle>()->SetParticleAngle(300.0f, 0.0f, 0.0f);
 			verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			verticalParticle->GetComponent<Particle>()->SetActive(true);
-			verticalParticle->SetActive(true);
+			verticalParticle->GetComponent<Particle>()->SetActive(false);
 			verticalParticle->SetParent(_kamenSword);
 
 			verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
@@ -1174,6 +1173,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				std::string name = "bladePrticle";
 				auto bladePrticle = _boss->GetObjectScene()->CreateObject(name);
 
+				bladePrticle->_autoAwake = true;
 				bladePrticle->AddComponent<Particle>();
 				bladePrticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam4", "Resources/Textures/Particles/fx_Beam4.dds", 1000);
 				bladePrticle->GetComponent<Particle>()->SetParticleDuration(0.1f, 1.0f);
@@ -1188,7 +1188,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 				bladePrticle->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 				bladePrticle->GetComponent<Light>()->SetActive(false);
-				bladePrticle->SetActive(false);
 
 				switch (j)
 				{
@@ -1250,6 +1249,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				std::string name = "bladePrticleWave";
 				auto bladePrticleWave = _boss->GetObjectScene()->CreateObject(name);
 
+				bladePrticleWave->_autoAwake = true;
 				bladePrticleWave->AddComponent<Particle>();
 				bladePrticleWave->GetComponent<Particle>()->SetParticleEffect("fx_Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
 				bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.3f, 1.0f);
@@ -1260,7 +1260,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				bladePrticleWave->GetComponent<Particle>()->SetParticleCameraApply(true);
 				bladePrticleWave->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
 				bladePrticleWave->GetComponent<Particle>()->SetActive(false);
-				bladePrticleWave->SetActive(false);
 
 				switch (w)
 				{
@@ -1333,6 +1332,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name = "bladePrticle";
 			auto bladePrticle = _boss->GetObjectScene()->CreateObject(name);
 
+			bladePrticle->_autoAwake = true;
 			bladePrticle->AddComponent<Particle>();
 			bladePrticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam4", "Resources/Textures/Particles/fx_Beam4.dds", 1000);
 			bladePrticle->GetComponent<Particle>()->SetParticleDuration(0.1f, 1.0f);
@@ -1347,7 +1347,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			bladePrticle->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 			bladePrticle->GetComponent<Light>()->SetDiffuse(0.15f, 0.5f, 0.05f, 1.0f);
 			bladePrticle->GetComponent<Light>()->SetActive(false);
-			bladePrticle->SetActive(false);
 
 			switch (j)
 			{
@@ -1410,6 +1409,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			std::string name = "bladePrticleWave";
 			auto bladePrticleWave = _boss->GetObjectScene()->CreateObject(name);
 
+			bladePrticleWave->_autoAwake = true;
 			bladePrticleWave->AddComponent<Particle>();
 			bladePrticleWave->GetComponent<Particle>()->SetParticleEffect("fx_Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
 			bladePrticleWave->GetComponent<Particle>()->SetParticleDuration(0.3f, 1.0f);
@@ -1420,7 +1420,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			bladePrticleWave->GetComponent<Particle>()->SetParticleCameraApply(true);
 			bladePrticleWave->GetComponent<Particle>()->SetParticleAngle(0.f, 0.0f, 0.0f);
 			bladePrticleWave->GetComponent<Particle>()->SetActive(false);
-			bladePrticleWave->SetActive(false);
 
 
 			switch (w)
