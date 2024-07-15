@@ -88,6 +88,12 @@ namespace KunrealEngine
 
 		GameObject* _deathParticle1;				// 플레이어 죽을 때 출력될 파티클
 		GameObject* _deathParticle2;	
+		GameObject* _deathParticle3;	
+		GameObject* _deathParticle4;	
+		GameObject* _deathParticle5;	
+		GameObject* _deathParticle6;	
+
+		std::vector<GameObject*> _deathParticleVector;	
 		float _deathAnimationSpeed;
 
 	private:
