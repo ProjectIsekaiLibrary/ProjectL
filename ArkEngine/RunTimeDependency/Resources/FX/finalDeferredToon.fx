@@ -49,6 +49,8 @@ TextureCube gCubeMap;
 //    AddressW = CLAMP;
 //};
 
+
+
 float3 ToneMapReinhard(float3 color)
 {
     float3 mappedColor = color / (color + float3(1.0, 1.0, 1.0));
@@ -70,12 +72,12 @@ SamplerState samAnisotropic
 
 SamplerComparisonState samShadow
 {
-    Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
-    
+    //Filter = COMPARISON_MIN_MAG_LINEAR_MIP_POINT;
+    Filter = COMPARISON_MIN_MAG_MIP_LINEAR;
     AddressU = BORDER;
     AddressV = BORDER;
     AddressW = BORDER;
-    BorderColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+    BorderColor = float4(1.0f, 1.0f, 1.0f, 1.0f);
 
     ComparisonFunc = LESS_EQUAL;
 };
@@ -193,39 +195,44 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
     toEye /= distToEye;
 
-    // 현재 픽셀의 월드좌표에 광원의 VIEW,RPOJ행렬을 곱해 광원시점으로 이동시킴
-    float4 worldPosByLight = WorldToLight(position);
+    //// 현재 픽셀의 월드좌표에 광원의 VIEW,RPOJ행렬을 곱해 광원시점으로 이동시킴
+    //float4 worldPosByLight = WorldToLight(position);
+    //
+    //// 현재 픽셀의 광원시점에서의 Z값을 가져옴
+    //float vertexDepth = worldPosByLight.z / worldPosByLight.w;
+    //
+
+//    //float4 texColor = (diffuseAlbedo.a <= 0.f) ? float4(diffuseAlbedo.xyz, 1.0f) : float4(diffuseAlbedo.xyz * shadowFactor, 1.0f);
+    //
+    //// 광원시점에서 오브젝트의 깊이를 담아놓은 텍스쳐에서 현재 픽셀의 Z값을 가져옴
+    //float lightDepth = gShadowDepthMapTexture.Sample(samAnisotropic, ToTexcoord(worldPosByLight)).r;
     
-    // 현재 픽셀의 광원시점에서의 Z값을 가져옴
-    float vertexDepth = worldPosByLight.z / worldPosByLight.w;
-    // 광원시점에서 오브젝트의 깊이를 담아놓은 텍스쳐에서 현재 픽셀의 Z값을 가져옴
-    float lightDepth = gShadowDepthMapTexture.Sample(samAnisotropic, ToTexcoord(worldPosByLight)).r;
-    
-    float shadowFactor;
-    
-    // 본인 앞에 다른 물체가 있어 LIGHTDepth가 더 작다면 그림자가 생김
-    if (vertexDepth > lightDepth + 0.0000125f)
-    {
-        shadowFactor = 0.5f;
-    }
-    else
-    {
-        shadowFactor = 1.0f;
-    }
-    
-    float4 texColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
+   // float shadowFactor;
+   // 
+   // // 본인 앞에 다른 물체가 있어 LIGHTDepth가 더 작다면 그림자가 생김
+   // float bias = 0.005f;
+   // //if (vertexDepth > lightDepth + 0.0000125f)
+   // if (vertexDepth > lightDepth + bias)
+   // {
+   //     shadowFactor = 0.5f;
+   // }
+   // else
+   // {
+   //     shadowFactor = 1.0f;
+   // }
+   // 
+   // float4 texColor = float4(0.0f, 0.0f, 0.0f, 0.0f);
     //diffuseAlbedo.a = 1.0f;
-    //float4 texColor = float4(diffuseAlbedo.xyz, 1.0f);
     
-    if (diffuseAlbedo.a <= 0.f)
-    {
-        cartoon = 0.0f;
-        texColor = float4(diffuseAlbedo.xyz, 1.0f);
-    }
-    else
-    {
-        texColor = float4(diffuseAlbedo.xyz * shadowFactor, 1.0f);
-    }
+    //if (diffuseAlbedo.a <= 0.f)
+    //{
+    //    cartoon = 0.0f;
+    //    texColor = float4(diffuseAlbedo.xyz, 1.0f);
+    //}
+    //else
+    //{
+    //    texColor = float4(diffuseAlbedo.xyz * shadowFactor, 1.0f);
+    //}
     
     Material nowMat;
     nowMat.Diffuse = float4(1.0f, 1.0f, 1.0f, 1.0f);
@@ -238,8 +245,51 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     float3 toLightDir = -gDirLights[0].Direction;
 
-
-   
+    // 현재 픽셀의 위치를 광원 뷰 공간으로 바꾼다
+    float4 lightView = mul(float4(position, 1.0f), gLightView);
+    // 광원 투영 공간으로 변환
+    float4 lightViewProj = mul(lightView, gLightProj);
+    // 그림자 팩터를 초기화
+    float shadowFactor = 1.0f;
+    // 그림자 좌표를 계산한다
+    float3 shadowCoord = lightViewProj.xyz / lightViewProj.w;
+    // 그림자 좌표의 x,y 값을 텍스쳐 좌표로 변환한다
+    // 이를 [-1,1]범위가 아닌 [0,1]범위로 바꿔준다
+    shadowCoord.xy = (shadowCoord * 0.5) + 0.5;
+    // y좌표를 뒤집는다
+    shadowCoord.y = 1.0f - shadowCoord.y;
+    //// 그림자 좌표의 z 값을 픽셀 깊이로 변환한다
+    
+ 
+    
+    const float dx = 1.0f / 8192.f;
+    
+    float percentLit = 0.0f;
+    const float2 offsets[9] =
+    {
+        float2(-dx, -dx), float2(0.0f, -dx), float2(dx, -dx),
+		float2(-dx, 0.0f), float2(0.0f, 0.0f), float2(dx, 0.0f),
+		float2(-dx, +dx), float2(0.0f, +dx), float2(dx, +dx)
+    };
+    
+    
+    // 그림자 맵에서 해당 픽셀의 깊이를 샘플링한다
+    [unroll]
+    for (int i = 0; i < 9; i++)
+    {
+        percentLit += gShadowDepthMapTexture.SampleCmpLevelZero(samShadow, shadowCoord.xy + offsets[i], shadowCoord.z).r;
+    }
+    
+    percentLit /= 9.0f;
+    //percentLit *= 0.5f;
+    
+    float shadowIntensity = 0.5f;
+    percentLit = lerp(1.0f, percentLit, shadowIntensity);
+    
+    float4 texColor = float4(diffuseAlbedo.xyz, 1.0f);
+    
+    //texColor * percentLit;
+    
 	// Rim Lighting
     float rimIntensity = 0.2f;
     float rimThreshold = 0.2f;
@@ -271,7 +321,6 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     toonColor = ToonShade(lightIntensity);
     //if (cartoon == 1.0f)
     //{
-    //
     //    litColor = texColor * toonColor;
     //}
     //else
@@ -307,7 +356,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
     
 	// Specular Reflection
-    _Glossiness = 32.f;
+    _Glossiness = 16.f;
     _SpecularColor = (0.0f, 0.0f, 0.0f, 1.f);
     
 	//float3 halfVector = normalize(toLightDir + toEye);
@@ -329,7 +378,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
 	
 	// 원래 물체의 색상과 외곽선을 더함
-    float4 finalColor = litColor + outline + specular + rimLighting;
+    float4 finalColor = (litColor + outline + specular + rimLighting);
     
     float3 toneMappedColor = ToneMapReinhard(finalColor.xyz);
     
@@ -356,7 +405,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
         }
     }
     float4 emissiveColor = float4(emissive, 0.0f);
-    return float4(toneMappedColor, 1.0f) + emissiveColor;
+    return (float4(toneMappedColor, 1.0f) + emissiveColor) * percentLit;
     
     //return finalColor;
    
