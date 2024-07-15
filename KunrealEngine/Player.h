@@ -32,6 +32,7 @@ namespace KunrealEngine
 		struct PlayerInfo
 		{
 			float _hp;				// 체력
+			float _maxhp;			// 최대체력
 			float _stamina;			// 기력
 
 			float _moveSpeed;		// 이동 속도
@@ -44,8 +45,8 @@ namespace KunrealEngine
 
 			float _speedScale;		// 전체적인 속도에 영향
 
-			PlayerInfo(float hp, float stamina, float moveSpeed, float dashSpeed, float dashRange, float dashCooldown, float spellpower, float damageReduce, float speedScale)
-				:_hp(hp), _stamina(stamina), _moveSpeed(moveSpeed), _dashSpeed(dashSpeed), _dashRange(dashRange), _dashCooldown(dashCooldown), _spellPower(spellpower), _damageReduce(damageReduce), _speedScale(speedScale)
+			PlayerInfo(float hp, float maxhp, float stamina, float moveSpeed, float dashSpeed, float dashRange, float dashCooldown, float spellpower, float damageReduce, float speedScale)
+				:_hp(hp), _maxhp(maxhp), _stamina(stamina), _moveSpeed(moveSpeed), _dashSpeed(dashSpeed), _dashRange(dashRange), _dashCooldown(dashCooldown), _spellPower(spellpower), _damageReduce(damageReduce), _speedScale(speedScale)
 			{}
 		};
 

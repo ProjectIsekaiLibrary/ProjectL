@@ -64,12 +64,16 @@ void KunrealEngine::PlayerMove::Update()
 		}
 	}
 
+	//if (this->_playerComp->_playerStatus != Player::Status::WALK)
+	//{
+	//	this->_isMoving = false;
+	//}
+
 	if (_isMoving)
 	{
 		_SoundComp->Play(0);
 	}
 
-	/// 여기에 쿨타임 조건 및 플레이어 상태 조건 추가해야함
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE) && this->_isDashReady)
 	{
 		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
@@ -90,6 +94,11 @@ void KunrealEngine::PlayerMove::Update()
 			UpdateDashNode();
 			_isDash = true;
 		}
+	}
+
+	if (InputSystem::GetInstance()->KeyDown(KEY::S))
+	{
+		StopPlayer();
 	}
 
 	/// 디버깅용
@@ -765,4 +774,17 @@ DirectX::XMFLOAT3 KunrealEngine::PlayerMove::GetTargetPosition()
 float& KunrealEngine::PlayerMove::GetMovedRange()
 {
 	return _movedRange;
+}
+
+void KunrealEngine::PlayerMove::StopPlayer()
+{
+	// 플레이어가 이동중이라면	// 대시중, 스킬 사용중, 피격 중일땐 불가
+	if (this->_playerComp->_playerStatus == Player::Status::WALK)
+	{
+		// 평시 상태로 만들고
+		this->_playerComp->_playerStatus = Player::Status::IDLE;
+		
+		// 노드를 비워줌
+		this->_stopover.clear();
+	}
 }

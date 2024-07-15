@@ -17,6 +17,7 @@ KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE), _owner(nullptr)
 	, _playerInfo(
 		500.0f,			// hp
+		500.0f,			// maxhp
 		100.0f,			// stamina
 		30.0f,			// movespeed
 		120.0f,			// dashspeed

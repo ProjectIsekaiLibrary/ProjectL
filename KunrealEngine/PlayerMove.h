@@ -94,13 +94,16 @@ namespace KunrealEngine
 		// 움직일 수 없는 공간을 클릭했을 때 가까운 지점으로 노드 재생성
 		void RecalculateNavigation();
 
-		/// 디버깅을 위한 함수
-		void ShowPlayerInfo();
-
 		//대시중 카메라효과를 위한 함수
 		bool GetisDashed();
 		DirectX::XMFLOAT3 GetTargetPosition();
 		float& GetMovedRange();
+
+		// 플레이어가 움직이는 도중 멈추는 함수
+		void StopPlayer();
+
+		/// 디버깅을 위한 함수
+		void ShowPlayerInfo();
 
 	private:
 		// 코루틴

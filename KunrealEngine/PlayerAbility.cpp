@@ -19,11 +19,12 @@
 KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _circle(nullptr), _laser(nullptr)
 	, _isCircleReady(true), _destroyCircle(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
-	, _isShotHit(false), _isLaserHit(false), _isMeteorHit(false)
+	, _isShotHit(false), _isLaserHit(false), _isMeteorHit(false), _isCircleHit(false)
 	, _isShotDetected(false), _isCircleDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false),
 	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isCircleEnded(false), _circleParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false), _destroyLaser(false),
 	_shotParticle2(nullptr), _shotParticle3(nullptr), _shotParticle4(nullptr), _shotParticleHit1(nullptr), _shotParticleHit2(nullptr), _shotParticleHit3(nullptr),
-	_laserParticle1(nullptr), _laserParticle2(nullptr), _laserParticle3(nullptr), _laserParticle4(nullptr), _meteorParticle2(nullptr), _meteorParticle3(nullptr), _meteorParticle4(nullptr), _meteorParticleHit1(nullptr), _meteorParticleHit2(nullptr), _meteorParticleHit3(nullptr), _meteorParticleHit4(nullptr)
+	_laserParticle1(nullptr), _laserParticle2(nullptr), _laserParticle3(nullptr), _laserParticle4(nullptr), _meteorParticle2(nullptr), _meteorParticle3(nullptr), _meteorParticle4(nullptr), _meteorParticleHit1(nullptr), _meteorParticleHit2(nullptr), _meteorParticleHit3(nullptr), _meteorParticleHit4(nullptr),
+	_maxPotion(5), _restorePercentage(0.3f), _potionCoolDown(8.0f), _isPotionReady(true)
 
 {
 
@@ -60,10 +61,21 @@ void KunrealEngine::PlayerAbility::FixedUpdate()
 void KunrealEngine::PlayerAbility::Update()
 {
 	/// 함수로 나누자 나중에
-	/// 쿨타임 조건 필요
+
+	// 타이틀씬에서는 작동하지 않도록
+	if (this->GetOwner()->GetObjectScene()->GetSceneName() != "Main")
+	{
+		return;
+	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady)
 	{
+		// 플레이어가 행동할 수 없는 상태라면 return
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		{
+			return;
+		}
+
 		ResetShotPos();
 		Startcoroutine(shotCoolDown);
 		_isShotDetected = true;
@@ -81,6 +93,12 @@ void KunrealEngine::PlayerAbility::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isCircleReady)
 	{
+		// 플레이어가 행동할 수 없는 상태라면 return
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		{
+			return;
+		}
+
 		ResetCirclePos();											// 투사체 위치 리셋
 		_isCircleDetected = true;
 		_isCircleHit = true;
@@ -90,21 +108,26 @@ void KunrealEngine::PlayerAbility::Update()
 
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 2;				// 얼음 소환 애니메이션	
-		
+
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isLaserReady)
 	{
+		// 플레이어가 행동할 수 없는 상태라면 return
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		{
+			return;
+		}
+
 		ResetLaserPos();
 		_isLaserDetected = true;
 		_isLaserHit = true;
 		_isLaserStarted = true;
-		this->laserCount = 0;
 		Startcoroutine(LaserCoolDown);
 		Startcoroutine(LaserStandby);
 		_playerComp->_playerStatus = Player::Status::ABILITY;
 		_playerComp->_abilityAnimationIndex = 3;				// 범위 공격 애니메이션
-		
+
 		_CoroutineIs(laserDestroy)
 		{
 			auto* ability = this;
@@ -139,6 +162,12 @@ void KunrealEngine::PlayerAbility::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady)
 	{
+		// 플레이어가 행동할 수 없는 상태라면 return
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		{
+			return;
+		}
+
 		ResetMeteorPos();
 		_isMeteorDetected = true;
 		_isMeteorHit = true;
@@ -147,84 +176,16 @@ void KunrealEngine::PlayerAbility::Update()
 		_playerComp->_abilityAnimationIndex = 4;
 	}
 
-	/// 교통정리 필요
-	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 1 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+	if (InputSystem::GetInstance()->KeyDown(KEY::_1) && this->_maxPotion > 0 && this->_isPotionReady)
 	{
-		_playerComp->_playerStatus = Player::Status::IDLE;
+		RestoreHealth();
 	}
 
-	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 2 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
-	{
-		_playerComp->_playerStatus = Player::Status::IDLE;
-	}
+	AnimateByFrame();
+	UpdateAbilityLogic();
 
-	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
-	{
-		_playerComp->_playerStatus = Player::Status::IDLE;
-		this->_isLaserReady = false;
-	}
 
-	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 4 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
-	{
-		_meteor->SetActive(true);
-		_meteor->GetComponent<Particle>()->SetActive(true);
-		_meteorParticle2->GetComponent<Particle>()->SetActive(true);
-		_meteorParticle3->GetComponent<Particle>()->SetActive(true);
-		_meteorParticle4->GetComponent<Particle>()->SetActive(true);
-		_playerComp->_playerStatus = Player::Status::IDLE;
-	}
-
-	_abilityContainer[0]->_abilityLogic();
-	_abilityContainer[1]->_abilityLogic();
-	_abilityContainer[2]->_abilityLogic();
-	_abilityContainer[3]->_abilityLogic();
-
-	//if (this->_isShotReady)
-	//{
-	//	GRAPHICS->DrawDebugText(100, 500, 40, "Q Ready");
-	//}
-	//else
-	//{
-	//	GRAPHICS->DrawDebugText(100, 500, 40, "Q On CoolDown");
-	//}
-	//
-	//if (this->_isIceReady)
-	//{
-	//	GRAPHICS->DrawDebugText(100, 600, 40, "W Ready");
-	//}
-	//else
-	//{
-	//	GRAPHICS->DrawDebugText(100, 600, 40, "W On CoolDown");
-	//}
-	//
-	//if (this->_isLaserReady)
-	//{
-	//	GRAPHICS->DrawDebugText(100, 700, 40, "E Ready");
-	//}
-	//else
-	//{
-	//	GRAPHICS->DrawDebugText(100, 700, 40, "E On CoolDown");
-	//}
-	//
-	//if (this->_isMeteorReady)
-	//{
-	//	GRAPHICS->DrawDebugText(100, 800, 40, "R Ready");
-	//}
-	//else
-	//{
-	//	GRAPHICS->DrawDebugText(100, 800, 40, "R On CoolDown");
-	//}
-
-	GRAPHICS->DrawDebugText(100, 500, 40, "LaserCount : %d", this->laserCount);
-
-	if (this->_laser->GetCollider()->GetTargetObject() != nullptr)
-	{
-		GRAPHICS->DrawDebugText(100, 800, 40, this->_laser->GetCollider()->GetTargetObject()->GetObjectName().c_str());
-	}
-	else
-	{
-		GRAPHICS->DrawDebugText(100, 800, 40, "Laser Not Collided");
-	}
+	DebugText();
 }
 
 void KunrealEngine::PlayerAbility::LateUpdate()
@@ -1017,11 +978,132 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				{
 					EventManager::GetInstance().CamShake(3.0f);
 				}
-			} 
+			}
 		});
 
 	// 다 만들었으면 컨테이너에 추가
 	AddToContanier(meteor);
+}
+
+
+void KunrealEngine::PlayerAbility::RestoreHealth()
+{
+	// 회복량 계산 소수점 반올림
+	float restoreAmount = round(this->_playerComp->_playerInfo._maxhp * this->_restorePercentage);
+
+	// 플레이어가 회복 가능한 체력이 회복율보다 낮을 경우	// 체력이 70%보다 높을 경우
+	if (this->_playerComp->_playerInfo._hp + restoreAmount > this->_playerComp->_playerInfo._maxhp)
+	{
+		this->_playerComp->_playerInfo._hp = this->_playerComp->_playerInfo._maxhp;
+	}
+	else
+	{
+		this->_playerComp->_playerInfo._hp += restoreAmount;
+	}
+
+	this->_maxPotion--;
+
+	Startcoroutine(PotionCoolDown);
+
+}
+
+
+void KunrealEngine::PlayerAbility::AnimateByFrame()
+{
+	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 1 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+	{
+		_playerComp->_playerStatus = Player::Status::IDLE;
+	}
+
+	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 2 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+	{
+		_playerComp->_playerStatus = Player::Status::IDLE;
+	}
+
+	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+	{
+		_playerComp->_playerStatus = Player::Status::IDLE;
+		this->_isLaserReady = false;
+	}
+
+	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 4 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
+	{
+		_meteor->SetActive(true);
+		_meteor->GetComponent<Particle>()->SetActive(true);
+		_meteorParticle2->GetComponent<Particle>()->SetActive(true);
+		_meteorParticle3->GetComponent<Particle>()->SetActive(true);
+		_meteorParticle4->GetComponent<Particle>()->SetActive(true);
+		_playerComp->_playerStatus = Player::Status::IDLE;
+	}
+}
+
+
+void KunrealEngine::PlayerAbility::UpdateAbilityLogic()
+{
+	this->_abilityContainer[0]->_abilityLogic();
+	this->_abilityContainer[1]->_abilityLogic();
+	this->_abilityContainer[2]->_abilityLogic();
+	this->_abilityContainer[3]->_abilityLogic();
+}
+
+
+void KunrealEngine::PlayerAbility::DebugText()
+{
+	//if (this->_isShotReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 500, 40, "Q Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 500, 40, "Q On CoolDown");
+	//}
+	//
+	//if (this->_isIceReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 600, 40, "W Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 600, 40, "W On CoolDown");
+	//}
+	//
+	//if (this->_isLaserReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 700, 40, "E Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 700, 40, "E On CoolDown");
+	//}
+	//
+	//if (this->_isMeteorReady)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 800, 40, "R Ready");
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 800, 40, "R On CoolDown");
+	//}
+
+	//if (this->_laser->GetCollider()->GetTargetObject() != nullptr)
+	//{
+	//	GRAPHICS->DrawDebugText(100, 800, 40, this->_laser->GetCollider()->GetTargetObject()->GetObjectName//().c_str());
+	//}
+	//else
+	//{
+	//	GRAPHICS->DrawDebugText(100, 800, 40, "Laser Not Collided");
+	//}
+
+	if (this->_isPotionReady)
+	{
+		GRAPHICS->DrawDebugText(100, 800, 40, "Potion Ready");
+	}
+	else
+	{
+		GRAPHICS->DrawDebugText(100, 800, 40, "Potion on cooldown");
+	}
+
+	GRAPHICS->DrawDebugText(100, 850, 40, "%d", this->_maxPotion);
 }
 
 void KunrealEngine::PlayerAbility::AddToContanier(Ability* abil)

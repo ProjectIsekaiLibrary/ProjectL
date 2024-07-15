@@ -43,7 +43,7 @@ namespace KunrealEngine
 		Player* _playerComp;
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
-		GameObject* _circle;			// W 스킬 객체
+		GameObject* _circle;		// W 스킬 객체
 		GameObject* _laser;			// E 스킬 객체
 		GameObject* _meteor;		// R 스킬 운석 객체
 
@@ -68,9 +68,6 @@ namespace KunrealEngine
 		bool _isCircleDetected;
 		bool _isLaserDetected;
 		bool _isMeteorDetected;
-
-		/// TestTestTestTestTestTestTest
-		int laserCount = 0;
 
 		/// 파티클 배치용 멤버변수
 	private:
@@ -115,19 +112,41 @@ namespace KunrealEngine
 		bool _isMeteorEnded;
 		float _meteorParticleTimer;
 
+		// 포션 로직 변수
+		int _maxPotion;					// 포션 사용 최대횟수
+		float _restorePercentage;		// 포션 회복 비율
+		float _potionCoolDown;			// 포션 재사용 대기시간
+		bool _isPotionReady;			// 포션 사용 가능 여부
+
 		// 비활성화 되었을 경우
 	private:
+		// Q스킬 전기 구체
 		void ResetShotPos();
 		void CreateAbility1();
 
+		// W스킬 마법진
 		void ResetCirclePos();
 		void CreateAbility2();
 
+		// E스킬 레이저
 		void ResetLaserPos();
 		void CreateAbility3();
 
+		// R스킬 메테오
 		void ResetMeteorPos();
 		void CreateAbility4();
+
+		// 1번키 스킬 물약
+		void RestoreHealth();
+
+		// 애니메이션 프레임과 스킬 발동 여부
+		void AnimateByFrame();
+
+		// 스킬 로직 랩핑
+		void UpdateAbilityLogic();
+
+		/// 디버깅용
+		void DebugText();
 
 	public:
 		void AddToContanier(Ability* abil);
@@ -268,7 +287,6 @@ namespace KunrealEngine
 			Waitforsecond(0.4f);
 
 			ability->_isLaserHit = true;
-			ability->laserCount++;
 
 		};
 
@@ -276,9 +294,18 @@ namespace KunrealEngine
 		Coroutine_Func(meteorCoolDown)
 		{
 			auto* ability = this;
-			_isMeteorReady = false;
+			ability->_isMeteorReady = false;
 			Waitforsecond(ability->_abilityContainer[3]->_cooldown);
 			ability->_isMeteorReady = true;
+		};
+
+		// 물약 사용 쿨타임
+		Coroutine_Func(PotionCoolDown)
+		{
+			auto* ability = this;
+			ability->_isPotionReady = false;
+			Waitforsecond(ability->_potionCoolDown);
+			ability->_isPotionReady = true;
 		};
 	};
 }
