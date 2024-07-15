@@ -27,6 +27,7 @@ KunrealEngine::Player::Player()
 		1.5f			// speedScale
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
+	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathAnimationSpeed(30.0f)
 {
 	_sweepNode.clear();
 }
@@ -72,6 +73,14 @@ void KunrealEngine::Player::Initialize()
 
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
+
+	//this->_deathParticle1 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle1");
+	//this->_deathParticle1->SetParent(this->GetOwner());
+	//this->_deathParticle1->AddComponent<Particle>();
+	//
+	//this->_deathParticle2 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle2");
+	//this->_deathParticle2->SetParent(this->GetOwner());
+	//this->_deathParticle2->AddComponent<Particle>();
 
 }
 
@@ -193,7 +202,25 @@ void KunrealEngine::Player::AnimateByStatus()
 				}
 				break;
 			case KunrealEngine::Player::Status::DEAD:
-				this->_owner->GetComponent<Animator>()->Play("Death", 30.0f * _playerInfo._speedScale, false);
+				this->_owner->GetComponent<Animator>()->Play("Death", _deathAnimationSpeed * _playerInfo._speedScale, false);
+
+				if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() < 9)
+				{
+					_deathAnimationSpeed = 5.0f;
+				}
+				else if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= 10 && _owner->GetComponent<Animator>()->GetCurrentFrame() < 42)
+				{
+					_deathAnimationSpeed = 30.0f;
+				}
+				else if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= 42 && _owner->GetComponent<Animator>()->GetCurrentFrame() < 44)
+				{
+					_deathAnimationSpeed = 1.0f;
+				}
+				else
+				{
+					_deathAnimationSpeed = 30.0f;
+				}
+
 				break;
 			default:
 				break;
