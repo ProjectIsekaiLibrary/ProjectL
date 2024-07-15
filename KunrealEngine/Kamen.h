@@ -69,6 +69,8 @@ namespace KunrealEngine
 	private:
 		void CoreEmmergencePattern();
 
+		void CoreSwordMutipleAttackPattern();
+
 		// 기본 패턴 조각들
 	private:
 		void CreateLeftAttack();
@@ -104,9 +106,16 @@ namespace KunrealEngine
 
 		void CreateSwordChopAttack();
 
+	private:
+		void CreateBattleCry();
+
+	private:
+		void CreateDecalTest();
+
 		//검 핵심 패턴
 	private:
 		void CreateSwordMultipleAttack();
+		void CreateKamenHoldSword();
 
 		// 3페이즈 with 검
 	private:
@@ -202,6 +211,9 @@ namespace KunrealEngine
 	private:
 		BossPattern* _emergence9Lich;
 		BossPattern* _swordMultipleAttack;
+
+		BossPattern* _battleCry;
+		BossPattern* _holdSword;
 
 	private:
 		// 패턴에 필요한 subObject들

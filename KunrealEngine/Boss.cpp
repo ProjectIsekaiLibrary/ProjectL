@@ -941,6 +941,32 @@ void KunrealEngine::Boss::SetSpecialPatternPlayPhase(unsigned int phase)
 void KunrealEngine::Boss::StopSpecialPattern()
 {
 	_stopSpecialPattern = true;
+
+	if (_isSpecialPatternPlaying)
+	{
+		for (const auto& pattern : _specialPattern[_specialPatternIndex]->_patternList)
+		{
+			for (int i = 0; i < pattern->_isColliderActive.size(); i++)
+			{
+				pattern->_isColliderHit[i] = false;
+				pattern->_isColliderActive[i] = false;
+			}
+
+			for (const auto& object : pattern->_subObject)
+			{
+				object->SetTotalComponentState(false);
+
+				object->SetActive(false);
+
+				_isSpecialPatternPlaying = false;
+
+				_specialPatternIndex = -1;
+				_specialPatternTimer = 0.0f;
+
+				_specialPatternEndLogicPlay = false;
+			}
+		}
+	}
 }
 
 bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)

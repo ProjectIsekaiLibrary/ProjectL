@@ -197,6 +197,18 @@ float4 PSForward(VertexOut pin) : SV_Target
     resultColor.y += emissive.y;
     resultColor.z += emissive.z;
     
+    if (gIsDissolve == true)
+    {
+      // 디졸브 효과 계산
+        float noiseVel = gNoiseTexture.Sample(samAnisotropic, pin.Tex).w;
+        float d = (2.0f * gDissolveValue + noiseVel) - 1.0f;
+        float overOne = saturate(d * 2.0f);
+        float4 burn = gBurnTexture.Sample(samPoint, float2(overOne, 0.5f));
+        float dissolveSmooth = smoothstep(0.0f, 1.0f, burn);
+    
+        resultColor *= burn;
+    }
+    
     return resultColor;
 }
 
