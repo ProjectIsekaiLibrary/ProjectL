@@ -30,7 +30,7 @@ struct BossBasicInfo
 {
 	BossBasicInfo()
 		: _hp(0.0f), _phase(1), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(20.0f), _rotationSpeed(100.0f), _baseAnimSpeed(30.0f),
-		_staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f)
+		_staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f), _maxPhase(0)
 	{};
 
 	BossBasicInfo& SetHp(float hp) { _maxHp = hp; _hp = hp;   return *this; };
@@ -51,7 +51,7 @@ struct BossBasicInfo
 	float _hp;				// 체력
 	unsigned int _phase;	// 체력 비례 페이즈
 
-	float _armor;			// 방어력
+	float _armor;			// 피해감소
 	float _damage;			// 데미지
 	float _attackRange;		// 기본 공격 범위
 
