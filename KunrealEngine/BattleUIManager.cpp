@@ -467,7 +467,7 @@ void KunrealEngine::BattleUIManager::SetBossHpbar()
 void KunrealEngine::BattleUIManager::SetPlayerHpBar()
 {
 	float currenthp = _eventmanager->_playerComp->GetPlayerData()._hp;
-	//float maxhp = _eventmanager->_playerComp->GetPlayerInfo()._Maxhp;
+	//float maxhp = _eventmanager->_playerComp->GetPlayerData()._Maxhp;
 	float maxhp = 1000;
 	float minhp = 0;
 	float minhpbar = 0;

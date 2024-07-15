@@ -216,7 +216,7 @@ namespace KunrealEngine
 
 	void Coroutine::UpdateCoroutines()
 	{
-		GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 0.0f, 255.0f, 255.0f), "Corotine: %d", _coroutines.size());
+		//GRAPHICS->DrawUIText(100, 100, 20, DirectX::XMFLOAT4(255.0f, 255.0f, 255.0f, 255.0f), "Corotine: %d", _coroutines.size());
 		bool ismember = true;
 
 		std::vector<Coroutine_type*> deletethings;

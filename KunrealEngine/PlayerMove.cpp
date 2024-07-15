@@ -30,8 +30,10 @@ void KunrealEngine::PlayerMove::Initialize()
 	_transform = GetOwner()->GetComponent<Transform>();
 	_playerComp = GetOwner()->GetComponent<Player>();
 	_SoundComp = GetOwner()->GetComponent<SoundPlayer>();
-	_SoundComp->CreateSoundInfo("Resources/Sound/footstep-1-83098.mp3", true, false, 100);
+	_SoundComp->CreateSoundInfo("Resources/Sound/footstep_short.mp3", true, false, 100);
+	_SoundComp->CreateSoundInfo("Resources/Sound/footstep_short.mp3", true, false, 100);
 	_SoundComp->CreateSound(0, 1);
+	_SoundComp->CreateSound(1, 1);
 	DashParticleSetting();
 }
 
@@ -67,10 +69,7 @@ void KunrealEngine::PlayerMove::Update()
 		}
 	}
 
-	if (this->_playerComp->_playerStatus == Player::Status::WALK)
-	{
-		_SoundComp->Play(0);
-	}
+	UpdateSound();
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE) && this->_isDashReady)
 	{
@@ -761,6 +760,26 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 	}
 
 }
+
+void KunrealEngine::PlayerMove::UpdateSound()
+{
+	if (this->_playerComp->_playerStatus == Player::Status::WALK)
+	{
+		auto comp = GetOwner()->GetComponent<Animator>();
+		float fram = comp->GetCurrentFrame();
+		//GRAPHICS->DrawDebugText(200, 30, 20, "%f", fram);
+		if ((fram > 1.0) && (fram < 1.2))
+		{
+			_SoundComp->Play(0);
+		}
+
+		if ((fram > 13.0) && (fram < 13.2))
+		{
+			_SoundComp->Play(1);
+		}
+	}
+}
+
 bool KunrealEngine::PlayerMove::GetisDashed()
 {
 	return _isDash;

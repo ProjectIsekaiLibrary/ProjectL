@@ -67,6 +67,9 @@ namespace KunrealEngine
 
 		// 대시 파티클 초기화
 		void DashParticleSetting();
+		
+		// 사운드 업데이트
+		void UpdateSound();
 
 		// 타이머 
 		float _timer;
