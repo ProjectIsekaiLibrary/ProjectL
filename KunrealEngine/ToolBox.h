@@ -51,6 +51,14 @@ namespace KunrealEngine
 		// 포물선의 좌표를 vector<XMFLOAT3> 변수에 넣어주는 함수
 											// 출발점						// 도착점					// 지속시간		// 중력가속도		// 넣어줄 경로 변수
 		static void CalculateParabolaPath(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float duration, float gravity, std::vector<DirectX::XMFLOAT3>& path);
+
+		// 두 좌표를 선형보간하는 함수
+		static DirectX::XMFLOAT3 Lerp(DirectX::XMFLOAT3 p0, DirectX::XMFLOAT3 p1, float t);
+
+		// XMFLOAT3 뺼샘
+		static DirectX::XMFLOAT3 XMFLOAT3Subtract(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b);
+		// XMFLOAT3 덧샘
+		static DirectX::XMFLOAT3 XMFLOAT3Add(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b);
 	};
 
 }

@@ -32,7 +32,8 @@ void KunrealEngine::PlayerMove::Initialize()
 	_SoundComp = GetOwner()->GetComponent<SoundPlayer>();
 	_SoundComp->CreateSoundInfo("Resources/Sound/footstep-1-83098.mp3", true, false, 100);
 	_SoundComp->CreateSound(0, 1);
-	DashParticleSetting();}
+	DashParticleSetting();
+}
 
 void KunrealEngine::PlayerMove::Release()
 {
@@ -426,7 +427,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 		}
 
 		if (_isDashStart == true)
-		{		
+		{
 			_isDashStart = false;
 			_isDashEnd = true;
 			for (auto& playerDashParticleStart : _playerDashParticleStart)
@@ -444,7 +445,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 			else
 			{
 				playerDashParticleStart->GetComponent<Particle>()->SetActive(false);
-			}		
+			}
 		}
 
 		_timer += TimeManager::GetInstance().GetDeltaTime();
@@ -465,7 +466,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 				_isDashEnd = false;
 				for (auto& playerDashParticleEnd : _playerDashParticleEnd)
 				{
-					playerDashParticleEnd->GetComponent<Transform>()->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);			
+					playerDashParticleEnd->GetComponent<Transform>()->SetPosition(_transform->GetPosition().x, _transform->GetPosition().y, _transform->GetPosition().z);
 				}
 			}
 
@@ -496,7 +497,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 				_playerDashParticleEnd[2]->GetComponent<Particle>()->SetParticleSize(10, 10);
 				_playerDashParticleEnd[3]->GetComponent<Particle>()->SetParticleSize(25, 25);
 			}
-			
+
 		}
 	}
 }
@@ -747,5 +748,21 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 		{
 			_playerDashParticleEnd.emplace_back(dashParticle);
 		}
+
 	}
+
+}
+bool KunrealEngine::PlayerMove::GetisDashed()
+{
+	return _isDash;
+}
+
+DirectX::XMFLOAT3 KunrealEngine::PlayerMove::GetTargetPosition()
+{
+	return _targetPos;
+}
+
+float& KunrealEngine::PlayerMove::GetMovedRange()
+{
+	return _movedRange;
 }

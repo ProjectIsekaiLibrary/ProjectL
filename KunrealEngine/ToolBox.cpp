@@ -219,3 +219,30 @@ void KunrealEngine::ToolBox::CalculateParabolaPath(const DirectX::XMFLOAT3& src,
 		t += TimeManager::GetInstance().GetDeltaTime();
 	}
 }
+
+// 선형 보간 함수
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::Lerp(DirectX::XMFLOAT3 p0, DirectX::XMFLOAT3 p1, float t)
+{
+	DirectX::XMFLOAT3 p =
+	{
+		p0.x + t * (p1.x - p0.x),
+		p0.y + t * (p1.y - p0.y),
+		p0.z + t * (p1.z - p0.z)
+	};
+
+	return p;
+}
+
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::XMFLOAT3Add(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+	DirectX::XMFLOAT3 result(a.x + b.x, a.y + b.y, a.z + b.z);
+
+	return result;
+}
+
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::XMFLOAT3Subtract(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
+{
+	DirectX::XMFLOAT3 result(a.x - b.x, a.y - b.y, a.z - b.z);
+
+	return result;
+}
