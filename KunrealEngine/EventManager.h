@@ -1,5 +1,6 @@
 #pragma once
 #include "CommonHeader.h"
+#include "Coroutine.h"
 
 struct BossBasicInfo;
 
@@ -81,5 +82,6 @@ namespace KunrealEngine
 		const DirectX::XMVECTOR& SetBossAttackDirection(GameObject* subObject);
 		const DirectX::XMVECTOR& SetEgoAttackDirection(GameObject* subObject);
 
+		_Coroutine(DashCamMove);
 	};
 }

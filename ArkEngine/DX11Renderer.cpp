@@ -107,6 +107,7 @@ void ArkEngine::ArkDX11::DX11Renderer::Initialize(long long hwnd, int clientWidt
 	auto shadowMapWidth = _clientWidth * 2;
 	auto shadowMapHeight = _clientHeight * 2;
 
+
 	_deferredRenderer = std::make_unique<ArkEngine::ArkDX11::DeferredRenderer>(_clientWidth, _clientHeight, shadowMapWidth, shadowMapHeight);
 	CreateShadowViewPort(shadowMapWidth, shadowMapHeight);
 
@@ -1600,7 +1601,7 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateShadowCamera(const DirectX::XMFLOAT
 	ArkEngine::ArkDX11::Camera* newCamera = new ArkEngine::ArkDX11::Camera(cameraPosition, targetPosition, worldUp);
 	ICamera* iCamera = newCamera;
 
-	iCamera->SetProjectionMatrix(0.25f * DirectX::XM_PI, GetShadowRatio(), 1.0f, 1000.0f, true);
+	iCamera->SetProjectionMatrix(DirectX::XMConvertToRadians(90.0f), GetShadowRatio(), 1.0f, 1000.0f, true);
 
 	ResourceManager::GetInstance()->SetShadowCamera(iCamera);
 }
@@ -1631,10 +1632,13 @@ void ArkEngine::ArkDX11::DX11Renderer::CreateRenderState()
 
 	D3D11_RASTERIZER_DESC shadowDesc;
 	ZeroMemory(&shadowDesc, sizeof(D3D11_RASTERIZER_DESC));
-	shadowDesc.FillMode = D3D11_FILL_WIREFRAME;
+	shadowDesc.FillMode = D3D11_FILL_SOLID;
 	shadowDesc.CullMode = D3D11_CULL_NONE;
 	shadowDesc.FrontCounterClockwise = false;
 	shadowDesc.DepthClipEnable = true;
+	shadowDesc.DepthBias = 117;
+	shadowDesc.SlopeScaledDepthBias = 16.0f;
+	shadowDesc.DepthBiasClamp = 0.01;
 	_device->CreateRasterizerState(&shadowDesc, _shadowRS.GetAddressOf());
 }
 

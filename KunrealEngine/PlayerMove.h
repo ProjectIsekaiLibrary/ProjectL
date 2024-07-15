@@ -97,6 +97,11 @@ namespace KunrealEngine
 		/// 디버깅을 위한 함수
 		void ShowPlayerInfo();
 
+		//대시중 카메라효과를 위한 함수
+		bool GetisDashed();
+		DirectX::XMFLOAT3 GetTargetPosition();
+		float& GetMovedRange();
+
 	private:
 		// 코루틴
 		Coroutine_Func(dashReady)

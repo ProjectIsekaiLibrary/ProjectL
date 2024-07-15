@@ -86,6 +86,10 @@ namespace KunrealEngine
 		std::vector<DirectX::XMFLOAT3> _sweepNode;	// 날아가는 좌표노드
 		int _nodeCount;							// 노드 체크 보조변수
 
+		GameObject* _deathParticle1;				// 플레이어 죽을 때 출력될 파티클
+		GameObject* _deathParticle2;	
+		float _deathAnimationSpeed;
+
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
 		void AnimateByStatus();
