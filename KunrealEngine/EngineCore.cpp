@@ -2351,6 +2351,9 @@ void KunrealEngine::EngineCore::MoveToMain()
 			&& sceneInstance.GetCurrentScene()->GetGameObject("BossPortal")->GetCollider()->GetTargetObject() == sceneInstance.GetCurrentScene()->GetObjectWithTag("Player"))
 		{
 			sceneInstance.ChangeScene("Main");
+
+			sceneInstance.GetCurrentScene()->GetGameObject("DirectionalLight")->GetComponent<Light>()->SetDirection(-1.0f, -1.0f, 1.0f);
+
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.0f);
 			navigationInstance.HandleBuild(0, "bossmap.obj");
 			navigationInstance.HandleBuild(1, "bossmap.obj");
