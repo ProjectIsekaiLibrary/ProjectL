@@ -42,7 +42,10 @@ void KunrealEngine::PlayerMove::Release()
 
 void KunrealEngine::PlayerMove::FixedUpdate()
 {
-
+	if (this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::DEAD)
+	{
+		ClearNavigation();
+	}
 }
 
 void KunrealEngine::PlayerMove::Update()
@@ -64,12 +67,7 @@ void KunrealEngine::PlayerMove::Update()
 		}
 	}
 
-	//if (this->_playerComp->_playerStatus != Player::Status::WALK)
-	//{
-	//	this->_isMoving = false;
-	//}
-
-	if (_isMoving)
+	if (this->_playerComp->_playerStatus == Player::Status::WALK)
 	{
 		_SoundComp->Play(0);
 	}
@@ -213,10 +211,6 @@ void KunrealEngine::PlayerMove::UpdateDashNode()
 
 	DirectX::XMVECTOR direction = ToolBox::GetDirectionVec(currentPoint, targetWithY);
 	_playerComp->_directionVector = direction;
-
-	///
-	//_playerComp->CalculateSweep(direction);
-	///
 
 	// 플레이어 위치에서 방향벡터 방향으로 대시 거리만큼의 좌표
 	direction = DirectX::XMVectorScale(direction, _playerComp->GetPlayerData()._dashRange);
@@ -624,6 +618,12 @@ void KunrealEngine::PlayerMove::RecalculateNavigation()
 	{
 		return;
 	}
+}
+
+
+void KunrealEngine::PlayerMove::ClearNavigation()
+{
+	this->_stopover.clear();
 }
 
 void KunrealEngine::PlayerMove::ShowPlayerInfo()
