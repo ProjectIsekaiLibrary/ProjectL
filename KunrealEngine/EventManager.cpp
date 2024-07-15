@@ -401,6 +401,8 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 				// 콜라이더가 켜졌지만 맞지 않은 상태
 				if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
 				{
+					collider->FixedUpdate();
+
 					collider->SetActive(true);
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
@@ -454,6 +456,8 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 				// 콜라이더가 켜졌지만 맞지 않은 상태
 				if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
 				{
+					collider->FixedUpdate();
+
 					collider->SetActive(true);
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
@@ -508,9 +512,9 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 				// 콜라이더가 켜졌지만 맞지 않은 상태
 				if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
 				{
-					collider->SetActive(true);
-
 					collider->FixedUpdate();
+
+					collider->SetActive(true);
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)
 					{
@@ -565,6 +569,8 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 				// 콜라이더가 켜졌지만 맞지 않은 상태
 				if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
 				{
+					collider->FixedUpdate();
+
 					collider->SetActive(true);
 
 					if (collider->IsCollided() && collider->GetTargetObject() == _player)

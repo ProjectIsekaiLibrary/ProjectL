@@ -271,6 +271,8 @@ void KunrealEngine::Boss::Enter()
 	{
 		_boss->GetComponent<BoxCollider>()->SetActive(false);
 		_boss->GetComponent<MeshRenderer>()->SetActive(false);
+
+		_boss->GetComponent<BoxCollider>()->FixedUpdate();
 	}
 
 	if (_startTime < 0.0f)
@@ -278,6 +280,8 @@ void KunrealEngine::Boss::Enter()
 		_isStart = true;
 		_boss->GetComponent<MeshRenderer>()->SetActive(true);
 		_boss->GetComponent<BoxCollider>()->SetActive(true);
+
+		_boss->GetComponent<BoxCollider>()->FixedUpdate();
 	}
 
 	// 시작하면 
@@ -1092,6 +1096,8 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 
 		_boss->GetComponent<MeshRenderer>()->SetActive(true);
 		_boss->GetComponent<BoxCollider>()->SetActive(true);
+
+		_boss->GetComponent<BoxCollider>()->FixedUpdate();
 
 		_prevRot = _bossTransform->GetRotation();
 

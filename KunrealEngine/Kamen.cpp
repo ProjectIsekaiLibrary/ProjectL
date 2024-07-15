@@ -57,7 +57,7 @@ void KunrealEngine::Kamen::Initialize()
 	// 보스 타이머 설정
 	SetStartTime(0.0f);
 	
-	SetSpecialPatternPlayPhase(1);
+	SetSpecialPatternPlayPhase(2);
 }
 
 void KunrealEngine::Kamen::Release()
@@ -206,7 +206,7 @@ void KunrealEngine::Kamen::CreatePattern()
 	// 코어
 	CreateSwordMultipleAttack();
 
-	CreateDecalTest();
+	//CreateDecalTest();
 
 	// 실제 사용중인 패턴들 모아놓음
 	GamePattern();
@@ -221,17 +221,21 @@ void KunrealEngine::Kamen::GamePattern()
 	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 	
-	_basicPattern[1] = _basicPattern[0];
-	   
-	_basicPattern[2].emplace_back(_swordSwingVertical);
+	//_basicPattern[1] = _basicPattern[0];
+	//   
+
+	// 3페이즈 패턴 테스트용
+	_basicPattern[0].emplace_back(_holdSword);
+
 	_basicPattern[2].emplace_back(_swordSwingTwice);
-	_basicPattern[2].emplace_back(_swordSwingTwiceHard);
-	_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
+	//_basicPattern[2].emplace_back(_swordSwingVertical);
+	//_basicPattern[2].emplace_back(_swordSwingHorizontal);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
 	//SwordLinearAttackPattern();						// 칼 직선 공격
-	SwordChopPattern();								// 도넛
+	//SwordChopPattern();								// 도넛
 
 	CoreSwordMutipleAttackPattern();
 }
@@ -2852,6 +2856,8 @@ void KunrealEngine::Kamen::CreateTurnClockWise()
 		{
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -2900,6 +2906,8 @@ void KunrealEngine::Kamen::CreateTurnAntiClockWise()
 		{
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -2948,6 +2956,8 @@ void KunrealEngine::Kamen::CreateReverseEmergence()
 		{
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -2972,6 +2982,8 @@ void KunrealEngine::Kamen::CreateReverseEmergence()
 			{
 				_boss->GetComponent<BoxCollider>()->SetActive(false);
 				_boss->GetComponent<MeshRenderer>()->SetActive(false);
+
+				_boss->GetComponent<BoxCollider>()->FixedUpdate();
 
 				return false;
 			}
@@ -2998,6 +3010,8 @@ void KunrealEngine::Kamen::CreateEmergence()
 		{
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 
 			_boss->GetComponent<Transform>()->SetPosition(_emergencePos);
 
@@ -3430,7 +3444,7 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 				//_swordDonutAttack[1]->GetComponent<BoxCollider>()->SetActive(true);
 				pattern->_isColliderActive[objectIndex1] = true;
 
-				_donutSize = _swordDonutAttack[0]->GetComponent<CylinderCollider>()->GetColliderScale().x;
+				_donutSize = 40.0f;
 			}
 
 			else if (_swordTimer > 2 * donutInterval)
@@ -3447,7 +3461,7 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 				//_swordDonutAttack[2]->GetComponent<BoxCollider>()->SetActive(true);
 				pattern->_isColliderActive[objectIndex2] = true;
 
-				_donutSize = _swordDonutAttack[1]->GetComponent<CylinderCollider>()->GetColliderScale().x;
+				_donutSize = 80.0f;
 			}
 
 			if (_swordTimer >= 3 * donutInterval)
@@ -3479,6 +3493,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 		{
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 
 			_timer = 0.0f;
 			_timer2 = 0.0f;
@@ -4588,6 +4604,8 @@ void KunrealEngine::Kamen::CreateBattleCry()
 				_boss->GetComponent<MeshRenderer>()->SetActive(false);
 				_boss->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
 
+				_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
 				_info._armor = 1.0f;
 				return false;
 			}
@@ -4604,7 +4622,7 @@ void KunrealEngine::Kamen::CreateDecalTest()
 {
 	BossPattern* pattern = new BossPattern();
 
-	pattern->SetPatternName("BattleCry");
+	pattern->SetPatternName("decalTest");
 
 	pattern->SetAnimName("BattleCry").SetSpeed(20.0f).SetSkipChase(true);
 
@@ -4913,7 +4931,7 @@ void KunrealEngine::Kamen::CreateKamenHoldSword()
 
 			_kamenSword->SetActive(true);
 			_kamenSword->GetComponent<MeshRenderer>()->SetActive(true);
-			_kamenSword->GetComponent<BoxCollider>()->SetActive(true);
+
 			auto swordChild = _kamenSword->GetChilds();
 			for (auto& object : swordChild)
 			{
@@ -6128,7 +6146,7 @@ void KunrealEngine::Kamen::SwordChopPattern()
 			float x = _swordOriginPos.x - _swordCircleWarningSize * cos(0.0f);
 			float z = _swordOriginPos.z - _swordCircleWarningSize * sin(0.0f);
 
-			_swordStartPos = DirectX::XMFLOAT3{ x , 30.0f + 70.0f, z };
+			_swordStartPos = DirectX::XMFLOAT3{ ranX , 30.0f + 70.0f, ranZ };
 
 			auto swordTransform = _freeSword->GetComponent<Transform>();
 
