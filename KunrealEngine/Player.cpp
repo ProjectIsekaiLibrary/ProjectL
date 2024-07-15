@@ -27,7 +27,7 @@ KunrealEngine::Player::Player()
 		1.5f			// speedScale
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
-	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathAnimationSpeed(30.0f)
+	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
 {
 	_sweepNode.clear();
 }
@@ -74,14 +74,73 @@ void KunrealEngine::Player::Initialize()
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
 
-	//this->_deathParticle1 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle1");
-	//this->_deathParticle1->SetParent(this->GetOwner());
-	//this->_deathParticle1->AddComponent<Particle>();
-	//
-	//this->_deathParticle2 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle2");
-	//this->_deathParticle2->SetParent(this->GetOwner());
-	//this->_deathParticle2->AddComponent<Particle>();
+	// 파티클 lifetime을 서서히 0으로 만들어주면 서서히 사라짐
 
+	this->_deathParticle1 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle1");
+	this->_deathParticle1->AddComponent<Particle>();
+	this->_deathParticle1->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	this->_deathParticle1->GetComponent<Particle>()->SetParticleDuration(10.0f, 5.0f);
+	this->_deathParticle1->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+	this->_deathParticle1->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	this->_deathParticle1->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.1f);
+	this->_deathParticle1->GetComponent<Particle>()->SetParticleDirection(0.3f, 0.6f, 0.0f);
+	this->_deathParticle1->GetComponent<Particle>()->SetActive(false);
+	_deathParticleVector.emplace_back(_deathParticle1);
+
+	this->_deathParticle2 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle2");
+	this->_deathParticle2->AddComponent<Particle>();
+	this->_deathParticle2->GetComponent<Particle>()->SetParticleEffect("fx_Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
+	this->_deathParticle2->GetComponent<Particle>()->SetParticleDuration(10.0f, 5.0f);
+	this->_deathParticle2->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+	this->_deathParticle2->GetComponent<Particle>()->SetParticleSize(3.0f, 3.0f);
+	this->_deathParticle2->GetComponent<Particle>()->AddParticleColor(0.2f, 0.2f, 0.2f);
+	this->_deathParticle2->GetComponent<Particle>()->SetParticleDirection(0.3f, 0.6f, 0.0f);
+	this->_deathParticle2->GetComponent<Particle>()->SetActive(false);
+	_deathParticleVector.emplace_back(_deathParticle2);
+
+	this->_deathParticle3 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle1");
+	this->_deathParticle3->AddComponent<Particle>();
+	this->_deathParticle3->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	this->_deathParticle3->GetComponent<Particle>()->SetParticleDuration(10.0f, 5.0f);
+	this->_deathParticle3->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+	this->_deathParticle3->GetComponent<Particle>()->SetParticleSize(0.3f, 0.3f);
+	this->_deathParticle3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.1f);
+	this->_deathParticle3->GetComponent<Particle>()->SetParticleDirection(0.3f, 0.6f, 0.0f);
+	this->_deathParticle3->GetComponent<Particle>()->SetActive(false);
+	_deathParticleVector.emplace_back(_deathParticle3);
+
+	this->_deathParticle4 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle2");
+	this->_deathParticle4->AddComponent<Particle>();
+	this->_deathParticle4->GetComponent<Particle>()->SetParticleEffect("fx_Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
+	this->_deathParticle4->GetComponent<Particle>()->SetParticleDuration(10.0f, 5.0f);
+	this->_deathParticle4->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+	this->_deathParticle4->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	this->_deathParticle4->GetComponent<Particle>()->AddParticleColor(0.2f, 0.2f, 0.2f);
+	this->_deathParticle4->GetComponent<Particle>()->SetParticleDirection(0.3f, 0.6f, 0.0f);
+	this->_deathParticle4->GetComponent<Particle>()->SetActive(false);
+	_deathParticleVector.emplace_back(_deathParticle4);
+
+	this->_deathParticle5 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle1");
+	this->_deathParticle5->AddComponent<Particle>();
+	this->_deathParticle5->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	this->_deathParticle5->GetComponent<Particle>()->SetParticleDuration(10.0f, 5.0f);
+	this->_deathParticle5->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+	this->_deathParticle5->GetComponent<Particle>()->SetParticleSize(0.3f, 0.3f);
+	this->_deathParticle5->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.1f);
+	this->_deathParticle5->GetComponent<Particle>()->SetParticleDirection(0.3f, 0.6f, 0.0f);
+	this->_deathParticle5->GetComponent<Particle>()->SetActive(false);
+	_deathParticleVector.emplace_back(_deathParticle5);
+
+	this->_deathParticle6 = this->GetOwner()->GetObjectScene()->CreateObject("playerDeathParticle2");
+	this->_deathParticle6->AddComponent<Particle>();
+	this->_deathParticle6->GetComponent<Particle>()->SetParticleEffect("fx_Dust3", "Resources/Textures/Particles/fx_Dust3.dds", 1000);
+	this->_deathParticle6->GetComponent<Particle>()->SetParticleDuration(10.0f, 5.0f);
+	this->_deathParticle6->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+	this->_deathParticle6->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	this->_deathParticle6->GetComponent<Particle>()->AddParticleColor(0.2f, 0.2f, 0.2f);
+	this->_deathParticle6->GetComponent<Particle>()->SetParticleDirection(0.3f, 0.6f, 0.0f);
+	this->_deathParticle6->GetComponent<Particle>()->SetActive(false);
+	_deathParticleVector.emplace_back(_deathParticle6);
 }
 
 void KunrealEngine::Player::Release()
@@ -208,17 +267,67 @@ void KunrealEngine::Player::AnimateByStatus()
 				{
 					_deathAnimationSpeed = 5.0f;
 				}
-				else if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= 10 && _owner->GetComponent<Animator>()->GetCurrentFrame() < 42)
+				else if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= 10 && _owner->GetComponent<Animator>()->GetCurrentFrame() < 39)
 				{
 					_deathAnimationSpeed = 30.0f;
+
+					// 다시 시작하는 버튼이 생긴하면 다시 꺼줘야함
+
+					for (auto& deathParticle : _deathParticleVector)
+					{
+						deathParticle->SetActive(true);
+						deathParticle->GetComponent<Particle>()->SetActive(true);
+					}
+
+					for (int i = 0; i < _deathParticleVector.size(); i++)
+					{
+						if (i == 0 || i == 1)
+						{
+							_deathParticleVector[i]->GetComponent<Transform>()->SetPosition(this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._41,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._42,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._43);
+						}
+						else if(i == 2 || i == 3)
+						{
+							_deathParticleVector[i]->GetComponent<Transform>()->SetPosition(this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_r")._41,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_r")._42,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_r")._43);
+						}
+						else
+						{
+							_deathParticleVector[i]->GetComponent<Transform>()->SetPosition(this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_l")._41,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_l")._42,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_l")._43);
+						}
+
+					}
 				}
-				else if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= 42 && _owner->GetComponent<Animator>()->GetCurrentFrame() < 44)
+				else if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= 39)
 				{
-					_deathAnimationSpeed = 1.0f;
-				}
-				else
-				{
-					_deathAnimationSpeed = 30.0f;
+					_deathAnimationSpeed = 15.0f;
+
+					for (int i = 0; i < _deathParticleVector.size(); i++)
+					{
+						if (i == 0 || i == 1)
+						{
+							_deathParticleVector[i]->GetComponent<Transform>()->SetPosition(this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._41,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._42,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._43);
+						}
+						else if (i == 2 || i == 3)
+						{
+							_deathParticleVector[i]->GetComponent<Transform>()->SetPosition(this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_r")._41,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_r")._42,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_r")._43);
+						}
+						else
+						{
+							_deathParticleVector[i]->GetComponent<Transform>()->SetPosition(this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_l")._41,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_l")._42,
+								this->_owner->GetComponent<MeshRenderer>()->GetBoneTransform("calf_l")._43);
+						}
+
+					}
 				}
 
 				break;
