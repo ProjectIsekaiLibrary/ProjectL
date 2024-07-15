@@ -346,6 +346,7 @@ namespace KunrealEngine
 		float _timer3;
 
 		float _swordTimer;
+		float _swordTimer2;
 
 		float _warningMaxTimer;
 
