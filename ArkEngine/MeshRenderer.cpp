@@ -395,7 +395,7 @@ void ArkEngine::MeshRenderer::ShadowRender()
 	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
 	deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-	deviceContext->RSSetState(_arkDevice->GetSolidRS());
+	deviceContext->RSSetState(_arkDevice->GetShadowRS());
 
 	UINT stride = sizeof(ArkEngine::ArkDX11::Vertex);
 	UINT offset = 0;
