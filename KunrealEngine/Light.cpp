@@ -104,10 +104,10 @@ void KunrealEngine::Light::CreateDirectionalLight(DirectX::XMFLOAT4 ambient /*= 
 		_light->Delete();
 	}
 
-	ambient.x = diffuse.x * 0.2f;
-	ambient.y = diffuse.y * 0.2f;
-	ambient.z = diffuse.z * 0.2f;
-	ambient.w = diffuse.w * 0.2f;
+	//ambient.x = diffuse.x * 0.2f;
+	//ambient.y = diffuse.y * 0.2f;
+	//ambient.z = diffuse.z * 0.2f;
+	//ambient.w = diffuse.w * 0.2f;
 
 	_light = GRAPHICS->CreateDirectionalLight(ambient, diffuse, specular, direction);
 
@@ -323,7 +323,12 @@ DirectX::XMFLOAT3 KunrealEngine::Light::GetPointPos()
 void KunrealEngine::Light::ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos)
 {
 	DirectX::XMFLOAT3 newDirection = { pointPos };
-
-	SetDirection(pointPos.x, pointPos.y, pointPos.z);
 	
+	//SetDirection(pointPos.x, pointPos.y, pointPos.z);
+	
+	DirectX::XMVECTOR dirVec = XMLoadFloat3(&newDirection);
+	dirVec = DirectX::XMVector3Normalize(dirVec);
+	XMStoreFloat3(&newDirection, dirVec);
+
+	SetDirection(newDirection.x, newDirection.y, newDirection.z);
 }

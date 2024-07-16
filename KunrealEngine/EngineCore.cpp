@@ -15,6 +15,7 @@
 #include "UIPackageFuntion.hpp"
 #include "ToolBox.h"
 #include "TimeManager.h"
+#include "Animator.h"
 
 KunrealEngine::SceneManager& sceneInstance = KunrealEngine::SceneManager::GetInstance();
 KunrealEngine::TimeManager& timeInstance = KunrealEngine::TimeManager::GetInstance();
@@ -35,6 +36,7 @@ KunrealEngine::GameObject* titleRock1;
 KunrealEngine::GameObject* titleRock2;
 KunrealEngine::GameObject* titleRock3;
 KunrealEngine::GameObject* floatingObj;
+KunrealEngine::GameObject* titleBoss;
 
 KunrealEngine::GameObject* Title_ui_box;	// 타이틀UI
 KunrealEngine::GameObject* pause_ui_box;	// 일시정지
@@ -300,6 +302,9 @@ void KunrealEngine::EngineCore::Update()
 		ShiveringLight(titleRock2);
 		ShiveringLight(titleRock3);
 	}
+
+	titleBoss->GetComponent<Animator>()->Play("titleIdle", 0.5f, true);
+
 	MoveToMain();
 	Updatecoroutine();
 }
@@ -421,6 +426,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	// 맵 꾸미기 파티클
 	MapParticleSetting();
 }
+
 
 void KunrealEngine::EngineCore::CheckMousePosition()
 {
@@ -2440,10 +2446,10 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	EventManager::GetInstance().SetCamera("TitleCamera");
 
 	// light test
-	DirectX::XMFLOAT4 diffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
-	DirectX::XMFLOAT4 ambient = { 0.2f, 0.2f, 0.2f, 0.2f };
+	DirectX::XMFLOAT4 diffuse = { 0.3f, 0.3f, 0.430f, 0.3f };
+	DirectX::XMFLOAT4 ambient = { 0.0f, 0.06f, 0.410f, 0.2f };
 	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-	DirectX::XMFLOAT3 direction = { 1.0f, -1.0f, -1.0f };
+	DirectX::XMFLOAT3 direction = { 1.0f, -1.0f, 0.1f };
 
 	auto soundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
 	auto soundComp = soundManager->AddComponent<SoundPlayer>();
@@ -2602,4 +2608,24 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	particleMoon->GetComponent<Particle>()->SetParticleSize(15.0f, 15.0f);
 	particleMoon->GetComponent<Particle>()->AddParticleColor(0.2f, 1.0f, 0.0f);
 	particleMoon->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+	titleBoss = sceneInstance.GetCurrentScene()->CreateObject("titleBoss");
+	titleBoss->AddComponent<MeshRenderer>();
+	titleBoss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
+	titleBoss->GetComponent<Transform>()->SetScale(42.6f, 30.3f, 30.3f);
+	titleBoss->GetComponent<Transform>()->SetPosition(-159.f, -173.f, 751.f);
+	titleBoss->GetComponent<Transform>()->SetRotation(5.f, -10.f, -1.f);
+	auto texSize = titleBoss->GetComponent<MeshRenderer>()->GetTextures().size();
+	for (int i = 0; i < texSize; i++)
+	{
+		titleBoss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+		titleBoss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+		titleBoss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+	}
+	//DirectX::XMFLOAT4 bdiffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
+	//DirectX::XMFLOAT4 bambient = { 0.2f, 0.2f, 0.2f, 0.2f };
+	//DirectX::XMFLOAT4 bspecular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//titleBoss->AddComponent<Light>();
+	//titleBoss->GetComponent<Light>()->CreatePointLight(bambient, bdiffuse,bspecular, 500, 64.f);
+	//titleBoss->GetComponent<Light>()->SetOffSet(0.0f, 60.f, 0.0f);
 }
