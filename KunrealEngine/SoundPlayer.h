@@ -82,6 +82,7 @@ namespace KunrealEngine
 		void SetVolume(int vol, int index = -1);
 
 		// 입력한 인덱스에 해당하는 사운드를 출력		// 첫번째 사운드는 0번 인덱스
+		// 사운드 시스템 내의 리스트를 넣는게 아니라 사운드 플레이어 컴포넌트 내의 리스트 인덱스를 넣는다
 		void Play(int index);
 
 		// 입력한 인덱스에 해당하는 사운드를 일시정지
@@ -93,6 +94,11 @@ namespace KunrealEngine
 		// 모든 사운드 출력 종료
 		void StopAll();
 
+		// 인덱스 탐색
+		int FindIndex(std::string soundname);
+		
+		// SoundInfo와 그 배열을 넣어서 해당 SoundInfo가 입력받은 배열에 있는지를 탐색하는 함수
+		// 이건 내부에서 쓰려고 만든거 같음 만들 때 주석을 달아놓은게 아니라 어떤 용도로 만들었는지 모르겠다.
 		int FindIndex(const std::vector<SoundInfo>& vec, SoundInfo value);
 	};
 }

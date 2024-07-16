@@ -192,6 +192,31 @@ void KunrealEngine::SoundPlayer::StopAll()
 	}
 }
 
+int KunrealEngine::SoundPlayer::FindIndex(std::string soundname)
+{
+	// 명확하게 해야 할 부분 - 여기서 찾는건 사운드 플레이어 내 사운드 리스트의 인덱스이다.
+	// 사운드인포에 들어있는 인덱스를 반환하는게 아니다.
+	// 내부에 인덱스는 _soindList[FindIndex("path")].soundIndex 로 접근해야 한다.
+	// 왜 굳이 그렇게 해놨냐 하면 관리의 용이를 위해서.
+	// 여기 있는 리스트는 해당 게임 오브젝트가 관리해줄 사운드만 있을거고
+	// 사운드 시스템에서의 리스트는 모든 소리가 다 들어있을텐데
+	// 굳이 이 사운드 플레이어 컴포넌트가 사운드 시스템의 다른 사운드를 건드리지 않도록 하기 위해서 나눠놨다.
+
+	int result = 0;
+
+	for (SoundInfo sound : _soundList)
+	{
+		if (sound._soundPath == soundname)
+		{
+			return result;
+		}
+		result++;
+	}
+
+	return -1;
+}
+
+
 int KunrealEngine::SoundPlayer::FindIndex(const std::vector<SoundInfo>& vec, SoundInfo value)
 {
 	auto it = std::find(vec.begin(), vec.end(), value);

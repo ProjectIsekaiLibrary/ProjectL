@@ -120,6 +120,10 @@ namespace KunrealEngine
 		void SetEndpos(int index, DirectX::XMFLOAT3 position);
 		// 네비매쉬를 빌드하기 위한 agent를 세팅하는 함수. 각 변수명을 참고
 		void SetAgent(int index, float agentHeight, float agentMaxSlope, float agentRadius, float agentMaxClimb);
+		
+		// 좌표값을 입력해서 그 값이 네비매쉬 위에 있는지 판단하는 함수들 
+		unsigned int GetPositionRef(int index, float x, float y, float z);	// Ref값을 반환
+		bool GetPositionOnMap(int index, float x, float y, float z);// 단순이 네비매쉬 위에 있는지 아닌지만 반환
 
 		// 네비매쉬를 빌드하기 위해 vertex와 index를 제공해주는 함수(예정)
 		void GetNavmeshRenderInfo(int index, std::vector<DirectX::XMFLOAT3>& vertices, std::vector<unsigned int>& indices);

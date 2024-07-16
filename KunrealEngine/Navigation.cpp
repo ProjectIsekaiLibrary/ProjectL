@@ -937,6 +937,31 @@ namespace KunrealEngine
 		_package[index]._agentsetting._agentMaxClimb = agentMaxClimb;
 	}
 
+	unsigned int Navigation::GetPositionRef(int index, float x, float y, float z)
+	{
+		float pos[3] = { x, y, z };
+		dtPolyRef ref = 0;
+		_package[index]._navQuery->findNearestPoly(pos, _package[index]._polyPickExt, &(_package[index]._filter), &ref, 0);
+		return (unsigned int)ref;
+	}
+
+	bool Navigation::GetPositionOnMap(int index, float x, float y, float z)
+	{
+		float pos[3] = { x, y, z };
+		dtPolyRef ref = 0;
+		_package[index]._navQuery->findNearestPoly(pos, _package[index]._polyPickExt, &(_package[index]._filter), &ref, 0);
+		
+		if (ref > 0)
+		{
+			return true;
+		}
+
+		else
+		{
+			return false;
+		}
+	}
+
 	dtObstacleRef Navigation::hitTestObstacle(const dtTileCache* tc, const float* sq)
 	{
 		float tmin = FLT_MAX;
