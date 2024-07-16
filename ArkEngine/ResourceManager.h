@@ -238,12 +238,16 @@ namespace ArkEngine
 		void AddParticleResource(const std::string& particleName, ParticleResource* particleResource);
 
 	public:
-		
 		const std::vector<ArkEngine::ArkDX11::TransparentMesh*>& GetTransParentMeshList();
 		void AddTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
 		void DeleteTransParentMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
 
+		const std::vector<ArkEngine::ArkDX11::TransparentMesh*>& GetDecalMeshList();
+		void AddDecalMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
+
 		void SortTransParentMesh();
+
+		void SortDecalMesh();
 
 	public:
 		void ReleaseAll();
@@ -307,6 +311,8 @@ namespace ArkEngine
 		std::unordered_map<std::string, ParticleResource*> _particleResourceList;
 
 		std::vector<ArkEngine::ArkDX11::TransparentMesh*> _transParentMeshList;
+
+		std::vector<ArkEngine::ArkDX11::TransparentMesh*> _decalMeshList;
 
 	private:
 		unsigned int _objectIndex;

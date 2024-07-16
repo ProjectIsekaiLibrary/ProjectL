@@ -21,7 +21,7 @@ cbuffer cbPerFrame
     
     float gAttenuation[30];
     
-    float4x4 gDecalWorldInv[10];
+    float4x4 gDecalWorldInv[30];
 };
 
 // 빛을 받는 객채의 포지션
@@ -34,10 +34,12 @@ Texture2D AdditionalTexture : register(t5);
 // 깊이 값 전달용(G-Buffer에 저장된 depth 정보를 가져와서 그림자)
 Texture2D gShadowDepthMapTexture;
 
-Texture2D gDecalTexture;
+Texture2D gDecalTexture[30];
 Texture2D gDecalPositionTexture;
 
 TextureCube gCubeMap;
+
+int gDecalNum;
 
 //SamplerState samAnisotropic
 //{
@@ -388,23 +390,27 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     if (decalInfo.x == 1)
     {
-        float4 toDecal = mul(float4(posDecal, 1.0f), gDecalWorldInv[decalInfo.y]);
+        for (int i = 0; i < gDecalNum; i++)
+        {
+        
+            float4 toDecal = mul(float4(posDecal, 1.0f), gDecalWorldInv[i]);
     
     // 데칼 박스 내부 좌표를 텍스처 좌표로 변환
-        float2 decalUV = (toDecal.xz + 0.5f);
+            float2 decalUV = (toDecal.xz + 0.5f);
     
-        float3 inDecal = 0.5f - abs(toDecal.xyz);
+            float3 inDecal = 0.5f - abs(toDecal.xyz);
     
     // 데칼 박스 내부에 있는지 확인
-        if (inDecal.x >= 0 && inDecal.y >= 0 && inDecal.z >= 0)
-        {
-            float4 texSample = gDecalTexture.Sample(samAnisotropic, decalUV);
-            
-            if (texSample.a > 0.0f)
+            if (inDecal.x >= 0 && inDecal.y >= 0 && inDecal.z >= 0)
             {
-                toneMappedColor.r = texSample.r * texSample.a;
-                toneMappedColor.g = texSample.g * texSample.a;
-                toneMappedColor.b = texSample.b * texSample.a;
+                float4 texSample = gDecalTexture[i].Sample(samAnisotropic, decalUV);
+            
+                if (texSample.a > 0.0f)
+                {
+                    toneMappedColor.r = texSample.r * texSample.a;
+                    toneMappedColor.g = texSample.g * texSample.a;
+                    toneMappedColor.b = texSample.b * texSample.a;
+                }
             }
         }
     }

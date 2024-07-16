@@ -198,6 +198,12 @@ ID3D11ShaderResourceView* ArkEngine::ArkDX11::TransparentMesh::GetTexture()
 	return _diffuseMapSRV;
 }
 
+
+int ArkEngine::ArkDX11::TransparentMesh::GetIndex()
+{
+	return _index;
+}
+
 void ArkEngine::ArkDX11::TransparentMesh::SetTransform(const DirectX::XMFLOAT4X4& matrix)
 {
 	_meshTransform->SetTransformMatrix(matrix);
@@ -224,6 +230,11 @@ void ArkEngine::ArkDX11::TransparentMesh::Delete()
 void ArkEngine::ArkDX11::TransparentMesh::SetDecal(bool tf)
 {
 	_isApplyDecal = tf;
+
+	if (tf == true)
+	{
+		ResourceManager::GetInstance()->AddDecalMesh(this);
+	}
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()

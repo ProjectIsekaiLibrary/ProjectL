@@ -30,7 +30,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr), 
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr), _decalPositionTexture(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -55,7 +55,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr),
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr), _decalPositionTexture(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -199,10 +199,23 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 	{
 		_fxDecalWorld->SetMatrixArray(reinterpret_cast<float*>(&decalWorldVec[0]), 0, static_cast<uint32_t>(decalWorldVec.size()));
 
-		auto test = ResourceManager::GetInstance()->GetTransParentMeshList()[0]->GetTexture();
-		_decalTexture->SetResource(test);
+		_fxDecalNum->SetInt(decalWorldVec.size());
 
 		_decalPositionTexture->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_DECALPOS)));
+
+		std::vector<ID3D11ShaderResourceView*> textureVec;
+
+		ResourceManager::GetInstance()->SortDecalMesh();
+
+		for (auto& index : ResourceManager::GetInstance()->GetDecalMeshList())
+		{
+			if (index->GetIndex() >= 0)
+			{
+				textureVec.emplace_back(index->GetTexture());
+			}
+		}
+		
+		_decalTexture->SetResourceArray(textureVec.data(), 0, textureVec.size());
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
@@ -343,6 +356,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_pointAttenuationFX = effect->GetVariableByName("gAttenuation")->AsScalar();
 
 	_fxDecalWorld = effect->GetVariableByName("gDecalWorldInv")->AsMatrix();
+
+	_fxDecalNum = effect->GetVariableByName("gDecalNum")->AsScalar();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()

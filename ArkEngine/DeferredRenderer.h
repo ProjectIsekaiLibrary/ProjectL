@@ -133,6 +133,8 @@ namespace ArkEngine
 		private:
 			ID3DX11EffectMatrixVariable* _fxDecalWorld;
 
+			ID3DX11EffectScalarVariable* _fxDecalNum;
+
 
 		private:
 			float _backGroundColor[4];
