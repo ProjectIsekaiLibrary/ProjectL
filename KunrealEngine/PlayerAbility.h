@@ -79,6 +79,10 @@ namespace KunrealEngine
 		GameObject* _shotParticleHit2;
 		GameObject* _shotParticleHit3;
 
+		GameObject* _circleParticle;
+		GameObject* _circleBuffParticle1;
+		GameObject* _circleBuffParticle2;
+
 		GameObject* _laserParticle1;
 		GameObject* _laserParticle2;
 		GameObject* _laserParticle3;
@@ -194,11 +198,12 @@ namespace KunrealEngine
 			while (ability->_circle->GetComponent<Transform>()->GetScale().x > 0.0f)
 			{
 				ability->_circle->GetComponent<Transform>()->SetTotalScale(ability->_circle->GetComponent<Transform>()->GetScale().x - 0.01f);
-
+				_circleParticle->GetComponent<Particle>()->SetActive(false);
 				Return_null;
 			}
-
 			ability->_circle->SetActive(false);
+			_circleBuffParticle1->GetComponent<Particle>()->SetActive(false);
+			_circleBuffParticle2->GetComponent<Particle>()->SetActive(false);
 		};
 
 		// E스킬 쿨타임

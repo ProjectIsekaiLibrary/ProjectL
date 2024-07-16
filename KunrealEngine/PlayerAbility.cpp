@@ -24,7 +24,7 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isCircleEnded(false), _circleParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false), _destroyLaser(false),
 	_shotParticle2(nullptr), _shotParticle3(nullptr), _shotParticle4(nullptr), _shotParticleHit1(nullptr), _shotParticleHit2(nullptr), _shotParticleHit3(nullptr),
 	_laserParticle1(nullptr), _laserParticle2(nullptr), _laserParticle3(nullptr), _laserParticle4(nullptr), _meteorParticle2(nullptr), _meteorParticle3(nullptr), _meteorParticle4(nullptr), _meteorParticleHit1(nullptr), _meteorParticleHit2(nullptr), _meteorParticleHit3(nullptr), _meteorParticleHit4(nullptr),
-	_maxPotion(5), _restorePercentage(0.3f), _potionCoolDown(8.0f), _isPotionReady(true)
+	_maxPotion(5), _restorePercentage(0.3f), _potionCoolDown(8.0f), _isPotionReady(true), _circleParticle(nullptr), _circleBuffParticle1(nullptr), _circleBuffParticle2(nullptr)
 
 {
 
@@ -317,7 +317,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 	_shotParticle3->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
 	_shotParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.05f);
 	_shotParticle3->GetComponent<Particle>()->SetParticleVelocity(200.0f, true);
-	_shotParticle3->GetComponent<Particle>()->SetParticleSize(4.0f, 4.0f);
+	_shotParticle3->GetComponent<Particle>()->SetParticleSize(2.0f, 2.0f);
 	_shotParticle3->GetComponent<Particle>()->AddParticleColor(0.0f, 1.5f, 10.f);
 	_shotParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_shotParticle3->GetComponent<Particle>()->SetActive(true);
@@ -493,6 +493,44 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 
 	_circle->SetActive(false);
 
+	_circleParticle = SceneManager::GetInstance().GetCurrentScene()->CreateObject("CircleParticle");
+	_circleParticle->_autoAwake = true;
+	_circleParticle->AddComponent<Particle>();
+	_circleParticle->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	_circleParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
+	_circleParticle->GetComponent<Particle>()->SetParticleVelocity(0.4f, true);
+	_circleParticle->GetComponent<Particle>()->SetParticleSize(100.0f, 100.0f);
+	_circleParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 2.0f);
+	_circleParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+	_circleParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_circleParticle->GetComponent<Particle>()->SetActive(false);
+	_circleParticle->SetParent(_circle);
+
+	_circleBuffParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("CircleBuffParticle1");
+	_circleBuffParticle1->_autoAwake = true;
+	_circleBuffParticle1->AddComponent<Particle>();
+	_circleBuffParticle1->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+	_circleBuffParticle1->GetComponent<Particle>()->SetParticleDuration(0.9f, 1.0f);
+	_circleBuffParticle1->GetComponent<Particle>()->SetParticleVelocity(0.4f, true);
+	_circleBuffParticle1->GetComponent<Particle>()->SetParticleSize(9.0f, 9.0f);
+	_circleBuffParticle1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.05f, 4.0f);
+	_circleBuffParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_circleBuffParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_circleBuffParticle1->GetComponent<Particle>()->SetActive(false);
+
+	_circleBuffParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("CircleBuffParticle2");
+	_circleBuffParticle2->_autoAwake = true;
+	_circleBuffParticle2->AddComponent<Particle>();
+	_circleBuffParticle2->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+	_circleBuffParticle2->GetComponent<Particle>()->SetParticleDuration(0.8f, 2.0f);
+	_circleBuffParticle2->GetComponent<Particle>()->SetParticleVelocity(10.f, true);
+	_circleBuffParticle2->GetComponent<Particle>()->SetParticleSize(15.0f, 15.0f);
+	_circleBuffParticle2->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 5.0f);
+	_circleBuffParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+	//_circleBuffParticle2->GetComponent<Particle>()->SetOffSet(0.0f, 8.0f, 0.0f);
+	//_circleBuffParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	_circleBuffParticle2->GetComponent<Particle>()->SetActive(false);
+
 	circle->SetLogic([circle, this]()
 		{
 			if (_circle->GetActivated())
@@ -500,10 +538,19 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 				if (_circle->GetCollider()->IsCollided() && _circle->GetCollider()->GetTargetObject() == this->GetOwner())
 				{
 					this->_playerComp->_playerInfo._spellPower = 2.0f;
+					_circleBuffParticle1->GetComponent<Particle>()->SetActive(true);
+					_circleBuffParticle2->GetComponent<Particle>()->SetActive(true);
+
+					_circleBuffParticle1->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+					_circleBuffParticle2->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._41,
+						this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._42,
+						this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("spine_02")._43);
 				}
 				else
 				{
 					this->_playerComp->_playerInfo._spellPower = 1.0f;
+					_circleBuffParticle1->GetComponent<Particle>()->SetActive(false);
+					_circleBuffParticle2->GetComponent<Particle>()->SetActive(false);
 				}
 
 				if (this->_isCircleHit && _circle->GetCollider()->IsCollided() && _circle->GetCollider()->GetTargetObject()->GetTag() == "Boss")
@@ -529,6 +576,9 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 				else
 				{
 					_destroyCircle = true;
+					_circleParticle->GetComponent<Particle>()->SetParticleSize(100.0f, 100.0f);
+					_circleParticle->GetComponent<Particle>()->SetActive(true);
+
 					Startcoroutine(CircleFadeOut);
 				}
 			}
