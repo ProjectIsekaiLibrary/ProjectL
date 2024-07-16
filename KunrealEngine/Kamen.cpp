@@ -53,7 +53,7 @@ void KunrealEngine::Kamen::Initialize()
 {
 	// 반드시 해야함
 	Boss::Initialize(this->GetOwner());
-
+	mainLight = SceneManager::GetInstance().GetScene("Main")->GetGameObject("DirectionalLight")->GetComponent<Light>();
 	// 보스 타이머 설정
 	SetStartTime(0.0f);
 
@@ -75,6 +75,8 @@ void KunrealEngine::Kamen::Update()
 	Boss::Update();
 	HoldKamenSword();
 
+	// 특정 패턴에 따라 Directional Light를 바꾼다
+
 	for (auto& kamenLastphaseParticle : _kamenLastphaseParticle)
 	{
 		kamenLastphaseParticle->GetComponent<Particle>()->SetActive(true);
@@ -85,7 +87,6 @@ void KunrealEngine::Kamen::Update()
 		kamenLastphaseParticleBack->GetComponent<Particle>()->SetActive(true);
 		kamenLastphaseParticleBack->GetComponent<Particle>()->SetParticleAngle(270, -(_boss->GetComponent<Transform>()->GetRotation().y), 0);
 	}
-
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -210,19 +211,21 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	TeleportSpellPattern();							// 텔포 후 spell	
-	BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	//TeleportSpellPattern();							// 텔포 후 spell	
+	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	//
+	//_basicPattern[1] = _basicPattern[0];
+	//
+	//_basicPattern[2].emplace_back(_swordSwingTwice);
 
-	_basicPattern[1] = _basicPattern[0];
-
-	_basicPattern[2].emplace_back(_swordSwingTwice);
+	_basicPattern[0].emplace_back(_holdSword);
 	_basicPattern[2].emplace_back(_swordSwingTwiceHard);
 	_basicPattern[2].emplace_back(_swordSwingHorizontal);
-	_basicPattern[2].emplace_back(_swordSwingVertical);
+	//_basicPattern[2].emplace_back(_swordSwingVertical);
 
 	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
 	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
@@ -5407,7 +5410,14 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 					auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos1), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
 
 					_blade[0]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos1.y, bladeMove.m128_f32[2]);
+					swordDirPos = _blade[0]->GetComponent<Light>()->ChangeDirectionForPattern(_blade[0]->GetComponent<Transform>()->GetPosition());
+					mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 				}
+			}
+			if (69 < nowFrame && nowFrame < 82)
+			{
+				swordDirPos = mainLight->ResetDirection(swordDirPos, TimeManager::GetInstance().GetDeltaTime(), 2.0f);
+				mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 			}
 
 			if (bladeMesh2->GetActivated())
@@ -5438,7 +5448,14 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 					auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos2), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection2), moveSpeed));
 
 					_blade[1]->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos2.y, bladeMove.m128_f32[2]);
+					swordDirPos = _blade[1]->GetComponent<Light>()->ChangeDirectionForPattern(_blade[1]->GetComponent<Transform>()->GetPosition());
+					mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 				}
+			}
+			if(nowFrame > 94)
+			{
+				swordDirPos = mainLight->ResetDirection(swordDirPos, TimeManager::GetInstance().GetDeltaTime(), 2.0f);
+				mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 			}
 
 			if (isAnimationPlaying == false)
@@ -5603,11 +5620,18 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 					auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
 
 					_largeBlade->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos.y, bladeMove.m128_f32[2]);
-
 					auto index = pattern->GetSubObjectIndex(_largeBlade);
+
+					swordDirPos = _largeBlade->GetComponent<Light>()->ChangeDirectionForPattern(_largeBlade->GetComponent<Transform>()->GetPosition());
+					mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 
 					pattern->_isColliderActive[index] = true;
 				}
+			}
+			if (nowFrame > 35 )
+			{
+				swordDirPos = mainLight->ResetDirection(swordDirPos, TimeManager::GetInstance().GetDeltaTime(), 2.0f);
+				mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 			}
 
 			if (!isAnimationPlaying)

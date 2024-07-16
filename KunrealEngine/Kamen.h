@@ -419,5 +419,9 @@ namespace KunrealEngine
 
 		float _spellDel;
 		float _spellWaveDel;
+
+		Light* mainLight;
+	public:
+		DirectX::XMFLOAT3 swordDirPos;
 	};
 }

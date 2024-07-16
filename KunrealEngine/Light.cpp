@@ -320,15 +320,26 @@ DirectX::XMFLOAT3 KunrealEngine::Light::GetPointPos()
 	return _decomposedPos;
 }
 
-void KunrealEngine::Light::ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos)
+DirectX::XMFLOAT3 KunrealEngine::Light::ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos)
 {
 	DirectX::XMFLOAT3 newDirection = { pointPos };
-	
-	//SetDirection(pointPos.x, pointPos.y, pointPos.z);
 	
 	DirectX::XMVECTOR dirVec = XMLoadFloat3(&newDirection);
 	dirVec = DirectX::XMVector3Normalize(dirVec);
 	XMStoreFloat3(&newDirection, dirVec);
 
-	SetDirection(newDirection.x, newDirection.y, newDirection.z);
+	newDirection.x = newDirection.x * -1;
+	newDirection.z = newDirection.z * -1;
+
+	return newDirection;
+}
+
+DirectX::XMFLOAT3 KunrealEngine::Light::ResetDirection(DirectX::XMFLOAT3 currentDirection, float deltaTime, float speed)
+{
+	DirectX::XMFLOAT3 targetDirection = { -1.0f, -1.0f, 1.0f };
+
+	currentDirection.x += (targetDirection.x - currentDirection.x) * deltaTime * speed;
+	currentDirection.z += (targetDirection.z - currentDirection.z) * deltaTime * speed;
+
+	return currentDirection;
 }

@@ -244,7 +244,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ParticleTest();
 	/// 니들 맘대로 해
 	PlayGround();
-	CreateTitleScene();
+	//CreateTitleScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -299,7 +299,7 @@ void KunrealEngine::EngineCore::Update()
 		ShiveringLight(titleRock1);
 		ShiveringLight(titleRock2);
 		ShiveringLight(titleRock3);
-
+		titleBoss->GetComponent<Animator>()->Play("titleIdle", 0.5f, true);
 		TitleMapParticle();
 	}
 	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main")
@@ -310,7 +310,7 @@ void KunrealEngine::EngineCore::Update()
 		}
 	}
 
-	titleBoss->GetComponent<Animator>()->Play("titleIdle", 0.5f, true);
+
 
 	MoveToMain();
 	Updatecoroutine();
@@ -373,20 +373,6 @@ void KunrealEngine::EngineCore::PlayGround()
 	player->_autoAwake = true;
 
 
-	// Kamen
-	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
-	kamen->AddComponent<Kamen>();
-	kamen->_autoAwake = true;
-
-	// UI의 부모가 될 0,0pos객체
-	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
-	battle_ui_box->AddComponent<BattleUIManager>();
-	battle_ui_box->_autoAwake = true;
-
-	pause_ui_box = MakeMenuUIPack();
-	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
-	option_ui_box->AddComponent<OptionUIManager>();
-	//Title_ui_box = 
 
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "sunsetcube1024.dds", true);
@@ -429,6 +415,21 @@ void KunrealEngine::EngineCore::PlayGround()
 	bossMap->GetComponent<MeshRenderer>()->SetMeshObject("MapMesh/MapMesh");
 	bossMap->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	bossMap->_autoAwake = true;
+
+	// Kamen
+	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
+	kamen->AddComponent<Kamen>();
+	kamen->_autoAwake = true;
+
+	// UI의 부모가 될 0,0pos객체
+	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	battle_ui_box->AddComponent<BattleUIManager>();
+	battle_ui_box->_autoAwake = true;
+
+	pause_ui_box = MakeMenuUIPack();
+	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
+	option_ui_box->AddComponent<OptionUIManager>();
+	//Title_ui_box = 
 
 	// 맵 꾸미기 파티클
 	MapParticleSetting();

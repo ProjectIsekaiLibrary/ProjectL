@@ -360,7 +360,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
 
     
 	// Specular Reflection
-    _Glossiness = 16.f;
+    _Glossiness = 64.f;
     _SpecularColor = (0.0f, 0.0f, 0.0f, 1.f);
     
 	//float3 halfVector = normalize(toLightDir + toEye);

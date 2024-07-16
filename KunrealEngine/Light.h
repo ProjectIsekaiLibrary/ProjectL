@@ -121,7 +121,8 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 GetPointPos();
 
 	public:
-		void ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos);
+		DirectX::XMFLOAT3 ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos);
+		DirectX::XMFLOAT3 ResetDirection(DirectX::XMFLOAT3 currentDirection, float deltaTime, float speed);
 	};
 }
 
