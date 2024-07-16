@@ -28,7 +28,7 @@ namespace KunrealEngine
 		imagebackground->AddComponent<ImageRenderer>();
 		imagebackground->GetComponent<ImageRenderer>()->SetImage("ui/MenuBackground.png");
 		imagebackground->GetComponent<ImageRenderer>()->SetPosition(725.f, 207.f);
-		imagebackground->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.0f);
+		imagebackground->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		imagebackground->SetParent(pauseuibox);
 
 		// 옵션 버튼

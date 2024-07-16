@@ -2350,6 +2350,14 @@ void KunrealEngine::EngineCore::MoveToMain()
 		if (sceneInstance.GetCurrentScene()->GetGameObject("BossPortal")->GetCollider()->IsCollided()
 			&& sceneInstance.GetCurrentScene()->GetGameObject("BossPortal")->GetCollider()->GetTargetObject() == sceneInstance.GetCurrentScene()->GetObjectWithTag("Player"))
 		{
+			// 시작 할때 포탈로 넘어가는 소리
+			auto soundManager = sceneInstance.GetCurrentScene()->GetGameObject("SoundManager");
+			auto soundComp = soundManager->AddComponent<SoundPlayer>();
+			int soundindex = soundComp->CreateSoundInfo("Resources/Sound/intro.mp3", false, false);
+			soundComp->CreateSound(soundindex, 1);
+			soundComp->Play(soundindex);
+
+			// 원래 씬 교체하는 부분
 			sceneInstance.ChangeScene("Main");
 
 			sceneInstance.GetCurrentScene()->GetGameObject("DirectionalLight")->GetComponent<Light>()->SetDirection(-1.0f, -1.0f, 1.0f);
@@ -2436,6 +2444,13 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	DirectX::XMFLOAT4 ambient = { 0.2f, 0.2f, 0.2f, 0.2f };
 	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 direction = { 1.0f, -1.0f, -1.0f };
+
+	auto soundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
+	auto soundComp = soundManager->AddComponent<SoundPlayer>();
+
+	int soundindex = soundComp->CreateSoundInfo("Resources/Sound/TitleMap.mp3");
+	soundComp->CreateSound(soundindex, 1);
+	soundComp->Play(soundindex);
 
 	GameObject* titleLight = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
 	titleLight->AddComponent<Light>();

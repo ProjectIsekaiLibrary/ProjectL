@@ -293,6 +293,8 @@ namespace KunrealEngine
 			boss->_boss->GetComponent<MeshRenderer>()->SetActive(false);
 			boss->_boss->GetComponent<BoxCollider>()->SetActive(false);
 
+			boss->_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
 			Waitforsecond(3.0f);
 
 			boss->_isHideFinish = true;
