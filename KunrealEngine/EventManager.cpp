@@ -6,6 +6,7 @@
 #include "ToolBox.h"
 #include "EventManager.h"
 #include "Camera.h"
+#include "MeshCollider.h"
 #include "ToolBox.h"
 
 KunrealEngine::EventManager::EventManager()
@@ -94,7 +95,7 @@ void KunrealEngine::EventManager::Update()
 			dirvec = DirectX::XMFLOAT3(dirvec.x * range, dirvec.y * range, dirvec.z * range);
 			// 그리고 그걸 camtarget에 더해서 목표지점을 만들어 준다.
 			DirectX::XMFLOAT3 camoverTarget = DirectX::XMFLOAT3 \
-			(dirvec.x + camTarget.x, dirvec.y + camTarget.y, dirvec.z + camTarget.z);
+				(dirvec.x + camTarget.x, dirvec.y + camTarget.y, dirvec.z + camTarget.z);
 
 			// 거리계산시 오차
 			float distancevalue = 0.1f;
@@ -133,7 +134,7 @@ void KunrealEngine::EventManager::Update()
 				Return_null; // 이번 루프를 종료
 			}
 			// 다 끝났으니 카메라추적을 다시 켠다.
-			 _iscamfollow = true;
+			_iscamfollow = true;
 		};
 		Startcoroutine(DashCamMove);
 	}
@@ -368,6 +369,341 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer()
 				}
 			}
 		}
+
+
+		else if (nowPattern->_colliderType == BossPattern::eColliderType::eSwordMultiple)
+		{
+			auto subObjectList = nowPattern->_subObject;
+
+			for (int i = 0; i < subObjectList.size(); i++)
+			{
+				auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+
+				if (collider != nullptr && !nowPattern->_isColliderActive[i])
+				{
+					collider->SetActive(false);
+				}
+
+				// 콜라이더가 켜졌지만 맞지 않은 상태
+				if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+				{
+					collider->FixedUpdate();
+
+					collider->SetActive(true);
+
+					if (collider->IsCollided() && collider->GetTargetObject() == _player)
+					{
+						auto colliderDirVec = _bossComp->GetMultipleSwordDirVec(i);
+						colliderDirVec.y = 0.0f;
+						_playerComp->CalculateSweep(colliderDirVec);
+
+						auto damage = nowPattern->_damage;
+
+						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+						_playerComp->GetPlayerData()._hp -= damage;
+						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+
+						// 맞았다고 체크
+						nowPattern->_isColliderHit[i] = true;
+					}
+				}
+
+				// 콜라이더가 켜지고 맞은 상태
+				if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+				{
+					// 맞았으니 콜라이더 끄기
+					nowPattern->_isColliderActive[i] = false;
+
+					collider->SetActive(false);
+				}
+			}
+		}
+
+
+		else if (nowPattern->_colliderType == BossPattern::eColliderType::eSwordDirection)
+		{
+			auto subObjectList = nowPattern->_subObject;
+
+			for (int i = 0; i < subObjectList.size(); i++)
+			{
+				auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+
+				if (collider != nullptr && !nowPattern->_isColliderActive[i])
+				{
+					collider->SetActive(false);
+				}
+
+				// 콜라이더가 켜졌지만 맞지 않은 상태
+				if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+				{
+					collider->FixedUpdate();
+
+					collider->SetActive(true);
+
+					if (collider->IsCollided() && collider->GetTargetObject() == _player)
+					{
+						if (nowPattern->_attackState == BossPattern::eAttackState::ePush)
+						{
+							auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+							auto bossPos = _boss->GetComponent<Transform>()->GetPosition();
+
+							auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, playerPos);
+
+							colliderDirVec.m128_f32[1] = 0.0f;
+
+							_playerComp->CalculateSweep(colliderDirVec);
+						}
+
+						auto damage = nowPattern->_damage;
+
+						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+						_playerComp->GetPlayerData()._hp -= damage;
+						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+
+						// 맞았다고 체크
+						nowPattern->_isColliderHit[i] = true;
+					}
+				}
+
+				// 콜라이더가 켜지고 맞은 상태
+				if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+				{
+					// 맞았으니 콜라이더 끄기
+					nowPattern->_isColliderActive[i] = false;
+
+					collider->SetActive(false);
+				}
+			}
+		}
+
+		else if (nowPattern->_colliderType == BossPattern::eColliderType::eSwordColliderWithMeshCollider)
+		{
+			auto subObjectList = nowPattern->_subObject;
+
+			for (int i = 0; i < subObjectList.size(); i++)
+			{
+				auto collider = subObjectList[i]->GetComponent<MeshCollider>();
+
+				if (collider == nullptr)
+				{
+					auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+
+					if (collider != nullptr && !nowPattern->_isColliderActive[i])
+					{
+						collider->SetActive(false);
+					}
+
+					// 콜라이더가 켜졌지만 맞지 않은 상태
+					if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+					{
+						collider->FixedUpdate();
+
+						collider->SetActive(true);
+
+						if (collider->IsCollided() && collider->GetTargetObject() == _player)
+						{
+							auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+							auto bossPos = _boss->GetComponent<Transform>()->GetPosition();
+
+							auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, playerPos);
+
+							colliderDirVec.m128_f32[1] = 0.0f;
+
+							_playerComp->CalculateSweep(colliderDirVec);
+
+
+							auto damage = nowPattern->_damage;
+
+							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+							_playerComp->GetPlayerData()._hp -= damage;
+							_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+
+							// 맞았다고 체크
+							nowPattern->_isColliderHit[i] = true;
+						}
+					}
+
+					// 콜라이더가 켜지고 맞은 상태
+					if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+					{
+						// 맞았으니 콜라이더 끄기
+						nowPattern->_isColliderActive[i] = false;
+
+						collider->SetActive(false);
+					}
+				}
+
+				else
+				{
+					if (collider != nullptr && !nowPattern->_isColliderActive[i])
+					{
+						collider->SetActive(false);
+					}
+
+					// 콜라이더가 켜졌지만 맞지 않은 상태
+					if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+					{
+						collider->FixedUpdate();
+
+						collider->SetActive(true);
+
+						if (collider->IsCollided() && collider->GetTargetObject() == _player)
+						{
+							auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+							auto bossPos = _boss->GetComponent<Transform>()->GetPosition();
+
+							auto colliderDirVec = SetBossAttackDirection(subObjectList[i]);
+
+							_playerComp->CalculateSweep(colliderDirVec);
+
+
+							auto damage = nowPattern->_damage;
+
+							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+							_playerComp->GetPlayerData()._hp -= damage;
+							_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+
+							// 맞았다고 체크
+							nowPattern->_isColliderHit[i] = true;
+						}
+					}
+
+					// 콜라이더가 켜지고 맞은 상태
+					if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+					{
+						// 맞았으니 콜라이더 끄기
+						nowPattern->_isColliderActive[i] = false;
+
+						collider->SetActive(false);
+					}
+				}
+			}
+		}
+
+
+		else if (nowPattern->_colliderType == BossPattern::eColliderType::eSwordColliderWithCylinderCollider)
+		{
+			auto subObjectList = nowPattern->_subObject;
+
+			for (int i = 0; i < subObjectList.size(); i++)
+			{
+				auto collider = subObjectList[i]->GetComponent<CylinderCollider>();
+
+				if (collider == nullptr)
+				{
+					auto collider = subObjectList[i]->GetComponent<BoxCollider>();
+
+					if (collider != nullptr && !nowPattern->_isColliderActive[i])
+					{
+						collider->SetActive(false);
+					}
+
+					// 콜라이더가 켜졌지만 맞지 않은 상태
+					if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+					{
+						collider->FixedUpdate();
+
+						collider->SetActive(true);
+
+						if (collider->IsCollided() && collider->GetTargetObject() == _player)
+						{
+							auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+							auto bossPos = _boss->GetComponent<Transform>()->GetPosition();
+
+							auto colliderDirVec = ToolBox::GetDirectionVec(bossPos, playerPos);
+
+							colliderDirVec.m128_f32[1] = 0.0f;
+
+							_playerComp->CalculateSweep(colliderDirVec);
+
+
+							auto damage = nowPattern->_damage;
+
+							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+							_playerComp->GetPlayerData()._hp -= damage;
+							_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+
+							// 맞았다고 체크
+							nowPattern->_isColliderHit[i] = true;
+						}
+					}
+
+					// 콜라이더가 켜지고 맞은 상태
+					if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+					{
+						// 맞았으니 콜라이더 끄기
+						nowPattern->_isColliderActive[i] = false;
+
+						collider->SetActive(false);
+					}
+				}
+
+				else
+				{
+					if (collider != nullptr && !nowPattern->_isColliderActive[i])
+					{
+						collider->SetActive(false);
+					}
+
+					// 콜라이더가 켜졌지만 맞지 않은 상태
+					if (nowPattern->_isColliderActive[i] && !nowPattern->_isColliderHit[i])
+					{
+						collider->FixedUpdate();
+
+						collider->SetActive(true);
+
+						if (collider->IsCollided() && collider->GetTargetObject() == _player)
+						{
+
+							auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+							auto colliderPos = subObjectList[i]->GetComponent<Transform>()->GetPosition();
+
+							auto distance = ToolBox::GetDistance(colliderPos, playerPos);
+
+							if (20 <= distance && distance <= 50)
+							{
+								return;
+							}
+
+							auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
+							_playerComp->CalculateSweep(colliderDirVec);
+
+							auto damage = nowPattern->_damage;
+
+							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+							_playerComp->GetPlayerData()._hp -= damage;
+							_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+							// 데미지가 들어간 후 메쉬를 꺼야한다면
+							if (!nowPattern->_isRemainMesh && subObjectList[i]->GetComponent<MeshRenderer>() != nullptr)
+							{
+								// 메쉬를 꺼버림
+								subObjectList[i]->GetComponent<MeshRenderer>()->SetActive(false);
+							}
+
+							//맞았다고 체크
+							nowPattern->_isColliderHit[i] = true;
+						}
+					}
+
+					// 콜라이더가 켜지고 맞은 상태
+					if (nowPattern->_isColliderActive[i] && nowPattern->_isColliderHit[i])
+					{
+						// 맞았으니 콜라이더 끄기
+						nowPattern->_isColliderActive[i] = false;
+
+						collider->SetActive(false);
+					}
+				}
+			}
+			}
+
+
 	}
 }
 

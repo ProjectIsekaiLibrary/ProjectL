@@ -151,6 +151,8 @@ namespace KunrealEngine
 
 		const float GetDonutSize();
 
+		const DirectX::XMFLOAT3& GetMultipleSwordDirVec(int index);
+
 		// 분신용 편의성 함수
 	private:
 		DirectX::XMVECTOR GetEgoDirection();
