@@ -35,6 +35,7 @@ Texture2D AdditionalTexture : register(t5);
 Texture2D gShadowDepthMapTexture;
 
 Texture2D gDecalTexture;
+Texture2D gDecalPositionTexture;
 
 TextureCube gCubeMap;
 
@@ -120,7 +121,7 @@ float ToonShade(float intensity)
 }
 
 
-void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float4 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon, out float2 decal)
+void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 position, out float4 diffuseAlbedo, out float3 emissive, out float4 material, out float cartoon, out float2 decal, out float3 posDecal)
 {
     position = PositionTexture.Sample(samAnisotropic, texCoord).xyz;
 
@@ -135,6 +136,8 @@ void GetGBufferAttributes(float2 texCoord, out float3 normal, out float3 positio
     cartoon = AdditionalTexture.Sample(samAnisotropic, texCoord).x;
     
     decal = AdditionalTexture.Sample(samAnisotropic, texCoord).yz;
+    
+    posDecal = gDecalPositionTexture.Sample(samAnisotropic, texCoord).xyz;
 }
 
 float4 WorldToLight(float3 position)
@@ -177,12 +180,13 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     float4 material;
     float cartoon;
     float2 decalInfo;
+    float3 posDecal;
     
 	// Specular Reflaction
     float _Glossiness;
     float4 _SpecularColor;
 
-    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon, decalInfo);
+    GetGBufferAttributes(pin.Tex, normal, position, diffuseAlbedo, emissive, material, cartoon, decalInfo, posDecal);
        
    //if (diffuseAlbedo.a == 0.f)
    //{
@@ -384,7 +388,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     if (decalInfo.x == 1)
     {
-        float4 toDecal = mul(float4(position, 1.0f), gDecalWorldInv[decalInfo.y]);
+        float4 toDecal = mul(float4(posDecal, 1.0f), gDecalWorldInv[decalInfo.y]);
     
     // µ¥Ä® ¹Ú½º ³»ºÎ ÁÂÇ¥¸¦ ÅØ½ºÃ³ ÁÂÇ¥·Î º¯È¯
         float2 decalUV = (toDecal.xz + 0.5f);

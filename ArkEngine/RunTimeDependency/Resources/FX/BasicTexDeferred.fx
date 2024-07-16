@@ -28,6 +28,8 @@ Texture2D gMaskMap;
 
 float gCartoon;
 
+bool gApplyDecal;
+
 // Dissolve Effect
 Texture2D gNoiseTexture;
 Texture2D gBurnTexture;
@@ -75,6 +77,7 @@ struct PSOut
     float4 Material : SV_Target4;
     float4 Additional : SV_Target5;
     float4 Color : SV_Target6;
+    float4 PositionY : SV_Target7;
 };
 
 struct PSOut2
@@ -127,6 +130,15 @@ PSOut PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect)
     output.Material = float4(gMaterial.Ambient.x, gMaterial.Diffuse.x, gMaterial.Specular.x, gMaterial.Specular.w);
     output.Additional = float4(gCartoon, 0.0f, 0.0f, 1.0f);
     output.Color = gColor[pin.InstanceID];
+    
+    if (gApplyDecal)
+    {
+        output.PositionY = float4(pin.PosW, 1.0f);
+    }
+    else
+    {
+        output.PositionY = float4(5000.0f, 5000.0f, 5000.0f, 1.0f);
+    }
 
     if (gIsDissolve == true)
     {
