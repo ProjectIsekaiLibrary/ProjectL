@@ -128,7 +128,7 @@ namespace KunrealEngine
 		}
 		newSound.fmodSound = fmodSound;
 		_soundBuffer.push_back(newSound);
-		return 0;
+		return _soundBuffer.size() - 1;
 	}
 
 	void SoundSystem::Update()
