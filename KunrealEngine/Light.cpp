@@ -319,3 +319,11 @@ DirectX::XMFLOAT3 KunrealEngine::Light::GetPointPos()
 {
 	return _decomposedPos;
 }
+
+void KunrealEngine::Light::ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos)
+{
+	DirectX::XMFLOAT3 newDirection = { pointPos };
+
+	SetDirection(pointPos.x, pointPos.y, pointPos.z);
+	
+}

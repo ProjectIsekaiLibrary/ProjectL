@@ -119,6 +119,9 @@ namespace KunrealEngine
 		float GetPointRange();
 
 		DirectX::XMFLOAT3 GetPointPos();
+
+	public:
+		void ChangeDirectionForPattern(DirectX::XMFLOAT3 pointPos);
 	};
 }
 
