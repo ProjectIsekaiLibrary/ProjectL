@@ -56,7 +56,7 @@ void KunrealEngine::Kamen::Initialize()
 
 	// 보스 타이머 설정
 	SetStartTime(0.0f);
-	
+
 	SetSpecialPatternPlayPhase(2);
 }
 
@@ -75,19 +75,17 @@ void KunrealEngine::Kamen::Update()
 	Boss::Update();
 	HoldKamenSword();
 
-	if (_info._phase == 3)
+	for (auto& kamenLastphaseParticle : _kamenLastphaseParticle)
 	{
-		for (auto& kamenLastphaseParticle : _kamenLastphaseParticle)
-		{
-			kamenLastphaseParticle->GetComponent<Particle>()->SetActive(true);
-			kamenLastphaseParticle->GetComponent<Particle>()->SetParticleAngle(270, (_boss->GetComponent<Transform>()->GetRotation().y), 0);
-		}
-		for (auto& kamenLastphaseParticleBack : _kamenLastphaseParticleBack)
-		{
-			kamenLastphaseParticleBack->GetComponent<Particle>()->SetActive(true);
-			kamenLastphaseParticleBack->GetComponent<Particle>()->SetParticleAngle(270, -(_boss->GetComponent<Transform>()->GetRotation().y), 0);
-		}
+		kamenLastphaseParticle->GetComponent<Particle>()->SetActive(true);
+		kamenLastphaseParticle->GetComponent<Particle>()->SetParticleAngle(270, (_boss->GetComponent<Transform>()->GetRotation().y), 0);
 	}
+	for (auto& kamenLastphaseParticleBack : _kamenLastphaseParticleBack)
+	{
+		kamenLastphaseParticleBack->GetComponent<Particle>()->SetActive(true);
+		kamenLastphaseParticleBack->GetComponent<Particle>()->SetParticleAngle(270, -(_boss->GetComponent<Transform>()->GetRotation().y), 0);
+	}
+
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -206,38 +204,34 @@ void KunrealEngine::Kamen::CreatePattern()
 	// 코어
 	CreateSwordMultipleAttack();
 
-	//CreateDecalTest();
-
 	// 실제 사용중인 패턴들 모아놓음
 	GamePattern();
 }
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
-	
-	//_basicPattern[1] = _basicPattern[0];
-	//   
+	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
-	// 3페이즈 패턴 테스트용
-	_basicPattern[0].emplace_back(_holdSword);
+	_basicPattern[1] = _basicPattern[0];
 
 	_basicPattern[2].emplace_back(_swordSwingTwice);
-	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
-	//_basicPattern[2].emplace_back(_swordSwingVertical);
-	//_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	_basicPattern[2].emplace_back(_swordSwingTwiceHard);
+	_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	_basicPattern[2].emplace_back(_swordSwingVertical);
 
-	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
-	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
-	//SwordLinearAttackPattern();						// 칼 직선 공격
-	//SwordChopPattern();								// 도넛
+	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
+	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
+	SwordLinearAttackPattern();						// 칼 직선 공격
+	SwordChopPattern();								// 도넛
 
 	CoreSwordMutipleAttackPattern();
+
+	//CreateDecalTest();
 }
 
 
@@ -473,7 +467,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 				handFire->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
 				handFire->GetComponent<Particle>()->AddParticleColor(1.2f, 7.5f, 0.6f);
 				handFire->GetComponent<Particle>()->SetActive(false);
-				
+
 
 				if (j == 0)
 				{
@@ -1982,6 +1976,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 			blade->GetComponent<Transform>()->SetScale(25.0f, 20.0f, 20.0f);
 
+			blade->AddComponent<MeshCollider>();
+			blade->GetComponent<MeshCollider>()->CreateMeshCollider("Blade");
+			blade->GetComponent<MeshCollider>()->SetColliderScale(50.0f, 20.0f, 20.0f);
+
 			blade->SetTotalComponentState(false);
 			blade->SetActive(false);
 
@@ -2003,6 +2001,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 			_largeBlade->GetComponent<MeshRenderer>()->SetAlpha(0.6f);
 
 			_largeBlade->GetComponent<Transform>()->SetScale(28.0f, 20.0f, 21.0f);
+
+			_largeBlade->AddComponent<MeshCollider>();
+			_largeBlade->GetComponent<MeshCollider>()->CreateMeshCollider("Blade");
+			_largeBlade->GetComponent<MeshCollider>()->SetColliderScale(56.0f, 20.0f, 21.0f);
 
 			_largeBlade->SetTotalComponentState(false);
 			_largeBlade->SetActive(false);
@@ -2187,7 +2189,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 		swordAttack->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
 		swordAttack->GetComponent<TransparentMesh>()->SetTimer(2.0F);
 		swordAttack->GetComponent<TransparentMesh>()->SetRenderType(3);
-		swordAttack->GetComponent<Transform>()->SetScale(6.0f, 6.0f, 300.0f);
+		swordAttack->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 300.0f);
 		swordAttack->SetTotalComponentState(false);
 		swordAttack->SetActive(false);
 		_multipleSwordWarningVec.emplace_back(swordAttack);
@@ -3072,7 +3074,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 					{
 						auto objectIndex = pattern->GetSubObjectIndex(_egoInsideAttack);
 						pattern->_isColliderActive[objectIndex] = false;
-			
+
 						if (_timer < 2.6f)
 						{
 							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
@@ -3634,14 +3636,14 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 					{
 						_egoLazer->GetComponent<Particle>()->SetActive(true);
 						_egoLazer->GetComponent<Particle>()->SetParticleSize((60.f - _spellDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (60.f - _spellDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
-					
+
 						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(true);
 						_egoLazer->GetChilds()[0]->GetComponent<Particle>()->SetParticleSize((40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.3f, 1.0f), (40.f - _spellWaveDel) * ToolBox::GetRandomFloat(0.1f, 1.0f));
-					
+
 						if (animator->GetCurrentFrame() >= 32.0f)
 						{
 							auto objectIndex = pattern->GetSubObjectIndex(_egoLazerCollider);
-					
+
 							if (pattern->_isColliderHit[objectIndex] == false)
 							{
 								pattern->_isColliderActive[objectIndex] = true;
@@ -3649,7 +3651,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 							else
 							{
 								_timer3 += TimeManager::GetInstance().GetDeltaTime();
-					
+
 								if (_timer3 >= 0.5f)
 								{
 									pattern->_isColliderHit[objectIndex] = false;
@@ -4629,7 +4631,7 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	std::string objectName = "testDecal";
 	static GameObject* testDecal = _boss->GetObjectScene()->CreateObject(objectName);
 	testDecal->AddComponent<TransparentMesh>();
-	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/MeteorDecal/test3.png", 0.6f);
+	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/MeteorDecal/Decal.png", 0.6f);
 	testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 	testDecal->GetComponent<TransparentMesh>()->SetRenderType(7);
 	testDecal->GetComponent<TransparentMesh>()->SetDecal(true);
@@ -4644,11 +4646,16 @@ void KunrealEngine::Kamen::CreateDecalTest()
 		{
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
+
+			_largeBlade->GetComponent<Transform>()->SetPosition(_centerPos);
 		};
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attakLogic = [pattern, this]()
 		{
+			_largeBlade->SetActive(true);
+			_largeBlade->GetComponent<MeshCollider>()->SetActive(true);
+
 			auto isPlayed = testDecal->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (isPlayed)
@@ -4671,7 +4678,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 	pattern->SetPatternName("SwordMultipleAttack");
 
 	pattern->SetAnimName("Idle").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox).SetSkipChase(true);
+	pattern->SetColliderType(BossPattern::eColliderType::eSwordMultiple).SetSkipChase(true);
 
 	for (auto& index : _multipleSwordVec)
 	{
@@ -4760,7 +4767,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 
 					_multipleSwordMoveDistance.back() = distance;
 
-					int index = _multipleSwordMoveDistance.size()-1;
+					int index = _multipleSwordMoveDistance.size() - 1;
 
 					if (index % 4 > 0)
 					{
@@ -4979,11 +4986,11 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 	pattern->SetPatternName("SwordSwingVertical");
 
 	pattern->SetAnimName("SwordSwingVertical").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox);
+	pattern->SetColliderType(BossPattern::eColliderType::eSwordColliderWithCylinderCollider);
 
 	pattern->SetSubObject(_swordDonutWarning1);
 	pattern->SetSubObject(_swordDonutWarning2);
-	//pattern->SetSubObject(_swordDonutAttack[0]);
+	pattern->SetSubObject(_swordDonutAttack[0]);
 	pattern->SetSubObject(_kamenSwordCollider);
 
 	auto initLogic = [pattern, this]()
@@ -5036,15 +5043,17 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 
 			auto nowFrame = animator->GetCurrentFrame();
 
-			//auto index = pattern->GetSubObjectIndex(_swordDonutAttack[0]);
-
 			SetKamenSwordCollider(21, 27, nowFrame);
+
+			auto index = pattern->GetSubObjectIndex(_swordDonutAttack[0]);
 
 			if (28 <= nowFrame && nowFrame <= 40)
 			{
 				auto outsideCircleSize = _swordCircleWarningSize * 2.0f;
 				_timer += TimeManager::GetInstance().GetDeltaTime();
-				//pattern->_isColliderActive[index] = true;
+
+				pattern->_isColliderActive[index] = true;
+
 
 				for (auto& verticalParticle : _verticalParticleSide)
 				{
@@ -5064,7 +5073,8 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 			}
 			else
 			{
-				//pattern->_isColliderActive[index] = false;
+				pattern->_isColliderActive[index] = false;
+
 				for (auto& verticalParticle : _verticalParticleSide)
 				{
 					verticalParticle->SetActive(false);
@@ -5096,16 +5106,28 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 	pattern->SetPatternName("SwordSwingTwice");
 
 	pattern->SetAnimName("SwordSwingTwice").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::eParalysis);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox);
+	pattern->SetColliderType(BossPattern::eColliderType::eSwordDirection).SetSkipChase(true);
 
 	pattern->SetSubObject(_kamenSwordCollider);
 
 	auto initLogic = [pattern, this]()
 		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+			TeleportToPlayer();
+
 			pattern->SetAttackState(BossPattern::eAttackState::eParalysis);
 			pattern->SetDamage(10.0f);
 
 			_isSwordSecondAttackStart = false;
+
+			auto nowPos = _bossTransform->GetPosition();
+			_bossTransform->SetPosition(nowPos.x, 30.0f, nowPos.z);
+			auto nowRot = _bossTransform->GetRotation();
+			_bossTransform->SetRotation(-33.0f, nowRot.y, nowRot.z);
+
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -5121,6 +5143,20 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 			if (19 <= nowFrame && nowFrame <= 36)
 			{
 				SetKamenSwordCollider();
+			}
+			else if (36 < nowFrame && nowFrame < 47)
+			{
+				auto nowRot = _bossTransform->GetRotation();
+				if (nowRot.x > -65.0f)
+				{
+					auto rotSpeed = 30.0f;
+					auto nextAngle = nowRot.x -= TimeManager::GetInstance().GetDeltaTime() * rotSpeed;
+					_bossTransform->SetRotation(nextAngle, nowRot.y, nowRot.z);
+				}
+
+				auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
+
+				pattern->_isColliderActive[index] = false;
 			}
 			else if (47 <= nowFrame && nowFrame <= 59)
 			{
@@ -5138,6 +5174,39 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 
 				SetKamenSwordCollider();
 			}
+			else if (59 < nowFrame)
+			{
+				auto nowPos = _bossTransform->GetPosition();
+
+				auto trsSpeed = 20.0f;
+				auto rotSpeed = 30.0f;
+
+				if (nowPos.y > _centerPos.y)
+				{
+					auto newPosY = nowPos.y - TimeManager::GetInstance().GetDeltaTime() * trsSpeed;
+					_bossTransform->SetPosition(nowPos.x, newPosY, nowPos.z);
+				}
+				else
+				{
+					_bossTransform->SetPosition(nowPos.x, _centerPos.y, nowPos.z);
+				}
+
+				auto nowRot = _bossTransform->GetRotation();
+				if (nowRot.x < 0.0f)
+				{
+					auto newRotX = nowRot.x + TimeManager::GetInstance().GetDeltaTime() * rotSpeed;
+					_bossTransform->SetRotation(newRotX, nowRot.y, nowRot.z);
+				}
+				else
+				{
+					_bossTransform->SetRotation(0.0f, nowRot.y, nowRot.z);
+				}
+
+				auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
+
+				pattern->_isColliderActive[index] = false;
+			}
+
 			else
 			{
 				auto index = pattern->GetSubObjectIndex(_kamenSwordCollider);
@@ -5145,7 +5214,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 				pattern->_isColliderActive[index] = false;
 			}
 
-			if (isAnimationPlaying == false)
+			if (_bossTransform->GetRotation().x == 0.0f && _bossTransform->GetPosition().y == _centerPos.y)
 			{
 				return false;
 			}
@@ -5165,7 +5234,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 	pattern->SetPatternName("SwordHardSwingTwice");
 
 	pattern->SetAnimName("SwordHardSwingTwice").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox);
+	pattern->SetColliderType(BossPattern::eColliderType::eSwordColliderWithMeshCollider);
 
 	pattern->SetSubObject(_kamenSwordCollider);
 
@@ -5203,8 +5272,8 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 				}
 				else
 				{
-					_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos2.m128_f32[0], 30.0f, bladeStartPos2.m128_f32[2]);
-					_blade[i]->GetComponent<Transform>()->SetRotation(30.0f, _bossTransform->GetRotation().y + 180, -10.0f);
+					_blade[i]->GetComponent<Transform>()->SetPosition(bladeStartPos2.m128_f32[0], 15.0f, bladeStartPos2.m128_f32[2]);
+					_blade[i]->GetComponent<Transform>()->SetRotation(0.0f, _bossTransform->GetRotation().y + 180, 0.0f);
 				}
 
 				auto bladePos = _blade[0]->GetComponent<Transform>()->GetPosition();
@@ -5263,6 +5332,9 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 						bladeParticle->GetComponent<Particle>()->SetActive(true);
 					}
 
+					auto index = pattern->GetSubObjectIndex(_blade[0]);
+
+					pattern->_isColliderActive[index] = true;
 				}
 			}
 			else if (82 < nowFrame && nowFrame < 94)
@@ -5281,6 +5353,10 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 					{
 						bladeParticle->GetComponent<Particle>()->SetActive(true);
 					}
+
+					auto index = pattern->GetSubObjectIndex(_blade[1]);
+
+					pattern->_isColliderActive[index] = true;
 				}
 			}
 			else
@@ -5317,6 +5393,10 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 					{
 						bladeParticle->GetComponent<Particle>()->SetActive(false);
 					}
+
+					auto index = pattern->GetSubObjectIndex(_blade[0]);
+
+					pattern->_isColliderActive[index] = false;
 				}
 				else
 				{
@@ -5344,6 +5424,10 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 					{
 						bladeParticle->GetComponent<Particle>()->SetActive(false);
 					}
+
+					auto index = pattern->GetSubObjectIndex(_blade[1]);
+
+					pattern->_isColliderActive[index] = false;
 				}
 				else
 				{
@@ -5377,7 +5461,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 	pattern->SetPatternName("SwordSwingHorizontal");
 
 	pattern->SetAnimName("SwordSwingHorizontal").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
-	pattern->SetColliderType(BossPattern::eColliderType::eBox).SetSkipChase(true);
+	pattern->SetColliderType(BossPattern::eColliderType::eSwordColliderWithMeshCollider).SetSkipChase(true);
 
 	pattern->SetSubObject(_kamenSwordCollider);
 	pattern->SetSubObject(_largeBlade);
@@ -5505,6 +5589,10 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 					{
 						largeBladeParticleWave->GetComponent<Particle>()->SetActive(false);
 					}
+
+					auto index = pattern->GetSubObjectIndex(_largeBlade);
+
+					pattern->_isColliderActive[index] = false;
 				}
 				else
 				{
@@ -5515,6 +5603,10 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 					auto bladeMove = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&bladePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_swordDirection), moveSpeed));
 
 					_largeBlade->GetComponent<Transform>()->SetPosition(bladeMove.m128_f32[0], bladePos.y, bladeMove.m128_f32[2]);
+
+					auto index = pattern->GetSubObjectIndex(_largeBlade);
+
+					pattern->_isColliderActive[index] = true;
 				}
 			}
 
@@ -5911,6 +6003,11 @@ const float KunrealEngine::Kamen::GetDonutSize()
 	return _donutSize;
 }
 
+const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetMultipleSwordDirVec(int index)
+{
+	return _multipleSwordDirectionVec[index];
+}
+
 void KunrealEngine::Kamen::BackStepCallPattern()
 {
 	BossPattern* backStepCallPattern = new BossPattern();
@@ -5940,7 +6037,7 @@ void KunrealEngine::Kamen::TeleportSpellPattern()
 	teleportSpellPattern->SetSkipChase(true);
 	teleportSpellPattern->SetRange(100.0f);
 	teleportSpellPattern->SetWithEgo(true);
-	
+
 	teleportSpellPattern->SetAfterDelay(1.0f);
 
 	teleportSpellPattern->SetPattern(_teleportRandomWithLook);
@@ -6208,7 +6305,7 @@ void KunrealEngine::Kamen::CoreSwordMutipleAttackPattern()
 	float triggerHp = _info.GetMaxHP() * 0.3f;
 
 	coreSwordMultipleAttack->SetTriggerHp(triggerHp);
-	
+
 	coreSwordMultipleAttack->SetMaxColliderCount(0);
 
 	coreSwordMultipleAttack->SetPattern(_battleCry);
