@@ -69,6 +69,8 @@ namespace ArkEngine
 
 			ID3D11ShaderResourceView* GetTexture();
 
+			int GetIndex();
+
 		private:
 			void BuildGeomtryBuffers();
 			void SetEffect();

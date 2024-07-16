@@ -558,11 +558,36 @@ void ArkEngine::ResourceManager::DeleteTransParentMesh(ArkEngine::ArkDX11::Trans
 }
 
 
+const std::vector<ArkEngine::ArkDX11::TransparentMesh*>& ArkEngine::ResourceManager::GetDecalMeshList()
+{
+	return _decalMeshList;
+}
+
+
+void ArkEngine::ResourceManager::AddDecalMesh(ArkEngine::ArkDX11::TransparentMesh* mesh)
+{
+	auto it = std::find(_decalMeshList.begin(), _decalMeshList.end(), mesh);
+
+	if (it == _decalMeshList.end()) 
+	{
+		_decalMeshList.emplace_back(mesh);
+	}
+}
+
 void ArkEngine::ResourceManager::SortTransParentMesh()
 {
 	std::sort(_transParentMeshList.begin(), _transParentMeshList.end(),
 		[](ArkEngine::ArkDX11::TransparentMesh* mesh1, ArkEngine::ArkDX11::TransparentMesh* mesh2) {
 			return mesh1->GetTransParency() > mesh2->GetTransParency();
+		});
+}
+
+
+void ArkEngine::ResourceManager::SortDecalMesh()
+{
+	std::sort(_decalMeshList.begin(), _decalMeshList.end(),
+		[](ArkEngine::ArkDX11::TransparentMesh* mesh1, ArkEngine::ArkDX11::TransparentMesh* mesh2) {
+			return mesh1->GetIndex() < mesh2->GetIndex();
 		});
 }
 
