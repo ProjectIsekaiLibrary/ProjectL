@@ -191,7 +191,6 @@ KunrealEngine::GameObject* bossCoreBladeMove2;
 KunrealEngine::GameObject* bossCoreBladeMove3;
 KunrealEngine::GameObject* bossCoreBladeMove4;
 
-
 DirectX::XMFLOAT3 targetPos;
 DirectX::XMFLOAT3 p0 = { 0, 0, 0 };
 DirectX::XMFLOAT3 p1 = { 0, 0, 0 };
@@ -199,7 +198,7 @@ DirectX::XMFLOAT3 p2 = { 0, 0, 0 };
 DirectX::XMFLOAT3 p3 = { 0, 0, 0 };
 
 KunrealEngine::EngineCore::EngineCore()
-	:_gInterface(nullptr), _isEditor(true)
+	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false),_isBezierStartSetting(false), _isBezierTeleportSetting(false)
 {
 
 }
@@ -239,7 +238,6 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	_timeCountPlayerR = 0.0f;
 	_isSettingTimer = false;
 	_isBezierStartSetting = false;
-	_isBezierBoomSetting = false;
 	_isBezierTeleportSetting = false;
 
 	//ChangeScene("ParticleTest");
@@ -301,6 +299,15 @@ void KunrealEngine::EngineCore::Update()
 		ShiveringLight(titleRock1);
 		ShiveringLight(titleRock2);
 		ShiveringLight(titleRock3);
+
+		TitleMapParticle();
+	}
+	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main")
+	{
+		for (auto& mapParticleList : _mapParticleList)
+		{
+			mapParticleList->GetComponent<Particle>()->SetActive(true);
+		}
 	}
 
 	titleBoss->GetComponent<Animator>()->Play("titleIdle", 0.5f, true);
@@ -1262,21 +1269,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleBossDonut4->GetComponent<Particle>()->SetParticleDirection(0.0f, 400.0f, 0.0f);
 	particleBossDonut4->GetComponent<Particle>()->SetParticleCameraApply(true);
 
-	/*for (int i = 0; i < 16; ++i)
-	{
-		GameObject* particleBezierTest;
-		particleBezierTest = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
-		particleBezierTest->GetComponent<Transform>()->SetPosition(ToolBox::GetRandomFloat(-50.0f, 50.0f), ToolBox::GetRandomFloat(-20.0f, 20.0f) , ToolBox::GetRandomFloat(-62.0f, 62.0f));
-		particleBezierTest->AddComponent<Particle>();
-		particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
-		particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
-		particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-		particleBezierTest->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
-		particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 1.0f);
-		particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
-		_bezierObjectList.push_back(particleBezierTest);
-	}*/
 
 	for (int i = 0; i < 16; ++i)
 	{
@@ -1941,14 +1934,6 @@ void KunrealEngine::EngineCore::UpdateParticleTest()
 		_isBezierStartSetting = true;
 	}
 
-
-	//for (auto& bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
-	//{	
-	//	Point3D particlePoint;
-	//	particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], p3, _timeCount);
-	//	_particlePointList.push_back(particlePoint);
-	//}
-
 	int bezierPointIndex = 0;
 
 	for (auto& bezierPoint : _bezierSwordSoulPointsList) // 각 점을 통한 베지어 곡선을 구함
@@ -1971,10 +1956,7 @@ void KunrealEngine::EngineCore::UpdateParticleTest()
 	}
 	_isSettingTimer = true;
 
-	//for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
-	//{
-	//	_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
-	//}
+
 
 	for (int i = 0; i < ParticleSwordSoulList.size(); ++i) // 곡선을 따라 이동
 	{
@@ -2157,6 +2139,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle1->AddComponent<Light>();
 	mapParticle1->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle1->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle1);
 
 	mapParticle2 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle2");
 	mapParticle2->GetComponent<Transform>()->SetPosition(-38.6, 13.88, -140.8f);
@@ -2171,6 +2154,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle2->AddComponent<Light>();
 	mapParticle2->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle2->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle2);
 
 	mapParticle3 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle3");
 	mapParticle3->GetComponent<Transform>()->SetPosition(39.18f, 13.88, -140.8f);
@@ -2185,6 +2169,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle3->AddComponent<Light>();
 	mapParticle3->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle3->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle3);
 
 	mapParticle4 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle4");
 	mapParticle4->GetComponent<Transform>()->SetPosition(115.42, 20.31, -136.35f);
@@ -2199,6 +2184,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle4->AddComponent<Light>();
 	mapParticle4->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle4->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle4);
 
 	mapParticle5 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle5");
 	mapParticle5->GetComponent<Transform>()->SetPosition(115.42f, 21.316f, 124.14f);
@@ -2213,6 +2199,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle5->AddComponent<Light>();
 	mapParticle5->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle5->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle5);
 
 	mapParticle6 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle6");
 	mapParticle6->GetComponent<Transform>()->SetPosition(28.16f, 47.125f, 138.95f);
@@ -2227,6 +2214,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle6->AddComponent<Light>();
 	mapParticle6->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle6->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle6);
 
 	mapParticle7 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle7");
 	mapParticle7->GetComponent<Transform>()->SetPosition(-27.11f, 47.125f, 138.95f);
@@ -2241,6 +2229,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle7->AddComponent<Light>();
 	mapParticle7->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle7->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle7);
 
 	mapParticle8 = sceneInstance.GetCurrentScene()->CreateObject("MapParticle8");
 	mapParticle8->GetComponent<Transform>()->SetPosition(-113.37f, 21.316f, 125.89f);
@@ -2255,6 +2244,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticle8->AddComponent<Light>();
 	mapParticle8->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 	mapParticle8->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticle8);
 
 	mapParticleEye1 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye1");
 	mapParticleEye1->GetComponent<Transform>()->SetPosition(122.3f, 28.13f, -5.02f);
@@ -2266,6 +2256,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye1->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye1->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye1);
 
 	mapParticleEye2 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye2");
 	mapParticleEye2->GetComponent<Transform>()->SetPosition(64.84f, 52.395f, 215.4f);
@@ -2277,6 +2268,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye2->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye2->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye2);
 
 	mapParticleEye3 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye3");
 	mapParticleEye3->GetComponent<Transform>()->SetPosition(42.37f, 29, 144.6f);
@@ -2289,6 +2281,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye3->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
 	mapParticleEye3->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye3);
 
 	mapParticleEye4 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye4");
 	mapParticleEye4->GetComponent<Transform>()->SetPosition(37.45f, 29, 144.6f);
@@ -2301,6 +2294,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye4->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
 	mapParticleEye4->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye4);
 
 	mapParticleEye5 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye5");
 	mapParticleEye5->GetComponent<Transform>()->SetPosition(-63.866f, 52.395f, 215.93f);
@@ -2312,6 +2306,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye5->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye5->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye5->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye5);
 
 	mapParticleEye6 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye6");
 	mapParticleEye6->GetComponent<Transform>()->SetPosition(-36.433f, 29, 144.6f);
@@ -2324,6 +2319,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye6->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye6->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
 	mapParticleEye6->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye6);
 
 	mapParticleEye7 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye7");
 	mapParticleEye7->GetComponent<Transform>()->SetPosition(-41.3f, 29, 144.6f);
@@ -2336,6 +2332,7 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye7->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye7->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
 	mapParticleEye7->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye7);
 
 	mapParticleEye8 = sceneInstance.GetCurrentScene()->CreateObject("MapParticleEye8");
 	mapParticleEye8->GetComponent<Transform>()->SetPosition(-120.72f, 28.02f, -5.02f);
@@ -2347,6 +2344,73 @@ void KunrealEngine::EngineCore::MapParticleSetting()
 	mapParticleEye8->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 	mapParticleEye8->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	mapParticleEye8->_autoAwake = true;
+	_mapParticleList.emplace_back(mapParticleEye8);
+
+}
+
+void KunrealEngine::EngineCore::TitleMapParticle()
+{
+	DirectX::XMFLOAT3 endPoint = { -152.121f, 182.672f, 180 }; // 목표 위치
+
+	_timeCount += TimeManager::GetInstance().GetDeltaTime();
+
+	if (_isBezierStartSetting == false)
+	{
+		for (auto& bezierObject : _bezierObjectList) // 베지어 곡선 초기 설정
+		{
+			_bezierPointsList.push_back(BezierSetting(bezierObject));
+		}
+		_isBezierStartSetting = true;
+	}
+
+	int bezierPointIndex = 0;
+
+	for (auto& bezierPoint : _bezierPointsList) // 각 점을 통한 베지어 곡선을 구함
+	{
+		DirectX::XMFLOAT3 particlePoint;
+
+		if (_isSettingTimer == false)
+		{
+			_timeCount = ToolBox::GetRandomFloat(0.1f, 0.8f);
+
+			_timeCountList.push_back(_timeCount);
+		}
+
+		particlePoint = Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], endPoint, _timeCountList[bezierPointIndex]);
+		_particlePointList.push_back(particlePoint);
+		bezierPointIndex++;
+	}
+	_isSettingTimer = true;
+
+	for (int i = 0; i < _bezierObjectList.size(); ++i) // 곡선을 따라 이동
+	{
+		_bezierObjectList[i]->GetComponent<Transform>()->SetPosition(_particlePointList[i].x, _particlePointList[i].y, _particlePointList[i].z);
+	}
+
+
+	for (auto& timeCount : _timeCountList) // 타이머
+	{
+		timeCount += TimeManager::GetInstance().GetDeltaTime() / 2;
+	}
+
+	int timeCountIndex = 0;
+
+	for (auto& timeCount : _timeCountList)
+	{
+		if (timeCount > 1.0f)
+		{
+			_bezierPointsList.erase(_bezierPointsList.begin() + timeCountIndex);
+			timeCount = 0.0f;
+
+			_bezierObjectList[timeCountIndex]->GetComponent<Transform>()->SetPosition(endPoint.x + ToolBox::GetRandomFloat(-250.0f, 250.0f),
+				endPoint.y + ToolBox::GetRandomFloat(-100.0f, 100.0f), endPoint.z + ToolBox::GetRandomFloat(-20.0f, 20.0f));
+
+			_bezierPointsList.insert(_bezierPointsList.begin() + timeCountIndex, BezierSetting(_bezierObjectList[timeCountIndex]));
+		}
+		++timeCountIndex;
+	}
+
+	_particlePointList.clear();
 }
 
 void KunrealEngine::EngineCore::MoveToMain()
@@ -2628,4 +2692,20 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	//titleBoss->AddComponent<Light>();
 	//titleBoss->GetComponent<Light>()->CreatePointLight(bambient, bdiffuse,bspecular, 500, 64.f);
 	//titleBoss->GetComponent<Light>()->SetOffSet(0.0f, 60.f, 0.0f);
+
+	for (int i = 0; i < 10; ++i)
+	{
+		GameObject* particleBezierTest;
+		particleBezierTest = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
+		particleBezierTest->GetComponent<Transform>()->SetPosition(-152.121f + ToolBox::GetRandomFloat(-250.0f, 250.0f), 182.672f + ToolBox::GetRandomFloat(-200.0f, 200.0f), 180 );
+		particleBezierTest->AddComponent<Particle>();
+		particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+		particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+		particleBezierTest->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+		particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 0.0f);
+		particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+		_bezierObjectList.push_back(particleBezierTest);
+	}
 }

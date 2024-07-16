@@ -93,7 +93,6 @@ namespace KunrealEngine
 		float _timeCountPlayerR;
 		bool _isSettingTimer;
 		bool _isBezierStartSetting;
-		bool _isBezierBoomSetting;
 		bool _isBezierTeleportSetting;
 			// 여기까지
 	private:
@@ -103,10 +102,13 @@ namespace KunrealEngine
 		/// 임시용 이미지 컴포넌트
 		GInterface::GraphicsImage* cursorimage;
 
+		std::vector<GameObject*> _mapParticleList;
+
 		void UpdateParticleTest();
 
-	void MapParticleSetting();
-	void MoveToMain();
+		void MapParticleSetting();
+		void TitleMapParticle();
+		void MoveToMain();
 
 	private:
 		// 인게임 마우스 포지션
