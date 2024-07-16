@@ -114,6 +114,8 @@ namespace ArkEngine
 
 			ID3DX11EffectShaderResourceVariable* _decalTexture;
 
+			ID3DX11EffectShaderResourceVariable* _decalPositionTexture;
+
 			// point light¿ë Ãß°¡
 			ID3DX11EffectScalarVariable* _pointAttenuationFX;
 		private:

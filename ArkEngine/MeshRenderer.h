@@ -116,9 +116,13 @@ namespace ArkEngine
 		ID3DX11EffectScalarVariable* _fxCartoon;
 
 		ID3DX11EffectScalarVariable* _fxAlpha;
+
+		ID3DX11EffectScalarVariable* _fxApplayDecal;
 		std::vector<float> _alphaList;
 
 		bool _isTransparentExist;
+
+		bool _isApplyingDecal;
 
 	private:
 		// 기초 세팅 가져오기

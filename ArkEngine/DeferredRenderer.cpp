@@ -30,7 +30,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr), 
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -55,7 +55,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr),
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -201,6 +201,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 
 		auto test = ResourceManager::GetInstance()->GetTransParentMeshList()[0]->GetTexture();
 		_decalTexture->SetResource(test);
+
+		_decalPositionTexture->SetResource(_deferredBuffer->GetSRV(static_cast<int>(eBUFFERTYPE::GBUFFER_DECALPOS)));
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
@@ -259,6 +261,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
 	
+	_decalPositionTexture = nullptr;
 	_decalTexture = nullptr;
 	_shadowDepthMap = nullptr;
 	_additionalMap = nullptr;
@@ -334,6 +337,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_additionalMap = effect->GetVariableByName("AdditionalTexture")->AsShaderResource();
 	_shadowDepthMap = effect->GetVariableByName("gShadowDepthMapTexture")->AsShaderResource();
 	_decalTexture = effect->GetVariableByName("gDecalTexture")->AsShaderResource();
+	_decalPositionTexture = effect->GetVariableByName("gDecalPositionTexture")->AsShaderResource();
+
 
 	_pointAttenuationFX = effect->GetVariableByName("gAttenuation")->AsScalar();
 

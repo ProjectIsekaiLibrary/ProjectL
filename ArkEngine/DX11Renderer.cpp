@@ -248,6 +248,10 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 		{
 			testdef = 10;
 		}
+		if (GetAsyncKeyState('V'))
+		{
+			testdef = 20;
+		}
 		if (GetAsyncKeyState('B'))
 		{
 			testdef = 11;
@@ -1070,8 +1074,11 @@ void* ArkEngine::ArkDX11::DX11Renderer::GetRenderingImage()
 	backBuffer->Release();
 	renderingImage->Release();
 
-
-	if (testdef == 9)
+	if (testdef == 20)
+	{
+		return static_cast<void*> (_deferredRenderer->GetDeferredBuffer()->GetSRV(7));
+	}
+	else if (testdef == 9)
 	{
 		return static_cast<void*> (_renderingImageView);
 	}

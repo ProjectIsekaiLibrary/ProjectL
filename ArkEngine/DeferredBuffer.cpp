@@ -198,6 +198,10 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTexture()
 		{
 			textureDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 		}
+		else
+		{
+			textureDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
+		}
 
 		HRESULT result = _arkDevice->GetDevice()->CreateTexture2D(&textureDesc, NULL, &_renderTargetTextureArray[i]);
 	}
@@ -218,6 +222,10 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetView()
 		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COLOR))
 		{
 			renderTagetViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+		else
+		{
+			renderTagetViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
 
 		HRESULT result = _arkDevice->GetDevice()->CreateRenderTargetView(_renderTargetTextureArray[i], &renderTagetViewDesc, &_renderTargetViewArray[i]);
@@ -240,6 +248,10 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateShaderResourceView()
 		if (i == static_cast<int>(eBUFFERTYPE::GBUFFER_COLOR))
 		{
 			shaderResourceViewDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
+		}
+		else
+		{
+			shaderResourceViewDesc.Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 		}
 
 		HRESULT result = _arkDevice->GetDevice()->CreateShaderResourceView(_renderTargetTextureArray[i], &shaderResourceViewDesc, &_shaderResourceViewArray[i]);

@@ -24,13 +24,20 @@ ArkEngine::MeshRenderer::MeshRenderer(IRenderable* mesh)
 	_noiseMapSRV(nullptr), _burnGradationSRV(nullptr),
 	_noiseMapName("Resources/Textures/Dissolve/DissolvePattern.png"),
 	_burnGradationName("Resources/Textures/Dissolve/burngradient.png"),
-	_isDissolve(false), _dissolveValue(1.0f)
+	_isDissolve(false), _dissolveValue(1.0f), _isApplyingDecal(false), _fxApplayDecal(nullptr)
 {
 	Initialize(mesh);
+
+	// 맵만 데칼에 영향받게 하기위해
+	if (mesh->GetName().find("Map") != std::string::npos)
+	{
+		_isApplyingDecal = true;
+	}
 }
 
 ArkEngine::MeshRenderer::~MeshRenderer()
 {
+	_fxApplayDecal->Release();
 	_fxAlpha->Release();
 	_fxCartoon->Release();
 	_fxColor->Release();
@@ -219,6 +226,8 @@ void ArkEngine::MeshRenderer::Render()
 		_fxColor->SetFloatVectorArray(reinterpret_cast<float*>(&_colorList[0]), 0, static_cast<uint32_t>(_colorList.size()));
 
 		_fxAlpha->SetFloatArray(reinterpret_cast<float*>(&_alphaList[0]), 0, static_cast<uint32_t>(_alphaList.size()));
+
+		_fxApplayDecal->SetBool(_isApplyingDecal);
 
 		_tech->GetPassByIndex(0)->Apply(0, deviceContext);
 		deviceContext->DrawIndexedInstanced(nowMesh->indexNum, _renderList.size(), 0, 0, 0);
@@ -604,6 +613,8 @@ void ArkEngine::MeshRenderer::SetEffect(IRenderable* mesh)
 	_fxCartoon = _effect->GetVariableByName("gCartoon")->AsScalar();
 
 	_fxAlpha = _effect->GetVariableByName("gAlpha")->AsScalar();
+
+	_fxApplayDecal = _effect->GetVariableByName("gApplyDecal")->AsScalar();
 
 	_noiseMap = _effect->GetVariableByName("gNoiseTexture")->AsShaderResource();
 	_burnGradation = _effect->GetVariableByName("gBurnTexture")->AsShaderResource();
