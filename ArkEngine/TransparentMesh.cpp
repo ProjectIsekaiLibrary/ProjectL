@@ -86,6 +86,8 @@ void ArkEngine::ArkDX11::TransparentMesh::Render(std::vector<DirectX::XMFLOAT4X4
 
 			worldVec.emplace_back(invWorld);
 			_index = worldVec.size() - 1;
+
+			ResourceManager::GetInstance()->AddDecalMesh(this);
 		}
 
 		DirectX::XMMATRIX view = XMLoadFloat4x4(&_view);
@@ -236,11 +238,6 @@ void ArkEngine::ArkDX11::TransparentMesh::Delete()
 void ArkEngine::ArkDX11::TransparentMesh::SetDecal(bool tf)
 {
 	_isApplyDecal = tf;
-
-	if (tf == true)
-	{
-		ResourceManager::GetInstance()->AddDecalMesh(this);
-	}
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()

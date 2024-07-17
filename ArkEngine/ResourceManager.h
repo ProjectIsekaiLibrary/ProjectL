@@ -244,6 +244,7 @@ namespace ArkEngine
 
 		const std::vector<ArkEngine::ArkDX11::TransparentMesh*>& GetDecalMeshList();
 		void AddDecalMesh(ArkEngine::ArkDX11::TransparentMesh* mesh);
+		void ClearDecalMeshVec();
 
 		void SortTransParentMesh();
 
