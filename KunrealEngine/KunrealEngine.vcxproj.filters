@@ -339,6 +339,9 @@
     <ClInclude Include="MeteorRange.h">
       <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityHelper</Filter>
     </ClInclude>
+    <ClInclude Include="MainMapParticlePackage.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">

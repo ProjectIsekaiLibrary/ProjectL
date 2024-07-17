@@ -106,7 +106,6 @@ namespace KunrealEngine
 
 		void UpdateParticleTest();
 
-		void MapParticleSetting();
 		void TitleMapParticle();
 		void MoveToMain();
 
