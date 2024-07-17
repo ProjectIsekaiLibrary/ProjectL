@@ -2029,10 +2029,15 @@ void KunrealEngine::EngineCore::MoveToMain()
 		{
 			// 시작 할때 포탈로 넘어가는 소리
 			auto soundManager = sceneInstance.GetCurrentScene()->GetGameObject("SoundManager");
-			auto soundComp = soundManager->AddComponent<SoundPlayer>();
+			auto soundComp = soundManager->GetComponent<SoundPlayer>();
 			int soundindex = soundComp->CreateSoundInfo("Resources/Sound/intro.mp3", false, false);
 			soundComp->CreateSound(soundindex, 1);
 			soundComp->Play(soundindex);
+
+			int titlebgmindex = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
+			int titlerainindex = soundComp->FindIndex("Resources/Sound/BridgeRaining.wav");
+			soundComp->Stop(titlebgmindex);
+			soundComp->Stop(titlerainindex);
 
 			// 원래 씬 교체하는 부분
 			sceneInstance.ChangeScene("Main");
@@ -2125,9 +2130,12 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	auto soundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
 	auto soundComp = soundManager->AddComponent<SoundPlayer>();
 
-	int soundindex = soundComp->CreateSoundInfo("Resources/Sound/TitleMap.mp3");
-	soundComp->CreateSound(soundindex, 1);
-	soundComp->Play(soundindex);
+	int titlebgm1 = soundComp->CreateSoundInfo("Resources/Sound/TitleMap.mp3");
+	int titlebgm2 = soundComp->CreateSoundInfo("Resources/Sound/BridgeRaining.wav");
+	soundComp->CreateSound(titlebgm1, 0);
+	soundComp->CreateSound(titlebgm2, 0);
+	soundComp->Play(titlebgm1);
+	soundComp->Play(titlebgm2);
 
 	GameObject* titleLight = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
 	titleLight->AddComponent<Light>();
