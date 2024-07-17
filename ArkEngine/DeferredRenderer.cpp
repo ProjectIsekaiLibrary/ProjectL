@@ -215,7 +215,17 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 			{
 				textureVec.emplace_back(index->GetTexture());
 
-				timerVec.emplace_back(index->GetTimer() * 0.5f);
+				auto realTimer = index->GetTimer() * 0.5f - 0.8f;
+				if (realTimer > 0)
+				{
+					realTimer *= 5.0f;
+				}
+				else
+				{
+					realTimer = 0.0f;
+				}
+
+				timerVec.emplace_back(realTimer);
 			}
 		}
 		
