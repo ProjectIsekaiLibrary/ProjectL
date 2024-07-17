@@ -22,6 +22,7 @@ cbuffer cbPerFrame
     float gAttenuation[30];
     
     float4x4 gDecalWorldInv[30];
+    float gDecalTimer[30];
 };
 
 // 빛을 받는 객채의 포지션
@@ -397,19 +398,21 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
     // 데칼 박스 내부 좌표를 텍스처 좌표로 변환
             float2 decalUV = (toDecal.xz + 0.5f);
-    
+            
             float3 inDecal = 0.5f - abs(toDecal.xyz);
+            
+            float alpha = saturate(1.0f - gDecalTimer[i]);
     
     // 데칼 박스 내부에 있는지 확인
             if (inDecal.x >= 0 && inDecal.y >= 0 && inDecal.z >= 0)
             {
                 float4 texSample = gDecalTexture[i].Sample(samAnisotropic, decalUV);
-            
+                
                 if (texSample.a > 0.0f)
                 {
-                    toneMappedColor.r = texSample.r * texSample.a;
-                    toneMappedColor.g = texSample.g * texSample.a;
-                    toneMappedColor.b = texSample.b * texSample.a;
+                    toneMappedColor.r = lerp(toneMappedColor.r, texSample.r, texSample.a * alpha);
+                    toneMappedColor.g = lerp(toneMappedColor.g, texSample.g, texSample.a * alpha);
+                    toneMappedColor.b = lerp(toneMappedColor.b, texSample.b, texSample.a * alpha);
                 }
             }
         }
