@@ -135,6 +135,8 @@ namespace ArkEngine
 
 			ID3DX11EffectScalarVariable* _fxDecalNum;
 
+			ID3DX11EffectScalarVariable* _fxDecalTimer;
+
 
 		private:
 			float _backGroundColor[4];

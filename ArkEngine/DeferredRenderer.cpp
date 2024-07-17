@@ -30,7 +30,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr), 
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -55,7 +55,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr),
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -207,15 +207,21 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 
 		ResourceManager::GetInstance()->SortDecalMesh();
 
+		std::vector<float> timerVec;
+
 		for (auto& index : ResourceManager::GetInstance()->GetDecalMeshList())
 		{
 			if (index->GetIndex() >= 0)
 			{
 				textureVec.emplace_back(index->GetTexture());
+
+				timerVec.emplace_back(index->GetTimer() * 0.5f);
 			}
 		}
 		
 		_decalTexture->SetResourceArray(textureVec.data(), 0, textureVec.size());
+
+		_fxDecalTimer->SetFloatArray(timerVec.data(), 0, timerVec.size());
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
@@ -358,6 +364,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_fxDecalWorld = effect->GetVariableByName("gDecalWorldInv")->AsMatrix();
 
 	_fxDecalNum = effect->GetVariableByName("gDecalNum")->AsScalar();
+
+	_fxDecalTimer = effect->GetVariableByName("gDecalTimer")->AsScalar();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()

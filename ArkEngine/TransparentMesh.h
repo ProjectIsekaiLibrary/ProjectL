@@ -71,6 +71,8 @@ namespace ArkEngine
 
 			int GetIndex();
 
+			float GetTimer();
+
 		private:
 			void BuildGeomtryBuffers();
 			void SetEffect();

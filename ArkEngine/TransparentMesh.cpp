@@ -204,6 +204,12 @@ int ArkEngine::ArkDX11::TransparentMesh::GetIndex()
 	return _index;
 }
 
+
+float ArkEngine::ArkDX11::TransparentMesh::GetTimer()
+{
+	return _renderTime;
+}
+
 void ArkEngine::ArkDX11::TransparentMesh::SetTransform(const DirectX::XMFLOAT4X4& matrix)
 {
 	_meshTransform->SetTransformMatrix(matrix);
