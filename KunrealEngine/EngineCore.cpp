@@ -2160,5 +2160,5 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 
 	GameObject* titleUIpack = MakeTitleUIPack();
 
-	titlesceneobjectSetting(_bezierObjectList);
+	TitlesceneobjectSetting(_bezierObjectList);
 }

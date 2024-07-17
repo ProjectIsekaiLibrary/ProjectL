@@ -12,7 +12,7 @@
 namespace KunrealEngine
 {
 
-	static void MapParticleSetting(std::vector<GameObject*>& _mapParticleList)
+	static void MapParticleSetting(std::vector<GameObject*>& mapParticleList)
 	{
 		DirectX::XMFLOAT4 Ambient = { 1.0f, 1.0f, 1.0f, 1.0f };
 		DirectX::XMFLOAT4 Diffuse = { 0.3f, 1.0f, 0.1f, 1.0f };
@@ -31,7 +31,7 @@ namespace KunrealEngine
 		mapParticle1->AddComponent<Light>();
 		mapParticle1->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle1->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle1);
+		mapParticleList.emplace_back(mapParticle1);
 
 		GameObject* mapParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle2");
 		mapParticle2->GetComponent<Transform>()->SetPosition(-38.6, 13.88, -140.8f);
@@ -46,7 +46,7 @@ namespace KunrealEngine
 		mapParticle2->AddComponent<Light>();
 		mapParticle2->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle2->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle2);
+		mapParticleList.emplace_back(mapParticle2);
 
 		GameObject* mapParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle3");
 		mapParticle3->GetComponent<Transform>()->SetPosition(39.18f, 13.88, -140.8f);
@@ -61,7 +61,7 @@ namespace KunrealEngine
 		mapParticle3->AddComponent<Light>();
 		mapParticle3->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle3->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle3);
+		mapParticleList.emplace_back(mapParticle3);
 
 		GameObject* mapParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle4");
 		mapParticle4->GetComponent<Transform>()->SetPosition(115.42, 20.31, -136.35f);
@@ -76,7 +76,7 @@ namespace KunrealEngine
 		mapParticle4->AddComponent<Light>();
 		mapParticle4->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle4->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle4);
+		mapParticleList.emplace_back(mapParticle4);
 
 		GameObject* mapParticle5 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle5");
 		mapParticle5->GetComponent<Transform>()->SetPosition(115.42f, 21.316f, 124.14f);
@@ -91,7 +91,7 @@ namespace KunrealEngine
 		mapParticle5->AddComponent<Light>();
 		mapParticle5->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle5->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle5);
+		mapParticleList.emplace_back(mapParticle5);
 
 		GameObject* mapParticle6 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle6");
 		mapParticle6->GetComponent<Transform>()->SetPosition(28.16f, 47.125f, 138.95f);
@@ -106,7 +106,7 @@ namespace KunrealEngine
 		mapParticle6->AddComponent<Light>();
 		mapParticle6->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle6->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle6);
+		mapParticleList.emplace_back(mapParticle6);
 
 		GameObject* mapParticle7 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle7");
 		mapParticle7->GetComponent<Transform>()->SetPosition(-27.11f, 47.125f, 138.95f);
@@ -121,7 +121,7 @@ namespace KunrealEngine
 		mapParticle7->AddComponent<Light>();
 		mapParticle7->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle7->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle7);
+		mapParticleList.emplace_back(mapParticle7);
 
 		GameObject* mapParticle8 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle8");
 		mapParticle8->GetComponent<Transform>()->SetPosition(-113.37f, 21.316f, 125.89f);
@@ -136,7 +136,7 @@ namespace KunrealEngine
 		mapParticle8->AddComponent<Light>();
 		mapParticle8->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle8->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticle8);
+		mapParticleList.emplace_back(mapParticle8);
 
 		GameObject* mapParticleEye1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye1");
 		mapParticleEye1->GetComponent<Transform>()->SetPosition(122.3f, 28.13f, -5.02f);
@@ -148,7 +148,7 @@ namespace KunrealEngine
 		mapParticleEye1->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye1->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye1);
+		mapParticleList.emplace_back(mapParticleEye1);
 
 		GameObject* mapParticleEye2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye2");
 		mapParticleEye2->GetComponent<Transform>()->SetPosition(64.84f, 52.395f, 215.4f);
@@ -160,7 +160,7 @@ namespace KunrealEngine
 		mapParticleEye2->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye2->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye2);
+		mapParticleList.emplace_back(mapParticleEye2);
 
 		GameObject* mapParticleEye3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye3");
 		mapParticleEye3->GetComponent<Transform>()->SetPosition(42.37f, 29, 144.6f);
@@ -173,7 +173,7 @@ namespace KunrealEngine
 		mapParticleEye3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye3->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
 		mapParticleEye3->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye3);
+		mapParticleList.emplace_back(mapParticleEye3);
 
 		GameObject* mapParticleEye4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye4");
 		mapParticleEye4->GetComponent<Transform>()->SetPosition(37.45f, 29, 144.6f);
@@ -186,7 +186,7 @@ namespace KunrealEngine
 		mapParticleEye4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye4->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
 		mapParticleEye4->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye4);
+		mapParticleList.emplace_back(mapParticleEye4);
 
 		GameObject* mapParticleEye5 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye5");
 		mapParticleEye5->GetComponent<Transform>()->SetPosition(-63.866f, 52.395f, 215.93f);
@@ -198,7 +198,7 @@ namespace KunrealEngine
 		mapParticleEye5->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye5->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye5->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye5);
+		mapParticleList.emplace_back(mapParticleEye5);
 
 		GameObject* mapParticleEye6 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye6");
 		mapParticleEye6->GetComponent<Transform>()->SetPosition(-36.433f, 29, 144.6f);
@@ -211,7 +211,7 @@ namespace KunrealEngine
 		mapParticleEye6->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye6->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
 		mapParticleEye6->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye6);
+		mapParticleList.emplace_back(mapParticleEye6);
 
 		GameObject* mapParticleEye7 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye7");
 		mapParticleEye7->GetComponent<Transform>()->SetPosition(-41.3f, 29, 144.6f);
@@ -224,7 +224,7 @@ namespace KunrealEngine
 		mapParticleEye7->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye7->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
 		mapParticleEye7->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye7);
+		mapParticleList.emplace_back(mapParticleEye7);
 
 		GameObject* mapParticleEye8 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye8");
 		mapParticleEye8->GetComponent<Transform>()->SetPosition(-120.72f, 28.02f, -5.02f);
@@ -236,11 +236,11 @@ namespace KunrealEngine
 		mapParticleEye8->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye8->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye8->_autoAwake = true;
-		_mapParticleList.emplace_back(mapParticleEye8);
+		mapParticleList.emplace_back(mapParticleEye8);
 
 	}
 	
-	void titlesceneobjectSetting(std::vector<GameObject*>& bezierObjectList)
+	void TitlesceneobjectSetting(std::vector<GameObject*>& bezierObjectList)
 	{
 		auto& sceneInstance = SceneManager::GetInstance();
 
