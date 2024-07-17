@@ -19,7 +19,7 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
 	_renderTime(0.0f), _isRenderFinsh(true), _isRenderStart(false),
-	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false)
+	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false), _isInfinite(false)
 {
 	Initialize();
 }
@@ -57,7 +57,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 
 void ArkEngine::ArkDX11::TransparentMesh::Render(std::vector<DirectX::XMFLOAT4X4>& worldVec)
 {
-	if (!_isRenderFinsh && _isRenderStart)
+	if (!_isRenderFinsh && _isRenderStart || _isInfinite)
 	{
 		auto deviceContext = _arkDevice->GetDeviceContext();
 
@@ -240,6 +240,18 @@ void ArkEngine::ArkDX11::TransparentMesh::SetDecal(bool tf)
 	_isApplyDecal = tf;
 }
 
+
+void ArkEngine::ArkDX11::TransparentMesh::SetInfinite(bool tf)
+{
+	_isInfinite = tf;
+}
+
+
+bool ArkEngine::ArkDX11::TransparentMesh::GetInfiniteState()
+{
+	return _isInfinite;
+}
+
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 {
 	ArkBuffer* buffer = nullptr;
@@ -330,6 +342,11 @@ void ArkEngine::ArkDX11::TransparentMesh::SetTexture(const std::string& textureN
 
 bool ArkEngine::ArkDX11::TransparentMesh::RenderWithTimer(float deltaTime, float timer)
 {
+	if (_isInfinite)
+	{
+		return false;
+	}
+
 	if (_isRenderFinsh)
 	{
 		return _isRenderFinsh;

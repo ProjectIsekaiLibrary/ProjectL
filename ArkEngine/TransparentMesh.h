@@ -58,6 +58,10 @@ namespace ArkEngine
 
 			virtual void SetDecal(bool tf) override;
 
+			virtual void SetInfinite(bool tf) override;
+
+			virtual bool GetInfiniteState() override;
+
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);
@@ -135,6 +139,8 @@ namespace ArkEngine
 			int _index;
 
 			bool _isApplyDecal;
+
+			bool _isInfinite;
 		};
 	}
 }

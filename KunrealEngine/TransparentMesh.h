@@ -78,6 +78,11 @@ namespace KunrealEngine
 
 		void SetDecal(bool tf);
 
+		void SetInfinite(bool tf);
+
+		void StopPlayingInfinite();
+		void PlayInfinite();
+
 		// 트랜스폼 강제 업데이트
 		void TransformForceUpdate();
 

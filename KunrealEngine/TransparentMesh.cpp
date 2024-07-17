@@ -170,6 +170,22 @@ void KunrealEngine::TransparentMesh::SetDecal(bool tf)
 	this->_tMesh->SetDecal(tf);
 }
 
+void KunrealEngine::TransparentMesh::SetInfinite(bool tf)
+{
+	this->_tMesh->SetInfinite(tf);
+}
+
+void KunrealEngine::TransparentMesh::StopPlayingInfinite()
+{
+	this->_tMesh->SetInfinite(false);
+}
+
+
+void KunrealEngine::TransparentMesh::PlayInfinite()
+{
+	this->_tMesh->SetInfinite(true);
+}
+
 void KunrealEngine::TransparentMesh::TransformForceUpdate()
 {
 	this->_tMesh->SetTransform(_transform->GetWorldTM());

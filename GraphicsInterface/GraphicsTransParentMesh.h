@@ -44,5 +44,9 @@ namespace GInterface
 		virtual void SetStartFlag(bool tf) abstract;
 
 		virtual void SetDecal(bool tf) abstract;
-	};
+
+		virtual void SetInfinite(bool tf) abstract;
+
+		virtual bool GetInfiniteState() abstract;
+	}; 
 }

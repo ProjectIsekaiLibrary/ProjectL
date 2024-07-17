@@ -221,10 +221,8 @@ void KunrealEngine::Kamen::GamePattern()
 	//_basicPattern[1] = _basicPattern[0];
 	//
 	//_basicPattern[2].emplace_back(_swordSwingTwice);
-
-	_basicPattern[0].emplace_back(_holdSword);
-	_basicPattern[2].emplace_back(_swordSwingTwiceHard);
-	_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
+	//_basicPattern[2].emplace_back(_swordSwingHorizontal);
 	//_basicPattern[2].emplace_back(_swordSwingVertical);
 
 	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
@@ -234,7 +232,7 @@ void KunrealEngine::Kamen::GamePattern()
 
 	CoreSwordMutipleAttackPattern();
 
-	//CreateDecalTest();
+	CreateDecalTest();
 }
 
 
@@ -4635,13 +4633,14 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	static GameObject* testDecal = _boss->GetObjectScene()->CreateObject(objectName);
 	testDecal->AddComponent<TransparentMesh>();
 	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/MeteorDecal/Decal.png", 0.6f);
-	testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
+	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 	testDecal->GetComponent<TransparentMesh>()->SetRenderType(7);
 	testDecal->GetComponent<TransparentMesh>()->SetDecal(true);
 	testDecal->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
 	testDecal->GetComponent<Transform>()->SetPosition(_centerPos);
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
+	testDecal->GetComponent<TransparentMesh>()->SetInfinite(true);
 
 	pattern->SetSubObject(testDecal);
 
@@ -4651,6 +4650,8 @@ void KunrealEngine::Kamen::CreateDecalTest()
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
 
 			_largeBlade->GetComponent<Transform>()->SetPosition(_centerPos);
+
+			_timer = 0.0f;
 		};
 	pattern->SetInitializeLogic(initLogic);
 
@@ -4659,12 +4660,36 @@ void KunrealEngine::Kamen::CreateDecalTest()
 			_largeBlade->SetActive(true);
 			_largeBlade->GetComponent<MeshCollider>()->SetActive(true);
 
-			auto isPlayed = testDecal->GetComponent<TransparentMesh>()->PlayOnce();
+			testDecal->GetComponent<TransparentMesh>()->PlayOnce();
 
-			if (isPlayed)
+			_timer += TimeManager::GetInstance().GetDeltaTime();
+
+			static bool a = false;
+
+			if (10.0f >= _timer && _timer >= 5.0f)
 			{
-				return false;
+				testDecal->GetComponent<TransparentMesh>()->StopPlayingInfinite();
+
 			}
+			else if (_timer > 10.0f)
+			{
+				if (a == false)
+				{
+					testDecal->GetComponent<TransparentMesh>()->SetInfinite(false);
+					testDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+					testDecal->GetComponent<TransparentMesh>()->Reset();
+
+					a = true;
+				}
+
+				testDecal->GetComponent<TransparentMesh>()->SetTexture("Resources/Textures/MeteorDecal/MeteorDecal.png");
+			}
+
+
+			//if (isPlayed)
+			//{
+			//	return false;
+			//}
 
 			return true;
 		};
@@ -5452,7 +5477,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 					mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
 				}
 			}
-			if(nowFrame > 94)
+			if (nowFrame > 94)
 			{
 				swordDirPos = mainLight->ResetDirection(swordDirPos, TimeManager::GetInstance().GetDeltaTime(), 2.0f);
 				mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
@@ -5628,7 +5653,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 					pattern->_isColliderActive[index] = true;
 				}
 			}
-			if (nowFrame > 35 )
+			if (nowFrame > 35)
 			{
 				swordDirPos = mainLight->ResetDirection(swordDirPos, TimeManager::GetInstance().GetDeltaTime(), 2.0f);
 				mainLight->SetDirection(swordDirPos.x, -1.0f, swordDirPos.z);
