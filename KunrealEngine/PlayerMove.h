@@ -73,6 +73,10 @@ namespace KunrealEngine
 		bool _isDashStart;
 		bool _isDashEnd;
 
+		// 사운드는 int로 관리
+		int _soundwalk;
+		int _sounddash;
+
 	public:
 		// 플레이어 이동
 		void MoveToTarget(DirectX::XMFLOAT3 targetPos, float speed);
