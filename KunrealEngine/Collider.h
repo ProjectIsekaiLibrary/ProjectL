@@ -23,6 +23,7 @@ namespace KunrealEngine
 
 	protected:
 		bool _isCollided;				// 충돌했는지
+		bool _colliderActivated;		// collider 활성화 정보
 		Transform* _transform;			// collider의 transform 정보
 		GameObject* _ownerObj;			// collider 컴포넌트를 가지고 있는 오브젝트
 		physx::PxShape* _shape;			// physx에서 가지고 있는 collider의 shape

@@ -56,11 +56,6 @@ namespace KunrealEngine
 		bool _isMoving;
 		bool _isDashReady;
 
-		// 이동 때 사용하는 임시 변수들
-		float _tempX;
-		float _tempY;
-		float _tempZ;
-
 		// 대시 파티클
 		std::vector<GameObject*> _playerDashParticleStart;
 		std::vector<GameObject*> _playerDashParticleEnd;

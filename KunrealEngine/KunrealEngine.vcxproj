@@ -215,6 +215,7 @@ xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
     <ClInclude Include="MeshCollider.h" />
     <ClInclude Include="MeshLoaderObj.h" />
     <ClInclude Include="MeshRenderer.h" />
+    <ClInclude Include="MeteorRange.h" />
     <ClInclude Include="Navigation.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>
@@ -272,6 +273,7 @@ xcopy "$(Projectdir)fmoddll" "$(targetdir)" /D /E /C /Q /H /R /Y /K</Command>
     <ClCompile Include="MeshCollider.cpp" />
     <ClCompile Include="MeshLoaderObj.cpp" />
     <ClCompile Include="MeshRenderer.cpp" />
+    <ClCompile Include="MeteorRange.cpp" />
     <ClCompile Include="Navigation.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">false</ExcludedFromBuild>

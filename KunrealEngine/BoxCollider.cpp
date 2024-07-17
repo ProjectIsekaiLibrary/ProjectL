@@ -115,6 +115,7 @@ void KunrealEngine::BoxCollider::SetActive(bool active)
 	this->_debugObject->SetActive(active);
 
 	this->_isActivated = active;
+	this->_colliderActivated = active;
 
 	if (!this->_isActivated)
 	{

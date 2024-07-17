@@ -169,6 +169,9 @@
     <Filter Include="Source Files\Component\Collider\MeshCollider">
       <UniqueIdentifier>{378e85b5-b9e6-4b4f-949a-b38dbe14354e}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Component\Script\Player\PlayerAbility\AbilityHelper">
+      <UniqueIdentifier>{d9a043f0-67eb-41bd-befc-ada1350a8b6c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="framework.h">
@@ -333,6 +336,9 @@
     <ClInclude Include="Dummy.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="MeteorRange.h">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityHelper</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="dllmain.cpp">
@@ -481,6 +487,9 @@
     </ClCompile>
     <ClCompile Include="MeshCollider.cpp">
       <Filter>Source Files\Component\Collider\MeshCollider</Filter>
+    </ClCompile>
+    <ClCompile Include="MeteorRange.cpp">
+      <Filter>Source Files\Component\Script\Player\PlayerAbility\AbilityHelper</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -15,7 +15,7 @@
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
 	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(2.0f),/* _playerDashParticleStart{0}, _playerDashParticleEnd{0},*/
-	_timer(1), _isDashStart(false), _isDashEnd(false)
+	_timer(1), _isDashStart(false), _isDashEnd(false), _SoundComp(nullptr)
 {
 
 }

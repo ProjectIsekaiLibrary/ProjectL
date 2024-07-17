@@ -78,6 +78,9 @@ namespace KunrealEngine
 
 		void SetDecal(bool tf);
 
+		// 트랜스폼 강제 업데이트
+		void TransformForceUpdate();
+
 	private:
 		bool _isRendering;
 		bool _isPlayed;

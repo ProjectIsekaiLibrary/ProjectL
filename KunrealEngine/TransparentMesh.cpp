@@ -169,3 +169,8 @@ void KunrealEngine::TransparentMesh::SetDecal(bool tf)
 {
 	this->_tMesh->SetDecal(tf);
 }
+
+void KunrealEngine::TransparentMesh::TransformForceUpdate()
+{
+	this->_tMesh->SetTransform(_transform->GetWorldTM());
+}

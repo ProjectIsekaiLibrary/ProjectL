@@ -9,13 +9,13 @@
 #include "BoxCollider.h"
 #include "Coroutine.h"
 #include "Particle.h"
+#include "TransparentMesh.h"
 #include "Transform.h"
 #include "TimeManager.h"
 
 namespace KunrealEngine
 {
 	class Boss;
-	class Particle;
 
 	class _DECLSPEC PlayerAbility : public Component
 	{
@@ -43,9 +43,19 @@ namespace KunrealEngine
 		Player* _playerComp;
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
+
 		GameObject* _circle;		// W 스킬 객체
+
 		GameObject* _laser;			// E 스킬 객체
+		GameObject* _laserCrator1;	// E 스킬 그을림 객체
+		GameObject* _laserCrator2;
+		GameObject* _laserCrator3;
+		GameObject* _laserCrator4;
+
 		GameObject* _meteor;		// R 스킬 운석 객체
+		GameObject* _meteorRange;	// R 스킬 범위 표시 객체
+		GameObject* _meteorCrator;	// 운석 떨어진 후 그을림 표현 객체
+		bool _beforeMeteor;			// 운석 스킬 사용 준비
 
 		bool _isShotHit;			// 한 번만 데미지 받도록
 		bool _isCircleHit;
@@ -138,6 +148,7 @@ namespace KunrealEngine
 
 		// R스킬 메테오
 		void ResetMeteorPos();
+		bool CheckMeteorRange();		// R스킬 사용가능 범위인지 체크
 		void CreateAbility4();
 
 		// 1번키 스킬 물약
@@ -234,6 +245,36 @@ namespace KunrealEngine
 		// E스킬 소멸조건
 		_Coroutine(laserDestroy);
 
+		// E스킬 그을림 순차적 실행
+		Coroutine_Func(LaserCratorStart)
+		{
+			auto* ability = this;
+			Waitforsecond(1.0f);
+			ability->_laserCrator1->GetComponent<TransparentMesh>()->SetActive(true);
+			ability->_laserCrator1->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			ability->_laserCrator1->GetComponent<TransparentMesh>()->Reset();
+			ability->_laserCrator1->GetComponent<TransparentMesh>()->PlayOnce();
+
+			Waitforsecond(0.3f);
+			ability->_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
+			ability->_laserCrator2->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			ability->_laserCrator2->GetComponent<TransparentMesh>()->Reset();
+			ability->_laserCrator2->GetComponent<TransparentMesh>()->PlayOnce();
+
+			Waitforsecond(0.3f);
+			ability->_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
+			ability->_laserCrator3->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			ability->_laserCrator3->GetComponent<TransparentMesh>()->Reset();
+			ability->_laserCrator3->GetComponent<TransparentMesh>()->PlayOnce();
+
+			Waitforsecond(0.3f);
+			ability->_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
+			ability->_laserCrator4->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			ability->_laserCrator4->GetComponent<TransparentMesh>()->Reset();
+			ability->_laserCrator4->GetComponent<TransparentMesh>()->PlayOnce();
+
+		};
+
 		//E스킬 취소 시 해당 크기로부터 줄어들도록
 		Coroutine_Func(LaserFadeOut)
 		{
@@ -302,6 +343,19 @@ namespace KunrealEngine
 			ability->_isMeteorReady = false;
 			Waitforsecond(ability->_abilityContainer[3]->_cooldown);
 			ability->_isMeteorReady = true;
+		};
+
+		// R스킬 그을림 지속시간
+		Coroutine_Func(cratorDuration)
+		{
+			auto* ability = this;
+
+			// 그을림 객체 활성화
+			ability->_meteorCrator->GetComponent<TransparentMesh>()->PlayOnce();
+
+			Waitforsecond(5.0f);
+			//ability->_meteorCrator->GetComponent<TransparentMesh>()->SetActive(false);
+			//ability->_meteorCrator->SetActive(false);
 		};
 
 		// 물약 사용 쿨타임

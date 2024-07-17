@@ -581,8 +581,8 @@ void KunrealEngine::PhysicsSystem::onContact(const physx::PxContactPairHeader& p
 	col1 = GetColliderFromDynamic(casted1);
 	col2 = GetColliderFromDynamic(casted2);
 
-	// collider둘의 부모중 하나가 비활성화라면 체크하지 않음
-	if (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated())
+	// collider 자체 혹은 둘의 부모중 하나가 비활성화라면 체크하지 않음
+	if (!col1->GetOwnerObject()->GetActivated() || !col2->GetOwnerObject()->GetActivated() || !col1->_colliderActivated || !col2->_colliderActivated)
 	{
 		return;
 	}
