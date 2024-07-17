@@ -574,6 +574,12 @@ void ArkEngine::ResourceManager::AddDecalMesh(ArkEngine::ArkDX11::TransparentMes
 	}
 }
 
+
+void ArkEngine::ResourceManager::ClearDecalMeshVec()
+{
+	_decalMeshList.clear();
+}
+
 void ArkEngine::ResourceManager::SortTransParentMesh()
 {
 	std::sort(_transParentMeshList.begin(), _transParentMeshList.end(),

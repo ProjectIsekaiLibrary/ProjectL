@@ -20,7 +20,7 @@
 #include "ShadowMap.h"
 
 ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clientHeight)
-	: _tech(nullptr), _fxDirLightCount(nullptr),_fxPointLightCount(nullptr),
+	: _tech(nullptr), _fxDirLightCount(nullptr), _fxPointLightCount(nullptr),
 	_fxDirLights(nullptr), _fxPointLights(nullptr), _fxEyePosW(nullptr), _fxLightView(nullptr), _fxLightProj(nullptr),
 	_positionMap(nullptr), _normalMap(nullptr), _diffuseMap(nullptr), _emissionMap(nullptr),
 	_materialMap(nullptr), _additionalMap(nullptr),
@@ -28,7 +28,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_deferredBuffer(nullptr), _shadowBuffer(nullptr),
 	_eyePosW(), _arkDevice(nullptr), _arkEffect(nullptr), _arkBuffer(nullptr),
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
-	_blurTexture(nullptr), _blurGrayTexture(nullptr), 
+	_blurTexture(nullptr), _blurGrayTexture(nullptr),
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
 	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr)
 {
@@ -71,7 +71,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 
 ArkEngine::ArkDX11::DeferredRenderer::~DeferredRenderer()
 {
-	
+
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
@@ -108,7 +108,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::BeginRender()
 {
 	// Ãß°¡ 
 	_deferredBuffer->SetRenderTargets();
-	
+
 	_deferredBuffer->ClearRenderTargets(_backGroundColor);
 }
 
@@ -205,30 +205,26 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 
 		std::vector<ID3D11ShaderResourceView*> textureVec;
 
-		ResourceManager::GetInstance()->SortDecalMesh();
-
 		std::vector<float> timerVec;
 
 		for (auto& index : ResourceManager::GetInstance()->GetDecalMeshList())
 		{
-			if (index->GetIndex() >= 0)
+			textureVec.emplace_back(index->GetTexture());
+
+			auto realTimer = index->GetTimer() * 0.5f - 0.8f;
+
+			if (realTimer > 0)
 			{
-				textureVec.emplace_back(index->GetTexture());
-
-				auto realTimer = index->GetTimer() * 0.5f - 0.8f;
-				if (realTimer > 0)
-				{
-					realTimer *= 5.0f;
-				}
-				else
-				{
-					realTimer = 0.0f;
-				}
-
-				timerVec.emplace_back(realTimer);
+				realTimer *= 5.0f;
 			}
+			else
+			{
+				realTimer = 0.0f;
+			}
+
+			timerVec.emplace_back(realTimer);
 		}
-		
+
 		_decalTexture->SetResourceArray(textureVec.data(), 0, textureVec.size());
 
 		_fxDecalTimer->SetFloatArray(timerVec.data(), 0, timerVec.size());
@@ -251,7 +247,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
 {
 	SetBloomEffect();
-	
+
 	auto deviceContext = _arkDevice->GetDeviceContext();
 
 	deviceContext->IASetInputLayout(_arkEffect->GetInputLayOut());
@@ -263,7 +259,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForBloom(int index)
 	{
 		_finalTexture->SetResource(_deferredBuffer->GetSRVForFinal(0));
 	}
-	
+
 	if (index > 0)
 	{
 		_finalTexture->SetResource(_deferredBuffer->GetSRVForBloom(index - 1));
@@ -289,7 +285,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Finalize()
 	_arkBuffer = nullptr;
 	_arkEffect = nullptr;
 	_arkDevice = nullptr;
-	
+
 	_decalPositionTexture = nullptr;
 	_decalTexture = nullptr;
 	_shadowDepthMap = nullptr;
@@ -352,7 +348,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 
 	_fxPointLights = effect->GetVariableByName("gPointLights");
 	_fxPointLightCount = effect->GetVariableByName("gPointLightCount")->AsScalar();
-	
+
 	_fxEyePosW = effect->GetVariableByName("gEyePosW")->AsVector();
 
 	_fxLightView = effect->GetVariableByName("gLightView")->AsMatrix();
@@ -440,7 +436,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetPointLight()
 		{
 			uint32_t dataSize32 = static_cast<uint32_t>(dataSize);
 
- 			_fxPointLights->SetRawValue(pointLightList.data(), 0, dataSize32);
+			_fxPointLights->SetRawValue(pointLightList.data(), 0, dataSize32);
 		}
 
 		size_t size = pointLightList.size();
