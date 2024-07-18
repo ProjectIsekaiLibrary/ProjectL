@@ -15,6 +15,9 @@ namespace GInterface
 		// 파티클 방출 멈춤
 		virtual void Stop() abstract;
 
+		// 파티클이 실행중인지 여부 반환
+		virtual bool GetParticleState() abstract;
+
 	public:
 		// 파티클의 위치 설정
 		virtual void SetEmitPos(const DirectX::XMFLOAT3& emitPos) abstract;

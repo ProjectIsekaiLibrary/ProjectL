@@ -8,6 +8,7 @@
 #include "Camera.h"
 #include "MeshCollider.h"
 #include "ToolBox.h"
+#include "Navigation.h"
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
@@ -1008,4 +1009,40 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetEgoAttackDirection(Game
 	auto colliderDirVec = ToolBox::GetDirectionVec(egoPos, colliderPos);
 
 	return colliderDirVec;
+}
+
+void KunrealEngine::EventManager::MoveToTitleAfterDeath()
+{
+	// 카메라 고정 해제
+	this->_iscamfollow = false;
+
+	// 플레이어 위치 초기화
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
+
+	// 타이틀 UI 위치 초기화
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.0f, 20.0f);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("button_Start")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 400.0f);
+
+	SceneManager::GetInstance().ChangeScene("Title");
+
+	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
+
+	SceneManager::GetInstance().GetScene("Main")->DeleteGameObject("Kamen");
+	//SceneManager::GetInstance().GetScene("Main")->DeleteGameObject("Player");
+
+	//SceneManager::GetInstance().GetScene("Main")->CreateObject("Player");
+	//SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->AddComponent<Player>();
+	//SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->_autoAwake = true;
+
+	SceneManager::GetInstance().GetScene("Main")->CreateObject("Kamen");
+	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Kamen")->AddComponent<Kamen>();
+	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Kamen")->_autoAwake = true;
+
+
+	Navigation::GetInstance().HandleBuild(0, "bridge_mapmesh.obj");
+
+	SetCamera("TitleCamera");
 }

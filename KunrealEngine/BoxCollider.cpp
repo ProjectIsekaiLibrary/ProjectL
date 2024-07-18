@@ -30,6 +30,7 @@ void KunrealEngine::BoxCollider::Initialize()
 void KunrealEngine::BoxCollider::Release()
 {
 	_debugObject->Delete();
+	PhysicsSystem::GetInstance().ReleasePhysxObject(this);
 }
 
 void KunrealEngine::BoxCollider::FixedUpdate()

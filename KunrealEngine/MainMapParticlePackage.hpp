@@ -250,6 +250,7 @@ namespace KunrealEngine
 
 		// 부유물 1
 		titleRock1 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock1");
+		titleRock1->_autoAwake = true;
 		titleRock1->AddComponent<MeshRenderer>();
 		titleRock1->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight1/FloatingLight1");
 		titleRock1->GetComponent<Transform>()->SetPosition(-96.0f, 95.f, -30.f);
@@ -269,13 +270,16 @@ namespace KunrealEngine
 
 		// 부유물 2
 		titleRock2 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock2");
+		titleRock2->_autoAwake = true;
 		titleRock2->AddComponent<MeshRenderer>();
 		titleRock2->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight2/FloatingLight2");
 		titleRock2->GetComponent<Transform>()->SetPosition(-230.0f, 100.f, 47.f);
 		titleRock2->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 		titleRock2->AddComponent<Light>();
 		titleRock2->GetComponent<Light>()->CreatePointLight(titleAmbient, titleDiffuse, titleSpecular, 300.f, 32.f);
+
 		GameObject* titleRock2Par = sceneInstance.GetCurrentScene()->CreateObject("TitleRock2Particle");
+		titleRock2Par->_autoAwake = true;
 		titleRock2Par->AddComponent<Particle>();
 		titleRock2Par->GetComponent<Particle>()->SetParticleEffect("FloatingFire2", "Resources/Textures/Particles/flare.dds", 1000);
 		//titleRock2Par->GetComponent<Particle>()->SetParticlePos(-230.0f, 110.f, 47.f);
@@ -289,6 +293,7 @@ namespace KunrealEngine
 
 		// 부유물 3
 		titleRock3 = sceneInstance.GetCurrentScene()->CreateObject("TitleRock3");
+		titleRock3->_autoAwake = true;
 		titleRock3->AddComponent<MeshRenderer>();
 		titleRock3->GetComponent<MeshRenderer>()->SetMeshObject("FloatingLight3/FloatingLight3");
 		titleRock3->GetComponent<Transform>()->SetScale(5.f, 5.f, 5.f);
@@ -308,6 +313,7 @@ namespace KunrealEngine
 
 		// 부유물 4
 		floatingObj = sceneInstance.GetCurrentScene()->CreateObject("FloatingObj");
+		floatingObj->_autoAwake = true;
 		floatingObj->AddComponent<MeshRenderer>();
 		floatingObj->GetComponent<MeshRenderer>()->SetMeshObject("FloatingObj/FloatingObj");
 		floatingObj->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
@@ -315,6 +321,7 @@ namespace KunrealEngine
 		floatingObj->GetComponent<Transform>()->SetRotation(-63.f, 39.f, 17.f);
 
 		GameObject* titlePlayer = sceneInstance.GetCurrentScene()->CreateObject("TitlePlayer");
+		titlePlayer->_autoAwake = true;
 		titlePlayer->AddComponent<Player>();
 		titlePlayer->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
 		titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
@@ -326,6 +333,7 @@ namespace KunrealEngine
 		titlePlayer->GetComponent<Light>()->SetOffSet(0.0f, 15.0f, -5.f);
 
 		GameObject* bossPortal = sceneInstance.GetCurrentScene()->CreateObject("BossPortal");
+		bossPortal->_autoAwake = true;
 		bossPortal->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 220.0f);
 		bossPortal->AddComponent<BoxCollider>();
 		bossPortal->GetComponent<BoxCollider>()->SetColliderScale(30.0f, 70.0f, 30.0f);
@@ -334,6 +342,7 @@ namespace KunrealEngine
 		// 포탈 파티클
 
 		GameObject* particlePortal1 = sceneInstance.GetCurrentScene()->CreateObject("particlePortal1");
+		particlePortal1->_autoAwake = true;
 		particlePortal1->GetComponent<Transform>()->SetPosition(-159, 90, 240);
 		particlePortal1->AddComponent<Particle>();
 		particlePortal1->GetComponent<Particle>()->SetParticleEffect("LightFlash2", "Resources/Textures/Particles/fx_LightFlash2.dds", 1000);
@@ -344,6 +353,7 @@ namespace KunrealEngine
 		particlePortal1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 		GameObject* particlePortal2 = sceneInstance.GetCurrentScene()->CreateObject("particlePortal2");
+		particlePortal2->_autoAwake = true;
 		particlePortal2->GetComponent<Transform>()->SetPosition(-159, 90, 180);
 		particlePortal2->AddComponent<Particle>();
 		particlePortal2->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
@@ -354,6 +364,7 @@ namespace KunrealEngine
 		particlePortal2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 		GameObject* particlePortal3 = sceneInstance.GetCurrentScene()->CreateObject("particlePortal3");
+		particlePortal3->_autoAwake = true;
 		particlePortal3->GetComponent<Transform>()->SetPosition(-159, 90, 180);
 		particlePortal3->AddComponent<Particle>();
 		particlePortal3->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
@@ -364,6 +375,7 @@ namespace KunrealEngine
 		particlePortal3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 		GameObject* particleMoon = sceneInstance.GetCurrentScene()->CreateObject("particleMoon");
+		particleMoon->_autoAwake = true;
 		particleMoon->GetComponent<Transform>()->SetPosition(-152.121f, 182.672f, 180);
 		particleMoon->AddComponent<Particle>();
 		particleMoon->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
@@ -374,6 +386,7 @@ namespace KunrealEngine
 		particleMoon->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 		titleBoss = sceneInstance.GetCurrentScene()->CreateObject("titleBoss");
+		titleBoss->_autoAwake = true;
 		titleBoss->AddComponent<MeshRenderer>();
 		titleBoss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
 		titleBoss->GetComponent<Transform>()->SetScale(42.6f, 30.3f, 30.3f);
@@ -397,6 +410,7 @@ namespace KunrealEngine
 		{
 			GameObject* particleBezierTest;
 			particleBezierTest = sceneInstance.GetCurrentScene()->CreateObject("Particle18");
+			particleBezierTest->_autoAwake = true;
 			particleBezierTest->GetComponent<Transform>()->SetPosition(-152.121f + ToolBox::GetRandomFloat(-150.0f, 150.0f), 182.672f + ToolBox::GetRandomFloat(-100.0f, 100.0f), 180);
 			particleBezierTest->AddComponent<Particle>();
 			particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);

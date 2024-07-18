@@ -4,7 +4,11 @@
 #include "PlayerAbility.h"
 
 KunrealEngine::BattleUIManager::BattleUIManager()
-	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.0f), _isdied(false)
+	:_bosshpsize(83.0f), _playerhpsize(47.5f), _skillcoolsize(1.0f), _isdied(false), _battleuibox(nullptr)
+	, _bosshp_bar(nullptr), _bosshp_bar_downGauge(nullptr), _playerhp_bar(nullptr), _playerhp_bar_downGauge(nullptr)
+	, _potion_cool(nullptr), _dash_cool(nullptr), _ui_skill1_cool(nullptr), _ui_skill2_cool(nullptr)
+	, _ui_skill3_cool(nullptr), _ui_skill4_cool(nullptr), pre_playerhp(0), pre_bosshp(0), _died2(nullptr)
+	, _eventmanager(nullptr), booshp_targetscale(0), playerhp_targetscale(0)
 {
 	_eventmanager = &KunrealEngine::EventManager::GetInstance();
 }
@@ -15,39 +19,39 @@ KunrealEngine::BattleUIManager::~BattleUIManager()
 
 void KunrealEngine::BattleUIManager::Initialize()
 {
-	KunrealEngine::SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
+	SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
 
-	KunrealEngine::GameObject* player_background;			// 전투 UI 배경
-	KunrealEngine::GameObject* player_background1;			// 전투 UI 배경
-	KunrealEngine::GameObject* player_background2;			// 전투 UI 배경
+	GameObject* player_background;		// 전투 UI 배경
+	GameObject* player_background1;		// 전투 UI 배경
+	GameObject* player_background2;		// 전투 UI 배경
 
-	KunrealEngine::GameObject* boss_background;			// 전투 UI 배경
-	KunrealEngine::GameObject* boss_background1;			// 전투 UI 배경
-	KunrealEngine::GameObject* boss_background2;			// 전투 UI 배경
+	GameObject* boss_background;		// 전투 UI 배경
+	GameObject* boss_background1;		// 전투 UI 배경
+	GameObject* boss_background2;		// 전투 UI 배경
 
-	KunrealEngine::GameObject* bosshp_barback;		// 보스 체력바 배경
-	KunrealEngine::GameObject* bosshp_background;	// 플레이어 체력바 배경
-	KunrealEngine::GameObject* bosshp_background1;	// 플레이어 체력바 배경
-	KunrealEngine::GameObject* bosshp_background2;	// 플레이어 체력바 배경
+	GameObject* bosshp_barback;			// 보스 체력바 배경
+	GameObject* bosshp_background;		// 플레이어 체력바 배경
+	GameObject* bosshp_background1;		// 플레이어 체력바 배경
+	GameObject* bosshp_background2;		// 플레이어 체력바 배경
 
-	KunrealEngine::GameObject* playerhp_barback;	// 플레이어 체력바 배경
-	KunrealEngine::GameObject* playerhp_background;	// 플레이어 체력바 배경
-	KunrealEngine::GameObject* playerhp_background1;	// 플레이어 체력바 배경
-	KunrealEngine::GameObject* playerhp_background2;	// 플레이어 체력바 배경
+	GameObject* playerhp_barback;		// 플레이어 체력바 배경
+	GameObject* playerhp_background;	// 플레이어 체력바 배경
+	GameObject* playerhp_background1;	// 플레이어 체력바 배경
+	GameObject* playerhp_background2;	// 플레이어 체력바 배경
 
-	KunrealEngine::GameObject* ui_skill1;		// 1번 스킬
-	KunrealEngine::GameObject* ui_skill1_icon;		// 1번 스킬
-	KunrealEngine::GameObject* ui_skill2;		// 2번 스킬
-	KunrealEngine::GameObject* ui_skill2_icon;		// 1번 스킬
-	KunrealEngine::GameObject* ui_skill3;		// 3번 스킬
-	KunrealEngine::GameObject* ui_skill3_icon;		// 1번 스킬
-	KunrealEngine::GameObject* ui_skill4;		// 4번 스킬
-	KunrealEngine::GameObject* ui_skill4_icon;		// 1번 스킬
+	GameObject* ui_skill1;				// 1번 스킬
+	GameObject* ui_skill1_icon;			// 1번 스킬
+	GameObject* ui_skill2;				// 2번 스킬
+	GameObject* ui_skill2_icon;			// 1번 스킬
+	GameObject* ui_skill3;				// 3번 스킬
+	GameObject* ui_skill3_icon;			// 1번 스킬
+	GameObject* ui_skill4;				// 4번 스킬
+	GameObject* ui_skill4_icon;			// 1번 스킬
 
-	KunrealEngine::GameObject* potion;			// 포션 먹기
-	KunrealEngine::GameObject* potion_icon;			// 포션 먹기
-	KunrealEngine::GameObject* dash;			// 대쉬(회피?)
-	KunrealEngine::GameObject* dash_icon;			// 대쉬(회피?)
+	GameObject* potion;					// 포션 먹기
+	GameObject* potion_icon;			// 포션 먹기
+	GameObject* dash;					// 대쉬(회피?)
+	GameObject* dash_icon;				// 대쉬(회피?)
 
 	_battleuibox = this->GetOwner();
 
@@ -308,6 +312,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 	_potion_cool->SetActive(false);
 
 	_died2->SetActive(false);
+
 }
 
 void KunrealEngine::BattleUIManager::Release()
@@ -471,7 +476,7 @@ void KunrealEngine::BattleUIManager::SetPlayerHpBar()
 	float minhp = 0;
 	float minhpbar = 0;
 
-	playerhp_targetscale = ((currenthp - minhp) / (maxhp - minhp)) * (_bosshpsize - minhpbar) + minhpbar;
+	playerhp_targetscale = ((currenthp - minhp) / (maxhp - minhp)) * (_playerhpsize - minhpbar) + minhpbar;
 	_playerhp_bar->GetComponent<Transform>()->SetScale(playerhp_targetscale, 1.0f, 1.0f);
 	_CoroutineIs(playerdowngauge)
 	{
@@ -793,9 +798,8 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 			loop++;
 		}
 
-		//
-		// 여기에 타이틀 씬으로 돌아가는 코드를 넣을 것
-		//
+		Waitforsecond(3.0f);
+		EventManager::GetInstance().MoveToTitleAfterDeath();
 	};
 	Startcoroutine(diedcoro);
 }

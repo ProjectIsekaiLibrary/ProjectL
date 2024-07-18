@@ -134,7 +134,7 @@ void KunrealEngine::Boss::DebugTest()
 
 void KunrealEngine::Boss::Initialize(GameObject* boss)
 {
-	_player = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player");
+	_player = SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player");
 
 	_boss = boss;
 

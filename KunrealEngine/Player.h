@@ -147,6 +147,9 @@ namespace KunrealEngine
 		// 플레이어 scene 이동
 		void MoveToScene(std::string sceneName);
 
+		// 플레이어 상태, 체력 초기화
+		void ResetPlayerStatus();
+
 		// 플레이어가 스킬 시전중인지 Flag
 		bool _onCasting;
 	};

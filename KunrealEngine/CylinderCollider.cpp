@@ -25,6 +25,7 @@ void KunrealEngine::CylinderCollider::Initialize()
 void KunrealEngine::CylinderCollider::Release()
 {
 	_debugObject->Delete();
+	PhysicsSystem::GetInstance().ReleasePhysxObject(this);
 }
 
 void KunrealEngine::CylinderCollider::FixedUpdate()

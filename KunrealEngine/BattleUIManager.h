@@ -46,27 +46,27 @@ namespace KunrealEngine
 		// (필요하다면 Setparent 해둘거니까 그걸 통해서 접근하면 됨)
 		// 여기 있는 변수들은 모두 오브젝트에 변화가 있을거라고 판단해서 가져다 쓰기 쉽게 꺼내둔 것들
 
-		KunrealEngine::GameObject* _battleuibox;	// 부모가 되어줄 오브젝트(Empty)
+		GameObject* _battleuibox;	// 부모가 되어줄 오브젝트(Empty)
 
-		KunrealEngine::GameObject* _ui_skill1_cool;	// 1번 스킬 쿨다운
-		KunrealEngine::GameObject* _ui_skill2_cool;	// 2번 스킬 쿨다운
-		KunrealEngine::GameObject* _ui_skill3_cool;	// 3번 스킬 쿨다운
-		KunrealEngine::GameObject* _ui_skill4_cool;	// 4번 스킬 쿨다운
+		GameObject* _ui_skill1_cool;	// 1번 스킬 쿨다운
+		GameObject* _ui_skill2_cool;	// 2번 스킬 쿨다운
+		GameObject* _ui_skill3_cool;	// 3번 스킬 쿨다운
+		GameObject* _ui_skill4_cool;	// 4번 스킬 쿨다운
 
-		KunrealEngine::GameObject* _potion_cool;			// 포션 먹기
-		KunrealEngine::GameObject* _dash_cool;			// 대쉬(회피?)
+		GameObject* _potion_cool;			// 포션 먹기
+		GameObject* _dash_cool;			// 대쉬(회피?)
 
-		KunrealEngine::GameObject* _playerhp_bar;		// 플레이어 체력바
-		KunrealEngine::GameObject* _playerhp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
-		KunrealEngine::GameObject* _bosshp_bar;			// 보스 체력바
-		KunrealEngine::GameObject* _bosshp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
+		GameObject* _playerhp_bar;		// 플레이어 체력바
+		GameObject* _playerhp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
+		GameObject* _bosshp_bar;			// 보스 체력바
+		GameObject* _bosshp_bar_downGauge;	// 보스 체력바 체력 감소 연출용
 		float booshp_targetscale;
 		float playerhp_targetscale;
 
 		int pre_playerhp;
 		int pre_bosshp;
 
-		KunrealEngine::GameObject* _died2;
+		GameObject* _died2;
 
 	private:
 		EventManager* _eventmanager;

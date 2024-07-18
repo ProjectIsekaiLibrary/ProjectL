@@ -83,5 +83,9 @@ namespace KunrealEngine
 		const DirectX::XMVECTOR& SetEgoAttackDirection(GameObject* subObject);
 
 		_Coroutine(DashCamMove);
+
+	public:
+		// scene 전환 관련
+		void MoveToTitleAfterDeath();
 	};
 }

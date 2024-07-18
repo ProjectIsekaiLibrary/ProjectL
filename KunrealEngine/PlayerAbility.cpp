@@ -985,6 +985,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	this->_meteorRange = this->GetOwner()->GetObjectScene()->CreateObject("MeteorRange");
 	_meteorRange->AddComponent<MeteorRange>();
 	_meteorRange->SetActive(false);
+	_meteorRange->_autoAwake = true;
 
 	// ³«ÇÏ ÈÄ ±×À»¸² Ç¥Çö °´Ã¼
 	this->_meteorCrator = this->GetOwner()->GetObjectScene()->CreateObject("MeteorCrater");

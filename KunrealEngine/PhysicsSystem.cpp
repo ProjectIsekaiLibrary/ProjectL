@@ -385,6 +385,13 @@ void KunrealEngine::PhysicsSystem::SetActorState(Collider* collider, bool active
 	//collider->_shape->setFlag(physx::PxShapeFlag::eSIMULATION_SHAPE, active);
 }
 
+
+void KunrealEngine::PhysicsSystem::ReleasePhysxObject(Collider* collider)
+{
+	this->_dynamicMap.erase(collider);
+	this->_dynamicMap.at(collider)->release();
+}
+
 void KunrealEngine::PhysicsSystem::TestFunc()
 {
 	physx::PxTransform transform(physx::PxVec3(0.0f, 10.0f, 0.0f));		// À§Ä¡

@@ -78,6 +78,9 @@ namespace KunrealEngine
 		// physx 객체 on off
 		void SetActorState(Collider* collider, bool active);
 
+		// physx 객체 제거
+		void ReleasePhysxObject(Collider* collider);
+
 		// Dynamic actor들 업데이트
 		void UpdateDynamics();
 

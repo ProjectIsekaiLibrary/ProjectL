@@ -78,6 +78,8 @@ namespace ArkEngine
 		virtual void SetParticleCameraApply(bool tf) override;
 		virtual bool GetParticleCameraApply() override;
 
+		virtual bool GetParticleState() override;
+
 		float GetRandomFloat(float minNum, float maxNum);
 		void SetEyePos(const DirectX::XMFLOAT3& eyePosW);
 	private:
@@ -186,6 +188,7 @@ namespace ArkEngine
 
 	private:
 		void SetParticleState(bool isStart);
+
 		bool _isStart;
 
 		bool _isForwardRendering;

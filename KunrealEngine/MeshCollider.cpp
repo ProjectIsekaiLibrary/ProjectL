@@ -28,6 +28,7 @@ void KunrealEngine::MeshCollider::Initialize()
 void KunrealEngine::MeshCollider::Release()
 {
 	_debugObject->Delete();
+	PhysicsSystem::GetInstance().ReleasePhysxObject(this);
 }
 
 void KunrealEngine::MeshCollider::FixedUpdate()

@@ -146,16 +146,18 @@ namespace KunrealEngine
 	static GameObject* MakeTitleUIPack()
 	{
 		KunrealEngine::SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
-		KunrealEngine::GameObject* titleuibox;
-		KunrealEngine::GameObject* title_image;
-		KunrealEngine::GameObject* button_Start;
-		KunrealEngine::GameObject* button_quit;
-		KunrealEngine::GameObject* button_quit_focus;
+		KunrealEngine::GameObject* titleuibox;				// 부모용 빈 오브젝트
+		KunrealEngine::GameObject* title_image;				// 게임 로고
+		KunrealEngine::GameObject* button_Start;			// 게임시작 버튼(화면 전체)
+		KunrealEngine::GameObject* button_quit;				// 게임종료 버튼
+		KunrealEngine::GameObject* button_quit_focus;		// 게임종료 버튼 focus시 객체
 
 		titleuibox = scene.GetCurrentScene()->CreateObject("titleuibox");
+		titleuibox->_autoAwake = true;
 		titleuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 
 		title_image = scene.GetCurrentScene()->CreateObject("Title_Image");
+		title_image->_autoAwake;
 		title_image->AddComponent<ImageRenderer>();
 		title_image->GetComponent<ImageRenderer>()->SetImage("ui/title_logo.png");
 		title_image->GetComponent<ImageRenderer>()->SetPosition(525.f, 20.f);
@@ -166,6 +168,7 @@ namespace KunrealEngine
 		// 게임 시작
 		// 페이드 아웃 된다던가, 위나 아래로 올라가며 사라진다던가 하는 연출은 전달받은게 없으므로 일단은 disable
 		button_Start = scene.GetCurrentScene()->CreateObject("button_Start");
+		button_Start->_autoAwake = true;
 		button_Start->SetParent(titleuibox);
 		button_Start->AddComponent<ImageRenderer>();
 		button_Start->GetComponent<ImageRenderer>()->SetImage("ui/title.png");

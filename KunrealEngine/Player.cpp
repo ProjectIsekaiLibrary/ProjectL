@@ -523,6 +523,17 @@ void KunrealEngine::Player::MoveToScene(std::string sceneName)
 	this->_owner->GetComponent<PlayerAbility>()->_meteor->MoveToScene(sceneName);
 }
 
+
+void KunrealEngine::Player::ResetPlayerStatus()
+{
+	// 스탯 초기화
+	this->_playerInfo._hp = this->_playerInfo._maxhp;
+	this->_playerInfo._spellPower = 1.0f;
+
+	// 상태 초기화
+	this->_playerStatus = Status::IDLE;
+}
+
 void KunrealEngine::Player::AfterHit()
 {
 	if (_playerStatus == Status::PARALYSIS)

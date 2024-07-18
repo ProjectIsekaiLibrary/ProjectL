@@ -831,5 +831,9 @@ void ArkEngine::ParticleSystem::SetParticleState(bool isStart)
 	_isStart = isStart;
 }
 
+bool ArkEngine::ParticleSystem::GetParticleState()
+{
+	return this->_isStart;
+}
 
 
