@@ -21,8 +21,8 @@ cbuffer cbPerFrame
     
     float gAttenuation[30];
     
-    float4x4 gDecalWorldInv[30];
-    float gDecalTimer[30];
+    float4x4 gDecalWorldInv[50];
+    float gDecalTimer[50];
 };
 
 // 빛을 받는 객채의 포지션
@@ -35,7 +35,7 @@ Texture2D AdditionalTexture : register(t5);
 // 깊이 값 전달용(G-Buffer에 저장된 depth 정보를 가져와서 그림자)
 Texture2D gShadowDepthMapTexture;
 
-Texture2D gDecalTexture[30];
+Texture2D gDecalTexture[50];
 Texture2D gDecalPositionTexture;
 
 TextureCube gCubeMap;
@@ -410,9 +410,9 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
                 
                 if (texSample.a > 0.0f)
                 {
-                    toneMappedColor.r = lerp(toneMappedColor.r, texSample.r, texSample.a * alpha);
-                    toneMappedColor.g = lerp(toneMappedColor.g, texSample.g, texSample.a * alpha);
-                    toneMappedColor.b = lerp(toneMappedColor.b, texSample.b, texSample.a * alpha);
+                    toneMappedColor.r = lerp(toneMappedColor.r, texSample.r, texSample.a * alpha * 0.8f);
+                    toneMappedColor.g = lerp(toneMappedColor.g, texSample.g, texSample.a * alpha * 0.8f);
+                    toneMappedColor.b = lerp(toneMappedColor.b, texSample.b, texSample.a * alpha * 0.8f);
                 }
             }
         }

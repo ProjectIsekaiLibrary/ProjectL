@@ -108,6 +108,8 @@ PSOut PSBasic(VertexOut pin)
     
     output.Diffuse.a = alpha * gTransParency;
     
+    output.Diffuse.a = 1.0f;
+    
     return output;
 }
 
