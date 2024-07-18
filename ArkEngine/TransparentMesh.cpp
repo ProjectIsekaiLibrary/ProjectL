@@ -342,6 +342,8 @@ void ArkEngine::ArkDX11::TransparentMesh::SetTexture(const std::string& textureN
 
 bool ArkEngine::ArkDX11::TransparentMesh::RenderWithTimer(float deltaTime, float timer)
 {
+	_timer += deltaTime;
+
 	if (_isInfinite)
 	{
 		return false;
@@ -359,9 +361,7 @@ bool ArkEngine::ArkDX11::TransparentMesh::RenderWithTimer(float deltaTime, float
 		return _isRenderFinsh;
 	}
 
-	_timer += deltaTime;
-
-	_renderTime = (_timer / timer) * 2;
+ 	_renderTime = (_timer / timer) * 2;
 
 	return _isRenderFinsh;
 }

@@ -211,16 +211,29 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 		{
 			textureVec.emplace_back(index->GetTexture());
 
-			auto realTimer = index->GetTimer() * 0.5f - 0.8f;
+			float realTimer = 0.0f;
 
-			if (realTimer > 0)
+			auto decalTimer = index->GetTransParency();
+
+			if (index->GetTransParency() <= 0.5f)
 			{
-				realTimer *= 5.0f;
+				realTimer = 1 - decalTimer * 2.0f;
 			}
+
 			else
 			{
-				realTimer = 0.0f;
+				realTimer = index->GetTimer() * 0.5f - 0.8f;
+
+				if (realTimer > 0)
+				{
+					realTimer *= 5.0f;
+				}
+				else
+				{
+					realTimer = 0.0f;
+				}
 			}
+
 
 			timerVec.emplace_back(realTimer);
 		}
