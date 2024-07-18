@@ -19,7 +19,7 @@ ArkEngine::ArkDX11::TransparentMesh::TransparentMesh(const std::string& objectNa
 	_fxTransParency(nullptr), _isCircle(isCircle),
 	_timer(0.0f), _renderType(0),
 	_renderTime(0.0f), _isRenderFinsh(true), _isRenderStart(false),
-	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false), _isInfinite(false)
+	_fxDonutCenter(nullptr), _fxDonutRange(nullptr), _donutCenter(), _donutRange(0.0f), _index(-1), _isApplyDecal(false), _isInfinite(false), _isApplyPattern(false)
 {
 	Initialize();
 }
@@ -250,6 +250,18 @@ void ArkEngine::ArkDX11::TransparentMesh::SetInfinite(bool tf)
 bool ArkEngine::ArkDX11::TransparentMesh::GetInfiniteState()
 {
 	return _isInfinite;
+}
+
+
+void ArkEngine::ArkDX11::TransparentMesh::ApplyPattern(bool tf)
+{
+	_isApplyPattern = tf;
+}
+
+
+bool ArkEngine::ArkDX11::TransparentMesh::GetIsApplyPattern()
+{
+	return _isApplyPattern;
 }
 
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()

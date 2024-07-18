@@ -32,7 +32,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr)
 {
 	BossBasicInfo info;
 
@@ -204,7 +204,9 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateBattleCry();
 	CreateKamenHoldSword();
 
+	CreateSwordMeteorAppear();
 	CreateRentalFraud();
+	CreateSwordMeteorAttack();
 
 	// 코어
 	CreateSwordMultipleAttack();
@@ -237,7 +239,7 @@ void KunrealEngine::Kamen::GamePattern()
 	CoreSwordMutipleAttackPattern();
 	CoreSwordMeteorPattern();
 
-	_basicPattern[0].emplace_back(_rentalFraud);
+	_basicPattern[1].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
 }
 
 
@@ -2206,15 +2208,27 @@ void KunrealEngine::Kamen::CreateSubObject()
 		std::string objectName = "RentalArea" + std::to_string(i + 1);
 		auto area = _boss->GetObjectScene()->CreateObject(objectName);
 		area->AddComponent<TransparentMesh>();
-		area->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+		area->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/cube.png", 0.6f);
 		area->GetComponent<TransparentMesh>()->SetDecal(true);
 		area->GetComponent<TransparentMesh>()->SetRenderType(0);
 		area->GetComponent<Transform>()->SetScale(50.0f, 100.0f, 50.0f);
 		area->GetComponent<TransparentMesh>()->SetTimer(50000.0f);
 		area->GetComponent<TransparentMesh>()->SetInfinite(true);
+		area->GetComponent<TransparentMesh>()->SetApplyPattern(true);
 		area->SetTotalComponentState(false);
 		area->SetActive(false);
 		_rentalArea.emplace_back(area);
+	}
+
+	for (int i = 0; i < 2; i++)
+	{
+		std::string objectName = "RentalCollider" + std::to_string(i + 1);
+
+		auto areaCollider = _boss->GetObjectScene()->CreateObject(objectName);
+
+		areaCollider->AddComponent<BoxCollider>();
+
+		_rentalCollider.emplace_back(areaCollider);
 	}
 }
 
@@ -4589,7 +4603,10 @@ void KunrealEngine::Kamen::CreateBattleCry()
 
 	auto initLogic = [pattern, this]()
 		{
-			StopSpecialPattern();
+			if (_info._phase == 2)
+			{
+				StopSpecialPattern();
+			}
 
 			_info._armor = 100.0f;
 
@@ -4653,12 +4670,12 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	std::string objectName = "testDecal";
 	static GameObject* testDecal = _boss->GetObjectScene()->CreateObject(objectName);
 	testDecal->AddComponent<TransparentMesh>();
-	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/MeteorDecal/Decal.png", 0.6f);
+	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
 	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 	testDecal->GetComponent<TransparentMesh>()->SetRenderType(7);
 	testDecal->GetComponent<TransparentMesh>()->SetDecal(true);
-	testDecal->GetComponent<Transform>()->SetScale(100.0f, 100.0f, 100.0f);
-	testDecal->GetComponent<Transform>()->SetPosition(_centerPos);
+	testDecal->GetComponent<Transform>()->SetScale(200.0f, 100.0f, 230.0f);
+	testDecal->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(0.0f, 2.0f, -5.6f));
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
 	testDecal->GetComponent<TransparentMesh>()->SetInfinite(true);
@@ -4670,41 +4687,15 @@ void KunrealEngine::Kamen::CreateDecalTest()
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
 
-			_largeBlade->GetComponent<Transform>()->SetPosition(_centerPos);
-
 			_timer = 0.0f;
 		};
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attakLogic = [pattern, this]()
 		{
-			_largeBlade->SetActive(true);
-			_largeBlade->GetComponent<MeshCollider>()->SetActive(true);
-
 			testDecal->GetComponent<TransparentMesh>()->PlayOnce();
 
 			_timer += TimeManager::GetInstance().GetDeltaTime();
-
-			static bool a = false;
-
-			if (10.0f >= _timer && _timer >= 5.0f)
-			{
-				testDecal->GetComponent<TransparentMesh>()->StopPlayingInfinite();
-
-			}
-			else if (_timer > 10.0f)
-			{
-				if (a == false)
-				{
-					testDecal->GetComponent<TransparentMesh>()->SetInfinite(false);
-					testDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
-					testDecal->GetComponent<TransparentMesh>()->Reset();
-
-					a = true;
-				}
-
-				testDecal->GetComponent<TransparentMesh>()->SetTexture("Resources/Textures/MeteorDecal/MeteorDecal.png");
-			}
 
 
 			//if (isPlayed)
@@ -4720,6 +4711,28 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	_basicPattern[0].emplace_back(pattern);
 }
 
+void KunrealEngine::Kamen::CreateSwordMeteorAppear()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordMeteorAppear");
+
+	auto initLogic = [pattern, this]()
+		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+		};
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+		{
+			return false;
+		};
+	pattern->SetLogic(attackLogic);
+
+	_swordMeteorAppear = pattern;
+}
+
 void KunrealEngine::Kamen::CreateRentalFraud()
 {
 	BossPattern* pattern = new BossPattern();
@@ -4733,6 +4746,8 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 
 	auto initLogic = [pattern, this]()
 		{
+			_rentalSuccess = false;
+
 			auto num = 0;
 
 			std::vector<int> randomNumbers;
@@ -4827,6 +4842,11 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 				_rentalArea[19+20*i]->GetComponent<Transform>()->SetPosition(82, 10.0, 2 - 118 * i);
 				_rentalArea[19+20*i]->GetComponent<Transform>()->SetScale(38, 100, 18);
 			}
+
+			for (auto& index : _rentalCollider)
+			{
+				pattern->SetSubObject(index);
+			}
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -4850,6 +4870,20 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 				_rentalArea[_rentalNumVec[i]]->GetComponent<TransparentMesh>()->PlayOnce();
 			}
 
+			if (_timer2 >= 2.1f)
+			{
+				for (auto& index : _rentalCollider)
+				{
+					auto collider = index->GetComponent<BoxCollider>();
+					if (collider->IsCollided() && collider->GetTargetObject() == _player)
+					{
+						_rentalSuccess = true;
+					}
+				}
+
+				return false;
+			}
+
 			if (_timer2 >= 2.0f)
 			{
 				for (int i = 0; i < intTimer; i++)
@@ -4857,9 +4891,28 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 					_rentalArea[_rentalNumVec[i]]->GetComponent<TransparentMesh>()->StopPlayingInfinite();
 				}
 
-				if (_timer2 >= 2.0f)
+				auto colliderIndex = 38;
+
+				for (auto& index : _rentalCollider)
 				{
-					return false;
+					auto transform = _rentalArea[_rentalNumVec[colliderIndex]]->GetComponent<Transform>();
+					
+					auto pos = transform->GetPosition();
+
+					auto scl = transform->GetScale();
+
+					pos.y = _playerTransform->GetPosition().y;
+
+					scl.x -= 7.0f;
+					scl.x = 10.0f;
+					scl.z -= 7.0f;
+
+					index->GetComponent<Transform>()->SetPosition(pos);
+					index->GetComponent<BoxCollider>()->SetColliderScale(scl);
+
+					colliderIndex++;
+
+					index->GetComponent<BoxCollider>()->SetActive(true);
 				}
 			}
 
@@ -4869,6 +4922,44 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 	pattern->SetLogic(attackLogic);
 
 	_rentalFraud = pattern;
+}
+
+void KunrealEngine::Kamen::CreateSwordMeteorAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("SwordMeteorAttack");
+
+	auto initLogic = [pattern, this]()
+		{
+
+		};
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+		{
+			// 종료 로직
+			{
+				if (_rentalSuccess)
+				{
+
+				}
+				else
+				{
+
+				}
+
+				ChangePhase(2);
+
+				_boss->GetComponent<MeshRenderer>()->SetActive(true);
+				_boss->GetComponent<BoxCollider>()->SetActive(true);
+				return false;
+			}
+		};
+
+	pattern->SetLogic(attackLogic);
+
+	_swordMeteorAttack = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordMultipleAttack()
@@ -6554,5 +6645,13 @@ void KunrealEngine::Kamen::CoreSwordMeteorPattern()
 
 	coreSwordMeteor->SetPattern(_battleCry);
 
+	coreSwordMeteor->SetPattern(_swordMeteorAppear);
+
+	coreSwordMeteor->SetPattern(_rentalFraud);
+
+	coreSwordMeteor->SetPattern(_swordMeteorAttack);
+
 	_corePattern.emplace_back(coreSwordMeteor);
+
+	_basicPattern[0].emplace_back(coreSwordMeteor);
 }

@@ -62,6 +62,10 @@ namespace ArkEngine
 
 			virtual bool GetInfiniteState() override;
 
+			virtual void ApplyPattern(bool tf) override;
+
+			virtual bool GetIsApplyPattern() override;
+
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);
@@ -141,6 +145,8 @@ namespace ArkEngine
 			bool _isApplyDecal;
 
 			bool _isInfinite;
+
+			bool _isApplyPattern;
 		};
 	}
 }

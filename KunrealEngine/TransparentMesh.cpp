@@ -175,13 +175,24 @@ void KunrealEngine::TransparentMesh::SetInfinite(bool tf)
 	this->_tMesh->SetInfinite(tf);
 }
 
+
+void KunrealEngine::TransparentMesh::SetApplyPattern(bool tf)
+{
+	this->_tMesh->ApplyPattern(tf);
+}
+
+
+bool KunrealEngine::TransparentMesh::GetIsApplyPattern()
+{
+	return this->_tMesh->GetIsApplyPattern();
+}
+
 void KunrealEngine::TransparentMesh::StopPlayingInfinite()
 {
 	this->_tMesh->SetInfinite(false);
 
 	this->_tMesh->Reset();
 }
-
 
 void KunrealEngine::TransparentMesh::PlayInfinite()
 {

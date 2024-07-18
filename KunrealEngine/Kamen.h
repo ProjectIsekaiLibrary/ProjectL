@@ -116,7 +116,9 @@ namespace KunrealEngine
 
 		// 1->2 페이즈 핵심 패턴
 	private:
+		void CreateSwordMeteorAppear();
 		void CreateRentalFraud();
+		void CreateSwordMeteorAttack();
 
 		//검 핵심 패턴
 	private:
@@ -223,7 +225,9 @@ namespace KunrealEngine
 		BossPattern* _battleCry;
 		BossPattern* _holdSword;
 
+		BossPattern* _swordMeteorAppear;
 		BossPattern* _rentalFraud;
+		BossPattern* _swordMeteorAttack;
 
 	private:
 		// 패턴에 필요한 subObject들
@@ -286,6 +290,8 @@ namespace KunrealEngine
 		std::vector<GameObject*> _multipleSwordWarningVec;
 
 		std::vector<GameObject*> _rentalArea;
+
+		std::vector<GameObject*> _rentalCollider;
 
 	private:
 		// Call 거리 체크용
@@ -373,6 +379,9 @@ namespace KunrealEngine
 		bool _isEgoAttackReady;
 		bool _isEgoAttack;
 		float _egoTimer;
+
+	private:
+		bool _rentalSuccess;
 		
 		// 1페이즈 핵심 패턴
 	private:

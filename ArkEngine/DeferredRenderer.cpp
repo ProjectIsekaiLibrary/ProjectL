@@ -30,7 +30,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(clientWidth), _shadowHeight(clientHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr),
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr), _fxApplyPattern(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -55,7 +55,7 @@ ArkEngine::ArkDX11::DeferredRenderer::DeferredRenderer(int clientWidth, int clie
 	_shadowWidth(shadowWidth), _shadowHeight(shadowHeight), _finalTexture(nullptr),
 	_blurTexture(nullptr), _blurGrayTexture(nullptr),
 	_pointAttenuationFX(nullptr), _pointAttenuation(16.0f), _fxDecalWorld(nullptr),
-	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr)
+	_decalTexture(nullptr), _decalPositionTexture(nullptr), _fxDecalNum(nullptr), _fxDecalTimer(nullptr), _fxApplyPattern(nullptr)
 {
 	for (int i = 0; i < 4; i++)
 	{
@@ -78,6 +78,18 @@ void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
 {
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 	BuildQuadBuffers();
+
+	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>("Resources/Textures/Warning/shapeTest128.dds");
+
+	if (texture != nullptr)
+	{
+		_patternTextureSRV = texture->GetDiffuseMapSRV();
+	}
+	else
+	{
+		ArkTexture* newTexture = new ArkTexture("Resources/Textures/Warning/shapeTest128.dds");
+		_patternTextureSRV = newTexture->GetDiffuseMapSRV();
+	}
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BeginRenderShadowDepth()
@@ -207,7 +219,11 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 
 		std::vector<float> timerVec;
 
-		for (auto& index : ResourceManager::GetInstance()->GetDecalMeshList())
+		std::vector<int> applyPatternVec;
+
+		auto& decalList = ResourceManager::GetInstance()->GetDecalMeshList();
+		
+		for (auto& index : decalList)
 		{
 			textureVec.emplace_back(index->GetTexture());
 
@@ -234,13 +250,18 @@ void ArkEngine::ArkDX11::DeferredRenderer::RenderForFinalTexture(std::vector<Dir
 				}
 			}
 
-
 			timerVec.emplace_back(realTimer);
+
+			applyPatternVec.emplace_back(index->GetIsApplyPattern());
 		}
 
 		_decalTexture->SetResourceArray(textureVec.data(), 0, textureVec.size());
 
+		_patternTexture->SetResource(_patternTextureSRV);
+
 		_fxDecalTimer->SetFloatArray(timerVec.data(), 0, timerVec.size());
+
+		_fxApplyPattern->SetIntArray(applyPatternVec.data(), 0, applyPatternVec.size());
 	}
 
 	D3DX11_TECHNIQUE_DESC techDesc;
@@ -375,6 +396,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_additionalMap = effect->GetVariableByName("AdditionalTexture")->AsShaderResource();
 	_shadowDepthMap = effect->GetVariableByName("gShadowDepthMapTexture")->AsShaderResource();
 	_decalTexture = effect->GetVariableByName("gDecalTexture")->AsShaderResource();
+	_patternTexture = effect->GetVariableByName("gWaveTexture")->AsShaderResource();
+
 	_decalPositionTexture = effect->GetVariableByName("gDecalPositionTexture")->AsShaderResource();
 
 
@@ -385,6 +408,8 @@ void ArkEngine::ArkDX11::DeferredRenderer::SetFinalEffect()
 	_fxDecalNum = effect->GetVariableByName("gDecalNum")->AsScalar();
 
 	_fxDecalTimer = effect->GetVariableByName("gDecalTimer")->AsScalar();
+
+	_fxApplyPattern = effect->GetVariableByName("gApplyPattern")->AsScalar();
 }
 
 void ArkEngine::ArkDX11::DeferredRenderer::BuildQuadBuffers()

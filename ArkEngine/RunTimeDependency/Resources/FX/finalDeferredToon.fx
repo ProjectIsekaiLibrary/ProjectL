@@ -23,6 +23,8 @@ cbuffer cbPerFrame
     
     float4x4 gDecalWorldInv[50];
     float gDecalTimer[50];
+    
+    int gApplyPattern[50];
 };
 
 // 빛을 받는 객채의 포지션
@@ -37,10 +39,13 @@ Texture2D gShadowDepthMapTexture;
 
 Texture2D gDecalTexture[50];
 Texture2D gDecalPositionTexture;
+Texture2D gWaveTexture;
 
 TextureCube gCubeMap;
 
 int gDecalNum;
+
+float gTimer;
 
 //SamplerState samAnisotropic
 //{
@@ -72,6 +77,14 @@ SamplerState samAnisotropic
     MipLODBias = 0.0;
     MinLOD = 0;
     MaxLOD = 15;
+};
+
+SamplerState samNormal
+{
+    Filter = MIN_MAG_MIP_LINEAR;
+    AddressU = Wrap;
+    AddressV = Wrap;
+    AddressW = Wrap;
 };
 
 SamplerComparisonState samShadow
@@ -392,12 +405,17 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     if (decalInfo.x == 1)
     {
         for (int i = 0; i < gDecalNum; i++)
-        {
-        
+        {        
             float4 toDecal = mul(float4(posDecal, 1.0f), gDecalWorldInv[i]);
     
     // 데칼 박스 내부 좌표를 텍스처 좌표로 변환
             float2 decalUV = (toDecal.xz + 0.5f);
+            
+             // 노이즈 텍스처 좌표를 계산
+            //float2 noiseUV = decalUV * 10.0f + 0.3f * 0.1f; // 시간에 따라 변화하는 좌표
+            //float3 noiseSample = gWaveTexture.Sample(samNormal, noiseUV).xyz;
+                        
+            //decalUV += (noiseSample.xy - 0.5f) * 0.05f;
             
             float3 inDecal = 0.5f - abs(toDecal.xyz);
             
@@ -408,11 +426,30 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
             {
                 float4 texSample = gDecalTexture[i].Sample(samAnisotropic, decalUV);
                 
+                if (gApplyPattern[i])
+                {
+                    texSample *= 0.5f;
+                    
+                    float2 waveUv = float2(position.x - (100), abs(position.z - 110));
+                    waveUv.x *= 0.005f;
+                    waveUv.y *= 0.0043478f;
+                
+                    waveUv *= 4.0f;
+                
+                    float4 waveSample = gWaveTexture.Sample(samNormal, waveUv);
+                
+                    waveSample.r += 0.5f;
+                    texSample += waveSample * 0.5f;
+                }
+
                 if (texSample.a > 0.0f)
                 {
-                    toneMappedColor.r = lerp(toneMappedColor.r, texSample.r, texSample.a * alpha * 0.8f);
-                    toneMappedColor.g = lerp(toneMappedColor.g, texSample.g, texSample.a * alpha * 0.8f);
-                    toneMappedColor.b = lerp(toneMappedColor.b, texSample.b, texSample.a * alpha * 0.8f);
+                    if (toneMappedColor.r != 0)
+                    {
+                        toneMappedColor.r = lerp(toneMappedColor.r, texSample.r, texSample.a * alpha * 0.8f);
+                        toneMappedColor.g = lerp(toneMappedColor.g, texSample.g, texSample.a * alpha * 0.8f);
+                        toneMappedColor.b = lerp(toneMappedColor.b, texSample.b, texSample.a * alpha * 0.8f);
+                    }
                 }
             }
         }

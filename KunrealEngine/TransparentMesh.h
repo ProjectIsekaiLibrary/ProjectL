@@ -80,6 +80,10 @@ namespace KunrealEngine
 
 		void SetInfinite(bool tf);
 
+		void SetApplyPattern(bool tf);
+
+		bool GetIsApplyPattern();
+
 		void StopPlayingInfinite();
 		void PlayInfinite();
 
