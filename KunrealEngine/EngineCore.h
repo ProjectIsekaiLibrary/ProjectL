@@ -103,6 +103,7 @@ namespace KunrealEngine
 		GInterface::GraphicsImage* cursorimage;
 
 		std::vector<GameObject*> _mapParticleList;
+		std::vector<GameObject*> _coreBigKamenSword;
 
 		void UpdateParticleTest();
 
