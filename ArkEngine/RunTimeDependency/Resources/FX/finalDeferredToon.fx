@@ -23,6 +23,8 @@ cbuffer cbPerFrame
     
     float4x4 gDecalWorldInv[50];
     float gDecalTimer[50];
+    
+    int gApplyPattern[50];
 };
 
 // ºûÀ» ¹Þ´Â °´Ã¤ÀÇ Æ÷Áö¼Ç
@@ -424,35 +426,22 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
             {
                 float4 texSample = gDecalTexture[i].Sample(samAnisotropic, decalUV);
                 
-                texSample *= 0.5f;
+                if (gApplyPattern[i])
+                {
+                    texSample *= 0.5f;
+                    
+                    float2 waveUv = float2(position.x - (100), abs(position.z - 110));
+                    waveUv.x *= 0.005f;
+                    waveUv.y *= 0.0043478f;
                 
-                //float2 waveUv = float2(position.x - (100), abs(position.z - 110));
-                //waveUv.x *= 0.005f;
-                //waveUv.y *= 0.0043478f;
+                    waveUv *= 4.0f;
                 
-                float2 waveUv = float2(position.x - (50), abs(position.z - 55));
-                waveUv.x *= 0.01f;
-                waveUv.y *= 0.0090909f;
+                    float4 waveSample = gWaveTexture.Sample(samNormal, waveUv);
                 
-                waveUv *= 2.0f;
-                
-                //float2 waveUv = float2(position.x - (25), abs(position.z - 27.5));
-                //waveUv.x *= 0.02f;
-                //waveUv.y *= 0.0181818f;
-                //
-                //waveUv *= 4.0f;
-                
-                //float2 waveUv = float2(position.x - (12.5), abs(position.z - 13.75));
-                //waveUv.x *= 0.04f;
-                //waveUv.y *= 0.0363636f;
-                //
-                //waveUv *= 8.0f;
-                
-                float4 waveSample = gWaveTexture.Sample(samNormal, waveUv);
-                
-                waveSample.r += 0.5f;
-                texSample += waveSample;
-                
+                    waveSample.r += 0.5f;
+                    texSample += waveSample * 0.5f;
+                }
+
                 if (texSample.a > 0.0f)
                 {
                     if (toneMappedColor.r != 0)
