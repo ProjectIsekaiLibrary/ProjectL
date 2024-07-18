@@ -48,5 +48,9 @@ namespace GInterface
 		virtual void SetInfinite(bool tf) abstract;
 
 		virtual bool GetInfiniteState() abstract;
+
+		virtual bool GetIsApplyPattern() abstract;
+
+		virtual void ApplyPattern(bool tf) abstract;
 	}; 
 }

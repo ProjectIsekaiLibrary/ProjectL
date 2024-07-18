@@ -116,6 +116,8 @@ namespace ArkEngine
 
 			ID3DX11EffectShaderResourceVariable* _decalPositionTexture;
 
+			ID3DX11EffectShaderResourceVariable* _patternTexture;
+
 			// point light¿ë Ãß°¡
 			ID3DX11EffectScalarVariable* _pointAttenuationFX;
 		private:
@@ -136,6 +138,11 @@ namespace ArkEngine
 			ID3DX11EffectScalarVariable* _fxDecalNum;
 
 			ID3DX11EffectScalarVariable* _fxDecalTimer;
+
+			ID3DX11EffectScalarVariable* _fxApplyPattern;
+
+		private:
+			ID3D11ShaderResourceView* _patternTextureSRV;
 
 
 		private:
