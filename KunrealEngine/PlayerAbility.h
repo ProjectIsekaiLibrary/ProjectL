@@ -16,6 +16,7 @@
 namespace KunrealEngine
 {
 	class Boss;
+	class SoundPlayer;
 
 	class _DECLSPEC PlayerAbility : public Component
 	{
@@ -41,6 +42,7 @@ namespace KunrealEngine
 	private:
 		std::vector<Ability*> _abilityContainer;
 		Player* _playerComp;
+		SoundPlayer* _soundComp;
 
 		GameObject* _shot;			// Q 스킬 투사체 객체
 
@@ -80,6 +82,17 @@ namespace KunrealEngine
 		bool _isCircleDetected;
 		bool _isLaserDetected;
 		bool _isMeteorDetected;
+
+		/// 소리 재생 여부 체크
+		bool _circlesoundplayed;
+
+		// 이건 사운드의 인덱스를 담아둔 변수뭉치들
+	private:
+		int meteorFall;
+		int meteorExplode;
+		int energyBallExplode;
+		int circleunfolding;
+		int _soundlaser;
 
 		/// 파티클 배치용 멤버변수
 	private:
@@ -185,6 +198,7 @@ namespace KunrealEngine
 		{
 			auto* ability = this;
 			ability->_isCircleReady = false;
+			_circlesoundplayed = false;
 			Waitforsecond(ability->_abilityContainer[1]->_cooldown);
 			ability->_isCircleReady = true;
 		};

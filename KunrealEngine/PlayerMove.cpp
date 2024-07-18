@@ -31,7 +31,7 @@ void KunrealEngine::PlayerMove::Initialize()
 	_playerComp = GetOwner()->GetComponent<Player>();
 	_SoundComp = GetOwner()->GetComponent<SoundPlayer>();
 	_soundwalk = _SoundComp->CreateSoundInfo("Resources/Sound/footstep_short.mp3", true, false, 100);
-	_sounddash = _SoundComp->CreateSoundInfo("Resources/Sound/Space.wav", true, false, 100);
+	_sounddash = _SoundComp->CreateSoundInfo("Resources/Sound/Space.mp3", true, false, 100);
 	_SoundComp->CreateSound(_soundwalk, 1);
 	_SoundComp->CreateSound(_sounddash, 1);
 	DashParticleSetting();

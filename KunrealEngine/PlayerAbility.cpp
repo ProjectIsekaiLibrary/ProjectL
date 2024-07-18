@@ -40,11 +40,23 @@ KunrealEngine::PlayerAbility::~PlayerAbility()
 void KunrealEngine::PlayerAbility::Initialize()
 {
 	_playerComp = GetOwner()->GetComponent<Player>();
+	_soundComp = GetOwner()->GetComponent<SoundPlayer>();
 
 	CreateAbility1();
 	CreateAbility2();
 	CreateAbility3();
 	CreateAbility4();
+
+	meteorExplode = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_explode.mp3", true, false);
+	meteorFall = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_falling.mp3", true, false);
+	energyBallExplode = _soundComp->CreateSoundInfo("Resources/Sound/wavsound.mp3", true, false);
+	circleunfolding = _soundComp->CreateSoundInfo("Resources/Sound/magic_filed.mp3", true, false);
+	_soundlaser = _soundComp->CreateSoundInfo("Resources/Sound/Laser.mp3", true, false);
+	_soundComp->CreateSound(meteorExplode, 1);
+	_soundComp->CreateSound(meteorFall, 1);
+	_soundComp->CreateSound(energyBallExplode, 1);
+	_soundComp->CreateSound(circleunfolding, 1);
+	_soundComp->CreateSound(_soundlaser, 1);
 }
 
 void KunrealEngine::PlayerAbility::Release()
@@ -105,6 +117,7 @@ void KunrealEngine::PlayerAbility::Update()
 		_isCircleDetected = true;
 		_isCircleHit = true;
 		_destroyCircle = false;
+		_soundComp->Play(circleunfolding);
 		_circle->SetActive(true);
 		Startcoroutine(circleCoolDown);
 
@@ -425,6 +438,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 			{
 				if (_isShotHit)
 				{
+					_soundComp->Play(energyBallExplode);
 					EventManager::GetInstance().CalculateDamageToBoss(shot);
 					_isShotHit = false;
 				}
@@ -855,6 +869,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 		{
 			if (_isLaserStarted == true)
 			{
+				_soundComp->Play(_soundlaser);
 				_laserParticle1->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				_laserParticle2->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 30.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				_laserParticle3->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 60.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
@@ -1098,6 +1113,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		{
 			if (_meteor->GetComponent<Transform>()->GetPosition().y <= 2.0f)
 			{
+				_soundComp->Play(meteorFall);
+
 				if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && this->_isMeteorHit)
 				{
 					EventManager::GetInstance().CalculateDamageToBoss(meteor);
@@ -1149,6 +1166,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 			if (!(_meteor->GetActivated()) && _isMeteorEnded == true)
 			{
+				_soundComp->Stop(meteorFall);
+				_soundComp->Play(meteorExplode);
 
 				_meteorParticleTimer += TimeManager::GetInstance().GetDeltaTime();
 
