@@ -110,6 +110,8 @@ KunrealEngine::GameObject* particleBossPillar3;
 
 KunrealEngine::GameObject* particleLastClash1;
 KunrealEngine::GameObject* particleLastClash2;
+KunrealEngine::GameObject* particleLastClash3;
+KunrealEngine::GameObject* particleLastClash4;
 
 KunrealEngine::GameObject* particleBossSword1;
 KunrealEngine::GameObject* particleBossSword2;
@@ -1614,7 +1616,7 @@ void KunrealEngine::EngineCore::ParticleTest()
 
 	// 보스 평타 불덩이
 
-	particleLastClash1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossShot1");
+	particleLastClash1 = sceneInstance.GetCurrentScene()->CreateObject("particleLastClash1");
 	particleLastClash1->GetComponent<Transform>()->SetPosition(10, 45, -86.f);
 	particleLastClash1->AddComponent<Particle>();
 	particleLastClash1->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
@@ -1624,15 +1626,35 @@ void KunrealEngine::EngineCore::ParticleTest()
 	particleLastClash1->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 5.0f);
 	particleLastClash1->GetComponent<Particle>()->SetParticleDirection(-77.0f, -25.0f, 0.0f);
 
-	particleLastClash2 = sceneInstance.GetCurrentScene()->CreateObject("particleBossShot2");
+	particleLastClash2 = sceneInstance.GetCurrentScene()->CreateObject("particleLastClash2");
 	particleLastClash2->GetComponent<Transform>()->SetPosition(13, 47.6, -65.f);
 	particleLastClash2->AddComponent<Particle>();
 	particleLastClash2->GetComponent<Particle>()->SetParticleEffect("fx_Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
 	particleLastClash2->GetComponent<Particle>()->SetParticleDuration(0.6f, 1.0f);
-	particleLastClash2->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+	particleLastClash2->GetComponent<Particle>()->SetParticleVelocity(100.0f, true);
 	particleLastClash2->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
-	particleLastClash2->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.1f);
+	particleLastClash2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.1f);
 	particleLastClash2->GetComponent<Particle>()->SetParticleDirection(-70.0f, -40.0f, 0.0f);
+
+	particleLastClash3 = sceneInstance.GetCurrentScene()->CreateObject("particleLastClash3");
+	particleLastClash3->GetComponent<Transform>()->SetPosition(14.6f, 56.3f, -12.0f);
+	particleLastClash3->AddComponent<Particle>();
+	particleLastClash3->GetComponent<Particle>()->SetParticleEffect("Beam2", "Resources/Textures/Particles/fx_Beam2.dds", 1000);
+	particleLastClash3->GetComponent<Particle>()->SetParticleDuration(0.7f, 0.7f);
+	particleLastClash3->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	particleLastClash3->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	particleLastClash3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 5.0f);
+	particleLastClash3->GetComponent<Particle>()->SetParticleDirection(-240.0f, 9.2f, 0.0f);
+
+	particleLastClash4 = sceneInstance.GetCurrentScene()->CreateObject("particleLastClash4");
+	particleLastClash4->GetComponent<Transform>()->SetPosition(30.0f, 38.3f, -13.6f);
+	particleLastClash4->AddComponent<Particle>();
+	particleLastClash4->GetComponent<Particle>()->SetParticleEffect("Beam2", "Resources/Textures/Particles/fx_Beam2.dds", 1000);
+	particleLastClash4->GetComponent<Particle>()->SetParticleDuration(0.7f, 0.7f);
+	particleLastClash4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+	particleLastClash4->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+	particleLastClash4->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 5.0f);
+	particleLastClash4->GetComponent<Particle>()->SetParticleDirection(-250.0f, -226.0f, 0.0f);
 
 	particleBossSword1 = sceneInstance.GetCurrentScene()->CreateObject("particleBossSword1");
 	particleBossSword1->GetComponent<Transform>()->SetPosition(-82.6, 6.65, -31.9f);
