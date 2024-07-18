@@ -19,7 +19,7 @@
 
 KunrealEngine::PlayerAbility::PlayerAbility()
 	:_playerComp(nullptr), _meteor(nullptr), _shot(nullptr), _circle(nullptr), _laser(nullptr), _meteorRange(nullptr)
-	, _beforeMeteor(false), _meteorCrator(nullptr), _laserCrator1(nullptr), _laserCrator2(nullptr), _laserCrator3(nullptr), _laserCrator4(nullptr)
+	, _beforeMeteor(false), _meteorCrator(nullptr), _laserCrator1(nullptr), _laserCrator2(nullptr), _laserCrator3(nullptr), _laserCrator4(nullptr), _laserCrator5(nullptr), _laserCrator6(nullptr)
 	, _isCircleReady(true), _destroyCircle(false), _isShotReady(true), _isMeteorReady(true), _isLaserReady(true)
 	, _isShotHit(false), _isLaserHit(false), _isMeteorHit(false), _isCircleHit(false)
 	, _isShotDetected(false), _isCircleDetected(false), _isLaserDetected(false), _isMeteorDetected(false), _isShotEnded(false),
@@ -70,7 +70,7 @@ void KunrealEngine::PlayerAbility::Update()
 		return;
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady)
+	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady && !_playerComp->_onCasting)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
 		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
@@ -93,7 +93,7 @@ void KunrealEngine::PlayerAbility::Update()
 		_playerComp->_abilityAnimationIndex = 1;				// 구체 투척 애니메이션
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isCircleReady)
+	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isCircleReady && !_playerComp->_onCasting)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
 		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
@@ -113,7 +113,7 @@ void KunrealEngine::PlayerAbility::Update()
 
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isLaserReady)
+	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isLaserReady && !_playerComp->_onCasting)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
 		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
@@ -164,7 +164,7 @@ void KunrealEngine::PlayerAbility::Update()
 		Startcoroutine(laserDestroy);
 	}
 
-	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady)
+	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady && !_playerComp->_onCasting)
 	{
 		this->_beforeMeteor = true;
 	}
@@ -176,6 +176,7 @@ void KunrealEngine::PlayerAbility::Update()
 		{
 			this->_beforeMeteor = false;
 			this->_meteorRange->SetActive(false);
+			this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
 			return;
 		}
 
@@ -183,6 +184,7 @@ void KunrealEngine::PlayerAbility::Update()
 		if (!this->_meteorRange->GetActivated())
 		{
 			this->_meteorRange->SetActive(true);
+			this->_meteorRange->GetComponent<MeteorRange>()->SetActive(true);
 		}
 
 			// 플레이어가 ESC키를 누를 경우 취소
@@ -190,6 +192,7 @@ void KunrealEngine::PlayerAbility::Update()
 			{
 				this->_beforeMeteor = false;
 				this->_meteorRange->SetActive(false);
+				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
 				return;
 			}
 
@@ -202,7 +205,6 @@ void KunrealEngine::PlayerAbility::Update()
 				}
 				else
 				{
-
 					this->_meteorRange->GetComponent<MeteorRange>()->_onCast = true;
 					ResetMeteorPos();
 					_isMeteorDetected = true;
@@ -663,15 +665,19 @@ void KunrealEngine::PlayerAbility::ResetLaserPos()
 	this->_laser->GetComponent<Transform>()->SetPosition(newLaserPos.m128_f32[0], 5.0f, newLaserPos.m128_f32[2]);
 
 	// 그을림 객체 위치값
-	DirectX::XMVECTOR cratorPos1 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 30.0f));
-	DirectX::XMVECTOR cratorPos2 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 60.0f));
-	DirectX::XMVECTOR cratorPos3 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 90.0f));
-	DirectX::XMVECTOR cratorPos4 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 120.0f));
+	DirectX::XMVECTOR cratorPos1 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 25.0f));
+	DirectX::XMVECTOR cratorPos2 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 50.0f));
+	DirectX::XMVECTOR cratorPos3 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 75.0f));
+	DirectX::XMVECTOR cratorPos4 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 100.0f));
+	DirectX::XMVECTOR cratorPos5 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 125.0f));
+	DirectX::XMVECTOR cratorPos6 = DirectX::XMVectorAdd(playerPosVec, DirectX::XMVectorScale(rotDirection, 150.0f));
 
 	this->_laserCrator1->GetComponent<Transform>()->SetPosition(cratorPos1.m128_f32[0], 20.0f, cratorPos1.m128_f32[2]);
 	this->_laserCrator2->GetComponent<Transform>()->SetPosition(cratorPos2.m128_f32[0], 20.0f, cratorPos2.m128_f32[2]);
 	this->_laserCrator3->GetComponent<Transform>()->SetPosition(cratorPos3.m128_f32[0], 20.0f, cratorPos3.m128_f32[2]);
 	this->_laserCrator4->GetComponent<Transform>()->SetPosition(cratorPos4.m128_f32[0], 20.0f, cratorPos4.m128_f32[2]);
+	this->_laserCrator5->GetComponent<Transform>()->SetPosition(cratorPos5.m128_f32[0], 20.0f, cratorPos5.m128_f32[2]);
+	this->_laserCrator6->GetComponent<Transform>()->SetPosition(cratorPos6.m128_f32[0], 20.0f, cratorPos6.m128_f32[2]);
 
 	// 파티클 위치조정 부분
 
@@ -786,46 +792,64 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 	_laserCrator2 = this->GetOwner()->GetObjectScene()->CreateObject("LaserCrator2");
 	_laserCrator3 = this->GetOwner()->GetObjectScene()->CreateObject("LaserCrator3");
 	_laserCrator4 = this->GetOwner()->GetObjectScene()->CreateObject("LaserCrator4");
+	_laserCrator5 = this->GetOwner()->GetObjectScene()->CreateObject("LaserCrator5");
+	_laserCrator6 = this->GetOwner()->GetObjectScene()->CreateObject("LaserCrator6");
 
 	_laserCrator1->_autoAwake = true;
 	_laserCrator2->_autoAwake = true;
 	_laserCrator3->_autoAwake = true;
 	_laserCrator4->_autoAwake = true;
+	_laserCrator5->_autoAwake = true;
+	_laserCrator6->_autoAwake = true;
 
 	_laserCrator1->AddComponent<TransparentMesh>();
 	_laserCrator2->AddComponent<TransparentMesh>();
 	_laserCrator3->AddComponent<TransparentMesh>();
 	_laserCrator4->AddComponent<TransparentMesh>();
+	_laserCrator5->AddComponent<TransparentMesh>();
+	_laserCrator6->AddComponent<TransparentMesh>();
 
 	_laserCrator1->GetComponent<TransparentMesh>()->CreateTMesh("LaserCrator1", "Resources/Textures/Decal/Decal.png", 0.6f);
 	_laserCrator2->GetComponent<TransparentMesh>()->CreateTMesh("LaserCrator2", "Resources/Textures/Decal/Decal.png", 0.6f);
 	_laserCrator3->GetComponent<TransparentMesh>()->CreateTMesh("LaserCrator3", "Resources/Textures/Decal/Decal.png", 0.6f);
 	_laserCrator4->GetComponent<TransparentMesh>()->CreateTMesh("LaserCrator4", "Resources/Textures/Decal/Decal.png", 0.6f);
+	_laserCrator5->GetComponent<TransparentMesh>()->CreateTMesh("LaserCrator5", "Resources/Textures/Decal/Decal.png", 0.6f);
+	_laserCrator6->GetComponent<TransparentMesh>()->CreateTMesh("LaserCrator6", "Resources/Textures/Decal/Decal.png", 0.6f);
 
 	_laserCrator1->GetComponent<TransparentMesh>()->SetTimer(5.0f);
 	_laserCrator2->GetComponent<TransparentMesh>()->SetTimer(5.0f);
 	_laserCrator3->GetComponent<TransparentMesh>()->SetTimer(5.0f);
 	_laserCrator4->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+	_laserCrator5->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+	_laserCrator6->GetComponent<TransparentMesh>()->SetTimer(5.0f);
 
 	_laserCrator1->GetComponent<TransparentMesh>()->SetDecal(true);
 	_laserCrator2->GetComponent<TransparentMesh>()->SetDecal(true);
 	_laserCrator3->GetComponent<TransparentMesh>()->SetDecal(true);
 	_laserCrator4->GetComponent<TransparentMesh>()->SetDecal(true);
+	_laserCrator5->GetComponent<TransparentMesh>()->SetDecal(true);
+	_laserCrator6->GetComponent<TransparentMesh>()->SetDecal(true);
 
 	_laserCrator1->GetComponent<TransparentMesh>()->SetActive(true);
 	_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
 	_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
 	_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
+	_laserCrator5->GetComponent<TransparentMesh>()->SetActive(true);
+	_laserCrator6->GetComponent<TransparentMesh>()->SetActive(true);
 
 	_laserCrator1->GetComponent<TransparentMesh>()->Reset();
 	_laserCrator2->GetComponent<TransparentMesh>()->Reset();
 	_laserCrator3->GetComponent<TransparentMesh>()->Reset();
 	_laserCrator4->GetComponent<TransparentMesh>()->Reset();
+	_laserCrator5->GetComponent<TransparentMesh>()->Reset();
+	_laserCrator6->GetComponent<TransparentMesh>()->Reset();
 
-	_laserCrator1->GetComponent<Transform>()->SetScale(45.0f, 200.0f, 45.0f);
-	_laserCrator2->GetComponent<Transform>()->SetScale(45.0f, 200.0f, 45.0f);
-	_laserCrator3->GetComponent<Transform>()->SetScale(45.0f, 200.0f, 45.0f);
-	_laserCrator4->GetComponent<Transform>()->SetScale(45.0f, 200.0f, 45.0f);
+	_laserCrator1->GetComponent<Transform>()->SetScale(40.0f, 200.0f, 40.0f);
+	_laserCrator2->GetComponent<Transform>()->SetScale(40.0f, 200.0f, 40.0f);
+	_laserCrator3->GetComponent<Transform>()->SetScale(40.0f, 200.0f, 40.0f);
+	_laserCrator4->GetComponent<Transform>()->SetScale(40.0f, 200.0f, 40.0f);
+	_laserCrator5->GetComponent<Transform>()->SetScale(40.0f, 200.0f, 40.0f);
+	_laserCrator6->GetComponent<Transform>()->SetScale(40.0f, 200.0f, 40.0f);
 
 	laser->SetLogic([laser, laserCollider, this]()
 		{
@@ -866,7 +890,9 @@ void KunrealEngine::PlayerAbility::ResetMeteorPos()
 		_meteor->GetComponent<Transform>()->GetPosition().z
 	);
 
+	// 그래픽스 부분들 Transform 업데이트
 	_meteor->GetComponent<BoxCollider>()->FixedUpdate();
+	_meteor->GetComponent<Light>()->Update();
 	_meteor->GetComponent<MeshRenderer>()->Update();
 
 	//플레이어 방향 돌리기
@@ -1065,7 +1091,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 
 	_meteor->AddComponent<Light>();
-	_meteor->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 300.0f, 100.0f);
+	_meteor->GetComponent<Light>()->CreatePointLight(ambient, diffuse, specular, 500.0f, 100.0f);
 
 	// 비활성화 조건		// 인게임에서는 소멸처럼
 	meteorProj->SetDestoryCondition([meteor, meteorProj, this]()->bool
@@ -1081,6 +1107,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 				// 범위 표시 부분을 비활성화
 				this->_meteorRange->GetComponent<MeteorRange>()->_onCast = false;
 				this->_meteorRange->SetActive(false);
+				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
 				this->_beforeMeteor = false;
 
 				// 그을림 객체 활성화

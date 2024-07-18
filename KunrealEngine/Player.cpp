@@ -29,6 +29,7 @@ KunrealEngine::Player::Player()
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
+	, _onCasting(false)
 {
 	_sweepNode.clear();
 }
@@ -216,6 +217,8 @@ void KunrealEngine::Player::AnimateByStatus()
 				this->_owner->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::ABILITY:
+				this->_onCasting = true;
+
 				if (this->_abilityAnimationIndex == 1)
 				{
 					this->_owner->GetComponent<Animator>()->Play("Shot", 40.0f * _playerInfo._speedScale, false);
@@ -232,6 +235,12 @@ void KunrealEngine::Player::AnimateByStatus()
 				{
 					this->_owner->GetComponent<Animator>()->Play("Meteor", 40.0f * _playerInfo._speedScale, false);
 				}
+
+				if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() > this->_owner->GetComponent<Animator>()->GetMaxFrame())
+				{
+					this->_onCasting = false;
+				}
+
 				break;
 			case KunrealEngine::Player::Status::STAGGERED:
 				this->_owner->GetComponent<Animator>()->Play("Staggered", 20.0f * _playerInfo._speedScale, true);

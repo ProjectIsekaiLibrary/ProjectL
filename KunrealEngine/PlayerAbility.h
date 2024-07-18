@@ -51,6 +51,8 @@ namespace KunrealEngine
 		GameObject* _laserCrator2;
 		GameObject* _laserCrator3;
 		GameObject* _laserCrator4;
+		GameObject* _laserCrator5;
+		GameObject* _laserCrator6;
 
 		GameObject* _meteor;		// R 스킬 운석 객체
 		GameObject* _meteorRange;	// R 스킬 범위 표시 객체
@@ -255,23 +257,35 @@ namespace KunrealEngine
 			ability->_laserCrator1->GetComponent<TransparentMesh>()->Reset();
 			ability->_laserCrator1->GetComponent<TransparentMesh>()->PlayOnce();
 
-			Waitforsecond(0.3f);
+			Waitforsecond(0.1f);
 			ability->_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
 			ability->_laserCrator2->GetComponent<TransparentMesh>()->TransformForceUpdate();
 			ability->_laserCrator2->GetComponent<TransparentMesh>()->Reset();
 			ability->_laserCrator2->GetComponent<TransparentMesh>()->PlayOnce();
 
-			Waitforsecond(0.3f);
+			Waitforsecond(0.1f);
 			ability->_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
 			ability->_laserCrator3->GetComponent<TransparentMesh>()->TransformForceUpdate();
 			ability->_laserCrator3->GetComponent<TransparentMesh>()->Reset();
 			ability->_laserCrator3->GetComponent<TransparentMesh>()->PlayOnce();
 
-			Waitforsecond(0.3f);
+			Waitforsecond(0.1f);
 			ability->_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
 			ability->_laserCrator4->GetComponent<TransparentMesh>()->TransformForceUpdate();
 			ability->_laserCrator4->GetComponent<TransparentMesh>()->Reset();
 			ability->_laserCrator4->GetComponent<TransparentMesh>()->PlayOnce();
+
+			Waitforsecond(0.1f);
+			ability->_laserCrator5->GetComponent<TransparentMesh>()->SetActive(true);
+			ability->_laserCrator5->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			ability->_laserCrator5->GetComponent<TransparentMesh>()->Reset();
+			ability->_laserCrator5->GetComponent<TransparentMesh>()->PlayOnce();
+
+			Waitforsecond(0.1f);
+			ability->_laserCrator6->GetComponent<TransparentMesh>()->SetActive(true);
+			ability->_laserCrator6->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			ability->_laserCrator6->GetComponent<TransparentMesh>()->Reset();
+			ability->_laserCrator6->GetComponent<TransparentMesh>()->PlayOnce();
 
 		};
 

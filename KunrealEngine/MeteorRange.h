@@ -9,7 +9,7 @@
 namespace KunrealEngine
 {
 	class Transform;
-	class MeshRenderer;
+	class TransparentMesh;
 	class Particle;
 
 	class _DECLSPEC MeteorRange : public Component
@@ -36,11 +36,11 @@ namespace KunrealEngine
 		~MeteorRange();
 
 		// 사용가능한 위치라면 원본 출력, 불가능한 위치라면 투명도 0.5
-		void SetTransparencyByMouse(bool onMap);
+		void SetTextureByStatus(bool onMap);
 
 	private:
 		Transform* _transform;
-		MeshRenderer* _mesh;
+		TransparentMesh* _tMesh;
 		bool _onCast;					// 스킬 시전 성공 여부
 
 		bool CheckisOnMap();
