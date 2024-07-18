@@ -62,9 +62,15 @@ namespace KunrealEngine
 
 		// 대시 파티클 초기화
 		void DashParticleSetting();
-		
-		// 사운드 업데이트
-		void UpdateSound();
+
+		// 우클릭 파티클 초기화
+		void ClickParticleSetting();
+
+		// 우클릭 파티클
+		std::vector<GameObject*> _clickParticleList;
+
+		// 우클릭 타이머
+		float _clickTimer;
 
 		// 타이머 
 		float _timer;
@@ -72,6 +78,10 @@ namespace KunrealEngine
 		// 파티클 출력 처리를 위한 변수
 		bool _isDashStart;
 		bool _isDashEnd;
+		bool _isClick;
+
+		// 사운드 업데이트
+		void UpdateSound();
 
 		// 사운드는 int로 관리
 		int _soundwalk;

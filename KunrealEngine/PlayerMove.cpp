@@ -15,7 +15,7 @@
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
 	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(2.0f),/* _playerDashParticleStart{0}, _playerDashParticleEnd{0},*/
-	_timer(1), _isDashStart(false), _isDashEnd(false), _SoundComp(nullptr)
+	_timer(1), _isDashStart(false), _isDashEnd(false), _SoundComp(nullptr), _clickTimer(0.0f), _isClick(false)
 {
 
 }
@@ -35,6 +35,7 @@ void KunrealEngine::PlayerMove::Initialize()
 	_SoundComp->CreateSound(_soundwalk, 1);
 	_SoundComp->CreateSound(_sounddash, 1);
 	DashParticleSetting();
+	ClickParticleSetting();
 }
 
 void KunrealEngine::PlayerMove::Release()
@@ -55,6 +56,19 @@ void KunrealEngine::PlayerMove::Update()
 	// 마우스 우클릭시	// 홀드도 적용
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
+		for (auto& clickParticleList : _clickParticleList)
+		{
+			clickParticleList->GetComponent<Particle>()->SetActive(true);
+			clickParticleList->GetComponent<Transform>()->SetPosition(GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y));
+			clickParticleList->GetComponent<Transform>()->SetPosition(clickParticleList->GetComponent<Transform>()->GetPosition().x, clickParticleList->GetComponent<Transform>()->GetPosition().y + 2, clickParticleList->GetComponent<Transform>()->GetPosition().z);
+			_isClick = true;
+			_clickTimer = 0.0f;
+		}
+
+		_clickParticleList[0]->GetComponent<Particle>()->SetParticleSize(5, 5);
+		_clickParticleList[1]->GetComponent<Particle>()->SetParticleSize(3, 3);
+		_clickParticleList[1]->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+
 		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK)
 		{
 			GRAPHICS->DeleteAllLine();
@@ -95,6 +109,29 @@ void KunrealEngine::PlayerMove::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::S))
 	{
 		StopPlayer();
+	}
+
+
+	if (_isClick == true)
+	{
+		_clickTimer += TimeManager::GetInstance().GetDeltaTime();
+
+		if (_clickTimer > 0.5f)
+		{
+			_clickParticleList[0]->GetComponent<Particle>()->SetParticleSize(7.0f - (6 * (_clickTimer - 0.5)), 7.0f - (6 * (_clickTimer - 0.5)));
+			_clickParticleList[1]->GetComponent<Particle>()->SetActive(false);
+		}
+
+		if (_clickTimer > 1.0f)
+		{
+			_clickTimer = 0;
+			_isClick = false;
+			for (auto& clickParticleList : _clickParticleList)
+			{
+				clickParticleList->GetComponent<Particle>()->SetActive(false);
+			}
+		}
+
 	}
 
 	/// 디버깅용
@@ -442,7 +479,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 
 		for (auto& playerDashParticleStart : _playerDashParticleStart)
 		{
-			if (playerDashParticleStart->GetComponent<Particle>()->GetParticleSize().x > 0)
+			if (playerDashParticleStart->GetComponent<Particle>()->GetParticleSize().x > 10)
 			{
 				playerDashParticleStart->GetComponent<Particle>()->SetActive(true);
 			}
@@ -761,6 +798,35 @@ void KunrealEngine::PlayerMove::DashParticleSetting()
 
 	}
 
+}
+
+void KunrealEngine::PlayerMove::ClickParticleSetting()
+{
+	GameObject* clickParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ClickParticle1");
+	clickParticle1->AddComponent<Particle>();
+	clickParticle1->_autoAwake = true;
+	clickParticle1->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+	clickParticle1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.5f);
+	clickParticle1->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	clickParticle1->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+	clickParticle1->GetComponent<Particle>()->AddParticleColor(0.5f, 0.5f, 5.0f);
+	clickParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	clickParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
+	clickParticle1->GetComponent<Particle>()->SetActive(false);
+	_clickParticleList.emplace_back(clickParticle1);
+
+	GameObject* clickParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ClickParticle2");
+	clickParticle2->AddComponent<Particle>();
+	clickParticle2->_autoAwake = true;
+	clickParticle2->GetComponent<Particle>()->SetParticleEffect("fx_EnergyBolt1", "Resources/Textures/Particles/fx_EnergyBolt1.dds", 1000);
+	clickParticle2->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+	clickParticle2->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	clickParticle2->GetComponent<Particle>()->SetParticleSize(3.0f, 3.0f);
+	clickParticle2->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 5.0f);
+	clickParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	//clickParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+	clickParticle2->GetComponent<Particle>()->SetActive(false);
+	_clickParticleList.emplace_back(clickParticle2);
 }
 
 void KunrealEngine::PlayerMove::UpdateSound()
