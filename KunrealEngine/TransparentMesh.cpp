@@ -178,6 +178,8 @@ void KunrealEngine::TransparentMesh::SetInfinite(bool tf)
 void KunrealEngine::TransparentMesh::StopPlayingInfinite()
 {
 	this->_tMesh->SetInfinite(false);
+
+	this->_tMesh->Reset();
 }
 
 

@@ -71,6 +71,8 @@ namespace KunrealEngine
 
 		void CoreSwordMutipleAttackPattern();
 
+		void CoreSwordMeteorPattern();
+
 		// 기본 패턴 조각들
 	private:
 		void CreateLeftAttack();
@@ -111,6 +113,10 @@ namespace KunrealEngine
 
 	private:
 		void CreateDecalTest();
+
+		// 1->2 페이즈 핵심 패턴
+	private:
+		void CreateRentalFraud();
 
 		//검 핵심 패턴
 	private:
@@ -217,6 +223,8 @@ namespace KunrealEngine
 		BossPattern* _battleCry;
 		BossPattern* _holdSword;
 
+		BossPattern* _rentalFraud;
+
 	private:
 		// 패턴에 필요한 subObject들
 		GameObject* _leftHand;
@@ -276,6 +284,8 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _multipleSwordVec;
 		std::vector<GameObject*> _multipleSwordWarningVec;
+
+		std::vector<GameObject*> _rentalArea;
 
 	private:
 		// Call 거리 체크용
@@ -363,8 +373,12 @@ namespace KunrealEngine
 		bool _isEgoAttackReady;
 		bool _isEgoAttack;
 		float _egoTimer;
+		
+		// 1페이즈 핵심 패턴
+	private:
+		std::vector<unsigned int> _rentalNumVec;
 
-		// 2페이즈 핵심패턴
+		// 2페이즈 핵심 패턴
 	private:
 		std::vector<DirectX::XMFLOAT3> _multipleSwordDirectionVec;
 		std::vector<float> _multipleSwordMoveDistance;
