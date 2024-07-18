@@ -75,6 +75,7 @@ void KunrealEngine::PlayerMove::Update()
 			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
 			)
 		{
+			//this->GetOwner()->GetComponent<BoxCollider>()->SetActive(false);
 			this->_isDashReady = false;
 			this->_isDashStart = true;
 			Startcoroutine(dashReady);
@@ -426,6 +427,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 			// 위치에 도달했다면 다시 평시 상태로
 			_isDash = false;
 			_playerComp->_playerStatus = Player::Status::IDLE;
+			//this->GetOwner()->GetComponent<BoxCollider>()->SetActive(true);
 		}
 
 		if (_isDashStart == true)
