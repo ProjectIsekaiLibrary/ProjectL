@@ -1,4 +1,6 @@
 #include <functional>
+#include <algorithm>
+#include <random>
 #include "ToolBox.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
@@ -30,7 +32,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr)
 {
 	BossBasicInfo info;
 
@@ -202,6 +204,8 @@ void KunrealEngine::Kamen::CreatePattern()
 	CreateBattleCry();
 	CreateKamenHoldSword();
 
+	CreateRentalFraud();
+
 	// ÄÚ¾î
 	CreateSwordMultipleAttack();
 
@@ -231,8 +235,9 @@ void KunrealEngine::Kamen::GamePattern()
 	SwordChopPattern();								// µµ³Ó
 
 	CoreSwordMutipleAttackPattern();
+	CoreSwordMeteorPattern();
 
-	CreateDecalTest();
+	_basicPattern[0].emplace_back(_rentalFraud);
 }
 
 
@@ -2194,6 +2199,22 @@ void KunrealEngine::Kamen::CreateSubObject()
 		swordAttack->SetTotalComponentState(false);
 		swordAttack->SetActive(false);
 		_multipleSwordWarningVec.emplace_back(swordAttack);
+	}
+
+	for (int i = 0; i < 40; i++)
+	{
+		std::string objectName = "RentalArea" + std::to_string(i + 1);
+		auto area = _boss->GetObjectScene()->CreateObject(objectName);
+		area->AddComponent<TransparentMesh>();
+		area->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+		area->GetComponent<TransparentMesh>()->SetDecal(true);
+		area->GetComponent<TransparentMesh>()->SetRenderType(0);
+		area->GetComponent<Transform>()->SetScale(50.0f, 100.0f, 50.0f);
+		area->GetComponent<TransparentMesh>()->SetTimer(50000.0f);
+		area->GetComponent<TransparentMesh>()->SetInfinite(true);
+		area->SetTotalComponentState(false);
+		area->SetActive(false);
+		_rentalArea.emplace_back(area);
 	}
 }
 
@@ -4699,6 +4720,157 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	_basicPattern[0].emplace_back(pattern);
 }
 
+void KunrealEngine::Kamen::CreateRentalFraud()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("RentalFraud");
+
+	for (auto& index : _rentalArea)
+	{
+		pattern->SetSubObject(index);
+	}
+
+	auto initLogic = [pattern, this]()
+		{
+			auto num = 0;
+
+			std::vector<int> randomNumbers;
+
+			for (auto& index : _rentalArea)
+			{
+				index->GetComponent<TransparentMesh>()->Reset();
+				index->GetComponent<TransparentMesh>()->SetActive(true);
+
+				randomNumbers.emplace_back(num);
+
+				num++;
+			}
+
+			std::vector<int> firstHalf(randomNumbers.begin(), randomNumbers.begin() + randomNumbers.size()*0.5f);
+			std::vector<int> secondHalf(randomNumbers.begin() + randomNumbers.size() * 0.5f, randomNumbers.end());
+
+			std::random_device rd;
+			std::mt19937 g(rd());   
+			
+			std::shuffle(firstHalf.begin(), firstHalf.end(), g);
+			std::shuffle(secondHalf.begin(), secondHalf.end(), g);
+
+			for (int i = 0; i < randomNumbers.size() * 0.5f; i++)
+			{
+				_rentalNumVec.emplace_back(firstHalf[i]);
+				_rentalNumVec.emplace_back(secondHalf[i]);
+			}
+
+			_timer = 0.0f;
+			_timer2 = 0.0f;
+
+			for (int i = 0; i < 2; i++)
+			{
+				_rentalArea[0+20*i]->GetComponent<Transform>()->SetPosition(-82.5, 10.0, 81-118*i);
+				_rentalArea[0+20*i]->GetComponent<Transform>()->SetScale(33, 100, 60);
+
+				_rentalArea[1+20*i]->GetComponent<Transform>()->SetPosition(-39.0, 10.0, 91 - 118 * i);
+				_rentalArea[1+20*i]->GetComponent<Transform>()->SetScale(55, 100, 40);
+
+				_rentalArea[2+ 20*i]->GetComponent<Transform>()->SetPosition(1, 2, 84 - 118 * i);
+				_rentalArea[2+ 20*i]->GetComponent<Transform>()->SetScale(26, 100, 54);
+
+				_rentalArea[3+20*i]->GetComponent<Transform>()->SetPosition(28.0, 10.0, 96 - 118 * i);
+				_rentalArea[3+20*i]->GetComponent<Transform>()->SetScale(28, 100, 30);
+
+				_rentalArea[4+20*i]->GetComponent<Transform>()->SetPosition(57.0, 10.0, 80 - 118 * i);
+				_rentalArea[4+20*i]->GetComponent<Transform>()->SetScale(30, 100, 62);
+
+				_rentalArea[5+20*i]->GetComponent<Transform>()->SetPosition(87.0, 10.0, 86 - 118 * i);
+				_rentalArea[5+20*i]->GetComponent<Transform>()->SetScale(30, 100, 50);
+
+				_rentalArea[6+20*i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 46 - 118 * i);
+				_rentalArea[6+20*i]->GetComponent<Transform>()->SetScale(34, 100, 50);
+
+				_rentalArea[7+20*i]->GetComponent<Transform>()->SetPosition(-83, 10.0, 22 - 118 * i);
+				_rentalArea[7+20*i]->GetComponent<Transform>()->SetScale(32, 100, 58);
+
+				_rentalArea[8+20*i]->GetComponent<Transform>()->SetPosition(28, 10.0, 56 - 118 * i);
+				_rentalArea[8+20*i]->GetComponent<Transform>()->SetScale(28, 100, 50);
+
+				_rentalArea[9+20*i]->GetComponent<Transform>()->SetPosition(86, 10.0, 36 - 118 * i);
+				_rentalArea[9+20*i]->GetComponent<Transform>()->SetScale(30, 100, 50);
+
+				_rentalArea[10+20*i]->GetComponent<Transform>()->SetPosition(56, 10.0, 30 - 118 * i);
+				_rentalArea[10+20*i]->GetComponent<Transform>()->SetScale(30, 100, 38);
+
+				_rentalArea[11+20*i]->GetComponent<Transform>()->SetPosition(1.5, 10.0, 34 - 118 * i);
+				_rentalArea[11+20*i]->GetComponent<Transform>()->SetScale(25, 100, 46);
+
+				_rentalArea[12+20*i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 7 - 118 * i);
+				_rentalArea[12+20*i]->GetComponent<Transform>()->SetScale(35, 100, 28);
+
+				_rentalArea[13+20*i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 34 - 118 * i);
+				_rentalArea[13+20*i]->GetComponent<Transform>()->SetScale(22, 100, 25);
+
+				_rentalArea[14+20*i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 7.5 - 118 * i);
+				_rentalArea[14+20*i]->GetComponent<Transform>()->SetScale(22, 100, 29);
+
+				_rentalArea[15+20*i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 59 - 118 * i);
+				_rentalArea[15+20*i]->GetComponent<Transform>()->SetScale(22, 100, 25);
+
+				_rentalArea[16+20*i]->GetComponent<Transform>()->SetPosition(27.5, 10.0, 21 - 118 * i);
+				_rentalArea[16+20*i]->GetComponent<Transform>()->SetScale(27.5, 100, 20);
+
+				_rentalArea[17+20*i]->GetComponent<Transform>()->SetPosition(9, 10.0, 2 - 118 * i);
+				_rentalArea[17+20*i]->GetComponent<Transform>()->SetScale(40, 100, 18);
+
+				_rentalArea[18+20*i]->GetComponent<Transform>()->SetPosition(46, 10.0, 2 - 118 * i);
+				_rentalArea[18+20*i]->GetComponent<Transform>()->SetScale(35, 100, 18);
+
+				_rentalArea[19+20*i]->GetComponent<Transform>()->SetPosition(82, 10.0, 2 - 118 * i);
+				_rentalArea[19+20*i]->GetComponent<Transform>()->SetScale(38, 100, 18);
+			}
+		};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attackLogic = [pattern, this]()
+		{
+			_timer += TimeManager::GetInstance().GetDeltaTime()*2.0f;
+
+			int intTimer = _timer;
+			intTimer *= 2;
+
+			if (intTimer >= 38)
+			{
+				intTimer = 38;
+
+				_timer2 += TimeManager::GetInstance().GetDeltaTime();
+			}
+
+			for (int i = 0; i < intTimer; i++)
+			{
+				_rentalArea[_rentalNumVec[i]]->GetComponent<TransparentMesh>()->PlayOnce();
+			}
+
+			if (_timer2 >= 1.0f)
+			{
+				for (int i = 0; i < intTimer; i++)
+				{
+					_rentalArea[_rentalNumVec[i]]->GetComponent<TransparentMesh>()->StopPlayingInfinite();
+				}
+
+				if (_timer2 >= 2.0f)
+				{
+					return false;
+				}
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(attackLogic);
+
+	_rentalFraud = pattern;
+}
+
 void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 {
 	BossPattern* pattern = new BossPattern();
@@ -6364,4 +6536,23 @@ void KunrealEngine::Kamen::CoreSwordMutipleAttackPattern()
 	coreSwordMultipleAttack->SetPattern(_holdSword);
 
 	_corePattern.emplace_back(coreSwordMultipleAttack);
+}
+
+void KunrealEngine::Kamen::CoreSwordMeteorPattern()
+{
+	BossPattern* coreSwordMeteor = new BossPattern();
+
+	coreSwordMeteor->SetSkipChase(true);
+
+	coreSwordMeteor->SetNextPatternForcePlay(true);
+
+	float triggerHp = _info.GetMaxHP() * 0.7f;
+
+	coreSwordMeteor->SetTriggerHp(triggerHp);
+
+	coreSwordMeteor->SetMaxColliderCount(0);
+
+	coreSwordMeteor->SetPattern(_battleCry);
+
+	_corePattern.emplace_back(coreSwordMeteor);
 }
