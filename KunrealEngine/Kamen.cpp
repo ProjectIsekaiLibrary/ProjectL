@@ -4850,7 +4850,7 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 				_rentalArea[_rentalNumVec[i]]->GetComponent<TransparentMesh>()->PlayOnce();
 			}
 
-			if (_timer2 >= 1.0f)
+			if (_timer2 >= 2.0f)
 			{
 				for (int i = 0; i < intTimer; i++)
 				{
