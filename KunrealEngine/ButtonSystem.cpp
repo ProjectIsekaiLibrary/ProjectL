@@ -1,5 +1,7 @@
 #include "ButtonSystem.h"
 #include "InputSystem.h"
+#include "ImageRenderer.h"
+#include "SoundPlayer.h"
 
 KunrealEngine::ButtonSystem::ButtonSystem()
 	: _image(nullptr)
@@ -12,6 +14,9 @@ KunrealEngine::ButtonSystem::~ButtonSystem()
 
 void KunrealEngine::ButtonSystem::Initialize()
 {
+	_soundComp = GetOwner()->AddComponent<SoundPlayer>();
+	_soundclick = _soundComp->CreateSoundInfo("Resources/Sound/Click.wav", false, false);
+	_soundComp->CreateSound(_soundclick, 1);
 }
 
 void KunrealEngine::ButtonSystem::Release()
@@ -50,6 +55,7 @@ void KunrealEngine::ButtonSystem::Update()
 	{
 		if (ispick)
 		{
+			_soundComp->Play(_soundclick);
 			_script();
 		}
 	}

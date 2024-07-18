@@ -3,7 +3,9 @@
 #include <windowsx.h>
 #include <functional>
 #include <assert.h>
+
 #include "InputSystem.h"
+#include "GraphicsSystem.h"
 
 #define Assert(formula, message) assert(formula && message)
 #define Assert(message) assert(0 && message)
@@ -212,6 +214,8 @@ namespace KunrealEngine
 		_mouseX = curspos.x;
 		_mouseY = curspos.y;
 		_mouseWheelData += _mouseState.lZ;
+
+		GRAPHICS->DrawDebugText(120,120,20,"x %d / y %d", _mouseX, _mouseY);
 
 		/////////////////////////////////////////////////////////////////
 		//////////	  스크린 밖으로 안나가게 클램프 거는 부분	   //////////

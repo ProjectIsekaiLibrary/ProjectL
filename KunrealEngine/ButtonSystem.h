@@ -1,10 +1,12 @@
 #pragma once
 #include "Component.h"
-#include "ImageRenderer.h"
 #include "functional"
 
 namespace KunrealEngine
 {
+	class ImageRenderer;
+	class SoundPlayer;
+
 	class ButtonSystem : public Component
 	{
 	public:
@@ -33,6 +35,9 @@ namespace KunrealEngine
 	private: 
 		ImageRenderer* _image;
 		ImageRenderer* _focusimage;
+		SoundPlayer* _soundComp;
+
+		int _soundclick;
 
 		// 이미지가 포커스드인지 아닌지 구별하기 위한 변수
 		// 매프레임 셋이미지를 하면 속도가 장난 아닐것 같아서 추가
