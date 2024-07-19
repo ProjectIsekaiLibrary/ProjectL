@@ -12,7 +12,7 @@
 ///
 
 KunrealEngine::Camera::Camera()
-	:_camera(nullptr), _transform(nullptr), _fixTarget(false) ,_targetPosition(), _prevPosition(), _prevRotation()
+	:_camera(nullptr), _transform(nullptr), _fixTarget(false) ,_targetPosition(), _prevPosition(), _prevRotation(), _nowParabolicMoving(false), _parabolicHeight(false), _timer(0.0f)
 {
 
 }
@@ -189,6 +189,59 @@ void KunrealEngine::Camera::CameraRotateX(float deltaTime)
 	_camera->RotateCamera(DirectX::XMFLOAT2(0.0f, deltaTime));
 }
 
+
+bool KunrealEngine::Camera::MoveParabolic(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float maxTime, float customHeight)
+{
+	float lerpRatio = _timer / maxTime;
+
+	if (lerpRatio >= 1.0f)
+	{
+		_timer = 0.0f;
+
+		_nowParabolicMoving = false;
+
+		_camera->SetCameraPosition(dst);
+
+		return true;
+	}
+
+
+	if (!_nowParabolicMoving)
+	{
+		if (customHeight == 0.0f)
+		{
+			_parabolicHeight = CalculateHeightForParabolic(src, dst, 0.2f);
+		}
+		else
+		{
+			_parabolicHeight = customHeight;
+		}
+
+		_nowParabolicMoving = true;
+
+		_timer = 0.0f;
+	}
+
+	_timer += TimeManager::GetInstance().GetDeltaTime();
+
+	float x = DirectX::XMVectorGetX(DirectX::XMVectorLerp(DirectX::XMLoadFloat3(&src), DirectX::XMLoadFloat3(&dst), lerpRatio));
+	float z = DirectX::XMVectorGetZ(DirectX::XMVectorLerp(DirectX::XMLoadFloat3(&src), DirectX::XMLoadFloat3(&dst), lerpRatio));
+
+	// 포물선 공식을 사용하여 y를 계산
+	float y_start = DirectX::XMVectorGetY(DirectX::XMLoadFloat3(&src));
+	float y_end = DirectX::XMVectorGetY(DirectX::XMLoadFloat3(&dst));
+	float y = y_start + lerpRatio * (y_end - y_start) + _parabolicHeight * (4 * lerpRatio * (1 - lerpRatio));
+
+	DirectX::XMFLOAT3 result;
+
+	DirectX::XMStoreFloat3(&result, DirectX::XMVectorSet(x, y, z, 0.0f));
+
+	_transform->SetPosition(result);
+	_camera->SetCameraPosition(_transform->GetPosition());
+
+	return false;
+}
+
 void KunrealEngine::Camera::MoveCamera()
 {
 	_camera->SetCameraPosition(_transform->GetPosition());
@@ -281,4 +334,13 @@ void KunrealEngine::Camera::MoveToDebug()
 	}
 
 	GRAPHICS->DrawUIText(100, 100, 30, DirectX::XMFLOAT4(0, 0, 255, 255), "R, %f", Rotdebug);
+}
+
+float KunrealEngine::Camera::CalculateHeightForParabolic(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float heightRatio)
+{
+	DirectX::XMVECTOR startVec = DirectX::XMLoadFloat3(&src);
+	DirectX::XMVECTOR endVec = DirectX::XMLoadFloat3(&dst);
+	DirectX::XMVECTOR diff = DirectX::XMVectorSubtract(endVec, startVec);
+	float distance = DirectX::XMVectorGetY(DirectX::XMVector3Length(diff));
+	return distance * heightRatio;
 }

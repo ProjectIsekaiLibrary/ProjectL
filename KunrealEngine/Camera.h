@@ -85,6 +85,9 @@ namespace KunrealEngine
 
 		void CameraRotateX(float deltaTime);
 
+	public:
+		bool MoveParabolic(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float maxTime, float customHeight = 0.0f);
+
 
 	public:
 		/// 조작 방식에 따른 카메라의 움직임
@@ -108,6 +111,14 @@ namespace KunrealEngine
 
 		/// 디버깅용 카메라 움직임 함수 릴리즈버전에서는 없어야함
 		void MoveToDebug();
+
+	private:
+		float CalculateHeightForParabolic(const DirectX::XMFLOAT3& src, const DirectX::XMFLOAT3& dst, float heightRatio);
+
+		bool _nowParabolicMoving;
+		float _parabolicHeight;
+
+		float _timer;
 	};
 }
 
