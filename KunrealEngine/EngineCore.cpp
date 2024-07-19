@@ -253,9 +253,9 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	//PlayGround();
-	//CreateTitleScene();
-	CreateEndingScene();
+	PlayGround();
+	CreateTitleScene();
+	//CreateEndingScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -2101,7 +2101,8 @@ void KunrealEngine::EngineCore::MoveToMain()
 
 			// 원래 씬 교체하는 부분
 			sceneInstance.ChangeScene("Main");
-			ResetMenuUIPack("Title", "Main");
+			ResetMenuUIPack(sceneInstance.GetScene("Title")->GetGameObject("pauseuibox"), "Title", "Main");
+			ResetMenuUIPack(sceneInstance.GetScene("Title")->GetGameObject("Option"), "Title", "Main");
 
 			sceneInstance.GetCurrentScene()->GetGameObject("DirectionalLight")->GetComponent<Light>()->SetDirection(-1.0f, -1.0f, 1.0f);
 
@@ -2221,7 +2222,8 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	GRAPHICS->CreateCubeMap("TitleBackground", "DarkMoon.dds", true);
 	GRAPHICS->SetMainCubeMap("TitleBackground");
 
-	ResetMenuUIPack("Main", "Title");
+	ResetMenuUIPack(sceneInstance.GetScene("Main")->GetGameObject("pauseuibox"), "Main", "Title");
+	ResetMenuUIPack(sceneInstance.GetScene("Main")->GetGameObject("Option"), "Main", "Title");
 	GameObject* titleUIpack = MakeTitleUIPack();
 
 	TitlesceneobjectSetting(_bezierObjectList);
