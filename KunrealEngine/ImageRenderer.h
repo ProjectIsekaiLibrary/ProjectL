@@ -45,6 +45,8 @@ namespace KunrealEngine
 		DirectX::XMFLOAT3 _decomposedRot;
 		DirectX::XMFLOAT3 _decomposedScale;
 
+		float _alpha;		// 투명도
+
 	public:
 		// 어떤 이미지를 출력할 것인지 설정
 		void SetImage(std::string imageName);
@@ -68,6 +70,9 @@ namespace KunrealEngine
 
 		// 이미지의 알파 값을 조정
 		void SetAlpha(float alpha);
+
+		// 이미지 알파값 반환
+		float GetAlpha();
 
 		// 이미지가 그려지고 있는 상태인지 확인
 		bool GetImageStatus();

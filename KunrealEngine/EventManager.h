@@ -1,6 +1,7 @@
 #pragma once
 #include "CommonHeader.h"
 #include "Coroutine.h"
+#include "ImageRenderer.h"
 
 struct BossBasicInfo;
 
@@ -58,8 +59,15 @@ namespace KunrealEngine
 		float _camshakex;
 		float _camshakez;
 
+
+		void CreateFadeObject();
 	private:
 		unsigned int _insideSafeCount;
+
+		bool _fadeoutFlag;				// 화면 fadeout
+
+		GameObject* _fadeObjectTitle;
+		GameObject* _fadeObjectMain;
 
 	public:
 		// 플레이어가 보스에게 주는 데미지 계산
@@ -85,7 +93,65 @@ namespace KunrealEngine
 		_Coroutine(DashCamMove);
 
 	public:
-		// scene 전환 관련
+		// 플레이어 사망후 타이틀화면으로
 		void MoveToTitleAfterDeath();
+
+		// FadeOut 	
+		void ActivateFadeOutTrigger();
+
+		// FadeIn
+		void ActivateFadeInTrigger();
+
+	private:
+		Coroutine_Func(fadeout)
+		{
+			EventManager* manager = this;
+			GameObject* blackBG = manager->_fadeObjectMain;
+			blackBG->SetActive(true);
+			blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+
+			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 1.0f)
+			{
+				blackBG->GetComponent<ImageRenderer>()->SetAlpha(blackBG->GetComponent<ImageRenderer>()->GetAlpha() + 0.005f);
+
+				if (blackBG->GetComponent<ImageRenderer>()->GetAlpha() >= 1.0f)
+				{
+					blackBG->GetComponent<ImageRenderer>()->SetAlpha(1.0f);
+
+					Waitforsecond(2.0f);
+					blackBG->SetActive(false);
+					manager->MoveToTitleAfterDeath();
+
+					break;
+				}
+
+				Return_null;
+			}		
+		};
+
+		Coroutine_Func(fadein)
+		{
+			EventManager* manager = this;
+			GameObject* blackBG = manager->_fadeObjectTitle;
+			blackBG->SetActive(true);
+			blackBG->GetComponent<ImageRenderer>()->SetAlpha(1.0f);
+
+			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() > 0.0f)
+			{
+				float pleaseman = blackBG->GetComponent<ImageRenderer>()->GetAlpha();
+
+				blackBG->GetComponent<ImageRenderer>()->SetAlpha(blackBG->GetComponent<ImageRenderer>()->GetAlpha() - 0.005f);
+
+				if (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 0.0f)
+				{
+					blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+					blackBG->SetActive(false);
+
+					break;
+				}
+
+				Return_null;
+			}
+		};
 	};
 }

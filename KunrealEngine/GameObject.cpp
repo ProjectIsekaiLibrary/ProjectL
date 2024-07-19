@@ -246,6 +246,8 @@ void KunrealEngine::GameObject::MoveToScene(Scene* scene)
 		GetObjectScene()->GetObjectList().erase(iter);
 	}
 
+	this->_sceneName = scene->GetSceneName();
+
 	// 이동한 scene과 현재 scene이 다르다면 비활성화	// 그래픽스 쪽에서 render 하지 않기 위해
 	if (SceneManager::GetInstance().GetCurrentScene() != scene)
 	{
@@ -273,6 +275,8 @@ void KunrealEngine::GameObject::MoveToScene(std::string sceneName)
 		{
 			GetObjectScene()->GetObjectList().erase(objectIter);
 		}
+
+		this->_sceneName = sceneName;
 
 		// 이동한 scene과 현재 scene이 다르다면 비활성화	// 그래픽스 쪽에서 render 하지 않기 위해
 		if (SceneManager::GetInstance().GetCurrentScene() != (*sceneIter))

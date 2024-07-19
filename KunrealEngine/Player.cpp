@@ -214,6 +214,7 @@ void KunrealEngine::Player::AnimateByStatus()
 				this->_owner->GetComponent<Animator>()->Play("FastRun", 15.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::DASH:
+				this->_onCasting = false;
 				this->_owner->GetComponent<Animator>()->Play("Dash", 30.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::ABILITY:
@@ -243,12 +244,15 @@ void KunrealEngine::Player::AnimateByStatus()
 
 				break;
 			case KunrealEngine::Player::Status::STAGGERED:
+				this->_onCasting = false;
 				this->_owner->GetComponent<Animator>()->Play("Staggered", 20.0f * _playerInfo._speedScale, true);
 				break;
 			case KunrealEngine::Player::Status::PARALYSIS:
+				this->_onCasting = false;
 				this->_owner->GetComponent<Animator>()->Play("SmallHit", 60.0f * _playerInfo._speedScale, false);
 				break;
 			case KunrealEngine::Player::Status::SWEEP:
+				this->_onCasting = false;
 				this->_owner->GetComponent<Animator>()->Play("Sweep", _sweepAnimationSpeed * _playerInfo._speedScale, false);
 
 				if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() <= 10.0f)
@@ -271,6 +275,7 @@ void KunrealEngine::Player::AnimateByStatus()
 				}
 				break;
 			case KunrealEngine::Player::Status::DEAD:
+				this->_onCasting = false;
 				this->_owner->GetComponent<Animator>()->Play("Death", _deathAnimationSpeed * _playerInfo._speedScale, false);
 
 				if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() < 9)

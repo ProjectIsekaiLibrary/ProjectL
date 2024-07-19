@@ -13,6 +13,7 @@
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
 	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(true)
+	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr)
 {
 
 }
@@ -45,18 +46,9 @@ void KunrealEngine::EventManager::Update()
 {
 	if (_eventStart)
 	{
-		//CalculateDamageToBoss();
-
-		//CalculateDamageToPlayer();
-
 		CalculateDamageToPlayer();
 
 		CalculateDamageToPlayer2();
-
-		//if (_bossComp->isDead())
-		//{
-		//	Release();
-		//}
 	}
 
 	if (_player != nullptr)
@@ -209,6 +201,24 @@ void KunrealEngine::EventManager::CamShake(float harder)
 	// 그냥 지정된 범위 내 랜덤값을 때려박는다.
 	_camshakex = ToolBox::GetRandomFloat(0.0f, harder);
 	_camshakez = ToolBox::GetRandomFloat(0.0f, harder);
+}
+
+
+void KunrealEngine::EventManager::CreateFadeObject()
+{
+	this->_fadeObjectTitle = SceneManager::GetInstance().GetScene("Title")->CreateObject("FadeObject");
+	//this->_fadeObjectTitle->_autoAwake = true;
+	this->_fadeObjectTitle->AddComponent<ImageRenderer>();
+	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	this->_fadeObjectTitle->SetActive(false);
+
+	this->_fadeObjectMain = SceneManager::GetInstance().GetScene("Main")->CreateObject("FadeObject");
+	//this->_fadeObjectMain->_autoAwake = true;
+	this->_fadeObjectMain->AddComponent<ImageRenderer>();
+	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	this->_fadeObjectMain->SetActive(false);
 }
 
 //void KunrealEngine::EventManager::CalculateDamageToBoss()
@@ -1017,7 +1027,8 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 	this->_iscamfollow = false;
 
 	// 플레이어 위치 초기화
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetRotation(0.0f, 45.0f, 0.0f);
 	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
 	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
 	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
@@ -1026,23 +1037,47 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.0f, 20.0f);
 	SceneManager::GetInstance().GetScene("Title")->GetGameObject("button_Start")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 400.0f);
 
+	// 빛 세팅
+	Light* titleLight = SceneManager::GetInstance().GetScene("Title")->GetGameObject("DirectionalLight")->GetComponent<Light>();
+	titleLight->SetDirection(1.0f, -1.0f, 0.1f);
+	titleLight->SetDiffuse(0.3f, 0.3f, 0.430f, 0.3f);
+	titleLight->SetAmbient(0.0f, 0.06f, 0.410f, 0.2f);
+	titleLight->SetSpecular(1.0f, 1.0f, 1.0f, 1.0f);
+
+	// 세팅 후 scene 변경
 	SceneManager::GetInstance().ChangeScene("Title");
 
+	// 전투중인 플레이어 초기화
 	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
 
-	SceneManager::GetInstance().GetScene("Main")->DeleteGameObject("Kamen");
-	//SceneManager::GetInstance().GetScene("Main")->DeleteGameObject("Player");
-
-	//SceneManager::GetInstance().GetScene("Main")->CreateObject("Player");
-	//SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->AddComponent<Player>();
-	//SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->_autoAwake = true;
-
-	SceneManager::GetInstance().GetScene("Main")->CreateObject("Kamen");
-	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Kamen")->AddComponent<Kamen>();
-	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Kamen")->_autoAwake = true;
-
-
+	// 네비게이션 재설정
 	Navigation::GetInstance().HandleBuild(0, "bridge_mapmesh.obj");
 
+	// 타이틀 씬의 파티클 재활성화
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitleRock1")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitleRock2Particle")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitleRock3")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particlePortal1")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particlePortal2")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particlePortal3")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particleMoon")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (1)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (2)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (3)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (4)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (5)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (6)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (7)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (8)")->GetComponent<Particle>()->SetActive(true);
+	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (9)")->GetComponent<Particle>()->SetActive(true);
+
+	// 카메라 재설정 후 fadeout fadein
 	SetCamera("TitleCamera");
+	Startcoroutine(fadein);
+}
+
+void KunrealEngine::EventManager::ActivateFadeOutTrigger()
+{
+	Startcoroutine(fadeout);
 }

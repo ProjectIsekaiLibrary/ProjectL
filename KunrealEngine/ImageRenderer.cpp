@@ -5,7 +5,7 @@
 
 KunrealEngine::ImageRenderer::ImageRenderer()
 	:_image(nullptr), _transform(nullptr), 
-	_decomposedPos({ 0.0f, 0.0f, 0.0f }), _decomposedRot({ 0.0f, 0.0f, 0.0f }), _decomposedScale({ 0.0f, 0.0f, 0.0f })
+	_decomposedPos({ 0.0f, 0.0f, 0.0f }), _decomposedRot({ 0.0f, 0.0f, 0.0f }), _decomposedScale({ 0.0f, 0.0f, 0.0f }), _alpha(1.0f)
 {
 	
 }
@@ -143,6 +143,13 @@ void KunrealEngine::ImageRenderer::SetImageStatus(bool flag)
 void KunrealEngine::ImageRenderer::SetAlpha(float alpha)
 {
 	_image->SetAlpha(alpha);
+	this->_alpha = alpha;
+}
+
+
+float KunrealEngine::ImageRenderer::GetAlpha()
+{
+	return this->_alpha;
 }
 
 bool KunrealEngine::ImageRenderer::GetImageStatus()

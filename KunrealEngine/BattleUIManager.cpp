@@ -773,6 +773,7 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		// textui는 천천히 커진다 대충 백ui 보다 아슬아슬하게 커지면 될듯
 		// 빛나야 하는가? 고민중
 		auto uimanager = this;
+		uimanager->_isdied = true;
 		float delta = 0;
 		float scale = 1.0f;
 
@@ -799,7 +800,7 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		}
 
 		Waitforsecond(3.0f);
-		EventManager::GetInstance().MoveToTitleAfterDeath();
+		EventManager::GetInstance().ActivateFadeOutTrigger();
 	};
 	Startcoroutine(diedcoro);
 }
