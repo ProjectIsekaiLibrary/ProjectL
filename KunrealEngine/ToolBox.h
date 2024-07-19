@@ -59,6 +59,9 @@ namespace KunrealEngine
 		static DirectX::XMFLOAT3 XMFLOAT3Subtract(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b);
 		// XMFLOAT3 µ¡»ù
 		static DirectX::XMFLOAT3 XMFLOAT3Add(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b);
+	
+		// º£Áö¾î °ø½Ä
+		static DirectX::XMFLOAT3 Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t);
 	};
 
 }

@@ -173,6 +173,11 @@ namespace KunrealEngine
 		void HoldKamenSword();
 
 	private:
+		// 베지어 곡선 활용 함수
+		// 일정 수치 사이의 랜덤 보조점을 세팅 (해당 함수는 20 ~ 30의 거리)
+		std::vector<DirectX::XMFLOAT3> BezierSetting(GameObject* bezierObject);
+
+	private:
 		BossPattern* _leftAttack;
 		BossPattern* _rightAttack;
 		BossPattern* _spellAttack;
@@ -445,6 +450,20 @@ namespace KunrealEngine
 		std::vector<GameObject*> _kamenLastphaseParticle;
 		std::vector<GameObject*> _kamenLastphaseParticleBack;
 
+		std::vector<GameObject*> _meteorSwordHitParticle;
+
+		// 베지어 곡선을 이용한 파티클 이동 관련 변수
+		std::vector<GameObject*> _bezierSwordParticles;
+		std::vector<DirectX::XMFLOAT3> _bezierSwordParticlePoints;
+		std::vector<std::vector<DirectX::XMFLOAT3>> _bezierCurvePoints;
+		std::vector<float> _timerList;
+
+		DirectX::XMFLOAT3 _targetSword;
+
+		bool _isBezierStartSetting;
+		bool _isSettingTimer;
+
+		GameObject* _3PhaseParticle;
 		// 스펠 소멸값을 위한 변수
 
 		float _spellDel;
