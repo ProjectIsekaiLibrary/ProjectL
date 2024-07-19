@@ -32,7 +32,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraReturn(false)
 {
 	BossBasicInfo info;
 
@@ -240,6 +240,8 @@ void KunrealEngine::Kamen::GamePattern()
 	CoreSwordMeteorPattern();
 
 	_basicPattern[1].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+
+	CreateDecalTest();
 }
 
 
@@ -2228,7 +2230,35 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 		areaCollider->AddComponent<BoxCollider>();
 
+		areaCollider->SetTotalComponentState(false);
+		areaCollider->SetActive(false);
+
 		_rentalCollider.emplace_back(areaCollider);
+	}
+
+	{
+		std::string name = "MeteorSword";
+
+		auto sword = _boss->GetObjectScene()->CreateObject(name);
+		sword->AddComponent<MeshRenderer>();
+		sword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+		sword->GetComponent<MeshRenderer>()->SetActive(false);
+		auto texSize = sword->GetComponent<MeshRenderer>()->GetTextures().size();
+		for (int i = 0; i < texSize; i++)
+		{
+			sword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+			sword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+			sword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+		}
+
+		sword->GetComponent<Transform>()->SetPosition(0.0f, 400.0f, 0.0f);
+		sword->GetComponent<Transform>()->SetRotation(180.0f, 90.0f, 0.0f);
+		sword->GetComponent<Transform>()->SetScale(8.0f, 8.0f, 8.0f);
+
+		sword->SetTotalComponentState(false);
+		sword->SetActive(false);
+
+		_meteorSword = sword;
 	}
 }
 
@@ -4679,6 +4709,7 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
 	testDecal->GetComponent<TransparentMesh>()->SetInfinite(true);
+	pattern->SetSubObject(_meteorSword);
 
 	pattern->SetSubObject(testDecal);
 
@@ -4686,6 +4717,8 @@ void KunrealEngine::Kamen::CreateDecalTest()
 		{
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
+
+			_meteorSword->GetComponent<MeshRenderer>()->SetActive(true);
 
 			_timer = 0.0f;
 		};
@@ -4715,18 +4748,142 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 {
 	BossPattern* pattern = new BossPattern();
 
+	pattern->SetSubObject(_meteorSword);
+
 	pattern->SetPatternName("SwordMeteorAppear");
 
 	auto initLogic = [pattern, this]()
 		{
 			_boss->GetComponent<MeshRenderer>()->SetActive(false);
 			_boss->GetComponent<BoxCollider>()->SetActive(false);
+
+			_meteorSword->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
+
+			_cameraReturn = false;
 		};
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
 		{
-			return false;
+			auto camera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Camera>();
+
+			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
+
+			if (!_cameraReturn)
+			{
+				if (_cameraRot.y > -50.0f)
+				{
+					auto angle = -10.0f * deltaTime;
+					camera->CameraRotateY(angle);
+					_cameraRot.y += angle;
+				}
+				else
+				{
+					if (_cameraMove.z > -300.0f)
+					{
+						auto distance = -40.0f * deltaTime;
+						camera->CameraWalk(distance);
+						_cameraMove.z += distance;
+					}
+					else
+					{
+						auto angle = -10.0f * deltaTime;
+						camera->CameraRotateY(angle);
+						_cameraRot.y += angle;
+
+						if (_cameraRot.y < -70.0f)
+						{
+							_cameraReturn = true;
+						}
+					}
+
+				}
+			}
+			else
+			{
+				if (_cameraRot.y < -50.0f)
+				{
+					auto angle = 10.0f * deltaTime;
+					camera->CameraRotateY(angle);
+					_cameraRot.y += angle;
+				}
+				else
+				{
+					if (_cameraMove.z < 0.0f)
+					{
+						auto distance = 40.0f * deltaTime;
+						camera->CameraWalk(distance);
+						_cameraMove.z += distance;
+					}
+					else
+					{
+						if (_cameraRot.y < 0.0f)
+						{
+							auto angle = 10.0f * deltaTime;
+							camera->CameraRotateY(angle);
+							_cameraRot.y += angle;
+						}
+
+						if (_cameraRot.y >= 0.0f)
+						{
+							return false;
+						}
+					}
+
+				}
+			}
+
+			//if (!_cameraReturn)
+			//{
+			//	if (_cameraMove.z > -300.0f)
+			//	{
+			//		auto moveSpeed = 40.0f;
+			//		camera->CameraWalk(-moveSpeed * deltaTime);
+			//		_cameraMove.z += deltaTime * -moveSpeed;
+			//
+			//		camera->CameraUpDown(moveSpeed * 0.02f * deltaTime);
+			//		_cameraMove.y += deltaTime * moveSpeed * 0.02f;
+			//	}
+			//
+			//	else
+			//	{
+			//		camera->CameraRotateY(-5.0f * deltaTime);
+			//		_cameraRot.y += deltaTime * -5.0f;
+			//
+			//		if (_cameraRot.y <= -30)
+			//		{
+			//			_cameraReturn = true;
+			//		}
+			//	}
+			//}
+			//else
+			//{
+			//	if (_cameraRot.y <= 0)
+			//	{
+			//		camera->CameraRotateY(5.0f * deltaTime);
+			//		_cameraRot.y += deltaTime * 5.0f;
+			//	}
+			//	else
+			//	{
+			//		auto moveSpeed = 40.0f;
+			//		camera->CameraWalk(moveSpeed * deltaTime);
+			//		_cameraMove.z += deltaTime * moveSpeed;
+			//
+			//		camera->CameraUpDown(-moveSpeed * 0.02f * deltaTime);
+			//		_cameraMove.y += deltaTime * -moveSpeed * 0.02f;
+			//
+			//		if (_cameraMove.z >= 0.0f)
+			//		{
+			//			return false;
+			//		}
+			//	}
+			//}
+			
+			return true;
 		};
 	pattern->SetLogic(attackLogic);
 
@@ -6653,5 +6810,5 @@ void KunrealEngine::Kamen::CoreSwordMeteorPattern()
 
 	_corePattern.emplace_back(coreSwordMeteor);
 
-	_basicPattern[0].emplace_back(coreSwordMeteor);
+	//_basicPattern[0].emplace_back(coreSwordMeteor);
 }

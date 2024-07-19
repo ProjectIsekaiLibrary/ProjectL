@@ -81,6 +81,11 @@ namespace KunrealEngine
 		// 카메라 상하 이동
 		void CameraUpDown(float deltaTime);
 
+		void CameraRotateY(float deltaTime);
+
+		void CameraRotateX(float deltaTime);
+
+
 	public:
 		/// 조작 방식에 따른 카메라의 움직임
 		// 타겟을 고정하지 않음

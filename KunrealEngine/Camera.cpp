@@ -55,7 +55,7 @@ void KunrealEngine::Camera::Update()
 	///
 	if (this->GetOwner() == SceneManager::GetInstance().GetCurrentScene()->GetMainCamera())
 	{
-		//MoveToDebug();
+		MoveToDebug();
 	}
 	///
 }
@@ -135,6 +135,8 @@ void KunrealEngine::Camera::CameraStrafe(float deltaTime)
 	DirectX::XMStoreFloat3(&finalPos, DirectX::XMVectorMultiplyAdd(right, move, position));
 
 	_transform->SetPosition(finalPos.x, finalPos.y, finalPos.z);
+
+	_camera->SetCameraPosition(_transform->GetPosition());
 }
 
 void KunrealEngine::Camera::CameraWalk(float deltaTime)
@@ -152,6 +154,8 @@ void KunrealEngine::Camera::CameraWalk(float deltaTime)
 	DirectX::XMStoreFloat3(&finalPos, DirectX::XMVectorMultiplyAdd(look, move, position));
 
 	_transform->SetPosition(finalPos.x, finalPos.y, finalPos.z);
+
+	_camera->SetCameraPosition(_transform->GetPosition());
 }
 
 void KunrealEngine::Camera::CameraUpDown(float deltaTime)
@@ -169,6 +173,20 @@ void KunrealEngine::Camera::CameraUpDown(float deltaTime)
 	DirectX::XMStoreFloat3(&finalPos, DirectX::XMVectorMultiplyAdd(up, move, position));
 
 	_transform->SetPosition(finalPos.x, finalPos.y, finalPos.z);
+
+	_camera->SetCameraPosition(_transform->GetPosition());
+}
+
+
+void KunrealEngine::Camera::CameraRotateY(float deltaTime)
+{
+	_camera->RotateCamera(DirectX::XMFLOAT2(deltaTime, 0.0f));
+}
+
+
+void KunrealEngine::Camera::CameraRotateX(float deltaTime)
+{
+	_camera->RotateCamera(DirectX::XMFLOAT2(0.0f, deltaTime));
 }
 
 void KunrealEngine::Camera::MoveCamera()
@@ -219,6 +237,8 @@ void KunrealEngine::Camera::SetMainCamera()
 
 void KunrealEngine::Camera::MoveToDebug()
 {
+	static float Rotdebug = 0.0f;
+
 	float x = _transform->GetPosition().x;
 	float y = _transform->GetPosition().y;
 	float z = _transform->GetPosition().z;
@@ -227,32 +247,38 @@ void KunrealEngine::Camera::MoveToDebug()
 	{
 		CameraStrafe(-40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::D))
+	if (InputSystem::GetInstance()->KeyInput(KEY::D))
 	{
 		CameraStrafe(40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::W))
+	if (InputSystem::GetInstance()->KeyInput(KEY::W))
 	{
 		CameraWalk(40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::S))
+	if (InputSystem::GetInstance()->KeyInput(KEY::S))
 	{
 		CameraWalk(-40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::Q))
+	if (InputSystem::GetInstance()->KeyInput(KEY::Q))
 	{
 		CameraUpDown(-40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::E))
+	if (InputSystem::GetInstance()->KeyInput(KEY::E))
 	{
 		CameraUpDown(40.0f * TimeManager::GetInstance().GetDeltaTime());
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::R))
+	if (InputSystem::GetInstance()->KeyInput(KEY::R))
 	{
-		GRAPHICS->GetMainCamera()->RotateCamera({ 0, -40.0f * TimeManager::GetInstance().GetDeltaTime() });
+		GRAPHICS->GetMainCamera()->RotateCamera({ -40.0f * TimeManager::GetInstance().GetDeltaTime(), 0 });
+
+		Rotdebug += -40.0f * TimeManager::GetInstance().GetDeltaTime();
 	}
-	else if (InputSystem::GetInstance()->KeyInput(KEY::T))
+	if (InputSystem::GetInstance()->KeyInput(KEY::T))
 	{
-		GRAPHICS->GetMainCamera()->RotateCamera({ 0, 40.0f * TimeManager::GetInstance().GetDeltaTime() });
+		GRAPHICS->GetMainCamera()->RotateCamera({ 40.0f * TimeManager::GetInstance().GetDeltaTime(), 0 });
+
+		Rotdebug += 40.0f * TimeManager::GetInstance().GetDeltaTime();
 	}
+
+	GRAPHICS->DrawUIText(100, 100, 30, DirectX::XMFLOAT4(0, 0, 255, 255), "R, %f", Rotdebug);
 }

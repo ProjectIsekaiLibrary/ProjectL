@@ -289,6 +289,7 @@ namespace KunrealEngine
 		std::vector<GameObject*> _multipleSwordVec;
 		std::vector<GameObject*> _multipleSwordWarningVec;
 
+		GameObject* _meteorSword;
 		std::vector<GameObject*> _rentalArea;
 
 		std::vector<GameObject*> _rentalCollider;
@@ -382,7 +383,13 @@ namespace KunrealEngine
 
 	private:
 		bool _rentalSuccess;
-		
+	
+	private:
+		DirectX::XMFLOAT3 _cameraMove;
+		DirectX::XMFLOAT2 _cameraRot;
+
+		bool _cameraReturn;
+
 		// 1페이즈 핵심 패턴
 	private:
 		std::vector<unsigned int> _rentalNumVec;
