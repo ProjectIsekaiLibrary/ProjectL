@@ -39,6 +39,11 @@ KunrealEngine::GameObject* titleRock3;
 KunrealEngine::GameObject* floatingObj;
 KunrealEngine::GameObject* titleBoss;
 
+// Ending
+KunrealEngine::GameObject* endingBoss;
+KunrealEngine::GameObject* endingRock;
+KunrealEngine::GameObject* endingPlayer;
+
 KunrealEngine::GameObject* Title_ui_box;	// 타이틀UI
 KunrealEngine::GameObject* pause_ui_box;	// 일시정지
 KunrealEngine::GameObject* option_ui_box;	// 일시정지
@@ -248,8 +253,9 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	PlayGround();
-	CreateTitleScene();
+	//PlayGround();
+	//CreateTitleScene();
+	CreateEndingScene();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -314,7 +320,10 @@ void KunrealEngine::EngineCore::Update()
 			mapParticleList->GetComponent<Particle>()->SetActive(true);
 		}
 	}
-
+	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Ending")
+	{
+		EndingSceneUpdate();
+	}
 
 
 	MoveToMain();
@@ -2216,4 +2225,319 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	GameObject* titleUIpack = MakeTitleUIPack();
 
 	TitlesceneobjectSetting(_bezierObjectList);
+}
+
+void KunrealEngine::EngineCore::CreateEndingScene()
+{
+	Scene* titleScene = sceneInstance.CreateScene("Ending");
+	sceneInstance.ChangeScene("Ending");
+
+	// Camera
+	_endingCamera = sceneInstance.GetCurrentScene()->CreateObject("EndingCamera");
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
+
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
+	_endingCamera->AddComponent<Camera>();
+	_endingCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+	_endingCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+
+	_endingCamera->GetComponent<Camera>()->SetMainCamera();
+
+	_endingCamera->GetComponent<Transform>()->SetPosition({ -322.f, 100.0f,-148.130f });
+	_endingCamera->GetComponent<Transform>()->SetRotation(-182.f, 168.f, 0.f);
+	EventManager::GetInstance().SetCamera("EndingCamera");
+
+	// light test
+	//DirectX::XMFLOAT4 diffuse = { 0.92f, 0.18f, 0.670f, 0.3f };
+	//DirectX::XMFLOAT4 ambient = { 0.52f, 0.28f, 0.6f, 0.2f };
+	//DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	//DirectX::XMFLOAT3 direction = { 0.18f, -0.16f, -1.0f };
+
+	DirectX::XMFLOAT4 diffuse = { 1.f, 1.f, 1.f, 0.3f };
+	DirectX::XMFLOAT4 ambient = { 1.f, 1.f, 1.f, 0.2f };
+	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 direction = { 0.18f, -0.16f, -1.0f };
+
+	_endingSoundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
+	_endingSoundComp = _endingSoundManager->AddComponent<SoundPlayer>();
+	endingSoundindex = _endingSoundComp->CreateSoundInfo("Resources/Sound/EndingBGM (mp3cut.net) (2).mp3");
+	_endingSoundComp->CreateSound(endingSoundindex, 1);
+	_endingSoundComp->SetVolume(20.f, endingSoundindex);
+
+	_endingLight = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
+	_endingLight->AddComponent<Light>();
+	Light* light = _endingLight->GetComponent<Light>();
+	light->CreateDirectionalLight(ambient, diffuse, specular, direction);
+	light->SetActive(true);
+	_endingLight->SetActive(true);
+
+	//// cube map test
+	GRAPHICS->CreateCubeMap("EndingBackground", "Texture6.dds", true);
+	GRAPHICS->SetMainCubeMap("EndingBackground");
+
+	endingRock = sceneInstance.GetCurrentScene()->CreateObject("EndingRock");
+	endingRock->AddComponent<MeshRenderer>();
+	endingRock->GetComponent<MeshRenderer>()->SetMeshObject("EndingRock/EndingRock");
+	endingRock->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
+	endingRock->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+	endingRock->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+
+	endingBoss = sceneInstance.GetCurrentScene()->CreateObject("titleBoss");
+	endingBoss->AddComponent<MeshRenderer>();
+	endingBoss->GetComponent<MeshRenderer>()->SetMeshObject("Lich/Lich");
+	endingBoss->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
+	endingBoss->GetComponent<Transform>()->SetPosition(-340.0f, 100.f, -267.0f);
+	endingBoss->GetComponent<Transform>()->SetRotation(0.f, 212.f, 0.f);
+	auto texSize = endingBoss->GetComponent<MeshRenderer>()->GetTextures().size();
+	for (int i = 0; i < texSize; i++)
+	{
+		endingBoss->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "Lich/T_Lich_1_D.tga");
+		endingBoss->GetComponent<MeshRenderer>()->SetNormalTexture(i, "Lich/T_Lich_N.tga");
+		endingBoss->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "Lich/T_Lich_01_E.tga");
+	}
+
+
+	endingPlayer = sceneInstance.GetCurrentScene()->CreateObject("EndingPlayer");
+	endingPlayer->AddComponent<MeshRenderer>();
+	endingPlayer->GetComponent<MeshRenderer>()->SetMeshObject("PlayerWithCloak/PlayerWithCloak");
+	endingPlayer->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
+	endingPlayer->GetComponent<Transform>()->SetRotation(3.0f, 9.f, 0.0f);
+	endingPlayer->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+
+	// Particle
+	endingPlayer->AddComponent<Particle>();
+	endingPlayer->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	//endingPlayer->GetComponent<Particle>()->SetParticlePos(-259.0f, 90.f, -255.0f);
+	endingPlayer->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	endingPlayer->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	endingPlayer->GetComponent<Particle>()->SetParticleSize(2.0f, 2.0f);
+	endingPlayer->GetComponent<Particle>()->AddParticleColor(1.1f, 0.5f, 1.0f);
+	endingPlayer->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	endingPlayer->GetComponent<Particle>()->SetActive(false);
+
+	_endingMeteo1 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo1");
+	_endingMeteo1->AddComponent<MeshRenderer>();
+	_endingMeteo1->GetComponent<MeshRenderer>()->SetMeshObject("BigMeteo1/BigMeteo1");
+	_endingMeteo1->GetComponent<Transform>()->SetPosition(153.7f, -60.f, -255.0f);
+	_endingMeteo1->GetComponent<Transform>()->SetScale(0.3f, 0.3f, 0.3f);
+	_endingMeteo1->AddComponent<Particle>();
+	_endingMeteo1->GetComponent<Particle>()->SetParticleEffect("Meteo1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo1->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo1->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo1->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo1->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo1->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo1->GetComponent<Particle>()->SetActive(true);
+
+	_endingMeteo2 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo2");
+	_endingMeteo2->AddComponent<MeshRenderer>();
+	_endingMeteo2->GetComponent<MeshRenderer>()->SetMeshObject("BigMeteo2/BigMeteo2");
+	_endingMeteo2->GetComponent<Transform>()->SetPosition(-203.6f, -50.f, -255.0f);
+	_endingMeteo2->AddComponent<Particle>();
+	_endingMeteo2->GetComponent<Particle>()->SetParticleEffect("Meteo2", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo2->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo2->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo2->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo2->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo2->GetComponent<Particle>()->SetActive(true);
+
+	_endingMeteo3 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo3");
+	_endingMeteo3->AddComponent<MeshRenderer>();
+	_endingMeteo3->GetComponent<MeshRenderer>()->SetMeshObject("BigMeteo3/BigMeteo3");
+	_endingMeteo3->GetComponent<Transform>()->SetPosition(-300.0f, -30.f, -462.0f);
+	_endingMeteo3->AddComponent<Particle>();
+	_endingMeteo3->GetComponent<Particle>()->SetParticleEffect("Meteo3", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo3->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo3->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo3->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo3->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo3->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo3->GetComponent<Particle>()->SetActive(true);
+
+	_endingMeteo4 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo4");
+	_endingMeteo4->AddComponent<MeshRenderer>();
+	_endingMeteo4->GetComponent<MeshRenderer>()->SetMeshObject("BigMeteo4/BigMeteo4");
+	_endingMeteo4->GetComponent<Transform>()->SetPosition(-173.0f, -50.f, -315.0f);
+	_endingMeteo4->AddComponent<Particle>();
+	_endingMeteo4->GetComponent<Particle>()->SetParticleEffect("Meteo4", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo4->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo4->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo4->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo4->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo4->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo4->GetComponent<Particle>()->SetActive(true);
+
+	_endingMeteo5 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo5");
+	_endingMeteo5->AddComponent<MeshRenderer>();
+	_endingMeteo5->GetComponent<MeshRenderer>()->SetMeshObject("SmallMeteo1/SmallMeteo1");
+	_endingMeteo5->GetComponent<Transform>()->SetPosition(-294.0f, -100.f, -255.0f);
+	_endingMeteo5->AddComponent<Particle>();
+	_endingMeteo5->GetComponent<Particle>()->SetParticleEffect("Meteo5", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo5->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo5->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo5->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo5->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo5->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo5->GetComponent<Particle>()->SetActive(true);
+
+	_endingMeteo6 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo6");
+	_endingMeteo6->AddComponent<MeshRenderer>();
+	_endingMeteo6->GetComponent<MeshRenderer>()->SetMeshObject("SmallMeteo2/SmallMeteo2");
+	_endingMeteo6->GetComponent<Transform>()->SetPosition(77.f, -200.f, -632.0f);
+	_endingMeteo6->AddComponent<Particle>();
+	_endingMeteo6->GetComponent<Particle>()->SetParticleEffect("Meteo6", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo6->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo6->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo6->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo6->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo6->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo6->GetComponent<Particle>()->SetActive(true);
+
+
+	_endingMeteo7 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo7");
+	_endingMeteo7->AddComponent<MeshRenderer>();
+	_endingMeteo7->GetComponent<MeshRenderer>()->SetMeshObject("SmallMeteo3/SmallMeteo3");
+	_endingMeteo7->GetComponent<Transform>()->SetPosition(-329.0f, -150.f, -255.0f);
+	_endingMeteo7->AddComponent<Particle>();
+	_endingMeteo7->GetComponent<Particle>()->SetParticleEffect("Meteo7", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo7->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo7->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo7->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo7->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo7->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo7->GetComponent<Particle>()->SetActive(true);
+
+
+	_endingMeteo8 = sceneInstance.GetCurrentScene()->CreateObject("EndingMeteo8");
+	_endingMeteo8->AddComponent<MeshRenderer>();
+	_endingMeteo8->GetComponent<MeshRenderer>()->SetMeshObject("SmallMeteo4/SmallMeteo4");
+	_endingMeteo8->GetComponent<Transform>()->SetPosition(-261.0f, -200.f, -172.0f);
+	_endingMeteo8->AddComponent<Particle>();
+	_endingMeteo8->GetComponent<Particle>()->SetParticleEffect("Meteo8", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+	_endingMeteo8->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
+	_endingMeteo8->GetComponent<Particle>()->SetParticleVelocity(11.2f, true);
+	_endingMeteo8->GetComponent<Particle>()->SetParticleSize(1.0f, 1.0f);
+	_endingMeteo8->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
+	_endingMeteo8->GetComponent<Particle>()->SetParticleDirection(-1.4f, 6.3f, -1.7f);
+	_endingMeteo8->GetComponent<Particle>()->SetActive(true);
+
+	_endingCredit1 = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit1");
+	auto credit1 = _endingCredit1->AddComponent<ImageRenderer>();
+	credit1->SetImage("ui/title_logo.png");
+	credit1->SetPosition(700.0f, 1300.0f);
+}
+
+void KunrealEngine::EngineCore::EndingSceneUpdate()
+{
+	endingTimer -= TimeManager::GetInstance().GetDeltaTime();
+
+	_endingMeteo1->GetComponent<Transform>()->SetPosition(153.7f,
+		CountPlus(_endingMeteo1->GetComponent<Transform>()->GetPosition().y, 400.f, 3.f), -255.0f);
+
+	_endingMeteo2->GetComponent<Transform>()->SetPosition(-203.6f,
+		CountPlus(_endingMeteo2->GetComponent<Transform>()->GetPosition().y, 400.f, 3.f), -255.0f);
+
+	_endingMeteo3->GetComponent<Transform>()->SetPosition(-300.0f,
+		CountPlus(_endingMeteo3->GetComponent<Transform>()->GetPosition().y, 400.f, 2.f), -462.0f);
+
+	_endingMeteo4->GetComponent<Transform>()->SetPosition(-173.0f,
+		CountPlus(_endingMeteo4->GetComponent<Transform>()->GetPosition().y, 400.f, 4.f), -315.0f);
+
+	_endingMeteo5->GetComponent<Transform>()->SetPosition(-294.0f,
+		CountPlus(_endingMeteo5->GetComponent<Transform>()->GetPosition().y, 400.f, 5.f), -255.0f);
+
+	_endingMeteo6->GetComponent<Transform>()->SetPosition(-77.f,
+		CountPlus(_endingMeteo6->GetComponent<Transform>()->GetPosition().y, 400.f, 3.f), -632.0f);
+
+	_endingMeteo7->GetComponent<Transform>()->SetPosition(-329.0f,
+		CountPlus(_endingMeteo7->GetComponent<Transform>()->GetPosition().y, 400.f, 4.f), -255.0f);
+
+	_endingMeteo8->GetComponent<Transform>()->SetPosition(-261.0f,
+		CountPlus(_endingMeteo8->GetComponent<Transform>()->GetPosition().y, 400.f, 5.f), -172.0f);
+
+	_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(700.f,
+		CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -400.0f, 30.f));
+
+
+	// boss
+	if (endingTimer <= 10.0f && endingTimer > 5.0f)
+	{
+		_endingSoundComp->Play(endingSoundindex);
+		endingBoss->GetComponent<Animator>()->Play("Idle", 10.f, true);
+	}
+	else if (endingTimer <= 5.0f && endingTimer >= 0.0f)
+	{
+		endingBoss->GetComponent<Animator>()->Play("BattleCry", 10.f, true);
+
+		endingBoss->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		endingBoss->GetComponent<MeshRenderer>()->SetDissolve(endingTimer / 5);
+	}
+
+	// player
+	if (endingTimer <= 10.0f && endingTimer > 2.f)
+	{
+		endingPlayer->GetComponent<Animator>()->Play("Idle", 10.0f, true);
+	}
+	else if (endingTimer <= 2.0f && endingTimer > -1.5f)
+	{
+		endingRock->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		endingRock->GetComponent<MeshRenderer>()->SetDissolve(endingTimer);
+
+		endingPlayer->GetComponent<Animator>()->Play("fallingEnding", 10.f, true);
+	}
+	else if (endingTimer <= -1.5f)
+	{
+		//_endingLight->GetComponent<Light>()->SetDirection(1.0f, 1.0f, -1.f);
+
+		_endingCamera->GetComponent<Transform>()->SetPosition({ -322.f, 100.0f,-148.130f });
+		_endingCamera->GetComponent<Transform>()->SetRotation(-182.f, 149.f, 0.f);
+
+
+		endingPlayer->GetComponent<Transform>()->SetPosition(-261.0f, 92.f, -255.0f);
+		endingPlayer->GetComponent<Transform>()->SetRotation(3.0f, 158.f, 0.0f);
+		endingPlayer->GetComponent<Particle>()->SetActive(true);
+
+		_endingSoundComp->SetVolume(70.0f, endingSoundindex);
+
+		endingPlayer->GetComponent<Animator>()->Play("endingFloatingfbx", 1.f, true);
+
+
+	}
+}
+
+float KunrealEngine::EngineCore::CountPlus(float start, float end, float speed)
+{
+	auto timer = TimeManager::GetInstance().GetDeltaTime();
+
+	float incresment = timer * speed;
+
+	start += incresment;
+
+	if (start >= end)
+	{
+		return end;
+	}
+	else
+	{
+		return start;
+	}
+}
+
+float KunrealEngine::EngineCore::CountMinus(float start, float end, float speed)
+{
+	auto timer = TimeManager::GetInstance().GetDeltaTime();
+
+	float decresement = timer * speed;
+
+	start -= decresement;
+
+	if (start <= end)
+	{
+		return end;
+	}
+	else
+	{
+		return start;
+	}
 }

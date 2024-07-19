@@ -33,6 +33,7 @@ namespace KunrealEngine
 {
 	class SceneManager;
 	class GameObject;
+	class SoundPlayer;
 
 	struct Point3D
 	{
@@ -125,6 +126,41 @@ namespace KunrealEngine
 		void FloatingY(GameObject* name, float range);
 
 		void ShiveringLight(GameObject* name);
+
+	private:
+		float endingTimer = 10.0f;
+
+		void CreateEndingScene();
+		void EndingSceneUpdate();
+		SoundPlayer* _endingSoundComp;
+		int endingSoundindex = 0;
+		GameObject* _endingSoundManager;
+
+		//GameObject* _endingPlayer;
+
+		GameObject* _endingCamera;
+		GameObject* _endingLight;
+
+		float CountPlus(float start, float end, float speed);
+		float CountMinus(float start, float end, float speed);
+
+		GameObject* _endingMeteo1;
+		GameObject* _endingMeteo2;
+		GameObject* _endingMeteo3;
+		GameObject* _endingMeteo4;
+		GameObject* _endingMeteo5;
+		GameObject* _endingMeteo6;
+		GameObject* _endingMeteo7;
+		GameObject* _endingMeteo8;
+
+		GameObject* _endingObject1;
+		GameObject* _endingObject2;
+		GameObject* _endingObject3;
+		GameObject* _endingObject4;
+		GameObject* _endingObject5;
+		GameObject* _endingObject6;
+
+		GameObject* _endingCredit1;
 	};
 }
 
