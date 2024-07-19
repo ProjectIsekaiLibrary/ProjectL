@@ -71,7 +71,7 @@ namespace KunrealEngine
 		buttonfocused_title->GetComponent<ImageRenderer>()->SetImage("ui/button-long-focus.png");
 		buttonfocused_title->GetComponent<ImageRenderer>()->SetPosition(800.0f, 500.0f);
 		buttonfocused_title->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-		
+
 		button_title->AddComponent<ButtonSystem>();
 		button_title->GetComponent<ButtonSystem>()->SetImage(button_title->GetComponent<ImageRenderer>());
 		button_title->GetComponent<ButtonSystem>()->Setfocused(buttonfocused_title->GetComponent<ImageRenderer>());
@@ -142,59 +142,19 @@ namespace KunrealEngine
 		return pauseuibox;
 	}
 
-	static GameObject* ResetMenuUIPack(std::string nowscene, std::string targetscene)
+	static void ResetMenuUIPack(GameObject* object ,std::string nowscene, std::string targetscene)
 	{
-		SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
-		auto now = scene.GetScene(nowscene); // Scene*
-		auto target = scene.GetScene(targetscene); // Scene*
-		GameObject* pauseuibox;
-		GameObject* button_option;
-		GameObject* button_title;
-		GameObject* button_quit;
-		GameObject* button_exit;
-		GameObject* buttonfocused_option;
-		GameObject* buttonfocused_title;
-		GameObject* buttonfocused_quit;
-		GameObject* buttonfocused_exit;
-		GameObject* imagebackground;
+		// 일단 사용할 씬을 받자.
+		Scene* now = SceneManager::GetInstance().GetScene(nowscene);
+		Scene* target = SceneManager::GetInstance().GetScene(targetscene);
+		// 그리고 나(파라미터)를 바꿔준다.
+		object->MoveToScene(target);
 
-		pauseuibox = now->GetGameObject("pauseuibox");
-		pauseuibox->MoveToScene(target);
-
-		imagebackground = now->GetGameObject("MenuBackground");
-		imagebackground->MoveToScene(target);
-
-		// 옵션 버튼
-		button_option = now->GetGameObject("button_resume");
-		button_option->MoveToScene(target);
-
-		buttonfocused_option = now->GetGameObject("button_resume_focus");
-		buttonfocused_option->MoveToScene(target);
-
-		//타이틀로 돌아가기
-		button_title = now->GetGameObject("button_title");
-		button_title->MoveToScene(target);
-
-		buttonfocused_title = now->GetGameObject("button_title_focus");
-		buttonfocused_title->MoveToScene(target);
-
-		// 게임 종료
-		button_quit = now->GetGameObject("button_Quit");
-		button_quit->MoveToScene(target);
-
-		buttonfocused_quit = now->GetGameObject("button_Quit_focus");
-		buttonfocused_quit->MoveToScene(target);
-
-		// 메뉴 나가기
-		button_exit = now->GetGameObject("button_exit");
-		button_exit->MoveToScene(target);
-
-		buttonfocused_exit = now->GetGameObject("button_exit_focus");
-		buttonfocused_exit->MoveToScene(target);
-
-		pauseuibox->SetActive(false);
-
-		return pauseuibox;
+		auto childs = object->GetChilds();
+		for (auto child : childs)
+		{
+			child->MoveToScene(target);
+		}
 	}
 
 	//일시정지 메뉴 UI를 불러오는 함수. UI들을 묶은 부모 오브젝트의 포인터를 반환합니다.
@@ -218,8 +178,8 @@ namespace KunrealEngine
 		title_image->GetComponent<ImageRenderer>()->SetPosition(525.f, 20.f);
 		title_image->GetComponent<Transform>()->SetScale(0.4f, 0.4f, 1.0f);
 		title_image->SetParent(titleuibox);
-		
-		
+
+
 		// 게임 시작
 		// 페이드 아웃 된다던가, 위나 아래로 올라가며 사라진다던가 하는 연출은 전달받은게 없으므로 일단은 disable
 		button_Start = scene.GetCurrentScene()->CreateObject("button_Start");

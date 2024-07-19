@@ -47,15 +47,19 @@ void KunrealEngine::PlayerAbility::Initialize()
 	CreateAbility3();
 	CreateAbility4();
 
-	meteorExplode = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_explode.mp3", true, false);
-	meteorFall = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_falling.mp3", true, false);
-	energyBallExplode = _soundComp->CreateSoundInfo("Resources/Sound/wavsound.mp3", true, false);
-	circleunfolding = _soundComp->CreateSoundInfo("Resources/Sound/magic_filed.mp3", true, false);
+	_energyBallShot = _soundComp->CreateSoundInfo("Resources/Sound/avatar_change.mp3", true, false);
+	_energyBallFlying = _soundComp->CreateSoundInfo("Resources/Sound/aura_loop.mp3", true, false);
+	_energyBallExplode = _soundComp->CreateSoundInfo("Resources/Sound/wavsound.mp3", true, false);
+	_circleunfolding = _soundComp->CreateSoundInfo("Resources/Sound/magic_filed.mp3", true, false);
 	_soundlaser = _soundComp->CreateSoundInfo("Resources/Sound/Laser.mp3", true, false);
-	_soundComp->CreateSound(meteorExplode, 1);
-	_soundComp->CreateSound(meteorFall, 1);
-	_soundComp->CreateSound(energyBallExplode, 1);
-	_soundComp->CreateSound(circleunfolding, 1);
+	_meteorExplode = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_explode.mp3", true, false);
+	_meteorFall = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_falling.mp3", true, false);
+	_soundComp->CreateSound(_energyBallShot, 1);
+	_soundComp->CreateSound(_energyBallFlying, 1);
+	_soundComp->CreateSound(_energyBallExplode, 1);
+	_soundComp->CreateSound(_meteorExplode, 1);
+	_soundComp->CreateSound(_meteorFall, 1);
+	_soundComp->CreateSound(_circleunfolding, 1);
 	_soundComp->CreateSound(_soundlaser, 1);
 }
 
@@ -117,7 +121,7 @@ void KunrealEngine::PlayerAbility::Update()
 		_isCircleDetected = true;
 		_isCircleHit = true;
 		_destroyCircle = false;
-		_soundComp->Play(circleunfolding);
+		_soundComp->Play(_circleunfolding);
 		_circle->SetActive(true);
 		Startcoroutine(circleCoolDown);
 
@@ -188,8 +192,14 @@ void KunrealEngine::PlayerAbility::Update()
 		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
 		{
 			this->_beforeMeteor = false;
-			this->_meteorRange->SetActive(false);
-			this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
+
+			if (!this->_meteor->GetActivated())
+			{
+				this->_meteorRange->GetComponent<MeteorRange>()->_onCast = false;
+				this->_meteorRange->SetActive(false);
+				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
+			}
+			
 			return;
 		}
 
@@ -438,7 +448,9 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 			{
 				if (_isShotHit)
 				{
-					_soundComp->Play(energyBallExplode);
+					//_soundComp->Stop(_energyBallShot);
+					_soundComp->Stop(_energyBallFlying);
+					_soundComp->Play(_energyBallExplode);
 					EventManager::GetInstance().CalculateDamageToBoss(shot);
 					_isShotHit = false;
 				}
@@ -461,6 +473,8 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		{
 			if (_shot->GetActivated())
 			{
+				_soundComp->Play(_energyBallShot);
+				_soundComp->Play(_energyBallFlying);
 				DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
 
 				DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);
@@ -473,8 +487,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				{
 					_isShotEnded = true;
 				}
-			}
-
+			} 
 
 			if (!(_shot->GetActivated()) && _isShotEnded == true)
 			{
@@ -1114,7 +1127,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		{
 			if (_meteor->GetComponent<Transform>()->GetPosition().y <= 2.0f)
 			{
-				_soundComp->Play(meteorFall);
+				_soundComp->Play(_meteorFall);
 
 				if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && this->_isMeteorHit)
 				{
@@ -1167,8 +1180,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 			if (!(_meteor->GetActivated()) && _isMeteorEnded == true)
 			{
-				_soundComp->Stop(meteorFall);
-				_soundComp->Play(meteorExplode);
+				_soundComp->Stop(_meteorFall);
+				_soundComp->Play(_meteorExplode);
 
 				_meteorParticleTimer += TimeManager::GetInstance().GetDeltaTime();
 

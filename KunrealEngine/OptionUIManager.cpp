@@ -216,7 +216,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_exit->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
 			scene->GetGameObject("pauseuibox")->SetActive(true);
-			optionuibox->SetActive(false);
+			this->optionuibox->SetActive(false);
 		});
 
 	button_exit_focus = scene->CreateObject("button_exit");

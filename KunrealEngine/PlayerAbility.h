@@ -88,10 +88,12 @@ namespace KunrealEngine
 
 		// 이건 사운드의 인덱스를 담아둔 변수뭉치들
 	private:
-		int meteorFall;
-		int meteorExplode;
-		int energyBallExplode;
-		int circleunfolding;
+		int _energyBallShot;
+		int _energyBallFlying;
+		int _energyBallExplode;
+		int _meteorFall;
+		int _meteorExplode;
+		int _circleunfolding;
 		int _soundlaser;
 
 		/// 파티클 배치용 멤버변수
