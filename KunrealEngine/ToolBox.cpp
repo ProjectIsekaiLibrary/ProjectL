@@ -240,6 +240,24 @@ DirectX::XMFLOAT3 KunrealEngine::ToolBox::XMFLOAT3Add(const DirectX::XMFLOAT3& a
 	return result;
 }
 
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t)
+{
+	float u = 1.0f - t;
+	float tt = t * t;
+	float ttt = tt * t;
+	float uu = u * u;
+	float uuu = uu * u;
+
+	DirectX::XMFLOAT3 p =
+	{
+		uuu * startPoint.x + 3 * uu * t * p1.x + 3 * u * tt * p2.x + ttt * endPoint.x,
+		uuu * startPoint.y + 3 * uu * t * p1.y + 3 * u * tt * p2.y + ttt * endPoint.y,
+		uuu * startPoint.z + 3 * uu * t * p1.z + 3 * u * tt * p2.z + ttt * endPoint.z,
+	};
+
+	return p;
+}
+
 DirectX::XMFLOAT3 KunrealEngine::ToolBox::XMFLOAT3Subtract(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 {
 	DirectX::XMFLOAT3 result(a.x - b.x, a.y - b.y, a.z - b.z);

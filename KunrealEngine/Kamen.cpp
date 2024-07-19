@@ -77,18 +77,10 @@ void KunrealEngine::Kamen::Update()
 	Boss::Update();
 	HoldKamenSword();
 
-	// 특정 패턴에 따라 Directional Light를 바꾼다
-
-	for (auto& kamenLastphaseParticle : _kamenLastphaseParticle)
-	{
-		kamenLastphaseParticle->GetComponent<Particle>()->SetActive(true);
-		kamenLastphaseParticle->GetComponent<Particle>()->SetParticleAngle(270, (_boss->GetComponent<Transform>()->GetRotation().y), 0);
-	}
-	for (auto& kamenLastphaseParticleBack : _kamenLastphaseParticleBack)
-	{
-		kamenLastphaseParticleBack->GetComponent<Particle>()->SetActive(true);
-		kamenLastphaseParticleBack->GetComponent<Particle>()->SetParticleAngle(270, -(_boss->GetComponent<Transform>()->GetRotation().y), 0);
-	}
+	_3PhaseParticle->GetComponent<Particle>()->SetActive(true);
+	_3PhaseParticle->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._41,
+		this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._42, 
+		this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._43);
 }
 
 void KunrealEngine::Kamen::LateUpdate()
@@ -225,23 +217,24 @@ void KunrealEngine::Kamen::GamePattern()
 	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 	//
 	//_basicPattern[1] = _basicPattern[0];
-	//
+
+	_basicPattern[0].emplace_back(_holdSword); // 2페 진입용 임시 코드
 	//_basicPattern[2].emplace_back(_swordSwingTwice);
 	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
-	//_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	_basicPattern[2].emplace_back(_swordSwingHorizontal);
 	//_basicPattern[2].emplace_back(_swordSwingVertical);
 
-	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
-	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
-	SwordLinearAttackPattern();						// 칼 직선 공격
-	SwordChopPattern();								// 도넛
+	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
+	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
+	//SwordLinearAttackPattern();						// 칼 직선 공격
+	//SwordChopPattern();								// 도넛
 
 	CoreSwordMutipleAttackPattern();
 	CoreSwordMeteorPattern();
 
 	_basicPattern[1].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
 
-	CreateDecalTest();
+	//CreateDecalTest();
 }
 
 
@@ -1579,81 +1572,144 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		}
 	}
 	{
-		//GameObject* boss3Phase1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase1");
-		//boss3Phase1->AddComponent<Particle>();
-		//boss3Phase1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
-		//boss3Phase1->GetComponent<Particle>()->SetParticleDuration(0.4f, 2.0f);
-		//boss3Phase1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-		//boss3Phase1->GetComponent<Particle>()->SetParticleSize(7.f, 7.0f);
-		//boss3Phase1->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
-		//boss3Phase1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
-		//boss3Phase1->SetParent(_boss);
-		//boss3Phase1->GetComponent<Transform>()->SetPosition(-0.272f, 15.53f, -0.616f);
+		GameObject* boss3Phase1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase1");
+		boss3Phase1->AddComponent<Particle>();
+		boss3Phase1->GetComponent<Particle>()->SetParticleEffect("Lightning2", "Resources/Textures/Particles/fx_Lightning2.dds", 1000);
+		boss3Phase1->GetComponent<Particle>()->SetParticleDuration(0.6f, 2.0f);
+		boss3Phase1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		boss3Phase1->GetComponent<Particle>()->SetParticleSize(10.f, 10.0f);
+		boss3Phase1->GetComponent<Particle>()->AddParticleColor(15.0f, 1.0f, 0.0f);
+		boss3Phase1->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+		//boss3Phase1->GetComponent<Particle>()->SetParticleCameraApply(true);
+		boss3Phase1->GetComponent<Transform>()->SetPosition(-0.272f, 15.53f, -0.616f);
+		boss3Phase1->SetTotalComponentState(false);
 		//_kamenLastphaseParticle.emplace_back(boss3Phase1);
+		_3PhaseParticle = boss3Phase1;
+	}
+	{
+		GameObject* particleBossSword1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossSword1");
+		particleBossSword1->_autoAwake = true;
+		particleBossSword1->SetParent(_meteorSword);
+		particleBossSword1->GetComponent<Transform>()->SetPosition(0.0f, 27.17f, -1.0f);
+		particleBossSword1->AddComponent<Particle>();
+		particleBossSword1->GetComponent<Particle>()->SetParticleEffect("Beam1", "Resources/Textures/Particles/fx_Beam1.dds", 1000);
+		particleBossSword1->GetComponent<Particle>()->SetParticleDuration(1.2f, 2.0f);
+		particleBossSword1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		particleBossSword1->GetComponent<Particle>()->SetParticleSize(27.f, 27.0f);
+		particleBossSword1->GetComponent<Particle>()->AddParticleColor(0.02f, 0.2f, 0.0f);
+		particleBossSword1->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+		particleBossSword1->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 49.0f);
 
-		GameObject* boss3Phase2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase2");
-		boss3Phase2->AddComponent<Particle>();
-		boss3Phase2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
-		boss3Phase2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
-		boss3Phase2->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		boss3Phase2->GetComponent<Particle>()->SetParticleSize(35.f, 35.0f);
-		boss3Phase2->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
-		boss3Phase2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		boss3Phase2->GetComponent<Particle>()->SetParticleAngle(270.0f, 0.0f, 0.0f);
-		boss3Phase2->GetComponent<Particle>()->SetParticleCameraApply(true);
-		boss3Phase2->SetParent(_boss);
-		boss3Phase2->GetComponent<Transform>()->SetPosition(0.0f, 18.f, 3.f);
-		boss3Phase2->SetTotalComponentState(false);
-		boss3Phase2->SetActive(false);
-		_kamenLastphaseParticle.emplace_back(boss3Phase2);
+		GameObject* particleBossSword2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossSword2");
+		particleBossSword2->_autoAwake = true;
+		particleBossSword2->SetParent(_meteorSword);
+		particleBossSword2->GetComponent<Transform>()->SetPosition(0.0f, 27.57f, -0.8f);
+		particleBossSword2->AddComponent<Particle>();
+		particleBossSword2->GetComponent<Particle>()->SetParticleEffect("Sparks1", "Resources/Textures/Particles/fx_Sparks1.dds", 1000);
+		particleBossSword2->GetComponent<Particle>()->SetParticleDuration(2.0f, 2.0f);
+		particleBossSword2->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		particleBossSword2->GetComponent<Particle>()->SetParticleSize(50.0f, 50.0f);
+		particleBossSword2->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 1.0f);
+		particleBossSword2->GetComponent<Particle>()->SetParticleDirection(0.0f, 200.0f, 0.0f);
 
-		GameObject* boss3Phase2_2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase2_2");
-		boss3Phase2_2->AddComponent<Particle>();
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleEffect("Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleSize(35.f, 35.0f);
-		boss3Phase2_2->GetComponent<Particle>()->AddParticleColor(15.0f, 0.6f, 0.0f);
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleAngle(270.0f, 180.0f, 0.0f);
-		boss3Phase2_2->GetComponent<Particle>()->SetParticleCameraApply(true);
-		boss3Phase2_2->SetParent(_boss);
-		boss3Phase2_2->GetComponent<Transform>()->SetPosition(0.0f, 18.f, 3.f);
-		boss3Phase2_2->SetTotalComponentState(false);
-		boss3Phase2_2->SetActive(false);
-		_kamenLastphaseParticle.emplace_back(boss3Phase2_2);
+		GameObject* particleBossSword3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossSword3");
+		particleBossSword3->_autoAwake = true;
+		particleBossSword3->SetParent(_meteorSword);
+		particleBossSword3->GetComponent<Transform>()->SetPosition(0.0f, 26.4f, -1.1f);
+		particleBossSword3->AddComponent<Particle>();
+		particleBossSword3->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+		particleBossSword3->GetComponent<Particle>()->SetParticleDuration(2.f, 3.0f);
+		particleBossSword3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		particleBossSword3->GetComponent<Particle>()->SetParticleSize(10.0f, 10.0f);
+		particleBossSword3->GetComponent<Particle>()->AddParticleColor(10.0f, 10.0f, 0);
+		particleBossSword3->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
 
-		GameObject* boss3Phase3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase3");
-		boss3Phase3->AddComponent<Particle>();
-		boss3Phase3->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-		boss3Phase3->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
-		boss3Phase3->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-		boss3Phase3->GetComponent<Particle>()->SetParticleSize(25.f, 25.0f);
-		boss3Phase3->GetComponent<Particle>()->AddParticleColor(6.0f, 0.2f, 0.0f);
-		boss3Phase3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		boss3Phase3->GetComponent<Particle>()->SetParticleAngle(270.0f, 0, 0);
-		boss3Phase3->GetComponent<Particle>()->SetParticleCameraApply(true);
-		boss3Phase3->SetParent(_boss);
-		boss3Phase3->GetComponent<Transform>()->SetPosition(0, 18.f, 3.f);
-		boss3Phase3->SetTotalComponentState(false);
-		boss3Phase3->SetActive(false);
-		_kamenLastphaseParticle.emplace_back(boss3Phase3);
+		GameObject* particleBossSword4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossSword4");
+		particleBossSword4->_autoAwake = true;
+		particleBossSword4->SetParent(_meteorSword);
+		particleBossSword4->GetComponent<Transform>()->SetPosition(0.0f, 27.1f, -1.0f);
+		particleBossSword4->AddComponent<Particle>();
+		particleBossSword4->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+		particleBossSword4->GetComponent<Particle>()->SetParticleDuration(3.0f, 4.0f);
+		particleBossSword4->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		particleBossSword4->GetComponent<Particle>()->SetParticleSize(4.0f, 4.0f);
+		particleBossSword4->GetComponent<Particle>()->AddParticleColor(0.0f, 1.0f, 7.0f);
+		particleBossSword4->GetComponent<Particle>()->SetParticleDirection(0.0f, 70.0f, 0.0f);
 
-		GameObject* boss3Phase3_2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Boss3Phase3_2");
-		boss3Phase3_2->AddComponent<Particle>();
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleEffect("BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleSize(25.f, 25.0f);
-		boss3Phase3_2->GetComponent<Particle>()->AddParticleColor(6.0f, 0.2f, 0.0f);
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleAngle(270.0f, 180, 0);
-		boss3Phase3_2->GetComponent<Particle>()->SetParticleCameraApply(true);
-		boss3Phase3_2->SetParent(_boss);
-		boss3Phase3_2->GetComponent<Transform>()->SetPosition(0, 18.f, 3.f);
-		boss3Phase3_2->SetTotalComponentState(false);
-		boss3Phase3_2->SetActive(false);
-		_kamenLastphaseParticle.emplace_back(boss3Phase3_2);
+		// 도넛 패턴에 배치할 파이클 테스트
+
+		GameObject* particleBossDonut1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossDonut1");
+		particleBossDonut1->_autoAwake = true;
+		particleBossDonut1->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		particleBossDonut1->AddComponent<Particle>();
+		particleBossDonut1->GetComponent<Particle>()->SetParticleEffect("BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+		particleBossDonut1->GetComponent<Particle>()->SetParticleDuration(0.8f, 2.5f);
+		particleBossDonut1->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		particleBossDonut1->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+		particleBossDonut1->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.3f);
+		particleBossDonut1->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+		particleBossDonut1->GetComponent<Particle>()->SetParticleCameraApply(true);
+		particleBossDonut1->GetComponent<Particle>()->SetActive(false);
+		_meteorSwordHitParticle.emplace_back(particleBossDonut1);
+
+		GameObject* particleBossDonut2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossDonut2");
+		particleBossDonut2->_autoAwake = true;
+		particleBossDonut2->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		particleBossDonut2->AddComponent<Particle>();
+		particleBossDonut2->GetComponent<Particle>()->SetParticleEffect("BlastWave2", "Resources/Textures/Particles/fx_BlastWave2.dds", 1000);
+		particleBossDonut2->GetComponent<Particle>()->SetParticleDuration(0.8f, 2.0f);
+		particleBossDonut2->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		particleBossDonut2->GetComponent<Particle>()->SetParticleSize(75.f, 75.0f);
+		particleBossDonut2->GetComponent<Particle>()->AddParticleColor(0.5f, 0.1f, 0.0f);
+		particleBossDonut2->GetComponent<Particle>()->SetParticleDirection(0.0f, 200.0f, 0.0f);
+		particleBossDonut2->GetComponent<Particle>()->SetParticleCameraApply(true);
+		particleBossDonut2->GetComponent<Particle>()->SetActive(false);
+		_meteorSwordHitParticle.emplace_back(particleBossDonut2);
+
+		GameObject* particleBossDonut3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossDonut3");
+		particleBossDonut3->_autoAwake = true;
+		particleBossDonut3->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		particleBossDonut3->AddComponent<Particle>();
+		particleBossDonut3->GetComponent<Particle>()->SetParticleEffect("fx_Halo1", "Resources/Textures/Particles/fx_Halo1.dds", 1000);
+		particleBossDonut3->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
+		particleBossDonut3->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		particleBossDonut3->GetComponent<Particle>()->SetParticleSize(80.f, 80.0f);
+		particleBossDonut3->GetComponent<Particle>()->AddParticleColor(1.0f, 0.3f, 0.3f);
+		particleBossDonut3->GetComponent<Particle>()->SetParticleDirection(0.0f, 100.0f, 0.0f);
+		particleBossDonut3->GetComponent<Particle>()->SetParticleCameraApply(true);
+		particleBossDonut3->GetComponent<Particle>()->SetActive(false);
+		_meteorSwordHitParticle.emplace_back(particleBossDonut3);
+
+		GameObject* particleBossDonut4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleBossDonut4");
+		particleBossDonut4->_autoAwake = true;
+		particleBossDonut4->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		particleBossDonut4->AddComponent<Particle>();
+		particleBossDonut4->GetComponent<Particle>()->SetParticleEffect("fx_Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+		particleBossDonut4->GetComponent<Particle>()->SetParticleDuration(0.8f, 0.7f);
+		particleBossDonut4->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
+		particleBossDonut4->GetComponent<Particle>()->SetParticleSize(30.f, 30.0f);
+		particleBossDonut4->GetComponent<Particle>()->AddParticleColor(5.0f, 1.0f, 0.5f);
+		particleBossDonut4->GetComponent<Particle>()->SetParticleDirection(0.0f, 250.0f, 0.0f);
+		particleBossDonut4->GetComponent<Particle>()->SetParticleCameraApply(true);
+		particleBossDonut4->GetComponent<Particle>()->SetActive(false);
+		_meteorSwordHitParticle.emplace_back(particleBossDonut4);
+	}
+	{
+		for (int i = 0; i < 10; ++i)
+		{
+			GameObject* particleBezierTest;
+			particleBezierTest = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Particle18");
+			particleBezierTest->_autoAwake = true;
+			particleBezierTest->AddComponent<Particle>();
+			particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+			particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+			particleBezierTest->GetComponent<Particle>()->SetParticleSize(3.0f, 3.0f);
+			particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 0.0f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+			_bezierSwordParticles.push_back(particleBezierTest);
+		}
 	}
 }
 
@@ -2253,7 +2309,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 		sword->GetComponent<Transform>()->SetPosition(0.0f, 400.0f, 0.0f);
 		sword->GetComponent<Transform>()->SetRotation(180.0f, 90.0f, 0.0f);
-		sword->GetComponent<Transform>()->SetScale(8.0f, 8.0f, 8.0f);
+		sword->GetComponent<Transform>()->SetScale(5.0f, 5.0f, 5.0f);
 
 		sword->SetTotalComponentState(false);
 		sword->SetActive(false);
@@ -5089,7 +5145,12 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 	auto initLogic = [pattern, this]()
 		{
+			for (auto& meteorSwordParticle : _meteorSword->GetChilds())
+			{
+				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
+			}
 
+			_timer = 0.0f;
 		};
 	pattern->SetInitializeLogic(initLogic);
 
@@ -5097,6 +5158,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 		{
 			// 종료 로직
 			{
+
 				if (_rentalSuccess)
 				{
 
@@ -5105,6 +5167,33 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 				{
 
 				}
+
+				//if (조건문 필요)
+				//{
+					for (auto& meteorSwordHitParticle : _meteorSwordHitParticle)
+					{
+						meteorSwordHitParticle->GetComponent<Particle>()->SetActive(true);
+					}
+
+					_timer += TimeManager::GetInstance().GetDeltaTime();
+
+					if (_timer < 0.6f)
+					{
+						_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(60 + 6 * 60 * _timer, 60 + 6 * 60 * _timer);
+						_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(75 + 6 * 75 * _timer, 75 + 6 * 75 * _timer);
+						_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(80 + 6 * 80 * _timer, 80 + 6 * 80 * _timer);
+						_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(30 + 6 * 30 * _timer, 30 + 6 * 30 * _timer);
+					}
+					else
+					{
+						_timer = 0.0f;
+						_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(0, 0);
+						_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(0, 0);
+						_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(0, 0);
+						_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(0, 0);
+					}
+				//}
+				
 
 				ChangePhase(2);
 
@@ -5990,6 +6079,13 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 			auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
 			_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) - 5.0f;
+
+			for (auto& bezierObject : _bezierSwordParticles) // 베지어 곡선 초기 설정
+			{
+				bezierObject->SetActive(true);
+			}
+		
+			_timer = 0.0f;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6002,9 +6098,90 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 
 			auto nowFrame = animator->GetCurrentFrame();
 
+			if (8 < nowFrame && nowFrame < 10)
+			{
+				for (auto& bezierObject : _bezierSwordParticles) // 목표 초기 설정
+				{
+					bezierObject->GetComponent<Transform>()->SetPosition(_kamenSwordLight->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-35.0f, 35.0f),
+						_kamenSwordLight->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), _kamenSwordLight->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-5.0f, 5.0f));
+				}
+			}
+
 			if (10 < nowFrame && nowFrame < 17)
 			{
+				_timer += TimeManager::GetInstance().GetDeltaTime();
+
+				if (nowFrame < 12)
+				{
+					for (auto& bezierObject : _bezierSwordParticles) // 목표 초기 설정
+					{
+						bezierObject->GetComponent<Particle>()->SetActive(true);
+						/*bezierObject->GetComponent<Transform>()->SetPosition(_kamenSwordLight->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-35.0f, 35.0f),
+							_kamenSwordLight->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), _kamenSwordLight->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-5.0f, 5.0f));*/
+					}
+				}
+
+				if (_isBezierStartSetting == false)
+				{
+					for (auto& bezierObject : _bezierSwordParticles) // 베지어 곡선 초기 설정
+					{
+						_bezierCurvePoints.push_back(BezierSetting(bezierObject));
+						
+					}
+					_isBezierStartSetting = true;
+				}
+
+				int bezierPointIndex = 0;
+
+				for (auto& bezierPoint : _bezierCurvePoints) // 각 점을 통한 베지어 곡선을 구함
+				{
+					DirectX::XMFLOAT3 particlePoint;
+
+					if (_isSettingTimer == false)
+					{
+						_timer = ToolBox::GetRandomFloat(0.1f, 0.5f);
+
+						_timerList.push_back(_timer);
+					}
+
+					particlePoint = ToolBox::Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], _kamenSwordLight->GetComponent<Transform>()->GetPosition(), _timerList[bezierPointIndex]);
+					_bezierSwordParticlePoints.push_back(particlePoint);
+					bezierPointIndex++;
+				}
+
+				_isSettingTimer = true;
+
+				for (int i = 0; i < _bezierSwordParticles.size(); ++i) // 곡선을 따라 이동
+				{
+					_bezierSwordParticles[i]->GetComponent<Transform>()->SetPosition(_bezierSwordParticlePoints[i].x, _bezierSwordParticlePoints[i].y, _bezierSwordParticlePoints[i].z);
+				}
+
+
+				for (auto& timer: _timerList) // 타이머
+				{
+					timer += TimeManager::GetInstance().GetDeltaTime();
+				}
+
+				int timerIndex = 0;
+
+				for (auto& timer : _timerList)
+				{
+					if (timer > 1.0f)
+					{
+						_bezierCurvePoints.erase(_bezierCurvePoints.begin() + timerIndex);
+						timer = 0.0f;
+
+						_bezierSwordParticles[timerIndex]->GetComponent<Transform>()->SetPosition(_kamenSwordLight->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-35.0f, 35.0f),
+							_kamenSwordLight->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-20.0f, 20.0f), _kamenSwordLight->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-5.0f, 5.0f));
+
+						_bezierCurvePoints.insert(_bezierCurvePoints.begin() + timerIndex, BezierSetting(_bezierSwordParticles[timerIndex]));
+					}
+					++timerIndex;
+				}
+
+				_bezierSwordParticlePoints.clear();
 				// 여기에 베지어 기 모으는 파티클 넣기
+
 				pattern->_speed = 3.0f;
 			}
 			else
@@ -6015,6 +6192,15 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 			if (16 < nowFrame && nowFrame < 38)
 			{
 				SetKamenSwordCollider();
+			}
+
+			if (19 < nowFrame && nowFrame < 21)
+			{
+				for (auto& bezierObject : _bezierSwordParticles) // 벡터 비워줌
+				{
+					bezierObject->GetComponent<Particle>()->SetActive(false);
+				}
+				_bezierSwordParticlePoints.clear();
 			}
 
 			if (35 < nowFrame)
@@ -6412,6 +6598,9 @@ void KunrealEngine::Kamen::HoldKamenSword()
 		_kamenSwordParticle[0]->GetComponent<Particle>()->SetParticleDirection(particleOriginDir.x, particleOriginDir.y, particleOriginDir.z);
 		_kamenSwordParticle[0]->GetComponent<Particle>()->SetOffSet(vec.m128_f32[0], vec.m128_f32[1], vec.m128_f32[2]);
 
+		_targetSword.x = vec8.m128_f32[0];
+		_targetSword.y = vec8.m128_f32[1];
+		_targetSword.z = vec8.m128_f32[2];
 
 		_kamenSwordAfterImageParticle[0]->GetComponent<Particle>()->SetOffSet(vec2.m128_f32[0], vec2.m128_f32[1], vec2.m128_f32[2]);
 		_kamenSwordAfterImageParticle[1]->GetComponent<Particle>()->SetOffSet(vec3.m128_f32[0], vec3.m128_f32[1], vec3.m128_f32[2]);
@@ -6427,6 +6616,45 @@ void KunrealEngine::Kamen::HoldKamenSword()
 		auto SwordLightPos = DirectX::XMVectorAdd(trs, vec5);
 		_kamenSwordLight->GetComponent<Transform>()->SetPosition(SwordLightPos.m128_f32[0], SwordLightPos.m128_f32[1], SwordLightPos.m128_f32[2]);
 	}
+}
+
+std::vector<DirectX::XMFLOAT3> KunrealEngine::Kamen::BezierSetting(GameObject* bezierObject)
+{
+	DirectX::XMFLOAT3 p0 = { 0, 0, 0 };
+	DirectX::XMFLOAT3 p1 = { 0, 0, 0 };
+	DirectX::XMFLOAT3 p2 = { 0, 0, 0 };
+	DirectX::XMFLOAT3 p3 = { 0, 0, 0 };
+
+	p0.x = bezierObject->GetComponent<Transform>()->GetPosition().x;
+	p0.y = bezierObject->GetComponent<Transform>()->GetPosition().y;
+	p0.z = bezierObject->GetComponent<Transform>()->GetPosition().z;
+
+	if (p0.x > p3.x)
+	{
+		p1.x = p0.x - (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(0.5f, 1.0f));
+		p2.x = p0.x - (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(1.0f, 1.5f));
+	}
+	else
+	{
+		p1.x = p0.x + (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(0.5f, 1.0f));
+		p2.x = p0.x + (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(1.0f, 1.5f));
+	}
+
+	p1.y = p0.y + (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(-0.5f, 0.5f));
+	p2.y = p0.y + (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(-0.5f, 0.5f));
+
+	p1.z = p0.z + (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(-0.5f, 0.5f));
+	p2.z = p0.z + (ToolBox::GetRandomFloat(5.0f, 10.0f) * ToolBox::GetRandomFloat(-0.5f, 0.5f));
+
+	std::vector<DirectX::XMFLOAT3> bezierPosintList;
+	bezierPosintList.push_back(p0);
+	bezierPosintList.push_back(p1);
+	bezierPosintList.push_back(p2);
+
+	//std::vector<std::vector<Point3D>> bezierPointsListSetting;
+	//bezierPointsListSetting.push_back(bezierPosintList);
+
+	return bezierPosintList;
 }
 
 void KunrealEngine::Kamen::SetKamenSwordCollider()
