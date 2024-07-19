@@ -2082,9 +2082,8 @@ void KunrealEngine::EngineCore::MoveToMain()
 			// 시작 할때 포탈로 넘어가는 소리
 			auto soundManager = sceneInstance.GetCurrentScene()->GetGameObject("SoundManager");
 			auto soundComp = soundManager->GetComponent<SoundPlayer>();
-			int soundindex = soundComp->CreateSoundInfo("Resources/Sound/intro.mp3", false, false);
-			soundComp->CreateSound(soundindex, 1);
-			soundComp->Play(soundindex);
+			int portal = soundComp->FindIndex("Resources/Sound/intro.mp3");
+			soundComp->Play(portal);
 
 			int titlebgmindex = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
 			int titlerainindex = soundComp->FindIndex("Resources/Sound/BridgeRaining.wav");
@@ -2093,6 +2092,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 
 			// 원래 씬 교체하는 부분
 			sceneInstance.ChangeScene("Main");
+			ResetMenuUIPack("Title", "Main");
 
 			sceneInstance.GetCurrentScene()->GetGameObject("DirectionalLight")->GetComponent<Light>()->SetDirection(-1.0f, -1.0f, 1.0f);
 
@@ -2184,6 +2184,8 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 
 	int titlebgm1 = soundComp->CreateSoundInfo("Resources/Sound/TitleMap.mp3");
 	int titlebgm2 = soundComp->CreateSoundInfo("Resources/Sound/BridgeRaining.wav");
+	int portal = soundComp->CreateSoundInfo("Resources/Sound/intro.mp3", false, false);
+	soundComp->CreateSound(portal, 1);
 	soundComp->CreateSound(titlebgm1, 0);
 	soundComp->CreateSound(titlebgm2, 0);
 	soundComp->Play(titlebgm1);
@@ -2210,6 +2212,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	GRAPHICS->CreateCubeMap("TitleBackground", "DarkMoon.dds", true);
 	GRAPHICS->SetMainCubeMap("TitleBackground");
 
+	ResetMenuUIPack("Main", "Title");
 	GameObject* titleUIpack = MakeTitleUIPack();
 
 	TitlesceneobjectSetting(_bezierObjectList);

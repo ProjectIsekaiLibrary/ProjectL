@@ -28,7 +28,7 @@ namespace KunrealEngine
 		imagebackground->AddComponent<ImageRenderer>();
 		imagebackground->GetComponent<ImageRenderer>()->SetImage("ui/MenuBackground.png");
 		imagebackground->GetComponent<ImageRenderer>()->SetPosition(725.f, 207.f);
-		imagebackground->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+		imagebackground->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
 		imagebackground->SetParent(pauseuibox);
 
 		// 옵션 버튼
@@ -40,7 +40,7 @@ namespace KunrealEngine
 		button_option->GetComponent<ImageRenderer>()->SetPosition(800.0f, 340.0f);
 		button_option->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-		buttonfocused_option = scene.GetCurrentScene()->CreateObject("button_resume");
+		buttonfocused_option = scene.GetCurrentScene()->CreateObject("button_resume_focus");
 		buttonfocused_option->SetParent(pauseuibox);
 		buttonfocused_option->AddComponent<ImageRenderer>();
 		buttonfocused_option->GetComponent<ImageRenderer>()->SetImage("ui/button-long-focus.png");
@@ -65,7 +65,7 @@ namespace KunrealEngine
 		button_title->GetComponent<ImageRenderer>()->SetPosition(800.0f, 500.0f);
 		button_title->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-		buttonfocused_title = scene.GetCurrentScene()->CreateObject("button_title");
+		buttonfocused_title = scene.GetCurrentScene()->CreateObject("button_title_focus");
 		buttonfocused_title->SetParent(pauseuibox);
 		buttonfocused_title->AddComponent<ImageRenderer>();
 		buttonfocused_title->GetComponent<ImageRenderer>()->SetImage("ui/button-long-focus.png");
@@ -93,7 +93,7 @@ namespace KunrealEngine
 		button_quit->GetComponent<ImageRenderer>()->SetPosition(800.0f, 660.0f);
 		button_quit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-		buttonfocused_quit = scene.GetCurrentScene()->CreateObject("button_Quit");
+		buttonfocused_quit = scene.GetCurrentScene()->CreateObject("button_Quit_focus");
 		buttonfocused_quit->SetParent(pauseuibox);
 		buttonfocused_quit->AddComponent<ImageRenderer>();
 		buttonfocused_quit->GetComponent<ImageRenderer>()->SetImage("ui/button-long-focus.png");
@@ -122,7 +122,7 @@ namespace KunrealEngine
 		button_exit->GetComponent<ImageRenderer>()->SetPosition(1095.f, 200.f);
 		button_exit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
-		buttonfocused_exit = scene.GetCurrentScene()->CreateObject("button_exit");
+		buttonfocused_exit = scene.GetCurrentScene()->CreateObject("button_exit_focus");
 		buttonfocused_exit->SetParent(pauseuibox);
 		buttonfocused_exit->AddComponent<ImageRenderer>();
 		buttonfocused_exit->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
@@ -136,6 +136,61 @@ namespace KunrealEngine
 			{
 				pauseuibox->SetActive(false);
 			});
+
+		pauseuibox->SetActive(false);
+
+		return pauseuibox;
+	}
+
+	static GameObject* ResetMenuUIPack(std::string nowscene, std::string targetscene)
+	{
+		SceneManager& scene = KunrealEngine::SceneManager::GetInstance();
+		auto now = scene.GetScene(nowscene); // Scene*
+		auto target = scene.GetScene(targetscene); // Scene*
+		GameObject* pauseuibox;
+		GameObject* button_option;
+		GameObject* button_title;
+		GameObject* button_quit;
+		GameObject* button_exit;
+		GameObject* buttonfocused_option;
+		GameObject* buttonfocused_title;
+		GameObject* buttonfocused_quit;
+		GameObject* buttonfocused_exit;
+		GameObject* imagebackground;
+
+		pauseuibox = now->GetGameObject("pauseuibox");
+		pauseuibox->MoveToScene(target);
+
+		imagebackground = now->GetGameObject("MenuBackground");
+		imagebackground->MoveToScene(target);
+
+		// 옵션 버튼
+		button_option = now->GetGameObject("button_resume");
+		button_option->MoveToScene(target);
+
+		buttonfocused_option = now->GetGameObject("button_resume_focus");
+		buttonfocused_option->MoveToScene(target);
+
+		//타이틀로 돌아가기
+		button_title = now->GetGameObject("button_title");
+		button_title->MoveToScene(target);
+
+		buttonfocused_title = now->GetGameObject("button_title_focus");
+		buttonfocused_title->MoveToScene(target);
+
+		// 게임 종료
+		button_quit = now->GetGameObject("button_Quit");
+		button_quit->MoveToScene(target);
+
+		buttonfocused_quit = now->GetGameObject("button_Quit_focus");
+		buttonfocused_quit->MoveToScene(target);
+
+		// 메뉴 나가기
+		button_exit = now->GetGameObject("button_exit");
+		button_exit->MoveToScene(target);
+
+		buttonfocused_exit = now->GetGameObject("button_exit_focus");
+		buttonfocused_exit->MoveToScene(target);
 
 		pauseuibox->SetActive(false);
 

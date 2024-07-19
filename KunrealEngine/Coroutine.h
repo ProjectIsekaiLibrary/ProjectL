@@ -18,6 +18,8 @@
 #define Waitforsecond(time) co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(time)
 //#define Checkbool(bool_param) co_await KunrealEngine::Coroutine::Coroutine_type::CheckBool(bool_param)
 #define Return_null co_await KunrealEngine::Coroutine::Coroutine_type::WaitForSeconds(0.0000001);
+
+/// Coroutine_Func대신 _Coroutine(.h에 선언)과 _CoroutineIs(.cpp내 Startcoroutine사용 직전 구현) 사용 권장
 #define Coroutine_Func(coro_func) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func = [this]() ->KunrealEngine::Coroutine::Coroutine_type
 #define Coroutine_staticFunc(coro_func, exporter) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func = [exporter]() ->KunrealEngine::Coroutine::Coroutine_type
 #define _Coroutine(coro_func) std::function<KunrealEngine::Coroutine::Coroutine_type()> coro_func
