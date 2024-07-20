@@ -32,7 +32,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraReturn(false)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr)
 {
 	BossBasicInfo info;
 
@@ -60,6 +60,24 @@ void KunrealEngine::Kamen::Initialize()
 	SetStartTime(0.0f);
 
 	SetSpecialPatternPlayPhase(2);
+
+	/// 연출용 카메라
+	// Camera
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
+	// KunrealEngine::KunrealMath::Float3 cameraPos = { 40.0f, 2.0f, -30.0f };
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
+	_cinematicCamera = _boss->GetObjectScene()->CreateObject("kamenCamera");
+	_cinematicCamera->AddComponent<Camera>();
+	_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+	_cinematicCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+
+	_cinematicCamera->GetComponent<Transform>()->SetPosition({ 0.0f, 120.0f, -130.0f });
+	_cinematicCamera->GetComponent<Transform>()->SetRotation(-43.f, 180.f, 0.f);
+	
+	_cinematicCamera->SetActive(true);
+	_cinematicCamera->GetComponent<Camera>()->SetActive(true);
+
+	_mainPlayCamera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera();
 }
 
 void KunrealEngine::Kamen::Release()
@@ -79,7 +97,7 @@ void KunrealEngine::Kamen::Update()
 
 	_3PhaseParticle->GetComponent<Particle>()->SetActive(true);
 	_3PhaseParticle->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._41,
-		this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._42, 
+		this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._42,
 		this->GetOwner()->GetComponent<MeshRenderer>()->GetBoneTransform("Head_M")._43);
 }
 
@@ -218,10 +236,10 @@ void KunrealEngine::Kamen::GamePattern()
 	//
 	//_basicPattern[1] = _basicPattern[0];
 
-	_basicPattern[0].emplace_back(_holdSword); // 2페 진입용 임시 코드
+	//_basicPattern[0].emplace_back(_holdSword); // 2페 진입용 임시 코드
 	//_basicPattern[2].emplace_back(_swordSwingTwice);
 	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
-	_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	//_basicPattern[2].emplace_back(_swordSwingHorizontal);
 	//_basicPattern[2].emplace_back(_swordSwingVertical);
 
 	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
@@ -232,7 +250,7 @@ void KunrealEngine::Kamen::GamePattern()
 	CoreSwordMutipleAttackPattern();
 	CoreSwordMeteorPattern();
 
-	_basicPattern[1].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	//_basicPattern[1].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
 
 	//CreateDecalTest();
 }
@@ -4807,6 +4825,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 	pattern->SetSubObject(_meteorSword);
 
 	pattern->SetPatternName("SwordMeteorAppear");
+	pattern->SetSubObject(_meteorSword);
 
 	auto initLogic = [pattern, this]()
 		{
@@ -4818,129 +4837,146 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 			_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
 			_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
 
-			_cameraReturn = false;
+			_cameraOriginPos = _mainPlayCamera->GetComponent<Transform>()->GetPosition();
+
+			_cameraRot.y = 0.0f;
+
+			_nowCameraStep = 0;
+
+			_meteorSword->GetComponent<Transform>()->SetPosition(-4.0f, 1200.0f, -8.0f);
+
+			_cameraMoveFinish = false;
+
+			_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
+
+			// 플레이어 이동 막아야함 이 패턴 끝날때 풀어주기
 		};
+
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
 		{
-			auto camera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera()->GetComponent<Camera>();
-
 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
+			auto camera = _cinematicCamera->GetComponent<Camera>();
 
-			if (!_cameraReturn)
+			switch (_nowCameraStep)
 			{
-				if (_cameraRot.y > -50.0f)
+				case 0:
 				{
-					auto angle = -10.0f * deltaTime;
-					camera->CameraRotateY(angle);
-					_cameraRot.y += angle;
-				}
-				else
-				{
-					if (_cameraMove.z > -300.0f)
+					DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(0, 40, -400);
+
+					float movingTime = 3.0f;
+
+					if (_cameraRot.y > -50.0f)
 					{
-						auto distance = -40.0f * deltaTime;
-						camera->CameraWalk(distance);
-						_cameraMove.z += distance;
+						auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
+						camera->CameraRotateY(-rotSpeed);
+						_cameraRot.y += -rotSpeed;
+					}
+
+					if (!_cameraMoveFinish)
+					{
+						_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+					}
+
+					if (_cameraMoveFinish && _cameraRot.y <= -50.0f)
+					{
+						_cameraMoveFinish = false;
+						_nowCameraStep++;
+					}
+
+					break;
+				}
+				case 1:
+				{
+					if (_cameraRot.y > -120.0f)
+					{
+						float movingTime = 3.0f;
+						auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
+						camera->CameraRotateY(-rotSpeed);
+						_cameraRot.y += -rotSpeed;
 					}
 					else
 					{
-						auto angle = -10.0f * deltaTime;
-						camera->CameraRotateY(angle);
-						_cameraRot.y += angle;
-
-						if (_cameraRot.y < -70.0f)
-						{
-							_cameraReturn = true;
-						}
+						_cameraMoveFinish = false;
+						_nowCameraStep++;
 					}
 
+					break;
 				}
-			}
-			else
-			{
-				if (_cameraRot.y < -50.0f)
+				case 2:
 				{
-					auto angle = 10.0f * deltaTime;
-					camera->CameraRotateY(angle);
-					_cameraRot.y += angle;
-				}
-				else
-				{
-					if (_cameraMove.z < 0.0f)
+					if (_cameraRot.y < -90.0f)
 					{
-						auto distance = 40.0f * deltaTime;
-						camera->CameraWalk(distance);
-						_cameraMove.z += distance;
+						auto swordTransform = _meteorSword->GetComponent<Transform>();
+						auto newPos = swordTransform->GetPosition();
+						newPos.y -= deltaTime * 300.0f;
+						swordTransform->SetPosition(newPos);
+						float movingTime = 3.0f;
+						auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
+						camera->CameraRotateY(rotSpeed);
+						_cameraRot.y += rotSpeed;
 					}
 					else
 					{
-						if (_cameraRot.y < 0.0f)
-						{
-							auto angle = 10.0f * deltaTime;
-							camera->CameraRotateY(angle);
-							_cameraRot.y += angle;
-						}
-
-						if (_cameraRot.y >= 0.0f)
-						{
-							return false;
-						}
+						_cameraMoveFinish = false;
+						_nowCameraStep++;
 					}
 
+					break;
+				}
+				case 3:
+				{
+					auto swordTransform = _meteorSword->GetComponent<Transform>();
+					auto newPos = swordTransform->GetPosition();
+					if (newPos.y > 450.0f)
+					{
+						newPos.y -= deltaTime * 250.0f;
+						swordTransform->SetPosition(newPos);
+					}
+
+					DirectX::XMFLOAT3 src = DirectX::XMFLOAT3(0, 40, -400);
+
+					float movingTime = 2.0f;
+
+					if (_cameraRot.y < 0.0f)
+					{
+						auto rotSpeed = deltaTime * 90.0f * (1 / movingTime);
+						camera->CameraRotateY(rotSpeed);
+						_cameraRot.y += rotSpeed;
+					}
+
+					if (!_cameraMoveFinish)
+					{
+						_cameraMoveFinish = camera->MoveParabolic(src, _cameraOriginPos, movingTime, 30.0f);
+					}
+
+					if (_cameraMoveFinish && _cameraRot.y >= 0.0f)
+					{
+						_cameraMoveFinish = false;
+						_nowCameraStep++;
+					}
+
+					break;
+				}
+
+				default:
+				{
+					camera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
+
+					camera->CameraRotateY(-1 * _cameraRot.y);
+
+					_mainPlayCamera->GetComponent<Camera>()->SetMainCamera();
+
+					return false;
+					break;
 				}
 			}
 
-			//if (!_cameraReturn)
-			//{
-			//	if (_cameraMove.z > -300.0f)
-			//	{
-			//		auto moveSpeed = 40.0f;
-			//		camera->CameraWalk(-moveSpeed * deltaTime);
-			//		_cameraMove.z += deltaTime * -moveSpeed;
-			//
-			//		camera->CameraUpDown(moveSpeed * 0.02f * deltaTime);
-			//		_cameraMove.y += deltaTime * moveSpeed * 0.02f;
-			//	}
-			//
-			//	else
-			//	{
-			//		camera->CameraRotateY(-5.0f * deltaTime);
-			//		_cameraRot.y += deltaTime * -5.0f;
-			//
-			//		if (_cameraRot.y <= -30)
-			//		{
-			//			_cameraReturn = true;
-			//		}
-			//	}
-			//}
-			//else
-			//{
-			//	if (_cameraRot.y <= 0)
-			//	{
-			//		camera->CameraRotateY(5.0f * deltaTime);
-			//		_cameraRot.y += deltaTime * 5.0f;
-			//	}
-			//	else
-			//	{
-			//		auto moveSpeed = 40.0f;
-			//		camera->CameraWalk(moveSpeed * deltaTime);
-			//		_cameraMove.z += deltaTime * moveSpeed;
-			//
-			//		camera->CameraUpDown(-moveSpeed * 0.02f * deltaTime);
-			//		_cameraMove.y += deltaTime * -moveSpeed * 0.02f;
-			//
-			//		if (_cameraMove.z >= 0.0f)
-			//		{
-			//			return false;
-			//		}
-			//	}
-			//}
-			
 			return true;
 		};
+
 	pattern->SetLogic(attackLogic);
 
 	_swordMeteorAppear = pattern;
@@ -4975,12 +5011,12 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 				num++;
 			}
 
-			std::vector<int> firstHalf(randomNumbers.begin(), randomNumbers.begin() + randomNumbers.size()*0.5f);
+			std::vector<int> firstHalf(randomNumbers.begin(), randomNumbers.begin() + randomNumbers.size() * 0.5f);
 			std::vector<int> secondHalf(randomNumbers.begin() + randomNumbers.size() * 0.5f, randomNumbers.end());
 
 			std::random_device rd;
-			std::mt19937 g(rd());   
-			
+			std::mt19937 g(rd());
+
 			std::shuffle(firstHalf.begin(), firstHalf.end(), g);
 			std::shuffle(secondHalf.begin(), secondHalf.end(), g);
 
@@ -4995,65 +5031,65 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 
 			for (int i = 0; i < 2; i++)
 			{
-				_rentalArea[0+20*i]->GetComponent<Transform>()->SetPosition(-82.5, 10.0, 81-118*i);
-				_rentalArea[0+20*i]->GetComponent<Transform>()->SetScale(33, 100, 60);
+				_rentalArea[0 + 20 * i]->GetComponent<Transform>()->SetPosition(-82.5, 10.0, 81 - 118 * i);
+				_rentalArea[0 + 20 * i]->GetComponent<Transform>()->SetScale(33, 100, 60);
 
-				_rentalArea[1+20*i]->GetComponent<Transform>()->SetPosition(-39.0, 10.0, 91 - 118 * i);
-				_rentalArea[1+20*i]->GetComponent<Transform>()->SetScale(55, 100, 40);
+				_rentalArea[1 + 20 * i]->GetComponent<Transform>()->SetPosition(-39.0, 10.0, 91 - 118 * i);
+				_rentalArea[1 + 20 * i]->GetComponent<Transform>()->SetScale(55, 100, 40);
 
-				_rentalArea[2+ 20*i]->GetComponent<Transform>()->SetPosition(1, 2, 84 - 118 * i);
-				_rentalArea[2+ 20*i]->GetComponent<Transform>()->SetScale(26, 100, 54);
+				_rentalArea[2 + 20 * i]->GetComponent<Transform>()->SetPosition(1, 2, 84 - 118 * i);
+				_rentalArea[2 + 20 * i]->GetComponent<Transform>()->SetScale(26, 100, 54);
 
-				_rentalArea[3+20*i]->GetComponent<Transform>()->SetPosition(28.0, 10.0, 96 - 118 * i);
-				_rentalArea[3+20*i]->GetComponent<Transform>()->SetScale(28, 100, 30);
+				_rentalArea[3 + 20 * i]->GetComponent<Transform>()->SetPosition(28.0, 10.0, 96 - 118 * i);
+				_rentalArea[3 + 20 * i]->GetComponent<Transform>()->SetScale(28, 100, 30);
 
-				_rentalArea[4+20*i]->GetComponent<Transform>()->SetPosition(57.0, 10.0, 80 - 118 * i);
-				_rentalArea[4+20*i]->GetComponent<Transform>()->SetScale(30, 100, 62);
+				_rentalArea[4 + 20 * i]->GetComponent<Transform>()->SetPosition(57.0, 10.0, 80 - 118 * i);
+				_rentalArea[4 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 62);
 
-				_rentalArea[5+20*i]->GetComponent<Transform>()->SetPosition(87.0, 10.0, 86 - 118 * i);
-				_rentalArea[5+20*i]->GetComponent<Transform>()->SetScale(30, 100, 50);
+				_rentalArea[5 + 20 * i]->GetComponent<Transform>()->SetPosition(87.0, 10.0, 86 - 118 * i);
+				_rentalArea[5 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 50);
 
-				_rentalArea[6+20*i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 46 - 118 * i);
-				_rentalArea[6+20*i]->GetComponent<Transform>()->SetScale(34, 100, 50);
+				_rentalArea[6 + 20 * i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 46 - 118 * i);
+				_rentalArea[6 + 20 * i]->GetComponent<Transform>()->SetScale(34, 100, 50);
 
-				_rentalArea[7+20*i]->GetComponent<Transform>()->SetPosition(-83, 10.0, 22 - 118 * i);
-				_rentalArea[7+20*i]->GetComponent<Transform>()->SetScale(32, 100, 58);
+				_rentalArea[7 + 20 * i]->GetComponent<Transform>()->SetPosition(-83, 10.0, 22 - 118 * i);
+				_rentalArea[7 + 20 * i]->GetComponent<Transform>()->SetScale(32, 100, 58);
 
-				_rentalArea[8+20*i]->GetComponent<Transform>()->SetPosition(28, 10.0, 56 - 118 * i);
-				_rentalArea[8+20*i]->GetComponent<Transform>()->SetScale(28, 100, 50);
+				_rentalArea[8 + 20 * i]->GetComponent<Transform>()->SetPosition(28, 10.0, 56 - 118 * i);
+				_rentalArea[8 + 20 * i]->GetComponent<Transform>()->SetScale(28, 100, 50);
 
-				_rentalArea[9+20*i]->GetComponent<Transform>()->SetPosition(86, 10.0, 36 - 118 * i);
-				_rentalArea[9+20*i]->GetComponent<Transform>()->SetScale(30, 100, 50);
+				_rentalArea[9 + 20 * i]->GetComponent<Transform>()->SetPosition(86, 10.0, 36 - 118 * i);
+				_rentalArea[9 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 50);
 
-				_rentalArea[10+20*i]->GetComponent<Transform>()->SetPosition(56, 10.0, 30 - 118 * i);
-				_rentalArea[10+20*i]->GetComponent<Transform>()->SetScale(30, 100, 38);
+				_rentalArea[10 + 20 * i]->GetComponent<Transform>()->SetPosition(56, 10.0, 30 - 118 * i);
+				_rentalArea[10 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 38);
 
-				_rentalArea[11+20*i]->GetComponent<Transform>()->SetPosition(1.5, 10.0, 34 - 118 * i);
-				_rentalArea[11+20*i]->GetComponent<Transform>()->SetScale(25, 100, 46);
+				_rentalArea[11 + 20 * i]->GetComponent<Transform>()->SetPosition(1.5, 10.0, 34 - 118 * i);
+				_rentalArea[11 + 20 * i]->GetComponent<Transform>()->SetScale(25, 100, 46);
 
-				_rentalArea[12+20*i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 7 - 118 * i);
-				_rentalArea[12+20*i]->GetComponent<Transform>()->SetScale(35, 100, 28);
+				_rentalArea[12 + 20 * i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 7 - 118 * i);
+				_rentalArea[12 + 20 * i]->GetComponent<Transform>()->SetScale(35, 100, 28);
 
-				_rentalArea[13+20*i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 34 - 118 * i);
-				_rentalArea[13+20*i]->GetComponent<Transform>()->SetScale(22, 100, 25);
+				_rentalArea[13 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 34 - 118 * i);
+				_rentalArea[13 + 20 * i]->GetComponent<Transform>()->SetScale(22, 100, 25);
 
-				_rentalArea[14+20*i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 7.5 - 118 * i);
-				_rentalArea[14+20*i]->GetComponent<Transform>()->SetScale(22, 100, 29);
+				_rentalArea[14 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 7.5 - 118 * i);
+				_rentalArea[14 + 20 * i]->GetComponent<Transform>()->SetScale(22, 100, 29);
 
-				_rentalArea[15+20*i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 59 - 118 * i);
-				_rentalArea[15+20*i]->GetComponent<Transform>()->SetScale(22, 100, 25);
+				_rentalArea[15 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 59 - 118 * i);
+				_rentalArea[15 + 20 * i]->GetComponent<Transform>()->SetScale(22, 100, 25);
 
-				_rentalArea[16+20*i]->GetComponent<Transform>()->SetPosition(27.5, 10.0, 21 - 118 * i);
-				_rentalArea[16+20*i]->GetComponent<Transform>()->SetScale(27.5, 100, 20);
+				_rentalArea[16 + 20 * i]->GetComponent<Transform>()->SetPosition(27.5, 10.0, 21 - 118 * i);
+				_rentalArea[16 + 20 * i]->GetComponent<Transform>()->SetScale(27.5, 100, 20);
 
-				_rentalArea[17+20*i]->GetComponent<Transform>()->SetPosition(9, 10.0, 2 - 118 * i);
-				_rentalArea[17+20*i]->GetComponent<Transform>()->SetScale(40, 100, 18);
+				_rentalArea[17 + 20 * i]->GetComponent<Transform>()->SetPosition(9, 10.0, 2 - 118 * i);
+				_rentalArea[17 + 20 * i]->GetComponent<Transform>()->SetScale(40, 100, 18);
 
-				_rentalArea[18+20*i]->GetComponent<Transform>()->SetPosition(46, 10.0, 2 - 118 * i);
-				_rentalArea[18+20*i]->GetComponent<Transform>()->SetScale(35, 100, 18);
+				_rentalArea[18 + 20 * i]->GetComponent<Transform>()->SetPosition(46, 10.0, 2 - 118 * i);
+				_rentalArea[18 + 20 * i]->GetComponent<Transform>()->SetScale(35, 100, 18);
 
-				_rentalArea[19+20*i]->GetComponent<Transform>()->SetPosition(82, 10.0, 2 - 118 * i);
-				_rentalArea[19+20*i]->GetComponent<Transform>()->SetScale(38, 100, 18);
+				_rentalArea[19 + 20 * i]->GetComponent<Transform>()->SetPosition(82, 10.0, 2 - 118 * i);
+				_rentalArea[19 + 20 * i]->GetComponent<Transform>()->SetScale(38, 100, 18);
 			}
 
 			for (auto& index : _rentalCollider)
@@ -5066,7 +5102,7 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 
 	auto attackLogic = [pattern, this]()
 		{
-			_timer += TimeManager::GetInstance().GetDeltaTime()*2.0f;
+			_timer += TimeManager::GetInstance().GetDeltaTime() * 2.0f;
 
 			int intTimer = _timer;
 			intTimer *= 2;
@@ -5109,7 +5145,7 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 				for (auto& index : _rentalCollider)
 				{
 					auto transform = _rentalArea[_rentalNumVec[colliderIndex]]->GetComponent<Transform>();
-					
+
 					auto pos = transform->GetPosition();
 
 					auto scl = transform->GetScale();
@@ -5142,64 +5178,86 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("SwordMeteorAttack");
+	pattern->SetSubObject(_meteorSword);
 
 	auto initLogic = [pattern, this]()
 		{
 			for (auto& meteorSwordParticle : _meteorSword->GetChilds())
 			{
 				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
+
+				_meteorSword->GetComponent<Transform>()->SetPosition(-4, 270, -8);
+				_meteorSword->GetComponent<MeshRenderer>()->SetActive(true);
 			}
 
 			_timer = 0.0f;
+			_timer2 = 0.5f;
 		};
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attackLogic = [pattern, this]()
 		{
-			// 종료 로직
+			auto swordPos = _meteorSword->GetComponent<Transform>()->GetPosition();
+			if (swordPos.y > 68.0f)
 			{
-
-				if (_rentalSuccess)
+				auto speed = TimeManager::GetInstance().GetDeltaTime() * -150.0f;
+				_meteorSword->GetComponent<Transform>()->SetPosition(swordPos.x, swordPos.y + speed, swordPos.z);
+			}
+			else
+			{
+				if (_timer == 0.0f)
 				{
-
-				}
-				else
-				{
-
-				}
-
-				//if (조건문 필요)
-				//{
 					for (auto& meteorSwordHitParticle : _meteorSwordHitParticle)
 					{
 						meteorSwordHitParticle->GetComponent<Particle>()->SetActive(true);
 					}
+				}
 
-					_timer += TimeManager::GetInstance().GetDeltaTime();
+				_timer += TimeManager::GetInstance().GetDeltaTime();
 
-					if (_timer < 0.6f)
+				if (_timer < 0.6f)
+				{
+					_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(60 + 6 * 60 * _timer, 60 + 6 * 60 * _timer);
+					_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(75 + 6 * 75 * _timer, 75 + 6 * 75 * _timer);
+					_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(80 + 6 * 80 * _timer, 80 + 6 * 80 * _timer);
+					_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(30 + 6 * 30 * _timer, 30 + 6 * 30 * _timer);
+				}
+				else
+				{
+					_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(0, 0);
+					_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(0, 0);
+					_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(0, 0);
+					_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+					if (!_rentalSuccess)
 					{
-						_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(60 + 6 * 60 * _timer, 60 + 6 * 60 * _timer);
-						_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(75 + 6 * 75 * _timer, 75 + 6 * 75 * _timer);
-						_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(80 + 6 * 80 * _timer, 80 + 6 * 80 * _timer);
-						_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(30 + 6 * 30 * _timer, 30 + 6 * 30 * _timer);
+						//_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
 					}
+
+					if (_timer2 > 0.0f)
+					{
+						_meteorSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+
+						_meteorSword->GetComponent<MeshRenderer>()->SetDissolve(_timer2);
+
+						_timer2 -= TimeManager::GetInstance().GetDeltaTime()*0.2f;
+					}
+					
+
 					else
 					{
-						_timer = 0.0f;
-						_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(0, 0);
-						_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(0, 0);
-						_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(0, 0);
-						_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(0, 0);
+						_meteorSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+
+						_meteorSword->GetComponent<MeshRenderer>()->SetActive(false);
+
+						//ChangePhase(2);
+
+						_boss->GetComponent<MeshRenderer>()->SetActive(true);
+						_boss->GetComponent<BoxCollider>()->SetActive(true);
+
+						return false;
 					}
-				//}
-				
-
-				ChangePhase(2);
-
-				_boss->GetComponent<MeshRenderer>()->SetActive(true);
-				_boss->GetComponent<BoxCollider>()->SetActive(true);
-				return false;
+				}
 			}
 		};
 
@@ -6084,7 +6142,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 			{
 				bezierObject->SetActive(true);
 			}
-		
+
 			_timer = 0.0f;
 		};
 
@@ -6126,7 +6184,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 					for (auto& bezierObject : _bezierSwordParticles) // 베지어 곡선 초기 설정
 					{
 						_bezierCurvePoints.push_back(BezierSetting(bezierObject));
-						
+
 					}
 					_isBezierStartSetting = true;
 				}
@@ -6157,7 +6215,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 				}
 
 
-				for (auto& timer: _timerList) // 타이머
+				for (auto& timer : _timerList) // 타이머
 				{
 					timer += TimeManager::GetInstance().GetDeltaTime();
 				}
@@ -7038,5 +7096,5 @@ void KunrealEngine::Kamen::CoreSwordMeteorPattern()
 
 	_corePattern.emplace_back(coreSwordMeteor);
 
-	//_basicPattern[0].emplace_back(coreSwordMeteor);
+	_basicPattern[0].emplace_back(coreSwordMeteor);
 }
