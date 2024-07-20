@@ -57,7 +57,7 @@ void ArkEngine::ArkDX11::TransparentMesh::Update(ArkEngine::ICamera* p_Camera)
 
 void ArkEngine::ArkDX11::TransparentMesh::Render(std::vector<DirectX::XMFLOAT4X4>& worldVec)
 {
-	if (!_isRenderFinsh && _isRenderStart || _isInfinite)
+	if (!_isRenderFinsh && _isRenderStart || _isInfinite && _isRenderStart)
 	{
 		auto deviceContext = _arkDevice->GetDeviceContext();
 

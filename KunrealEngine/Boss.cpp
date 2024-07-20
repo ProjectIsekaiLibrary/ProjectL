@@ -280,7 +280,7 @@ void KunrealEngine::Boss::Enter()
 
 
 	auto isCameraMoveFinsh = EnterCameraMove();
-
+	
 	if (isCameraMoveFinsh)
 	{
 		_startTime -= TimeManager::GetInstance().GetDeltaTime();

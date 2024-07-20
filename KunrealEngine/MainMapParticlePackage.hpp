@@ -27,7 +27,7 @@ namespace KunrealEngine
 		mapParticle1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 		mapParticle1->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 		mapParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
-		mapParticle1->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle1->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle1->AddComponent<Light>();
 		mapParticle1->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle1->_autoAwake = true;
@@ -42,7 +42,7 @@ namespace KunrealEngine
 		mapParticle2->GetComponent<Particle>()->SetParticleSize(8.f, 8.0f);
 		mapParticle2->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
 		mapParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
-		mapParticle2->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle2->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle2->AddComponent<Light>();
 		mapParticle2->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle2->_autoAwake = true;
@@ -57,7 +57,7 @@ namespace KunrealEngine
 		mapParticle3->GetComponent<Particle>()->SetParticleSize(8.f, 8.0f);
 		mapParticle3->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
 		mapParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
-		mapParticle3->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle3->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle3->AddComponent<Light>();
 		mapParticle3->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle3->_autoAwake = true;
@@ -72,7 +72,7 @@ namespace KunrealEngine
 		mapParticle4->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 		mapParticle4->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 		mapParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
-		mapParticle4->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle4->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle4->AddComponent<Light>();
 		mapParticle4->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle4->_autoAwake = true;
@@ -87,7 +87,7 @@ namespace KunrealEngine
 		mapParticle5->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 		mapParticle5->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 		mapParticle5->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
-		mapParticle5->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle5->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle5->AddComponent<Light>();
 		mapParticle5->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle5->_autoAwake = true;
@@ -102,7 +102,7 @@ namespace KunrealEngine
 		mapParticle6->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 		mapParticle6->GetComponent<Particle>()->AddParticleColor(1.0f, 10.0f, 0.0f);
 		mapParticle6->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
-		mapParticle6->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle6->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle6->AddComponent<Light>();
 		mapParticle6->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle6->_autoAwake = true;
@@ -117,7 +117,7 @@ namespace KunrealEngine
 		mapParticle7->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 		mapParticle7->GetComponent<Particle>()->AddParticleColor(1.0f, 10.0f, 0.0f);
 		mapParticle7->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
-		mapParticle7->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle7->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle7->AddComponent<Light>();
 		mapParticle7->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle7->_autoAwake = true;
@@ -132,7 +132,7 @@ namespace KunrealEngine
 		mapParticle8->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
 		mapParticle8->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
 		mapParticle8->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
-		mapParticle8->GetComponent<Particle>()->SetParticleCameraApply(true);
+		mapParticle8->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle8->AddComponent<Light>();
 		mapParticle8->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle8->_autoAwake = true;

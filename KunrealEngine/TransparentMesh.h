@@ -73,6 +73,8 @@ namespace KunrealEngine
 
 		bool PlayOnce();
 
+		bool IsPlayed();
+
 		// 5번 렌더타입으로 그릴때 도넛의 범위를 지정
 		void SetExceptRange(const DirectX::XMFLOAT3& center, float range);
 
