@@ -9,6 +9,7 @@
 #include "MeshCollider.h"
 #include "ToolBox.h"
 #include "Navigation.h"
+#include "UIPackageFuntion.hpp"
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
@@ -1025,20 +1026,21 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 {
 	// 카메라 고정 해제
 	this->_iscamfollow = false;
+	Scene* scene = SceneManager::GetInstance().GetScene("Title");
 
 	// 플레이어 위치 초기화
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetRotation(0.0f, 45.0f, 0.0f);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
+	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetRotation(0.0f, 45.0f, 0.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
+	scene->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
 
 	// 타이틀 UI 위치 초기화
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.0f, 20.0f);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("button_Start")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 400.0f);
+	scene->GetGameObject("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.0f, 20.0f);
+	scene->GetGameObject("button_Start")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 400.0f);
 
 	// 빛 세팅
-	Light* titleLight = SceneManager::GetInstance().GetScene("Title")->GetGameObject("DirectionalLight")->GetComponent<Light>();
+	Light* titleLight = scene->GetGameObject("DirectionalLight")->GetComponent<Light>();
 	titleLight->SetDirection(1.0f, -1.0f, 0.1f);
 	titleLight->SetDiffuse(0.3f, 0.3f, 0.430f, 0.3f);
 	titleLight->SetAmbient(0.0f, 0.06f, 0.410f, 0.2f);
@@ -1047,6 +1049,13 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 	// 세팅 후 scene 변경
 	SceneManager::GetInstance().ChangeScene("Title");
 
+	ResetMenuUIPack(SceneManager::GetInstance().GetScene("Main")->GetGameObject("pauseuibox"), "Main", "Title");
+	ResetMenuUIPack(SceneManager::GetInstance().GetScene("Main")->GetGameObject("Option"), "Main", "Title");
+	GameObject* soundManager = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("TitleSceneSound");
+	SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
+	int portal = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
+	soundComp->Play(portal);
+
 	// 전투중인 플레이어 초기화
 	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
 
@@ -1054,23 +1063,23 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 	Navigation::GetInstance().HandleBuild(0, "bridge_mapmesh.obj");
 
 	// 타이틀 씬의 파티클 재활성화
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitleRock1")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitleRock2Particle")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("TitleRock3")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particlePortal1")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particlePortal2")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particlePortal3")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("particleMoon")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (1)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (2)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (3)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (4)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (5)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (6)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (7)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (8)")->GetComponent<Particle>()->SetActive(true);
-	SceneManager::GetInstance().GetScene("Title")->GetGameObject("Particle18 (9)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("TitleRock1")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("TitleRock2Particle")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("TitleRock3")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("particlePortal1")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("particlePortal2")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("particlePortal3")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("particleMoon")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (1)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (2)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (3)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (4)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (5)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (6)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (7)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (8)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("Particle18 (9)")->GetComponent<Particle>()->SetActive(true);
 
 	// 카메라 재설정 후 fadeout fadein
 	SetCamera("TitleCamera");
