@@ -4843,6 +4843,11 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 
 			_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
 
+			for (auto& meteorSwordParticle : _meteorSword->GetChilds())
+			{
+				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
+			}
+
 			// 플레이어 이동 막아야함 이 패턴 끝날때 풀어주기
 		};
 
