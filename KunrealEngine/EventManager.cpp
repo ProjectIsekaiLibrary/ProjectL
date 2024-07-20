@@ -1059,6 +1059,8 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 	// 전투중인 플레이어 초기화
 	SceneManager::GetInstance().GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
 
+	_bossComp->Reset();
+
 	// 네비게이션 재설정
 	Navigation::GetInstance().HandleBuild(0, "bridge_mapmesh.obj");
 

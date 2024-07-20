@@ -43,6 +43,12 @@ namespace KunrealEngine
 	public:
 		void GamePattern();
 
+	public:
+		void Reset();
+
+	private:
+		void StopAllSpecialPattern();
+
 	private:
 		void CreateParticleObject();
 
@@ -479,7 +485,7 @@ namespace KunrealEngine
 		float _spellDel;
 		float _spellWaveDel;
 
-		Light* mainLight;
+		Light* _mainLight;
 	public:
 		DirectX::XMFLOAT3 swordDirPos;
 	};

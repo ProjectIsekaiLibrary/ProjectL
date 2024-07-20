@@ -74,6 +74,7 @@ namespace KunrealEngine
 		virtual void SpecialAttack();
 		virtual void SpecialAttack2();
 		virtual void PatternEnd();
+		virtual void Win();
 
 		virtual void InitializeEnterCameraMove();
 		virtual bool EnterCameraMove();
@@ -165,6 +166,9 @@ namespace KunrealEngine
 
 		void StopSpecialPattern();
 
+	public:
+		void ResetBoss();
+
 	private:
 		static bool CompareCorePattern(const BossPattern* pattern1, const BossPattern* pattern2);
 
@@ -199,6 +203,8 @@ namespace KunrealEngine
 
 		std::vector<std::vector<BossPattern*>> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
+
+		std::vector<BossPattern*> _corePatternOrigin;
 		
 		// 보스의 움직임과 무관하게 일정 주기마다 실행
 		std::vector<BossPattern*> _specialPattern;
@@ -268,7 +274,10 @@ namespace KunrealEngine
 
 	private:
 		bool _isEnterInitialize;
-			
+
+	private:
+		float _deathTimer;
+
 	private:
 		Coroutine_Func(patternEnd)
 		{

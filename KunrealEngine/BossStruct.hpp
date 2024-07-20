@@ -21,7 +21,9 @@ enum class BossStatus
 	PATTERN_READY,		// 공격 준비
 	BASIC_ATTACK,		// 기본 공격
 	CORE_ATTACK,		// 스킬 사용		// 스킬 구성에 따라 나뉠 예정
-	PATTERN_END			// 패턴이 끝난 경우
+	PATTERN_END,		// 패턴이 끝난 경우
+
+	WIN					// 플레이어가 죽은 경우
 };
 
 

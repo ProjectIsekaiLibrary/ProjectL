@@ -22,15 +22,15 @@
 KunrealEngine::Boss::Boss()
 	: _info(), _status(BossStatus::ENTER), _boss(nullptr), _player(nullptr), _patternIndex(-1), _exPatternIndex(-1),
 	_distance(0.0f), _startTime(1.0f), _isCorePattern(false),
-	_basicPattern(), _corePattern(), _nowTitlePattern(nullptr), _nowPlayingPattern(nullptr),
+	_basicPattern(), _corePattern(), _corePatternOrigin(), _nowTitlePattern(nullptr), _nowPlayingPattern(nullptr),
 	_isStart(false), _isHit(false), _isRotateFinish(false), _isAngleCheck(false),
 	_bossTransform(nullptr), _playerTransform(nullptr),
 	_stopover(), _nodeCount(0), _direction(), _prevPos(), _backStepPos(),
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(),
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
-	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern(),
-	_isEnterInitialize(false)
+	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern(false),
+	_isEnterInitialize(false), _deathTimer(0.5f)
 {
 }
 
@@ -181,9 +181,20 @@ void KunrealEngine::Boss::Update()
 
 	if (_info._hp <= 0)
 	{
-		PatternForceEnd();
+		if (_status != BossStatus::DEAD)
+		{
+			PatternForceEnd();
+			_status = BossStatus::DEAD;
+		}
+	}
 
-		_status = BossStatus::DEAD;
+	if (_player->GetComponent<Player>()->GetPlayerData()._hp <= 0)
+	{
+		if (_status != BossStatus::WIN)
+		{
+			PatternForceEnd();
+			_status = BossStatus::WIN;
+		}
 	}
 
 	if (_info._staggeredGauge <= 0)
@@ -248,6 +259,11 @@ void KunrealEngine::Boss::Update()
 		case BossStatus::PATTERN_END:
 		{
 			PatternEnd();
+			break;
+		}
+		case BossStatus::WIN:
+		{
+			Win();
 			break;
 		}
 		default:
@@ -540,7 +556,27 @@ void KunrealEngine::Boss::OffStaggred()
 void KunrealEngine::Boss::Dead()
 {
 	// 보스가 죽을때 애니메이션 실행
-	_boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
+	auto isPlaying = _boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
+	
+	if (!isPlaying)
+	{
+		if (_deathTimer >= 0.0f)
+		{
+			_boss->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+
+			_boss->GetComponent<MeshRenderer>()->SetDissolve(_deathTimer);
+		}
+		else
+		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(false);
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
+		}
+
+		if (_boss->GetComponent<MeshRenderer>()->GetActivated())
+		{
+			_deathTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.2f;
+		}
+	}
 
 	_canPlaySpecialPattern = false;
 }
@@ -600,6 +636,9 @@ void KunrealEngine::Boss::BasicAttack()
 
 void KunrealEngine::Boss::CoreAttack()
 {
+	auto index = _corePattern.back()->_index;
+	_nowPlayingPattern = _nowTitlePattern->_patternList[index];
+
 	// 패턴을 실행
 	auto isPatternPlaying = _nowTitlePattern->Play();
 
@@ -786,6 +825,11 @@ void KunrealEngine::Boss::PatternEnd()
 }
 
 
+void KunrealEngine::Boss::Win()
+{
+	auto isPlaying = _boss->GetComponent<Animator>()->Play("BattleCry", _info._baseAnimSpeed, true);
+}
+
 void KunrealEngine::Boss::InitializeEnterCameraMove()
 {
 
@@ -916,6 +960,8 @@ bool KunrealEngine::Boss::CompareCorePattern(const BossPattern* pattern1, const 
 void KunrealEngine::Boss::SortCorePattern()
 {
 	std::sort((_corePattern).begin(), (_corePattern).end(), CompareCorePattern);
+
+	_corePatternOrigin = _corePattern;
 }
 
 
@@ -996,6 +1042,48 @@ void KunrealEngine::Boss::StopSpecialPattern()
 			}
 		}
 	}
+}
+
+
+void KunrealEngine::Boss::ResetBoss()
+{
+	_status = BossStatus::ENTER;
+
+	_distance = 0.0f;
+	_startTime = 1.0f;
+	_isCorePattern = false;
+	_corePattern = _corePatternOrigin;
+	_nowTitlePattern = nullptr;
+	_nowPlayingPattern = nullptr;
+	_isStart = false;
+	_isHit = false;
+	_isRotateFinish = false;
+	_isAngleCheck = false;
+	_stopover = {};
+	_nodeCount = 0;
+	_direction = {};
+	_prevPos = {};
+	_backStepPos = {};
+	_isMoving = false;
+	_isRotate = false;
+	_backStepReady = false;
+	_isHideFinish = false;
+	_rotAngle = 0.0f;
+	_sumRot = 0.0f;
+	_prevRot = {};
+	_isSpecialPatternPlaying = false;
+	_specialPatternTimer = 0.0f;
+	_specialPatternIndex = -1;
+	_canPlaySpecialPattern = false;
+	_specialPatternEndLogicPlay = false;
+	_nowSpecialPattern = nullptr;
+	_specialPatternPlayPhase = 0;
+	_goalPhase = 1;
+	_stopSpecialPattern = false;
+	_isEnterInitialize = false;
+	_deathTimer = 0.5f;
+
+	SetSubObject(false);
 }
 
 bool KunrealEngine::Boss::MoveToPlayer(DirectX::XMFLOAT3& startPos, DirectX::XMFLOAT3& targetPos, float speed)
