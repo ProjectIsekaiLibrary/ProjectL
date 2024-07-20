@@ -29,7 +29,8 @@ KunrealEngine::Boss::Boss()
 	_isMoving(false), _isRotate(false), _backStepReady(false), _isHideFinish(false),
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(),
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
-	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern()
+	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern(),
+	_isEnterInitialize(false)
 {
 }
 
@@ -258,48 +259,62 @@ void KunrealEngine::Boss::Update()
 
 void KunrealEngine::Boss::Enter()
 {
-	// 일단 여기에서 이벤트 매니저 시작
-	EventManager::GetInstance().Initialize();
-
-	auto bossPosition = _boss->GetComponent<Transform>()->GetPosition();
-
-	auto playerPosition = _player->GetComponent<Transform>()->GetPosition();
-
-	_startTime -= TimeManager::GetInstance().GetDeltaTime();
-	
-	if (!_isStart)
+	if (!_isEnterInitialize)
 	{
+		// 일단 여기에서 이벤트 매니저 시작
+		EventManager::GetInstance().Initialize();
+
+		_bossOriginPos = _boss->GetComponent<Transform>()->GetPosition();
+
+		auto playerPosition = _player->GetComponent<Transform>()->GetPosition();
+
 		_boss->GetComponent<BoxCollider>()->SetActive(false);
 		_boss->GetComponent<MeshRenderer>()->SetActive(false);
 
 		_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
+		InitializeEnterCameraMove();
+
+		_isEnterInitialize = true;
 	}
 
-	if (_startTime < 0.0f)
+
+	auto isCameraMoveFinsh = EnterCameraMove();
+	
+	if (isCameraMoveFinsh)
 	{
-		_isStart = true;
-		_boss->GetComponent<MeshRenderer>()->SetActive(true);
-		_boss->GetComponent<BoxCollider>()->SetActive(true);
+		_startTime -= TimeManager::GetInstance().GetDeltaTime();
 
-		_boss->GetComponent<BoxCollider>()->FixedUpdate();
-	}
-
-	// 시작하면 
-	if (_isStart)
-	{
-		// 보스 등장 애니메이션 실행
-		_boss->GetComponent<Animator>()->Play("Emergence", _info._baseAnimSpeed, false);
-
-		// 보스 등장 애니메이션 실행이 끝난다면
-		if (_boss->GetComponent<Animator>()->GetIsAnimationPlaying() == false)
+		if (_startTime < 0.0f)
 		{
-			// 다음 애니메이션 실행을 위해 애니메이션 프레임을 0으로 되돌림
-			_boss->GetComponent<Animator>()->Stop();
-			// IDLE로 상태 변경
-			_status = BossStatus::IDLE;
+			_isStart = true;
+			_boss->GetComponent<Transform>()->SetPosition(_bossOriginPos);
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
+
+			_boss->GetComponent<Transform>()->Update();
+			_boss->GetComponent<MeshRenderer>()->Update();
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 		}
 
-		_canPlaySpecialPattern = true;
+		// 시작하면 
+		if (_isStart)
+		{
+			// 보스 등장 애니메이션 실행
+			_boss->GetComponent<Animator>()->Play("Emergence", _info._baseAnimSpeed, false);
+
+			// 보스 등장 애니메이션 실행이 끝난다면
+			if (_boss->GetComponent<Animator>()->GetIsAnimationPlaying() == false)
+			{
+				// 다음 애니메이션 실행을 위해 애니메이션 프레임을 0으로 되돌림
+				_boss->GetComponent<Animator>()->Stop();
+				// IDLE로 상태 변경
+
+				_status = BossStatus::IDLE;
+			}
+
+			_canPlaySpecialPattern = true;
+		}
 	}
 }
 
@@ -770,6 +785,16 @@ void KunrealEngine::Boss::PatternEnd()
 	Startcoroutine(patternEnd);
 }
 
+
+void KunrealEngine::Boss::InitializeEnterCameraMove()
+{
+
+}
+
+bool KunrealEngine::Boss::EnterCameraMove()
+{
+	return true;
+}
 
 void KunrealEngine::Boss::PatternForceEnd()
 {

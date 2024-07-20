@@ -77,6 +77,8 @@ void KunrealEngine::Kamen::Initialize()
 	_cinematicCamera->SetActive(true);
 	_cinematicCamera->GetComponent<Camera>()->SetActive(true);
 
+	_cinematicCamera->GetComponent<Camera>()->Update();
+
 	_mainPlayCamera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera();
 }
 
@@ -227,30 +229,28 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
-	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
-	//
-	//_basicPattern[1] = _basicPattern[0];
+	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
+	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	
+	_basicPattern[1] = _basicPattern[0];
 
 	//_basicPattern[0].emplace_back(_holdSword); // 2페 진입용 임시 코드
-	//_basicPattern[2].emplace_back(_swordSwingTwice);
-	//_basicPattern[2].emplace_back(_swordSwingTwiceHard);
-	//_basicPattern[2].emplace_back(_swordSwingHorizontal);
-	//_basicPattern[2].emplace_back(_swordSwingVertical);
+	_basicPattern[2].emplace_back(_swordSwingTwice);
+	_basicPattern[2].emplace_back(_swordSwingTwiceHard);
+	_basicPattern[2].emplace_back(_swordSwingHorizontal);
+	_basicPattern[2].emplace_back(_swordSwingVertical);
 
-	//SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
-	//SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
-	//SwordLinearAttackPattern();						// 칼 직선 공격
-	//SwordChopPattern();								// 도넛
+	SwordTurnAntiClockPattern();					// 텔포 후 반시계 -> 외부 안전
+	SwordTurnClockPattern();						// 텔포 후 시계 -> 내부 안전
+	SwordLinearAttackPattern();						// 칼 직선 공격
+	SwordChopPattern();								// 도넛
 
 	CoreSwordMutipleAttackPattern();
 	CoreSwordMeteorPattern();
-
-	//_basicPattern[1].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 발사
 
 	//CreateDecalTest();
 }
@@ -455,6 +455,152 @@ void KunrealEngine::Kamen::SpecialAttack2()
 	}
 }
 
+
+void KunrealEngine::Kamen::InitializeEnterCameraMove()
+{
+	_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
+
+	_cameraRot.y = 0.0f;
+
+	_nowCameraStep = 0;
+
+	_cameraMoveFinish = false;
+
+	_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(0, 600, -500);
+
+	_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+
+	_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
+
+	_boss->GetComponent<Transform>()->SetPosition(0.0f, 35.0f, 320.0f);
+
+	_boss->GetComponent<MeshRenderer>()->SetActive(true);
+}
+
+bool KunrealEngine::Kamen::EnterCameraMove()
+{
+	auto camera = _cinematicCamera->GetComponent<Camera>();
+
+	auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
+	switch (_nowCameraStep)
+	{
+		case 0:
+		{
+			float movingTime = 8.0f;
+
+			if (_cameraRot.y > -43.0f)
+			{
+				auto rotSpeed = deltaTime * 40.0f * (1 / movingTime);
+				camera->CameraRotateY(-rotSpeed);
+				_cameraRot.y += -rotSpeed;
+			}
+
+			DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(0, 80, -400);
+
+			if (!_cameraMoveFinish)
+			{
+				_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+			}
+
+			if (_cameraMoveFinish && _cameraRot.y <= -43.0f)
+			{
+				_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+				_cameraMoveFinish = false;
+				_nowCameraStep++;
+
+				_boss->GetComponent<Animator>()->Stop();
+			}
+
+			_boss->GetComponent<Animator>()->Play("Idle", 20.0f, true);
+
+			return false;
+			break;
+		}
+
+		case 1:
+		{
+			auto cameraPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+
+			auto moveSpeed = 150.0f * TimeManager::GetInstance().GetDeltaTime();
+
+			if (cameraPos.z < 60)
+			{
+				_cinematicCamera->GetComponent<Camera>()->CameraWalk(moveSpeed);
+
+				_boss->GetComponent<Animator>()->Play("Idle", 20.0f, true);
+			}
+
+			else
+			{
+				_boss->GetComponent<MeshRenderer>()->SetActive(true);
+				auto animator = _boss->GetComponent<Animator>();
+				if (animator->GetNowAnimationName() == "Idle")
+				{
+					animator->Stop();
+				}
+
+				auto isPlyaing = animator->Play("ReverseEmergence", 20.0f);
+
+				if (!isPlyaing)
+				{
+					animator->Stop();
+
+					_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+					_cameraMoveFinish = false;
+					_nowCameraStep++;
+				}
+			}
+
+			return false;
+			break;
+		}
+
+		case 2:
+		{
+			float movingTime = 2.0f;
+
+			DirectX::XMFLOAT3 dst = _mainPlayCamera->GetComponent<Transform>()->GetPosition();
+
+			if (_cameraRot.y < 0.0f)
+			{
+				auto rotSpeed = deltaTime * 60.0f * (1 / movingTime);
+				camera->CameraRotateY(rotSpeed);
+				_cameraRot.y += rotSpeed;
+			}
+
+			if (!_cameraMoveFinish)
+			{
+				_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+			}
+
+			if (_cameraMoveFinish && _cameraRot.y >= 0.0f)
+			{
+				_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+				_cameraMoveFinish = false;
+				_nowCameraStep++;
+
+				camera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
+
+				camera->CameraRotateY(-1 * _cameraRot.y);
+
+				camera->Update();
+
+				_mainPlayCamera->GetComponent<Camera>()->SetMainCamera();
+			}
+
+			return false;
+			break;
+		}
+
+		default:
+		{
+			return true;
+			break;
+		}
+	}
+}
 
 void KunrealEngine::Kamen::CreateParticleObject()
 {
@@ -4710,6 +4856,23 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			if (_info._phase == 2)
 			{
 				StopSpecialPattern();
+
+				_alterEgo->GetComponent<MeshRenderer>()->SetActive(false);
+				_alterEgo->SetActive(false);
+
+				_isSpecial2Ready = false;
+				_isSpecial2Playing = false;
+				_isEgoAppearInit = false;
+				_isEgoAppearFinish = false;
+				_isEgoAttackReady = false;
+				_isEgoAttack = false;
+				_egoTimer = false;
+
+				auto egoTransform = _alterEgo->GetComponent<Transform>();
+
+				egoTransform->SetRotation(egoTransform->GetRotation().x, 0.0f, egoTransform->GetRotation().z);
+
+				_alterEgo->GetComponent<Animator>()->Stop();
 			}
 
 			_info._armor = 100.0f;
@@ -4778,12 +4941,12 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 	testDecal->GetComponent<TransparentMesh>()->SetRenderType(7);
 	testDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+	testDecal->GetComponent<TransparentMesh>()->SetTimer(10);
 	testDecal->GetComponent<Transform>()->SetScale(200.0f, 100.0f, 230.0f);
 	testDecal->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(0.0f, 2.0f, -5.6f));
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
-	testDecal->GetComponent<TransparentMesh>()->SetInfinite(true);
-	pattern->SetSubObject(_meteorSword);
+	testDecal->GetComponent<TransparentMesh>()->SetInfinite(false);
 
 	pattern->SetSubObject(testDecal);
 
@@ -4791,8 +4954,6 @@ void KunrealEngine::Kamen::CreateDecalTest()
 		{
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
-
-			_meteorSword->GetComponent<MeshRenderer>()->SetActive(true);
 
 			_timer = 0.0f;
 		};
@@ -4804,11 +4965,10 @@ void KunrealEngine::Kamen::CreateDecalTest()
 
 			_timer += TimeManager::GetInstance().GetDeltaTime();
 
-
-			//if (isPlayed)
-			//{
-			//	return false;
-			//}
+			if (testDecal->GetComponent<TransparentMesh>()->IsPlayed())
+			{
+				return false;
+			}
 
 			return true;
 		};
@@ -4847,7 +5007,14 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 
 			_cameraMoveFinish = false;
 
+			_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
+
 			_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
+
+			for (auto& meteorSwordParticle : _meteorSword->GetChilds())
+			{
+				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
+			}
 
 			// 플레이어 이동 막아야함 이 패턴 끝날때 풀어주기
 		};
@@ -5250,7 +5417,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 						_meteorSword->GetComponent<MeshRenderer>()->SetActive(false);
 
-						//ChangePhase(2);
+						ChangePhase(2);
 
 						_boss->GetComponent<MeshRenderer>()->SetActive(true);
 						_boss->GetComponent<BoxCollider>()->SetActive(true);
@@ -7095,6 +7262,4 @@ void KunrealEngine::Kamen::CoreSwordMeteorPattern()
 	coreSwordMeteor->SetPattern(_swordMeteorAttack);
 
 	_corePattern.emplace_back(coreSwordMeteor);
-
-	_basicPattern[0].emplace_back(coreSwordMeteor);
 }

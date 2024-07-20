@@ -36,6 +36,10 @@ namespace KunrealEngine
 
 		virtual void SpecialAttack2() override;
 
+		virtual void InitializeEnterCameraMove() override;
+
+		virtual bool EnterCameraMove() override;
+
 	public:
 		void GamePattern();
 

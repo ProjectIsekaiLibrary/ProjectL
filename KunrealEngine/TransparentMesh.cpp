@@ -76,6 +76,18 @@ void KunrealEngine::TransparentMesh::OnTriggerExit()
 void KunrealEngine::TransparentMesh::SetActive(bool active)
 {
 	this->_isActivated = active;
+
+	if (active)
+	{
+		this->_tMesh->SetStartFlag(true);
+		_isPlayed = false;
+	}
+
+	else
+	{
+		this->_tMesh->Reset();
+		_isPlayed = true;
+	}
 }
 
 void KunrealEngine::TransparentMesh::CreateTMesh(const std::string& objectName, const std::string& textureName, float transparency, bool isCircle)
@@ -149,14 +161,25 @@ void KunrealEngine::TransparentMesh::Reset()
 
 bool KunrealEngine::TransparentMesh::PlayOnce()
 {
-	this->_tMesh->SetStartFlag(true);
-
-	// 실행되지 않았다면
-	if (! _isPlayed)
+	if (this->_isActivated)
 	{
-		_isRendering = true;
+		this->_tMesh->SetStartFlag(true);
+
+		// 실행되지 않았다면
+		if (!_isPlayed)
+		{
+			_isRendering = true;
+		}
+
+		return _isPlayed;
 	}
 
+	else return true;
+}
+
+
+bool KunrealEngine::TransparentMesh::IsPlayed()
+{
 	return _isPlayed;
 }
 
