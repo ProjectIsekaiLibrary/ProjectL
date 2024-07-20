@@ -2102,6 +2102,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 			sceneInstance.ChangeScene("Main");
 			ResetMenuUIPack(sceneInstance.GetScene("Title")->GetGameObject("pauseuibox"), "Title", "Main");
 			ResetMenuUIPack(sceneInstance.GetScene("Title")->GetGameObject("Option"), "Title", "Main");
+			battle_ui_box->GetComponent<BattleUIManager>()->Resebattleuibar();
 
 			sceneInstance.GetCurrentScene()->GetGameObject("DirectionalLight")->GetComponent<Light>()->SetDirection(-1.0f, -1.0f, 1.0f);
 
