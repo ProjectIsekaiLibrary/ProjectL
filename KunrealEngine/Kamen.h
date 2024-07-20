@@ -299,6 +299,9 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _rentalCollider;
 
+		GameObject*_cinematicCamera;
+		GameObject* _mainPlayCamera;
+
 	private:
 		// Call 거리 체크용
 		float _callMoveDistance;
@@ -389,11 +392,14 @@ namespace KunrealEngine
 	private:
 		bool _rentalSuccess;
 	
+
 	private:
+		DirectX::XMFLOAT3 _cameraOriginPos;
 		DirectX::XMFLOAT3 _cameraMove;
 		DirectX::XMFLOAT2 _cameraRot;
+		bool _cameraMoveFinish;
 
-		bool _cameraReturn;
+		unsigned int _nowCameraStep;
 
 		// 1페이즈 핵심 패턴
 	private:
