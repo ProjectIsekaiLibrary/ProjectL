@@ -256,6 +256,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	PlayGround();
 	CreateTitleScene();
 	//CreateEndingScene();
+	EventManager::GetInstance().CreateFadeObject();
 }
 
 void KunrealEngine::EngineCore::Release()
