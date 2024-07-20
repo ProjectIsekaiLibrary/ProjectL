@@ -77,6 +77,8 @@ void KunrealEngine::Kamen::Initialize()
 	_cinematicCamera->SetActive(true);
 	_cinematicCamera->GetComponent<Camera>()->SetActive(true);
 
+	_cinematicCamera->GetComponent<Camera>()->Update();
+
 	_mainPlayCamera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera();
 }
 
@@ -4783,7 +4785,6 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
 	testDecal->GetComponent<TransparentMesh>()->SetInfinite(true);
-	pattern->SetSubObject(_meteorSword);
 
 	pattern->SetSubObject(testDecal);
 
@@ -4791,8 +4792,6 @@ void KunrealEngine::Kamen::CreateDecalTest()
 		{
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
-
-			_meteorSword->GetComponent<MeshRenderer>()->SetActive(true);
 
 			_timer = 0.0f;
 		};
@@ -4804,11 +4803,6 @@ void KunrealEngine::Kamen::CreateDecalTest()
 
 			_timer += TimeManager::GetInstance().GetDeltaTime();
 
-
-			//if (isPlayed)
-			//{
-			//	return false;
-			//}
 
 			return true;
 		};
@@ -5231,7 +5225,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 					if (!_rentalSuccess)
 					{
-						//_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
+						_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
 					}
 
 					if (_timer2 > 0.0f)
