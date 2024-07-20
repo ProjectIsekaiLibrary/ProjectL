@@ -2090,8 +2090,8 @@ void KunrealEngine::EngineCore::MoveToMain()
 			&& sceneInstance.GetCurrentScene()->GetGameObject("BossPortal")->GetCollider()->GetTargetObject() == sceneInstance.GetCurrentScene()->GetObjectWithTag("Player"))
 		{
 			// 시작 할때 포탈로 넘어가는 소리
-			auto soundManager = sceneInstance.GetCurrentScene()->GetGameObject("SoundManager");
-			auto soundComp = soundManager->GetComponent<SoundPlayer>();
+			GameObject* soundManager = sceneInstance.GetCurrentScene()->GetGameObject("TitleSceneSound");
+			SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
 			int portal = soundComp->FindIndex("Resources/Sound/intro.mp3");
 			soundComp->Play(portal);
 
@@ -2111,6 +2111,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 			navigationInstance.HandleBuild(0, "bossmap.obj");
 			navigationInstance.HandleBuild(1, "bossmap.obj");
 			EventManager::GetInstance().SetCamera("testCamera");
+			EventManager::GetInstance()._iscamfollow = true;
 		}
 
 	}
@@ -2170,6 +2171,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 
 	// Camera
 	GameObject* titleCamera = sceneInstance.GetCurrentScene()->CreateObject("TitleCamera");
+	titleCamera->_autoAwake = true;
 	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
 
 	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
@@ -2190,8 +2192,9 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 direction = { 1.0f, -1.0f, 0.1f };
 
-	auto soundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
-	auto soundComp = soundManager->AddComponent<SoundPlayer>();
+	GameObject* titleSceneSound = sceneInstance.GetCurrentScene()->CreateObject("TitleSceneSound");
+	titleSceneSound->_autoAwake = true;
+	SoundPlayer* soundComp = titleSceneSound->AddComponent<SoundPlayer>();
 
 	int titlebgm1 = soundComp->CreateSoundInfo("Resources/Sound/TitleMap.mp3");
 	int titlebgm2 = soundComp->CreateSoundInfo("Resources/Sound/BridgeRaining.wav");
@@ -2203,6 +2206,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	soundComp->Play(titlebgm2);
 
 	GameObject* titleLight = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
+	titleLight->_autoAwake = true;
 	titleLight->AddComponent<Light>();
 	Light* light = titleLight->GetComponent<Light>();
 	light->CreateDirectionalLight(ambient, diffuse, specular, direction);
@@ -2210,6 +2214,7 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	titleLight->SetActive(true);
 
 	GameObject* bridge = sceneInstance.GetCurrentScene()->CreateObject("Bridge");
+	bridge->_autoAwake = true;
 	bridge->GetComponent<Transform>()->SetPosition(-155.0f, 66.0f, 0.0f);
 	bridge->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
 	bridge->GetComponent<Transform>()->SetRotation(0.0f, 90.0f, 0.0f);
