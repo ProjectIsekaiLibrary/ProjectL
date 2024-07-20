@@ -40,6 +40,8 @@ namespace KunrealEngine
 
 		void ActiveDiedUI();
 
+		void Resebattleuibar();
+
 	private:
 		// 이쪽 변수 확인시 참조.
 		// 이미지에 변화가 오지 않을 배경 이미지들은 그냥 Initialize 할때 함수 내부에서 지역변수로 생성하고 관리했음.

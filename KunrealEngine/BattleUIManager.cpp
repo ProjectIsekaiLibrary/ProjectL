@@ -370,7 +370,6 @@ void KunrealEngine::BattleUIManager::Update()
 	// 플레이어 체력이 0이 되었을 때?
 	if (playerhp <= 0 && !_isdied)
 	{
-		_isdied = true;
 		ActiveDiedUI();
 	}
 
@@ -778,21 +777,24 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		float scale = 1.0f;
 
 		uimanager->_died2->SetActive(true);
+		uimanager->_died2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+		uimanager->_died2->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
 
 		int loop = 0;
 		while (loop < 50)
 		{
 			scale += 0.005;
-			uimanager->_died2->GetComponent<Transform>()->SetScale(scale, scale, 1.0f);
-			auto preimgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
+			DirectX::XMUINT2 preimgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
 			
 			Return_null;
 
 			DirectX::XMUINT2 imgsize = uimanager->_died2->GetComponent<ImageRenderer>()->GetImageSize();
 			auto nowpos = uimanager->_died2->GetComponent<Transform>()->GetPosition();
 
-			float a = nowpos.x - ((float)(imgsize.x - preimgsize.x)/2);
-			float b = nowpos.y - ((float)(imgsize.y - preimgsize.y)/2);
+			float a = nowpos.x - (((float)imgsize.x - (float)preimgsize.x)/2);
+			float b = nowpos.y - (((float)imgsize.y - (float)preimgsize.y)/2);
+			GRAPHICS->DrawDebugText(300, 100, 20, "%f, %f", a, b);
+
 			uimanager->_died2->GetComponent<Transform>()->SetPosition(a, b, 1.0f);
 			
 
@@ -803,4 +805,19 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		EventManager::GetInstance().ActivateFadeOutTrigger();
 	};
 	Startcoroutine(diedcoro);
+}
+
+void KunrealEngine::BattleUIManager::Resebattleuibar()
+{
+	_playerhp_bar->GetComponent<Transform>()->SetScale(_playerhpsize, 1.0f, 0.1f);
+	_playerhp_bar_downGauge->GetComponent<Transform>()->SetScale(_playerhpsize, 1.0f, 0.1f);
+
+	_bosshp_bar_downGauge->GetComponent<Transform>()->SetScale(_bosshpsize, 1.0f, 1.f);
+	_bosshp_bar->GetComponent<Transform>()->SetScale(_bosshpsize, 1.0f, 1.f);
+	
+	_died2->GetComponent<ImageRenderer>()->SetPosition(0.0f, 0.0f);
+	_died2->GetComponent<ImageRenderer>()->SetScale(1.0f, 1.0f);
+	_died2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	_died2->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+	_isdied = false;
 }
