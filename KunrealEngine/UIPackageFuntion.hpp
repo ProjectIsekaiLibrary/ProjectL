@@ -228,14 +228,14 @@ namespace KunrealEngine
 		button_quit_focus->SetParent(titleuibox);
 		button_quit_focus->AddComponent<ImageRenderer>();
 		button_quit_focus->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
-		button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1845.0f, 1005.0f);
-		button_quit_focus->GetComponent<Transform>()->SetScale(0.1f, 0.1f, 0.1f);
+		button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
+		button_quit_focus->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 		button_quit = scene.GetCurrentScene()->CreateObject("button_Quit");
 		button_quit->SetParent(titleuibox);
 		button_quit->AddComponent<ImageRenderer>();
 		button_quit->GetComponent<ImageRenderer>()->SetImage("ui/button-short.png");
-		button_quit->GetComponent<ImageRenderer>()->SetPosition(1845.0f, 1005.0f);
+		button_quit->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
 		button_quit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		button_quit->AddComponent<ButtonSystem>();
 		button_quit->GetComponent<ButtonSystem>()->SetImage(button_quit->GetComponent<ImageRenderer>());

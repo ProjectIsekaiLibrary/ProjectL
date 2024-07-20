@@ -215,7 +215,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_exit->GetComponent<ButtonSystem>()->SetImage(button_exit->GetComponent<ImageRenderer>());
 	button_exit->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			scene->GetGameObject("pauseuibox")->SetActive(true);
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("pauseuibox")->SetActive(true);
 			this->optionuibox->SetActive(false);
 		});
 

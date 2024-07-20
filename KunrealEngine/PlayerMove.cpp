@@ -53,6 +53,8 @@ void KunrealEngine::PlayerMove::FixedUpdate()
 
 void KunrealEngine::PlayerMove::Update()
 {
+	UpdateSound();
+
 	// 마우스 우클릭시	// 홀드도 적용
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
@@ -150,8 +152,6 @@ void KunrealEngine::PlayerMove::Update()
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 
 	ShowPlayerInfo();
-
-	UpdateSound();
 }
 
 void KunrealEngine::PlayerMove::LateUpdate()
@@ -849,7 +849,7 @@ void KunrealEngine::PlayerMove::UpdateSound()
 
 	bool temp = InputSystem::GetInstance()->KeyDown(KEY::SPACE);
 
-	if ( InputSystem::GetInstance()->KeyDown(KEY::SPACE) && !_isDashReady)
+	if ( InputSystem::GetInstance()->KeyDown(KEY::SPACE) && _isDashReady)
 	{
 		_SoundComp->Play(_sounddash);
 	}
