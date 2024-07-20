@@ -458,6 +458,154 @@ void KunrealEngine::Kamen::SpecialAttack2()
 }
 
 
+void KunrealEngine::Kamen::InitializeEnterCameraMove()
+{
+	_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+	_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
+
+	_cameraRot.y = 0.0f;
+
+	_nowCameraStep = 0;
+
+	_cameraMoveFinish = false;
+
+	_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(0, 600, -500);
+
+	_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+
+	_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
+
+	_boss->GetComponent<Transform>()->SetPosition(0.0f, 35.0f, 320.0f);
+
+	_boss->GetComponent<MeshRenderer>()->SetActive(true);
+}
+
+bool KunrealEngine::Kamen::EnterCameraMove()
+{
+	auto camera = _cinematicCamera->GetComponent<Camera>();
+
+	auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
+	switch (_nowCameraStep)
+	{
+		case 0:
+		{
+			float movingTime = 8.0f;
+
+			if (_cameraRot.y > -43.0f)
+			{
+				auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
+				camera->CameraRotateY(-rotSpeed);
+				_cameraRot.y += -rotSpeed;
+			}
+
+			DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(0, 60, -400);
+
+			if (!_cameraMoveFinish)
+			{
+				_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+			}
+
+			if (_cameraMoveFinish && _cameraRot.y <= -43.0f)
+			{
+				_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+				_cameraMoveFinish = false;
+				_nowCameraStep++;
+
+				_boss->GetComponent<Animator>()->Stop();
+			}
+
+			_boss->GetComponent<Animator>()->Play("Idle", 20.0f, true);
+
+			return false;
+			break;
+		}
+
+		case 1:
+		{
+			DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(0, 60, 120);
+
+			auto cameraPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+
+			auto moveSpeed = 120.0f * TimeManager::GetInstance().GetDeltaTime();
+
+			if (cameraPos.z < 60)
+			{
+				_cinematicCamera->GetComponent<Camera>()->CameraWalk(moveSpeed);
+
+				_boss->GetComponent<Animator>()->Play("Idle", 20.0f, true);
+			}
+
+			else
+			{
+				_boss->GetComponent<MeshRenderer>()->SetActive(true);
+				auto animator = _boss->GetComponent<Animator>();
+				if (animator->GetNowAnimationName() == "Idle")
+				{
+					animator->Stop();
+				}
+
+				auto isPlyaing = animator->Play("ReverseEmergence", 20.0f);
+
+				if (!isPlyaing)
+				{
+					animator->Stop();
+
+					_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+					_cameraMoveFinish = false;
+					_nowCameraStep++;
+				}
+			}
+
+			return false;
+			break;
+		}
+
+		case 2:
+		{
+			float movingTime = 2.0f;
+
+			DirectX::XMFLOAT3 dst = _mainPlayCamera->GetComponent<Transform>()->GetPosition();
+
+			if (_cameraRot.y < 0.0f)
+			{
+				auto rotSpeed = deltaTime * 60.0f * (1 / movingTime);
+				camera->CameraRotateY(rotSpeed);
+				_cameraRot.y += rotSpeed;
+			}
+
+			if (!_cameraMoveFinish)
+			{
+				_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+			}
+
+			if (_cameraMoveFinish && _cameraRot.y >= 0.0f)
+			{
+				_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+				_cameraMoveFinish = false;
+				_nowCameraStep++;
+
+				camera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
+
+				camera->CameraRotateY(-1 * _cameraRot.y);
+
+				camera->Update();
+
+				_mainPlayCamera->GetComponent<Camera>()->SetMainCamera();
+			}
+
+			return false;
+			break;
+		}
+
+		default:
+		{
+			return true;
+			break;
+		}
+	}
+}
+
 void KunrealEngine::Kamen::CreateParticleObject()
 {
 	auto mapOffsetY = 5.0f;
@@ -4841,6 +4989,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 
 			_cameraMoveFinish = false;
 
+			_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
+
 			_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
 
 			for (auto& meteorSwordParticle : _meteorSword->GetChilds())
@@ -5230,7 +5380,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 					if (!_rentalSuccess)
 					{
-						_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
+						//_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
 					}
 
 					if (_timer2 > 0.0f)

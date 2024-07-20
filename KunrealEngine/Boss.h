@@ -75,6 +75,9 @@ namespace KunrealEngine
 		virtual void SpecialAttack2();
 		virtual void PatternEnd();
 
+		virtual void InitializeEnterCameraMove();
+		virtual bool EnterCameraMove();
+
 	public:
 		void PatternForceEnd();
 		void ChangePhase(unsigned int phase);
@@ -192,6 +195,8 @@ namespace KunrealEngine
 
 		GameObject* _player;
 
+		DirectX::XMFLOAT3 _bossOriginPos;
+
 		std::vector<std::vector<BossPattern*>> _basicPattern;
 		std::vector<BossPattern*> _corePattern;
 		
@@ -261,6 +266,9 @@ namespace KunrealEngine
 	private:
 		bool _stopSpecialPattern;
 
+	private:
+		bool _isEnterInitialize;
+			
 	private:
 		Coroutine_Func(patternEnd)
 		{

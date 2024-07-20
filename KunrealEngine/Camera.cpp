@@ -200,7 +200,8 @@ bool KunrealEngine::Camera::MoveParabolic(const DirectX::XMFLOAT3& src, const Di
 
 		_nowParabolicMoving = false;
 
-		_camera->SetCameraPosition(dst);
+		_transform->SetPosition(dst);
+		_camera->SetCameraPosition(_transform->GetPosition());
 
 		return true;
 	}
