@@ -114,6 +114,10 @@ void KunrealEngine::Kamen::Update()
 		StopAllSpecialPattern();
 
 		_kamenSword->SetActive(false);
+		for (auto& bezierSwordParticles : _bezierSwordParticles)
+		{
+			bezierSwordParticles->GetComponent<Particle>()->SetActive(false);
+		}
 	}
 
 	/// µð¹ö±ë¿ë
