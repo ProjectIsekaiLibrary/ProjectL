@@ -142,6 +142,8 @@ namespace KunrealEngine
 		GameObject* _endingLight;
 
 		float CountPlus(float start, float end, float speed);
+		float CountPlusLoop(float start, float end, float speed);
+
 		float CountMinus(float start, float end, float speed);
 
 		GameObject* _endingMeteo1;
@@ -160,7 +162,19 @@ namespace KunrealEngine
 		GameObject* _endingObject5;
 		GameObject* _endingObject6;
 
+		GameObject* _endingEnt;
+		GameObject* _endingSpider;
+
 		GameObject* _endingCredit1;
+		GameObject* _endingThankYou;
+
+		float _originalYpos = -20.0f;
+
+		GameObject* titleCamera;
+
+		float titleUIPosY = 0.0f;
+		void SmoothTransition(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 startRot,
+			DirectX::XMFLOAT3 endPos, DirectX::XMFLOAT3 endRot, float duration, float deltaTime);
 	};
 }
 
