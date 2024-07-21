@@ -15,7 +15,7 @@
 KunrealEngine::PlayerMove::PlayerMove()
 	:_transform(nullptr), _playerComp(nullptr), _targetPos(), _isDash(false), _isMoving(false), _isDashReady(true)
 	, _stopover(), _errorRange(0.5f), _nodeCount(0), _movedRange(0.0f), _movableRange(0.0f), _posY(2.0f),/* _playerDashParticleStart{0}, _playerDashParticleEnd{0},*/
-	_timer(1), _isDashStart(false), _isDashEnd(false), _SoundComp(nullptr), _clickTimer(0.0f), _isClick(false)
+	_timer(1), _isDashStart(false), _isDashEnd(false), _SoundComp(nullptr), _clickTimer(0.0f), _isClick(false), _nodeUpdateCount(0) 
 {
 
 }
@@ -136,18 +136,6 @@ void KunrealEngine::PlayerMove::Update()
 
 	}
 
-	/// µð¹ö±ë¿ë
-	//if (_stopover.size() > 0)
-	//{
-	//	for (const auto& path : _stopover)
-	//	{
-	//		GRAPHICS->CreateDebugLine(path.first, path.second, DirectX::XMFLOAT4(1.0f, 1.0f, 0.0f, 1.0f));
-	//	}
-	//}
-
-	//MoveToTarget(_targetPos, 15.f * TimeManager::GetInstance().GetDeltaTime());
-	//PlayerDash(_targetPos, _playerComp->_playerInfo._dashSpeed * TimeManager::GetInstance().GetDeltaTime());
-
 	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 
@@ -233,9 +221,25 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 			_targetPos.x, _transform->GetPosition().y, _targetPos.z);
 
 		_stopover = Navigation::GetInstance().FindStraightPath(0);
+		
+		// Å»Ãâ ºÒ°¡ ¹æÁö
+		this->_nodeUpdateCount++;
+		if (this->_nodeUpdateCount >= 100)
+		{
+			if (this->GetOwner()->GetObjectScene()->GetSceneName() == "Title")
+			{
+				//this->_transform->SetPosition(_playerComp->_playerStartX, 2.0f, _playerComp->_playerStartZ);
+			}
+			else
+			{
+				this->_transform->SetPosition(_playerComp->_playerStartX, 2.0f, _playerComp->_playerStartZ);
+			}
+			break;
+		}
 	}
 
-	_nodeCount = 0;
+	this->_nodeCount = 0;
+	this->_nodeUpdateCount = 0;
 }
 
 void KunrealEngine::PlayerMove::UpdateDashNode()

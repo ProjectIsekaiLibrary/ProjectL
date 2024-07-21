@@ -97,6 +97,9 @@ namespace KunrealEngine
 		std::vector<GameObject*> _deathParticleVector;	
 		float _deathAnimationSpeed;
 
+		float _playerStartX;					// 보스맵 시작 x z 좌표
+		float _playerStartZ;		
+
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
 		void AnimateByStatus();

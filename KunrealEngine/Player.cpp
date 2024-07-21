@@ -29,7 +29,7 @@ KunrealEngine::Player::Player()
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
-	, _onCasting(false)
+	, _onCasting(false), _playerStartX(0.7f), _playerStartZ(-55.0f)
 {
 	_sweepNode.clear();
 }
@@ -534,6 +534,9 @@ void KunrealEngine::Player::ResetPlayerStatus()
 	// 스탯 초기화
 	this->_playerInfo._hp = this->_playerInfo._maxhp;
 	this->_playerInfo._spellPower = 1.0f;
+
+	// 위치 초기화
+	this->_transform->SetPosition(this->_playerStartX, 2.0f, this->_playerStartZ);
 
 	// 상태 초기화
 	this->_playerStatus = Status::IDLE;

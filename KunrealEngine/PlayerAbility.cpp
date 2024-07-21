@@ -26,7 +26,8 @@ KunrealEngine::PlayerAbility::PlayerAbility()
 	_shotParticleTimer(0), _isMeteorEnded(false), _meteorParticleTimer(0), _isCircleEnded(false), _circleParticleTimer(0), _isLaserEnded(false), _laserParticleTimer(0), _isLaserStarted(false), _destroyLaser(false),
 	_shotParticle2(nullptr), _shotParticle3(nullptr), _shotParticle4(nullptr), _shotParticleHit1(nullptr), _shotParticleHit2(nullptr), _shotParticleHit3(nullptr),
 	_laserParticle1(nullptr), _laserParticle2(nullptr), _laserParticle3(nullptr), _laserParticle4(nullptr), _meteorParticle2(nullptr), _meteorParticle3(nullptr), _meteorParticle4(nullptr), _meteorParticleHit1(nullptr), _meteorParticleHit2(nullptr), _meteorParticleHit3(nullptr), _meteorParticleHit4(nullptr),
-	_maxPotion(5), _restorePercentage(0.3f), _potionCoolDown(8.0f), _isPotionReady(true), _circleParticle(nullptr), _circleBuffParticle1(nullptr), _circleBuffParticle2(nullptr)
+	_maxPotion(5), _restorePercentage(0.3f), _potionCoolDown(8.0f), _isPotionReady(true), _circleParticle(nullptr), _circleBuffParticle1(nullptr), _circleBuffParticle2(nullptr),
+	_laserDestroyCount(2.5f)
 
 {
 
@@ -89,7 +90,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::Q) && this->_isShotReady && !_playerComp->_onCasting)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
-		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
 		{
 			return;
 		}
@@ -112,7 +113,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::W) && this->_isCircleReady && !_playerComp->_onCasting)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
-		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
 		{
 			return;
 		}
@@ -133,7 +134,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::E) && this->_isLaserReady && !_playerComp->_onCasting)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
-		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
 		{
 			return;
 		}
@@ -152,7 +153,7 @@ void KunrealEngine::PlayerAbility::Update()
 		_CoroutineIs(laserDestroy)
 		{
 			auto* ability = this;
-			Waitforsecond(2.5f);
+			Waitforsecond(ability->_laserDestroyCount);
 
 			ability->_laser->GetComponent<BoxCollider>()->SetActive(false);
 			ability->_laser->SetActive(false);
@@ -166,7 +167,11 @@ void KunrealEngine::PlayerAbility::Update()
 				ability->_laserParticle3->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				ability->_laserParticle4->GetComponent<Particle>()->SetParticleSize((50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f), (50 - (delta * 25)) * ToolBox::GetRandomFloat(0.8f, 1.0f));
 
-				if (delta > 2) break;
+				if (delta > 2)
+				{
+					ability->_laserDestroyCount = 2.5f;
+					break;
+				}
 				Return_null;
 			}
 			ability->_laserParticle1->SetActive(false);
@@ -179,6 +184,17 @@ void KunrealEngine::PlayerAbility::Update()
 
 		};
 		Startcoroutine(laserDestroy);
+
+	}
+
+	// 레이저 사용중 피격 혹은 취소되면 레이저 사라지도록
+	if (this->_laser->GetActivated() && (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH))
+	{
+		this->_laser->SetActive(false);
+		this->_laserParticle1->SetActive(false);
+		this->_laserParticle2->SetActive(false);
+		this->_laserParticle3->SetActive(false);
+		this->_laserParticle4->SetActive(false);
 	}
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady && !_playerComp->_onCasting)
@@ -204,7 +220,7 @@ void KunrealEngine::PlayerAbility::Update()
 		}
 
 		// 범위 객체 활성화
-		if (!this->_meteorRange->GetActivated())
+		if (!this->_meteorRange->GetComponent<MeteorRange>()->GetActivated())
 		{
 			this->_meteorRange->SetActive(true);
 			this->_meteorRange->GetComponent<MeteorRange>()->SetActive(true);
@@ -996,9 +1012,10 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 	// 운석 범위 표시 객체
 	this->_meteorRange = this->GetOwner()->GetObjectScene()->CreateObject("MeteorRange");
-	_meteorRange->AddComponent<MeteorRange>();
-	_meteorRange->SetActive(false);
-	_meteorRange->_autoAwake = true;
+	this->_meteorRange->AddComponent<MeteorRange>();
+	this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
+	this->_meteorRange->SetActive(false);
+	this->_meteorRange->_autoAwake = true;
 
 	// 낙하 후 그을림 표현 객체
 	this->_meteorCrator = this->GetOwner()->GetObjectScene()->CreateObject("MeteorCrater");

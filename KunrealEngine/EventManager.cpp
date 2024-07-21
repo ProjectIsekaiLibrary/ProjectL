@@ -222,21 +222,6 @@ void KunrealEngine::EventManager::CreateFadeObject()
 	this->_fadeObjectMain->SetActive(false);
 }
 
-//void KunrealEngine::EventManager::CalculateDamageToBoss()
-//{
-//	auto& bossInfo = _bossComp->GetBossInfo();
-//
-//	auto damage = _playerAbill->GetDamage();
-//
-//	if (damage > 0)
-//	{
-//		auto finalDamage = damage * (100.0f / 100 + bossInfo._armor);
-//
-//		_bossComp->GetBossInfo()._hp -= finalDamage;
-//	}
-//}
-
-
 void KunrealEngine::EventManager::CalculateDamageToBoss(Ability* abil)
 {
 	auto damage = abil->GetDamage() * _playerComp->GetPlayerData()._spellPower;

@@ -245,7 +245,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//// cube map test
 	GRAPHICS->CreateCubeMap("test", "Texture6.dds", true);
 	auto list = GRAPHICS->GetCubeMapList();
-	GRAPHICS->SetMainCubeMap(list.back());
+	//GRAPHICS->SetMainCubeMap(list.back());
 
 	sceneInstance.CreateScene("ParticleTest");
 
@@ -261,7 +261,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	PlayGround();
 	CreateTitleScene();
 	//CreateEndingScene();
-	//EventManager::GetInstance().CreateFadeObject();
+	EventManager::GetInstance().CreateFadeObject();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -2130,6 +2130,12 @@ void KunrealEngine::EngineCore::MoveToMain()
 			navigationInstance.HandleBuild(1, "bossmap.obj");
 			EventManager::GetInstance().SetCamera("testCamera");
 			EventManager::GetInstance()._iscamfollow = true;
+
+			// 큐브맵 변경
+			GRAPHICS->SetMainCubeMap("Texture6.dds");
+
+			// 플레이어 위치 조정 및 초기화
+			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
 		}
 
 	}
