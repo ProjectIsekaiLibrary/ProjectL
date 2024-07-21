@@ -254,12 +254,12 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 /발사
-	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 /발사
+	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
 	_basicPattern[1] = _basicPattern[0];
 
