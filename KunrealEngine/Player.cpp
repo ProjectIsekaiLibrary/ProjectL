@@ -73,9 +73,11 @@ void KunrealEngine::Player::Initialize()
 
 	auto soundcomp = this->_owner->AddComponent<SoundPlayer>();
 	_knock_downSound = soundcomp->CreateSoundInfo("Resources/sound/body-fall.mp3", true, false, 100);
-	_isdiedsound = soundcomp->CreateSoundInfo("Resources/sound/youDied.mp3", true, false, 100);
+	_diedsound = soundcomp->CreateSoundInfo("Resources/sound/youDied.mp3", true, false, 100);
+	_staandup = soundcomp->CreateSoundInfo("Resources/sound/standup_sound.mp3", true, false, 100);
 	soundcomp->CreateSound(_knock_downSound, 1);
-	soundcomp->CreateSound(_isdiedsound, 1);
+	soundcomp->CreateSound(_diedsound, 1);
+	soundcomp->CreateSound(_staandup, 1);
 
 
 	this->_owner->AddComponent<PlayerAbility>();
@@ -582,6 +584,7 @@ void KunrealEngine::Player::BeforeStart()
 		{
 			if (this->_playerStatus == Status::BEFORESTART)
 			{
+				this->_owner->GetComponent<SoundPlayer>()->Play(_staandup);
 				this->_owner->GetComponent<Animator>()->Play("StandingUp", 30.0f * _playerInfo._speedScale, false);
 			}
 		}
