@@ -414,9 +414,9 @@ namespace KunrealEngine
 			particleBezierTest->GetComponent<Transform>()->SetPosition(-152.121f + ToolBox::GetRandomFloat(-150.0f, 150.0f), 182.672f + ToolBox::GetRandomFloat(-100.0f, 100.0f), 180);
 			particleBezierTest->AddComponent<Particle>();
 			particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
-			particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleDuration(2.0f, 3.0f);
 			particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-			particleBezierTest->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleSize(7.0f, 7.0f);
 			particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 0.0f);
 			particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 

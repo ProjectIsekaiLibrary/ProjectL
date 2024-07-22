@@ -243,7 +243,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	navigationInstance.Initialize();
 
 	//// cube map test
-	GRAPHICS->CreateCubeMap("test", "Texture6.dds", true);
+	GRAPHICS->CreateCubeMap("BossMap", "Texture6.dds", true);
 	auto list = GRAPHICS->GetCubeMapList();
 	//GRAPHICS->SetMainCubeMap(list.back());
 
@@ -2059,7 +2059,7 @@ void KunrealEngine::EngineCore::TitleMapParticle()
 
 		if (_isSettingTimer == false)
 		{
-			_timeCount = ToolBox::GetRandomFloat(0.1f, 0.8f);
+			_timeCount = ToolBox::GetRandomFloat(0.1f, 0.6f);
 
 			_timeCountList.push_back(_timeCount);
 		}
@@ -2078,7 +2078,7 @@ void KunrealEngine::EngineCore::TitleMapParticle()
 
 	for (auto& timeCount : _timeCountList) // 타이머
 	{
-		timeCount += TimeManager::GetInstance().GetDeltaTime() / 2;
+		timeCount += TimeManager::GetInstance().GetDeltaTime() / 5;
 	}
 
 	int timeCountIndex = 0;
@@ -2132,7 +2132,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 			EventManager::GetInstance()._iscamfollow = true;
 
 			// 큐브맵 변경
-			GRAPHICS->SetMainCubeMap("Texture6.dds");
+			GRAPHICS->SetMainCubeMap("BossMap");
 
 			// 플레이어 위치 조정 및 초기화
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
