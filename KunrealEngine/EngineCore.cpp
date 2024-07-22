@@ -2490,12 +2490,12 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingCredit1 = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit1");
 	auto credit1 = _endingCredit1->AddComponent<ImageRenderer>();
 	credit1->SetImage("ui/endingCredit1.png");
-	credit1->SetPosition(700.0f, 1500.0f);
+	credit1->SetPosition(700.0f, 1100.0f);
 
 	_endingThankYou = sceneInstance.GetCurrentScene()->CreateObject("EndingThankYou");
 	auto credit2 = _endingThankYou->AddComponent<ImageRenderer>();
 	credit2->SetImage("ui/ThankYou.png");
-	credit2->SetPosition(0.0f, 1500.0f);
+	credit2->SetPosition(0.0f, 1100.0f);
 }
 
 void KunrealEngine::EngineCore::EndingSceneUpdate()
@@ -2527,22 +2527,22 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 	_endingMeteo8->GetComponent<Transform>()->SetPosition(-261.0f,
 		CountPlusLoop(_endingMeteo8->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -172.0f);
 
-	if (endingTimer <= -20.f)
+	if (endingTimer <= -10.f)
 	{
 		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(700.f,
-			CountPlus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 30.f));
+			CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 30.f));
 	}
 	if (endingTimer <= -50.0f)
 	{
 		_endingEnt->GetComponent<Transform>()->SetPosition(-93.0f,
 			CountPlus(_endingEnt->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -312.0f);
 	}
-	if (endingTimer <= -70.f)
+	if (endingTimer <= -65.f)
 	{
 		_endingSpider->GetComponent<Transform>()->SetPosition(-166.0f,
 			CountPlus(_endingSpider->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -314.0f);
 	}
-	if (endingTimer <= -80.f)
+	if (endingTimer <= -70.f)
 	{
 		_endingThankYou->GetComponent<ImageRenderer>()->SetPosition(0.f,
 			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 500.0f, 30.f));
