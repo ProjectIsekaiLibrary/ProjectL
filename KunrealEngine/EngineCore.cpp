@@ -2462,9 +2462,9 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingEnt = sceneInstance.GetCurrentScene()->CreateObject("EndingEnt");
 	_endingEnt->AddComponent<MeshRenderer>();
 	_endingEnt->GetComponent<MeshRenderer>()->SetMeshObject("Ent_Generic/Ent_Generic");
-	_endingEnt->GetComponent<Transform>()->SetPosition(-93.0f, -65.f, -312.0f);
-	_endingEnt->GetComponent<Transform>()->SetRotation(24.0f, 170.f, -52.0f);
-	_endingEnt->GetComponent<Transform>()->SetScale(24.0f, 24.f, 24.0f);
+	_endingEnt->GetComponent<Transform>()->SetPosition(-273.0f, -80.f, -475.0f);
+	_endingEnt->GetComponent<Transform>()->SetRotation(0.0f, 170.f, 56.0f);
+	_endingEnt->GetComponent<Transform>()->SetScale(22.0f, 22.f, 22.0f);
 	auto entTexSize = _endingEnt->GetComponent<MeshRenderer>()->GetTextures().size();
 	for (int i = 0; i < entTexSize; i++)
 	{
@@ -2476,8 +2476,8 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingSpider = sceneInstance.GetCurrentScene()->CreateObject("EndingSpider");
 	_endingSpider->AddComponent<MeshRenderer>();
 	_endingSpider->GetComponent<MeshRenderer>()->SetMeshObject("SpiderQueen/SpiderQueen");
-	_endingSpider->GetComponent<Transform>()->SetPosition(-166.0f, -51.f, -314.0f);
-	_endingSpider->GetComponent<Transform>()->SetRotation(-39.0f, -239.f, -313.0f);
+	_endingSpider->GetComponent<Transform>()->SetPosition(-242.0f, -90.f, -475.0f);
+	_endingSpider->GetComponent<Transform>()->SetRotation(-10.0f, -207.f, -381.0f);
 	_endingSpider->GetComponent<Transform>()->SetScale(20.0f, 20.f, 20.0f);
 	auto spiderTexSize = _endingSpider->GetComponent<MeshRenderer>()->GetTextures().size();
 	for (int i = 0; i < spiderTexSize; i++)
@@ -2487,15 +2487,78 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 		_endingSpider->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "SpiderQueen/T_SpiderQueen_1_E.tga");
 	}
 
+	_endingSword = sceneInstance.GetCurrentScene()->CreateObject("EndingSword");
+	_endingSword->AddComponent<MeshRenderer>();
+	_endingSword->GetComponent<MeshRenderer>()->SetMeshObject("KamenSword/KamenSword");
+	_endingSword->GetComponent<Transform>()->SetPosition(-298.0f, -50.f, -397.0f);
+	_endingSword->GetComponent<Transform>()->SetRotation(-86.0f, 94.f, -188.0f);
+	_endingSword->GetComponent<Transform>()->SetScale(2.5f, 2.5f, 2.5f);
+	auto swordTexSize = _endingSword->GetComponent<MeshRenderer>()->GetTextures().size();
+	for (int i = 0; i < spiderTexSize; i++)
+	{
+		_endingSword->GetComponent<MeshRenderer>()->SetDiffuseTexture(i, "KamenSword/KamenSword_BaseColor.png");
+		_endingSword->GetComponent<MeshRenderer>()->SetNormalTexture(i, "KamenSword/KamenSword_Normal.png");
+		_endingSword->GetComponent<MeshRenderer>()->SetEmissiveTexture(i, "KamenSword/KamenSword_Emissive.png");
+	}
+
+
+	_endingKachujin = sceneInstance.GetCurrentScene()->CreateObject("EndingKachujin");
+	_endingKachujin->AddComponent<MeshRenderer>();
+	_endingKachujin->GetComponent<MeshRenderer>()->SetMeshObject("Kachujin/Kachujin");
+	_endingKachujin->GetComponent<Transform>()->SetPosition(-239.0f, -90.f, -475.0f);
+	_endingKachujin->GetComponent<Transform>()->SetRotation(10.0f, -149.f, -21.0f);
+	_endingKachujin->GetComponent<Transform>()->SetScale(0.3f, 0.3f, 0.3f);
+
+	_endingKunho = sceneInstance.GetCurrentScene()->CreateObject("EndingKunho");
+	_endingKunho->AddComponent<MeshRenderer>();
+	_endingKunho->GetComponent<MeshRenderer>()->SetMeshObject("Player/Player");
+	_endingKunho->GetComponent<Transform>()->SetPosition(-250.0f, -90.f, -475.0f);
+	_endingKunho->GetComponent<Transform>()->SetRotation(25.0f, 140.f, -41.0f);
+	_endingKunho->GetComponent<Transform>()->SetScale(0.5f, 0.5f, 0.5f);
+
+
+	/// <summary>
+	/// ¿£µù Å©·¹µ÷
+	/// </summary>
 	_endingCredit1 = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit1");
 	auto credit1 = _endingCredit1->AddComponent<ImageRenderer>();
-	credit1->SetImage("ui/endingCredit1.png");
+	credit1->SetImage("ui/Programmers.png");
 	credit1->SetPosition(700.0f, 1100.0f);
 
-	_endingThankYou = sceneInstance.GetCurrentScene()->CreateObject("EndingThankYou");
-	auto credit2 = _endingThankYou->AddComponent<ImageRenderer>();
-	credit2->SetImage("ui/ThankYou.png");
+	_endingLee = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit2");
+	auto credit2 = _endingLee->AddComponent<ImageRenderer>();
+	credit2->SetImage("ui/LeeKunho.png");
 	credit2->SetPosition(0.0f, 1100.0f);
+
+	_endingYoon = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit3");
+	auto credit3 = _endingYoon->AddComponent<ImageRenderer>();
+	credit3->SetImage("ui/YoonJonghwa.png");
+	credit3->SetPosition(0.0f, 1100.0f);
+
+	_endingKim = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit4");
+	auto credit4 = _endingKim->AddComponent<ImageRenderer>();
+	credit4->SetImage("ui/KimHyunjae.png");
+	credit4->SetPosition(0.0f, 1100.0f);
+
+	_endingBae = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit5");
+	auto credit5 = _endingBae->AddComponent<ImageRenderer>();
+	credit5->SetImage("ui/BaeSunggeun.png");
+	credit5->SetPosition(-425.0f, 1100.0f);
+
+	_endingJung = sceneInstance.GetCurrentScene()->CreateObject("EndingCredit6");
+	auto credit6 = _endingJung->AddComponent<ImageRenderer>();
+	credit6->SetImage("ui/JeongJinsoo.png");
+	credit6->SetPosition(-425.0f, 1100.0f);
+
+	_endingThankYou = sceneInstance.GetCurrentScene()->CreateObject("EndingThankYou");
+	auto credit7 = _endingThankYou->AddComponent<ImageRenderer>();
+	credit7->SetImage("ui/ThankYouForPlaying.png");
+	credit7->SetPosition(0.0f, 1100.0f);
+
+	_endingTheme = sceneInstance.GetCurrentScene()->CreateObject("EndingTheme");
+	auto credit8 = _endingTheme->AddComponent<ImageRenderer>();
+	credit8->SetImage("ui/endingTheme.png");
+	credit8->SetPosition(0.0f, 1100.0f);
 }
 
 void KunrealEngine::EngineCore::EndingSceneUpdate()
@@ -2527,34 +2590,72 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 	_endingMeteo8->GetComponent<Transform>()->SetPosition(-261.0f,
 		CountPlusLoop(_endingMeteo8->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -172.0f);
 
-	if (endingTimer <= -10.f)
+
+	if (endingTimer <= -5.f)
 	{
-		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(700.f,
-			CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 30.f));
+		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(470.f,
+			CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
 	}
-	if (endingTimer <= -50.0f)
+	if (endingTimer <= -7.f)
 	{
-		_endingEnt->GetComponent<Transform>()->SetPosition(-93.0f,
-			CountPlus(_endingEnt->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -312.0f);
+		_endingLee->GetComponent<ImageRenderer>()->SetPosition(415.f,
+			CountMinus(_endingLee->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+
+		_endingKunho->GetComponent<Transform>()->SetPosition(-250.0f,
+			CountPlus(_endingKunho->GetComponent<Transform>()->GetPosition().y, 300.f, 11.f), -475.0f);
 	}
-	if (endingTimer <= -65.f)
+	if (endingTimer <= -17.f)
 	{
-		_endingSpider->GetComponent<Transform>()->SetPosition(-166.0f,
-			CountPlus(_endingSpider->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -314.0f);
+		_endingYoon->GetComponent<ImageRenderer>()->SetPosition(474.f,
+			CountMinus(_endingYoon->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+
+		_endingSword->GetComponent<Transform>()->SetPosition(-298.0f,
+			CountPlus(_endingSword->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -397.0f);
+	}
+	if (endingTimer <= -27.f)
+	{
+		_endingKim->GetComponent<ImageRenderer>()->SetPosition(452.f,
+			CountMinus(_endingKim->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+
+		_endingKachujin->GetComponent<Transform>()->SetPosition(-239.0f,
+			CountPlus(_endingKachujin->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -475.0f);
+	}
+	if (endingTimer <= -37.0f)
+	{
+		_endingBae->GetComponent<ImageRenderer>()->SetPosition(485.f,
+			CountMinus(_endingBae->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+
+		_endingEnt->GetComponent<Transform>()->SetPosition(-273.0f,
+			CountPlus(_endingEnt->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -475.0f);
+	}
+	if (endingTimer <= -47.f)
+	{
+		_endingJung->GetComponent<ImageRenderer>()->SetPosition(450.f,
+			CountMinus(_endingJung->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+
+		_endingSpider->GetComponent<Transform>()->SetPosition(-242.0f,
+			CountPlus(_endingSpider->GetComponent<Transform>()->GetPosition().y, 300.f, 11.f), -475.0f);
 	}
 	if (endingTimer <= -70.f)
 	{
 		_endingThankYou->GetComponent<ImageRenderer>()->SetPosition(0.f,
-			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 500.0f, 30.f));
+			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 500.0f, 50.f));
+	}
+	if (endingTimer <= -80.f)
+	{
+		_endingTheme->GetComponent<ImageRenderer>()->SetPosition(0.f,
+			CountMinus(_endingTheme->GetComponent<Transform>()->GetPosition().y, 1000.0f, 50.f));
 	}
 	_endingEnt->GetComponent<Animator>()->Play("Idle", 0.1f, true);
 	_endingSpider->GetComponent<Animator>()->Play("Idle", 0.1f, true);
+	_endingKachujin->GetComponent<Animator>()->Play("Idle", 0.1f, true);
+	_endingKunho->GetComponent<Animator>()->Play("Idle", 0.1f, true);
 
 	// boss
 	if (endingTimer <= 10.0f && endingTimer > 5.0f)
 	{
 		_endingSoundComp->Play(endingSoundindex);
-		endingBoss->GetComponent<Animator>()->Play("Idle", 10.f, true);
+		endingBoss->GetComponent<Animator>()->Play("BattleCry", 0.5f, true);
 	}
 	else if (endingTimer <= 5.0f && endingTimer >= 0.0f)
 	{
@@ -2591,8 +2692,6 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingSoundComp->SetVolume(70.0f, endingSoundindex);
 
 		endingPlayer->GetComponent<Animator>()->Play("endingFloatingfbx", 1.f, true);
-
-
 	}
 }
 
