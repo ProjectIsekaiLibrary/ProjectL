@@ -258,12 +258,12 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
-	_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 /발사
-	_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
-	TeleportSpellPattern();							// 텔포 후 spell	
-	BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
+	//_basicPattern[0].emplace_back(_leftFireAttack);	// 왼손으로 투사체 5개 /발사
+	//_basicPattern[0].emplace_back(_rightFireAttack);	// 오른손으로 투사체 5개 발사
+	//TeleportSpellPattern();							// 텔포 후 spell	
+	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//_basicPattern[0].emplace_back(_fiveWayAttack);		// 5갈래 분신 발사
 
 	_basicPattern[1] = _basicPattern[0];
 
@@ -281,6 +281,7 @@ void KunrealEngine::Kamen::GamePattern()
 	CoreSwordMutipleAttackPattern();
 	CoreSwordMeteorPattern();
 
+	_basicPattern[0].emplace_back(_swordMultipleAttack);
 	//CreateDecalTest();
 }
 
@@ -2554,7 +2555,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 		swordAttack->AddComponent<TransparentMesh>();
 		swordAttack->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
 		swordAttack->GetComponent<TransparentMesh>()->SetTimer(2.0F);
-		swordAttack->GetComponent<TransparentMesh>()->SetRenderType(3);
+		swordAttack->GetComponent<TransparentMesh>()->SetRenderType(2);
 		swordAttack->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 300.0f);
 		swordAttack->SetTotalComponentState(false);
 		swordAttack->SetActive(false);
@@ -5683,7 +5684,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 					{
 						auto interval = 200.0f;
 
-						_multipleSwordWarningVec[index]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y, 0.0f);
+						_multipleSwordWarningVec[index]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y - 180.0f, 0.0f);
 
 
 						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&startPosition), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[index]), interval));
@@ -5768,7 +5769,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 
 								auto interval = 200.0f;
 
-								_multipleSwordWarningVec[i]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y, 0.0f);
+								_multipleSwordWarningVec[i]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y - 180.0f, 0.0f);
 
 
 								DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[i]), interval));

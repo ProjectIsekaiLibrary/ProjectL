@@ -309,7 +309,7 @@ void ArkEngine::ArkDX11::deferredBuffer::CreateRenderTargetTextureForBloom()
 	{
 		D3D11_TEXTURE2D_DESC textureDesc;
 
-		float mul = 0.125f;
+		float mul = 0.25f;
 
 		textureDesc.Height = _textureHeight * mul;
 		textureDesc.Width = _textureWidth * mul;
