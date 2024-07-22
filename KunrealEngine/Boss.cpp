@@ -30,7 +30,7 @@ KunrealEngine::Boss::Boss()
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(),
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
 	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern(false),
-	_isEnterInitialize(false), _deathTimer(0.5f)
+	_isEnterInitialize(false), _deathTimer(0.5f), _finalPattern(nullptr), _updateTimer(0.0f), _isFinalPatternInit(false)
 {
 }
 
@@ -177,6 +177,20 @@ void KunrealEngine::Boss::Update()
 		_nodeCount = 0;
 
 		_isAngleCheck = false;
+	}
+
+	_updateTimer += TimeManager::GetInstance().GetDeltaTime();
+
+	if (_updateTimer >= 2.0f)
+	{
+		// 이동, 회전 관련된 것들 초기화해줌
+		_isRotateFinish = false;
+		_isMoving = false;
+		_nodeCount = 0;
+
+		_isAngleCheck = false;
+
+		_updateTimer = 0.0f;
 	}
 
 	if (_info._hp <= 0)
@@ -552,30 +566,39 @@ void KunrealEngine::Boss::OffStaggred()
 
 void KunrealEngine::Boss::Dead()
 {
-	// 보스가 죽을때 애니메이션 실행
-	auto isPlaying = _boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
-	
-	if (!isPlaying)
+	if (!_isFinalPatternInit)
 	{
-		if (_deathTimer >= 0.0f)
-		{
-			_boss->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+		_canPlaySpecialPattern = false;
 
-			_boss->GetComponent<MeshRenderer>()->SetDissolve(_deathTimer);
-		}
-		else
-		{
-			_boss->GetComponent<MeshRenderer>()->SetActive(false);
-			_boss->GetComponent<BoxCollider>()->SetActive(false);
-		}
+		_finalPattern->Initialize();
 
-		if (_boss->GetComponent<MeshRenderer>()->GetActivated())
-		{
-			_deathTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.2f;
-		}
+		_isFinalPatternInit = true;
 	}
 
-	_canPlaySpecialPattern = false;
+	_finalPattern->Play();
+
+	// 보스가 죽을때 애니메이션 실행
+	//auto isPlaying = _boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
+	//
+	//if (!isPlaying)
+	//{
+	//	if (_deathTimer >= 0.0f)
+	//	{
+	//		_boss->GetComponent<MeshRenderer>()->SetIsDissolve(true);
+	//
+	//		_boss->GetComponent<MeshRenderer>()->SetDissolve(_deathTimer);
+	//	}
+	//	else
+	//	{
+	//		_boss->GetComponent<MeshRenderer>()->SetActive(false);
+	//		_boss->GetComponent<BoxCollider>()->SetActive(false);
+	//	}
+	//
+	//	if (_boss->GetComponent<MeshRenderer>()->GetActivated())
+	//	{
+	//		_deathTimer -= TimeManager::GetInstance().GetDeltaTime() * 0.2f;
+	//	}
+	//}
 }
 
 
@@ -1079,6 +1102,8 @@ void KunrealEngine::Boss::ResetBoss()
 	_stopSpecialPattern = false;
 	_isEnterInitialize = false;
 	_deathTimer = 0.5f;
+	_updateTimer = 0.0f;
+	_isFinalPatternInit = false;
 
 	SetSubObject(false);
 }
@@ -1166,6 +1191,12 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 	if (_isHideFinish == false)
 	{
 		_boss->GetComponent<Animator>()->Stop();
+
+		_boss->GetComponent<MeshRenderer>()->SetActive(false);
+		_boss->GetComponent<MeshRenderer>()->Update();
+		_boss->GetComponent<BoxCollider>()->SetActive(false);
+		_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
 		Startcoroutine(TeleportWithHide);
 	}
 
@@ -1205,9 +1236,10 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 		}
 
 		_boss->GetComponent<MeshRenderer>()->SetActive(true);
+		_boss->GetComponent<MeshRenderer>()->Update();
 		_boss->GetComponent<BoxCollider>()->SetActive(true);
-
 		_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
 
 		_prevRot = _bossTransform->GetRotation();
 

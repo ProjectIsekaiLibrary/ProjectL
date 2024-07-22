@@ -5112,9 +5112,12 @@ void KunrealEngine::Kamen::CreateBattleCry()
 
 			_info._armor = 100.0f;
 
+			_boss->GetComponent<BoxCollider>()->SetActive(false);
 			_boss->GetComponent<MeshRenderer>()->SetActive(false);
 			_boss->GetComponent<Transform>()->SetPosition(_centerPos);
 			_boss->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
+			_boss->GetComponent<MeshRenderer>()->Update();
 
 			_timer = 0.0f;
 		};
@@ -5147,8 +5150,8 @@ void KunrealEngine::Kamen::CreateBattleCry()
 				_boss->GetComponent<BoxCollider>()->SetActive(false);
 				_boss->GetComponent<MeshRenderer>()->SetActive(false);
 				_boss->GetComponent<Transform>()->SetRotation(0.0f, 0.0f, 0.0f);
-
 				_boss->GetComponent<BoxCollider>()->FixedUpdate();
+				_boss->GetComponent<MeshRenderer>()->Update();
 
 				_info._armor = 1.0f;
 				return false;
@@ -5772,10 +5775,12 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 						_meteorSword->SetTotalComponentState(false);
 						_meteorSword->SetActive(false);
 
-						ChangePhase(2);
-
 						_boss->GetComponent<MeshRenderer>()->SetActive(true);
 						_boss->GetComponent<BoxCollider>()->SetActive(true);
+						_boss->GetComponent<BoxCollider>()->FixedUpdate();
+						_boss->GetComponent<MeshRenderer>()->Update();
+
+						ChangePhase(2);
 
 						return false;
 					}
@@ -6028,8 +6033,6 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 				_multipleSwordDirectionVec.clear();
 				_multipleSwordMoveDistance.clear();
 
-				_boss->GetComponent<MeshRenderer>()->SetActive(true);
-
 				return false;
 			}
 
@@ -6051,6 +6054,11 @@ void KunrealEngine::Kamen::CreateKamenHoldSword()
 
 	auto initializeLogic = [pattern, this]()
 		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+			_boss->GetComponent<BoxCollider>()->SetActive(true);
+			_boss->GetComponent<MeshRenderer>()->Update();
+			_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
 			_kamenSwordLight->SetActive(true);
 
 			_kamenSword->SetActive(true);
@@ -6128,6 +6136,10 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			{
 				index->GetComponent<Particle>()->SetParticleSize(10.0f, 10.0f);
 			}
+
+			_nowCameraStep = 0.0f;
+
+			/// 플레이어 이동 못하게 하기
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6329,9 +6341,14 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 원기옥 이동 로직
 				case 5:
 				{
+					auto logicFinish = false;
 					/// 여기에 원기옥 vs 에네르기파 코드 넣기
-
-					_nowCameraStep++;
+					
+					if (logicFinish)
+					{
+						_nowCameraStep++;
+					}
+					
 					break;
 				}
 				// 종료 로직
@@ -6356,6 +6373,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 	pattern->SetLogic(attakLogic);
 
 	_genkiAttack = pattern;
+
+	_finalPattern = _genkiAttack;
 }
 
 void KunrealEngine::Kamen::CreateSwordSwingVertical()

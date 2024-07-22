@@ -209,6 +209,8 @@ namespace KunrealEngine
 		// 보스의 움직임과 무관하게 일정 주기마다 실행
 		std::vector<BossPattern*> _specialPattern;
 
+		BossPattern* _finalPattern;
+
 		BossPattern* _nowTitlePattern;
 
 		BossPattern* _nowPlayingPattern;
@@ -277,6 +279,10 @@ namespace KunrealEngine
 
 	private:
 		float _deathTimer;
+
+		float _updateTimer;
+
+		bool _isFinalPatternInit;
 
 	private:
 		Coroutine_Func(patternEnd)
