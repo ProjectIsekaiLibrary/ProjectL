@@ -13,7 +13,7 @@
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
-	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(true)
+	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(false)
 	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr)
 {
 
@@ -101,6 +101,10 @@ void KunrealEngine::EventManager::Update()
 				//while문을 돌리자 조건은 카메라와 타겟 위치사이의 거리
 				while (ToolBox::GetDistance(camoverTarget, campos) > distancevalue)
 				{
+					if (t > 1.0f)
+					{
+						break;
+					}
 					// t값을 더해준다.
 					t += 0.1;
 					// for문 조건 연산을 위해 campos를 받아온다.
