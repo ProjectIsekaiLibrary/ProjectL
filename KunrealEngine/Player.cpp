@@ -71,7 +71,12 @@ void KunrealEngine::Player::Initialize()
 	//this->_owner->GetComponent<MeshCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
 	//this->_owner->GetComponent<MeshCollider>()->SetOffset(0.0f, 10.0f, 0.0f);
 
-	this->_owner->AddComponent<SoundPlayer>();
+	auto soundcomp = this->_owner->AddComponent<SoundPlayer>();
+	_knock_downSound = soundcomp->CreateSoundInfo("Resources/sound/body-fall.mp3", true, false, 100);
+	_isdiedsound = soundcomp->CreateSoundInfo("Resources/sound/youDied.mp3", true, false, 100);
+	soundcomp->CreateSound(_knock_downSound, 1);
+	soundcomp->CreateSound(_isdiedsound, 1);
+
 
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
@@ -481,6 +486,7 @@ void KunrealEngine::Player::PlayerSweep()
 	{
 		// 플레이어를 날아가는 상태로
 		this->_playerStatus = Status::SWEEP;
+		_owner->GetComponent<SoundPlayer>()->Play(_knock_downSound);
 
 		// 더 멀리 날아가는것 방지 안전장치
 		//if (_movedRange >= _sweepRange)

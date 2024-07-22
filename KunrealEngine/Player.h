@@ -100,6 +100,9 @@ namespace KunrealEngine
 		float _playerStartX;					// 보스맵 시작 x z 좌표
 		float _playerStartZ;		
 
+		int _knock_downSound;
+		int _isdiedsound;
+
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
 		void AnimateByStatus();

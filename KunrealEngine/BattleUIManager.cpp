@@ -786,6 +786,8 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		uimanager->_died2->SetActive(true);
 		uimanager->_died2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		uimanager->_died2->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
+		int sound = uimanager->_eventmanager->_player->GetComponent<SoundPlayer>()->FindIndex("Resources/sound/youDied.mp3");
+		uimanager->_eventmanager->_player->GetComponent<SoundPlayer>()->Play(sound);
 
 		int loop = 0;
 		while (loop < 50)
