@@ -125,6 +125,14 @@ namespace KunrealEngine
 		GameObject* _meteorParticleHit3;
 		GameObject* _meteorParticleHit4;
 
+		GameObject* _healthParticle1;
+		GameObject* _healthParticle2;
+		GameObject* _healthParticle3;
+		GameObject* _healthParticle4;
+		GameObject* _healthParticle5;
+		GameObject* _healthParticle6;
+
+		std::vector<GameObject*> _healthParticleList;
 	private:
 		// q 스킬 체크용 변수
 		bool _isShotEnded;
@@ -150,6 +158,8 @@ namespace KunrealEngine
 		float _potionCoolDown;			// 포션 재사용 대기시간
 		bool _isPotionReady;			// 포션 사용 가능 여부
 
+		float _potionTimer;
+		bool _isPotionUse;
 		// 비활성화 되었을 경우
 	private:
 		// Q스킬 전기 구체
@@ -170,7 +180,9 @@ namespace KunrealEngine
 		void CreateAbility4();
 
 		// 1번키 스킬 물약
+		void InitializeHealth();
 		void RestoreHealth();
+		void PlayHealParticle();
 
 		// 애니메이션 프레임과 스킬 발동 여부
 		void AnimateByFrame();
@@ -446,6 +458,67 @@ namespace KunrealEngine
 			ability->_isPotionReady = false;
 			Waitforsecond(ability->_potionCoolDown);
 			ability->_isPotionReady = true;
+		};
+
+		Coroutine_Func(PotionEffectDraw)
+		{
+			_healthParticle1->GetComponent<Particle>()->SetActive(true);
+			_healthParticle1->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle1->GetComponent<Particle>()->SetParticleSize(2,3);
+
+			_healthParticle6->GetComponent<Particle>()->SetActive(true);
+			_healthParticle6->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle6->GetComponent<Particle>()->SetParticleSize(2,3);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle3->GetComponent<Particle>()->SetActive(true);
+			_healthParticle3->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle3->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			_healthParticle2->GetComponent<Particle>()->SetActive(true);
+			_healthParticle2->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle2->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle5->GetComponent<Particle>()->SetActive(true);
+			_healthParticle5->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle5->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			_healthParticle4->GetComponent<Particle>()->SetActive(true);
+			_healthParticle4->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle4->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle1->GetComponent<Particle>()->SetActive(true);
+			_healthParticle1->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle1->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			_healthParticle5->GetComponent<Particle>()->SetActive(true);
+			_healthParticle5->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle5->GetComponent<Particle>()->SetParticleSize(0, 0);
+			
+			Waitforsecond(0.1f);
+
+			_healthParticle6->GetComponent<Particle>()->SetActive(true);
+			_healthParticle6->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle6->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			_healthParticle4->GetComponent<Particle>()->SetActive(true);
+			_healthParticle4->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle4->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle3->GetComponent<Particle>()->SetActive(true);
+			_healthParticle3->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle3->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			_healthParticle2->GetComponent<Particle>()->SetActive(true);
+			_healthParticle2->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle2->GetComponent<Particle>()->SetParticleSize(0, 0);
 		};
 	};
 }
