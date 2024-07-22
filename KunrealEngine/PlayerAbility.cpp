@@ -206,7 +206,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (this->_beforeMeteor)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
-		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
 		{
 			this->_beforeMeteor = false;
 
@@ -217,6 +217,21 @@ void KunrealEngine::PlayerAbility::Update()
 				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
 			}
 			
+			return;
+		}
+
+		// 다른 스킬이 사용되면 return
+		if (this->_playerComp->_playerStatus == Player::Status::ABILITY && this->_playerComp->_abilityAnimationIndex != 4)
+		{
+			this->_beforeMeteor = false;
+
+			if (!this->_meteor->GetActivated())
+			{
+				this->_meteorRange->GetComponent<MeteorRange>()->_onCast = false;
+				this->_meteorRange->SetActive(false);
+				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
+			}
+
 			return;
 		}
 

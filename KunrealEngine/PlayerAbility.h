@@ -261,6 +261,12 @@ namespace KunrealEngine
 		{
 			auto* ability = this;
 			Waitforsecond(0.9f);		// 0.9초 뒤 실행
+
+			if (ability->_playerComp->_playerStatus != Player::Status::ABILITY || _playerComp->_abilityAnimationIndex != 3)
+			{
+				co_return;
+			}
+
 			ability->_laser->SetActive(true);
 			ability->_laser->GetComponent<BoxCollider>()->SetActive(true);
 

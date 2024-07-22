@@ -543,6 +543,9 @@ void KunrealEngine::Player::ResetPlayerStatus()
 	this->_playerInfo._hp = this->_playerInfo._maxhp;
 	this->_playerInfo._spellPower = 1.0f;
 
+	// 물약 리필
+	this->GetOwner()->GetComponent<PlayerAbility>()->_maxPotion = 5;
+
 	// 위치 초기화
 	this->_transform->SetPosition(this->_playerStartX, 2.0f, this->_playerStartZ);
 
