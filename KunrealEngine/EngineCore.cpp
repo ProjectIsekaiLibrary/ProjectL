@@ -292,12 +292,6 @@ void KunrealEngine::EngineCore::Update()
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 	soundInstance.Update();
 
-	// UI 실행,종료
-	if (inputInstance->KeyDown(KEY::ESCAPE))
-	{
-		pause_ui_box->SetActive(true);
-	}
-
 	if (inputInstance->KeyDown(KEY::PERIOD))
 	{
 		EventManager::GetInstance()._iscamfollow = EventManager::GetInstance()._iscamfollow ? false : true;
