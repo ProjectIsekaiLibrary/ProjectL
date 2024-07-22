@@ -4,6 +4,7 @@
 #include "ToolBox.h"
 #include "TimeManager.h"
 #include "SceneManager.h"
+#include "InputSystem.h"
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
@@ -32,7 +33,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false)
 {
 	BossBasicInfo info;
 
@@ -78,6 +79,30 @@ void KunrealEngine::Kamen::Initialize()
 	_cinematicCamera->GetComponent<Camera>()->SetActive(true);
 
 	_cinematicCamera->GetComponent<Camera>()->Update();
+
+	/// 연출용 카메라
+// Camera
+	_cinematicCamera2 = _boss->GetObjectScene()->CreateObject("kamenCamera2");
+	_cinematicCamera2->AddComponent<Camera>();
+	_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(0.0f, 120.0f, -130.0f);
+	_cinematicCamera2->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+
+	//_cinematicCamera2->GetComponent<Transform>()->SetPosition({ 0.0f, 120.0f, -130.0f });
+	//_cinematicCamera2->GetComponent<Transform>()->SetRotation(-43.f, 180.f, 0.f);
+
+	_cinematicCamera2->GetComponent<Camera>()->CameraRotateY(-40.0f);
+	_cinematicCamera2->GetComponent<Camera>()->Update();
+	_cinematicCamera2->GetComponent<Camera>()->CameraRotateX(-90.0f);
+	_cinematicCamera2->GetComponent<Camera>()->Update();
+	
+
+	//_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(260.0f, 95.0f, 25.0f);
+	_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(340.0f, 140.0f, 25.0f);		// 카멘 위치 200으로
+
+	_cinematicCamera2->SetActive(true);
+	_cinematicCamera2->GetComponent<Camera>()->SetActive(true);
+
+	_cinematicCamera2->GetComponent<Camera>()->Update();
 
 	_mainPlayCamera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera();
 }
@@ -252,6 +277,8 @@ void KunrealEngine::Kamen::CreatePattern()
 	// 코어
 	CreateSwordMultipleAttack();
 
+	CreateGenkiAttack();
+
 	// 실제 사용중인 패턴들 모아놓음
 	GamePattern();
 }
@@ -281,7 +308,7 @@ void KunrealEngine::Kamen::GamePattern()
 	CoreSwordMutipleAttackPattern();
 	CoreSwordMeteorPattern();
 
-	//CreateDecalTest();
+	//_basicPattern[0].emplace_back(_genkiAttack);
 }
 
 
@@ -350,6 +377,35 @@ void KunrealEngine::Kamen::Reset()
 	_cameraMoveFinish = false;
 
 	_nowCameraStep = 0;
+
+	_genkiAttackStart = false;
+
+	_genkiHitV = false;
+
+	_bossLastAttackList[0]->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleSize(150.f, 150.0f);
+	_bossLastAttackList[0]->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_bossLastAttackList[0]->GetComponent<Particle>()->SetActive(false);
+
+	_bossLastAttackList[1]->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+	_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleDuration(1.5f, 3.2f);
+	_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+	_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleSize(170.f, 170.0f);
+	_bossLastAttackList[1]->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.1f);
+	_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+	_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+	_bossLastAttackList[1]->GetComponent<Particle>()->SetActive(false);
+
+	_bossLastAttackList[2]->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleSize(150.0f, 150.0f);
+	_bossLastAttackList[2]->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_bossLastAttackList[2]->GetComponent<Particle>()->SetActive(false);
 
 	BossBasicInfo info;
 
@@ -2011,6 +2067,47 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			_bezierSwordParticles.push_back(particleBezierTest);
 		}
 	}
+	{
+		GameObject* bossParticleLast1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast1");
+		bossParticleLast1->_autoAwake = true;
+		bossParticleLast1->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+		bossParticleLast1->AddComponent<Particle>();
+		bossParticleLast1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+		bossParticleLast1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+		bossParticleLast1->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		bossParticleLast1->GetComponent<Particle>()->SetParticleSize(150.f, 150.0f);
+		bossParticleLast1->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+		bossParticleLast1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		bossParticleLast1->GetComponent<Particle>()->SetActive(false);
+		_bossLastAttackList.emplace_back(bossParticleLast1);
+
+		GameObject* bossParticleLast2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast2");
+		bossParticleLast2->_autoAwake = true;
+		bossParticleLast2->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+		bossParticleLast2->AddComponent<Particle>();
+		bossParticleLast2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+		bossParticleLast2->GetComponent<Particle>()->SetParticleDuration(1.5f, 3.2f);
+		bossParticleLast2->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		bossParticleLast2->GetComponent<Particle>()->SetParticleSize(170.f, 170.0f);
+		bossParticleLast2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.1f);
+		bossParticleLast2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+		bossParticleLast2->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+		bossParticleLast2->GetComponent<Particle>()->SetActive(false);
+		_bossLastAttackList.emplace_back(bossParticleLast2);
+
+		GameObject* bossParticleLast3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast3");
+		bossParticleLast3->_autoAwake = true;
+		bossParticleLast3->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+		bossParticleLast3->AddComponent<Particle>();
+		bossParticleLast3->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+		bossParticleLast3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+		bossParticleLast3->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		bossParticleLast3->GetComponent<Particle>()->SetParticleSize(150.0f, 150.0f);
+		bossParticleLast3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+		bossParticleLast3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		bossParticleLast3->GetComponent<Particle>()->SetActive(false);
+		_bossLastAttackList.emplace_back(bossParticleLast3);
+	}
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
@@ -2554,7 +2651,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 		swordAttack->AddComponent<TransparentMesh>();
 		swordAttack->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
 		swordAttack->GetComponent<TransparentMesh>()->SetTimer(2.0F);
-		swordAttack->GetComponent<TransparentMesh>()->SetRenderType(3);
+		swordAttack->GetComponent<TransparentMesh>()->SetRenderType(2);
 		swordAttack->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 300.0f);
 		swordAttack->SetTotalComponentState(false);
 		swordAttack->SetActive(false);
@@ -5032,6 +5129,7 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			{
 				if (_timer > 1.0f)
 				{
+					_boss->GetComponent<BoxCollider>()->SetActive(true);
 					_boss->GetComponent<MeshRenderer>()->SetActive(true);
 					_boss->GetComponent<Transform>()->SetRotation(0.0f, -30.0f, 0.0f);
 				}
@@ -5093,21 +5191,130 @@ void KunrealEngine::Kamen::CreateDecalTest()
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
 
+			_bossTransform->SetPosition(0.0f, 100.0f, 200.0f);
+			_bossTransform->SetRotation(-30.0f, -5.0f, 0.0f);
+			_playerTransform->SetPosition(0.0f, _playerTransform->GetPosition().y, -120.0f);
+			_playerTransform->SetRotation(0.0f, 165.0f, 0.0f);
+
+			_cameraOriginPos = _cinematicCamera2->GetComponent<Transform>()->GetPosition();
+
+			//_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(-7.0f, 5.0f, -160.0f);
+			//_cinematicCamera2->GetComponent<Camera>()->CameraRotateY(-65.0f);
+			
+			_cinematicCamera2->GetComponent<Camera>()->SetMainCamera();
+
+			_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
+
+			_cameraMoveFinish = false;
+
 			_timer = 0.0f;
+			_timer2 = 0.0f;
 		};
+
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attakLogic = [pattern, this]()
 		{
-			testDecal->GetComponent<TransparentMesh>()->PlayOnce();
+ 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+ 
+ 			auto camera = _cinematicCamera2->GetComponent<Camera>();
+ 
+ 			DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(-7, 5, -160);
+ 
+ 			float movingTime = 3.0f;
 
-			_timer += TimeManager::GetInstance().GetDeltaTime();
-
-			if (testDecal->GetComponent<TransparentMesh>()->IsPlayed())
+			if (_nowCameraStep == 0)
 			{
-				_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
+				if (_cameraRot.y > -65.0f)
+				{
+					auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
+					camera->CameraRotateY(-rotSpeed);
+					_cameraRot.y += -rotSpeed;
+				}
 
-				return false;
+				if (!_cameraMoveFinish)
+				{
+					_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+				}
+
+				if (_cameraMoveFinish && _cameraRot.y <= -65.0f)
+				{
+					_cameraMoveFinish = false;
+					_nowCameraStep++;
+				}
+			}
+ 
+
+			if (_timer == 0.0f)
+			{
+				auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki1", 10.0f, false);
+
+				if (!isPlaying)
+				{
+					_boss->GetComponent<Animator>()->Stop();
+					_timer = 1.0f;
+				}
+			}
+			if (_timer == 1.0f)
+			{
+				_timer2 += TimeManager::GetInstance().GetDeltaTime();
+
+				auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki2", 5.0f, true);
+
+				for (auto& index : _bossLastAttackList)
+				{
+					index->GetComponent<Particle>()->SetActive(true);
+				}
+
+				for (auto& index : _bossLastAttackList)
+				{
+					auto playerPos = _playerTransform->GetPosition();
+					playerPos.y = 80.0f;
+
+					auto Genki = index->GetComponent<Transform>();
+
+					if (_timer2 <= 10.0f)
+					{
+						auto newPos = ToolBox::LogarithmicInterpolation(DirectX::XMFLOAT3(-2.2f, 180.0f, 88.0f), playerPos, _timer2 * 0.1f);
+
+						Genki->SetPosition(newPos);
+					}
+					else
+					{
+						auto nowPos = Genki->GetPosition();
+
+						DirectX::XMFLOAT3 newPos = DirectX::XMFLOAT3(nowPos.x, nowPos.y - 5 * deltaTime, nowPos.z - 5 * deltaTime);
+
+						if (newPos.y > 40)
+						{
+							Genki->SetPosition(newPos);
+						}
+
+						else
+						{
+							_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
+
+							_timer = 2.0f;
+						}
+					}
+				}
+
+
+			}
+			if (_timer == 2.0f)
+			{
+				auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki3", 10.0f, false);
+
+				if (!isPlaying)
+				{
+					_boss->GetComponent<Animator>()->Stop();
+					_timer = 4.0f;
+				}
+			}
+			if (_timer > 3.0f)
+			{
+				return true;
 			}
 
 			return true;
@@ -5683,7 +5890,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 					{
 						auto interval = 200.0f;
 
-						_multipleSwordWarningVec[index]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y, 0.0f);
+						_multipleSwordWarningVec[index]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y - 180.0f, 0.0f);
 
 
 						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&startPosition), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[index]), interval));
@@ -5768,7 +5975,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 
 								auto interval = 200.0f;
 
-								_multipleSwordWarningVec[i]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y, 0.0f);
+								_multipleSwordWarningVec[i]->GetComponent<Transform>()->SetRotation(0.0f, swordTransform->GetRotation().y - 180.0f, 0.0f);
 
 
 								DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&swordPos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_multipleSwordDirectionVec[i]), interval));
@@ -5887,6 +6094,268 @@ void KunrealEngine::Kamen::CreateKamenHoldSword()
 	pattern->SetLogic(mainLogic);
 
 	_holdSword = pattern;
+}
+
+void KunrealEngine::Kamen::CreateGenkiAttack()
+{
+	BossPattern* pattern = new BossPattern();
+
+	pattern->SetPatternName("GenkiAttack");
+
+	pattern->SetSpeed(20.0f).SetSkipChase(true);
+
+	auto initLogic = [pattern, this]()
+		{
+			_bossTransform->SetPosition(0.0f, 100.0f, 200.0f);
+			_bossTransform->SetRotation(-30.0f, -5.0f, 0.0f);
+			_playerTransform->SetPosition(0.0f, _playerTransform->GetPosition().y, -120.0f);
+			_playerTransform->SetRotation(0.0f, 165.0f, 0.0f);
+
+			_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
+
+			_cinematicCamera->GetComponent<Camera>()->SetMainCamera();
+
+			_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
+			_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
+
+			_cameraMoveFinish = false;
+
+			_timer = 0.0f;
+
+			_genkiHitV = false;
+
+			for (auto& index : _bossLastAttackList)
+			{
+				index->GetComponent<Particle>()->SetParticleSize(10.0f, 10.0f);
+			}
+		};
+
+	pattern->SetInitializeLogic(initLogic);
+
+	auto attakLogic = [pattern, this]()
+		{
+			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
+			auto camera = _cinematicCamera->GetComponent<Camera>();
+			
+			switch (_nowCameraStep)
+			{
+				// 카메라 무빙
+				case 0 :
+				{
+					DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(-7, 5, -160);
+
+					float movingTime = 3.0f;
+
+					if (_cameraRot.y > -65.0f)
+					{
+						auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
+						camera->CameraRotateY(-rotSpeed);
+						_cameraRot.y += -rotSpeed;
+					}
+
+					if (!_cameraMoveFinish)
+					{
+						_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
+					}
+
+					if (_cameraMoveFinish && _cameraRot.y <= -65.0f)
+					{
+						_cameraMoveFinish = false;
+						_nowCameraStep++;
+					}
+					break;
+				}
+
+				// 원기옥 준비 모션
+				/// 카메라 흔들기 넣기 case 1 ~ 5까지
+				case 1:
+				{
+					auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki1", 10.0f, false);
+
+					if (!isPlaying)
+					{
+						_boss->GetComponent<Animator>()->Stop();
+						_nowCameraStep++;
+					}
+					break;
+				}
+				case 2:
+				{
+					_timer += deltaTime;
+
+					auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki2", 2.0f, true);
+
+					int goalCount = 0;
+
+					int indexNum = 0;
+
+
+					/// for문 안에 원기옥 베지어 모으기 넣기
+
+					for (auto& index : _bossLastAttackList)
+					{
+						auto particle = index->GetComponent<Particle>();
+						particle->SetActive(true);
+
+						particle->SetParticleSize(particle->GetParticleSize().x + deltaTime*17, particle->GetParticleSize().x + deltaTime*17);
+
+						if (particle->GetParticleSize().x >= 170.0f)
+						{
+							goalCount++;
+
+							if (indexNum == 1)
+							{
+								index->GetComponent<Particle>()->SetParticleDuration(6.0f, 3.2f);
+							}
+						}
+						else
+						{
+							if (indexNum == 1)
+							{
+								if (particle->GetLifeTime() < 6.0f && particle->GetParticleSize().x >= 60.0f)
+								{
+									auto lifeTime = particle->GetLifeTime() + deltaTime * 0.5f;
+
+									index->GetComponent<Particle>()->SetParticleDuration(lifeTime, 3.2f);
+								}
+							}
+						}
+
+
+						indexNum++;
+					}
+
+					if (goalCount == 3)
+					{
+						_timer = 0.0f;
+						_nowCameraStep++;
+					}
+
+					break;
+				}
+
+				// 원기옥 공격
+				case 3:
+				{
+					auto animator = _boss->GetComponent<Animator>();
+
+					auto isPlaying = animator->Play("Genki3", 10.0f, false);
+
+					if (!isPlaying)
+					{
+						if (animator->GetNowAnimationName() != "Idle")
+						{
+							animator->Stop();
+							animator->Play("Idle", 20.0f, true);
+						}
+					}
+
+					if (animator->GetCurrentFrame() > 12)
+					{
+						_genkiAttackStart = true;
+					}
+
+					if (_genkiAttackStart)
+					{
+						_timer += deltaTime;
+
+						for (auto& index : _bossLastAttackList)
+						{
+							auto playerPos = _playerTransform->GetPosition();
+							playerPos.y = 80.0f;
+
+							auto Genki = index->GetComponent<Transform>();
+
+							if (_timer <= 10.0f)
+							{
+								auto newPos = ToolBox::LogarithmicInterpolation(DirectX::XMFLOAT3(-2.2f, 180.0f, 88.0f), playerPos, _timer * 0.1f);
+
+								Genki->SetPosition(newPos);
+
+								/// V키 누르라는 UI 표시해주기
+								if (_timer >= 3.0f)
+								{
+									if (InputSystem::GetInstance()->KeyDown(KEY::V))
+									{
+										_genkiHitV = true;
+									}
+								}
+							}
+
+							else
+							{
+								auto nowPos = Genki->GetPosition();
+
+								DirectX::XMFLOAT3 newPos = DirectX::XMFLOAT3(nowPos.x, nowPos.y - 10 * deltaTime, nowPos.z - 10 * deltaTime);
+
+								if (newPos.y > 40)
+								{
+									Genki->SetPosition(newPos);
+								}
+
+								else
+								{
+									_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
+
+									animator->Stop();
+
+									_timer = 0.0f;
+									return false;
+								}
+							}
+						}
+
+						if (_genkiHitV)
+						{
+							_timer = 0.0f;
+							_nowCameraStep++;
+						}
+					}
+
+					break;
+				}
+
+				// 마지막 격돌 카메라 세팅
+				case 4:
+				{
+					_cinematicCamera2->GetComponent<Camera>()->SetMainCamera();
+					_boss->GetComponent<Transform>()->SetPosition(0.0f, 210.0f, 240.0f);
+					_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 55.0f);
+					_nowCameraStep++;
+
+					break;
+				}
+				// 원기옥 이동 로직
+				case 5:
+				{
+					/// 여기에 원기옥 vs 에네르기파 코드 넣기
+
+					_nowCameraStep++;
+					break;
+				}
+				// 종료 로직
+				default:
+				{
+					/// 엔딩씬 넘어가는 코드 넣기
+
+					auto cinematicCamera = _cinematicCamera->GetComponent<Camera>();
+					cinematicCamera->CameraRotateY(-1 * _cameraRot.y);
+					_cameraRot.y = 0.0f;
+					cinematicCamera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
+					_nowCameraStep = 0;
+
+					return false;
+					break;
+				}
+			}
+
+			return true;
+		};
+
+	pattern->SetLogic(attakLogic);
+
+	_genkiAttack = pattern;
 }
 
 void KunrealEngine::Kamen::CreateSwordSwingVertical()

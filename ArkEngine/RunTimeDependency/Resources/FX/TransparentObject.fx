@@ -150,12 +150,12 @@ PSOut PSVertical(VertexOut pin)
     
     float4 newPos = mul(float4(pin.PosL, 1.0f), gWorld);
     
-    if (newPos.x < -100.0f || newPos.x > 110.0f)
+    if (newPos.x < -110.0f || newPos.x > 110.0f)
     {
         output.Diffuse.a = 0.0f;
         return output;
     }
-    if (newPos.z < -120.0f || newPos.z > 100.0f)
+    if (newPos.z < -130.0f || newPos.z > 120.0f)
     {
         output.Diffuse.a = 0.0f;
         return output;
@@ -171,6 +171,12 @@ PSOut PSVertical(VertexOut pin)
     alpha *= gTransParency;
     
     output.Diffuse.a = alpha;
+    
+    if (alpha >= 0.5)
+    {
+        output.Diffuse.r = output.Diffuse.r + 0.5f;
+    }
+
     
     return output;
 }

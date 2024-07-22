@@ -258,6 +258,39 @@ DirectX::XMFLOAT3 KunrealEngine::ToolBox::Bezier(DirectX::XMFLOAT3 startPoint, D
 	return p;
 }
 
+
+DirectX::XMFLOAT3 KunrealEngine::ToolBox::LogarithmicInterpolation(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& endPos, float t)
+{
+	// a점과 b점 사이의 벡터를 계산
+	DirectX::XMVECTOR start = DirectX::XMLoadFloat3(&startPos);
+	DirectX::XMVECTOR end = DirectX::XMLoadFloat3(&endPos);
+	DirectX::XMVECTOR delta = DirectX::XMVectorSubtract(end, start);
+
+	// 로그 함수 형태의 스칼라 값을 계산
+	float logValue = std::log1p(t);
+
+	// Z축 값의 진행 정도를 계산
+	float zStart = startPos.z;
+	float zEnd = endPos.z;
+	float zProgress = (zStart != zEnd) ? ((std::log1p(t) - std::log1p(0.0f)) / (std::log1p(1.0f) - std::log1p(0.0f))) : 0.0f;
+
+	// Y축 값 조정: Z 진행 정도의 제곱근을 사용하여 Y값 조정
+	float yStart = startPos.y;
+	float yEnd = endPos.y;
+	float newY = yStart + (yEnd - yStart) * std::pow(zProgress, 0.5f);
+
+	// 로그 스칼라 값을 사용하여 새로운 위치를 계산
+	DirectX::XMVECTOR newPosition = DirectX::XMVectorMultiplyAdd(DirectX::XMVectorReplicate(logValue), delta, start);
+
+	DirectX::XMFLOAT3 tempResult;
+	XMStoreFloat3(&tempResult, newPosition);
+
+	// 최종 결과 저장
+	DirectX::XMFLOAT3 result = { tempResult.x, newY, tempResult.z };
+	return result;
+}
+
+
 DirectX::XMFLOAT3 KunrealEngine::ToolBox::XMFLOAT3Subtract(const DirectX::XMFLOAT3& a, const DirectX::XMFLOAT3& b)
 {
 	DirectX::XMFLOAT3 result(a.x - b.x, a.y - b.y, a.z - b.z);
