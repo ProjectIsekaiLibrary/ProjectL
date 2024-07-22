@@ -454,6 +454,11 @@ void KunrealEngine::EngineCore::PlayGround()
 	kamen->AddComponent<Kamen>();
 	kamen->_autoAwake = true;	
 
+	// UI의 부모가 될 0,0pos객체
+	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	battle_ui_box->AddComponent<BattleUIManager>();
+	battle_ui_box->_autoAwake = true;
+
 	// 맵 꾸미기 파티클
 	MapParticleSetting(_mapParticleList);
 	EventManager::GetInstance().Initialize();
@@ -2235,11 +2240,6 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	//// cube map test
 	GRAPHICS->CreateCubeMap("TitleBackground", "DarkMoon.dds", true);
 	GRAPHICS->SetMainCubeMap("TitleBackground");
-
-	// UI의 부모가 될 0,0pos객체
-	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
-	battle_ui_box->AddComponent<BattleUIManager>();
-	battle_ui_box->_autoAwake = true;
 
 	pause_ui_box = MakeMenuUIPack();
 	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
