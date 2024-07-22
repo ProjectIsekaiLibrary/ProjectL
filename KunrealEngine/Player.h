@@ -101,7 +101,8 @@ namespace KunrealEngine
 		float _playerStartZ;		
 
 		int _knock_downSound;
-		int _isdiedsound;
+		int _diedsound;
+		int _staandup;
 
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
