@@ -528,6 +528,14 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 				}
 			}
 
+			for (auto& playerDashParticleStart : _playerDashParticleStart)
+			{
+				if (_timer > 0.22)
+				{
+					playerDashParticleStart->GetComponent<Particle>()->SetActive(false);
+				}
+			}
+
 			if (_timer < 0.22)
 			{
 				_playerDashParticleEnd[0]->GetComponent<Particle>()->SetParticleSize(120 * _timer, 120 * _timer);
