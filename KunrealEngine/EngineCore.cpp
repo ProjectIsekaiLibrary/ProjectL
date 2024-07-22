@@ -233,7 +233,7 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	GameObject* meshTest = sceneInstance.GetCurrentScene()->CreateObject("meshTest");
 	meshTest->AddComponent<MeshRenderer>();
 	meshTest->GetComponent<MeshRenderer>()->SetMeshObject("cylinder/cylinder");
-	meshTest->GetComponent<MeshRenderer>()->SetMeshObject("Blade/Blade");
+	meshTest->GetComponent<MeshRenderer>()->ChangeMeshObject("Blade/Blade");
 	sceneInstance.GetCurrentScene()->DeleteGameObject(meshTest);
 
 	PhysicsSystem::GetInstance().Initialize();
@@ -258,10 +258,10 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	PlayGround();
-	CreateTitleScene();
-	//CreateEndingScene();
-	EventManager::GetInstance().CreateFadeObject();
+	//PlayGround();
+	//CreateTitleScene();
+	CreateEndingScene();
+	//EventManager::GetInstance().CreateFadeObject();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -312,6 +312,7 @@ void KunrealEngine::EngineCore::Update()
 		FloatingY(titleRock2, 3);
 		FloatingY(titleRock3, 4);
 		FloatingY(floatingObj, 6);
+		FloatingY(_floatingOb1, 7);
 
 		ShiveringLight(titleRock1);
 		ShiveringLight(titleRock2);
@@ -2251,8 +2252,15 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	ResetMenuUIPack(sceneInstance.GetScene("Main")->GetGameObject("pauseuibox"), "Main", "Title");
 	ResetMenuUIPack(sceneInstance.GetScene("Main")->GetGameObject("Option"), "Main", "Title");
 	GameObject* titleUIpack = MakeTitleUIPack();
-	//titleUIPosY = GetCurrentScene()->GetGameObject("Title_Image")->GetComponent<Transform>()->GetPosition().y;
-	
+
+	_floatingOb1 = sceneInstance.GetCurrentScene()->CreateObject("FloatingOb1");
+	_floatingOb1->_autoAwake = true;
+	_floatingOb1->AddComponent<MeshRenderer>();
+	_floatingOb1->GetComponent<MeshRenderer>()->SetMeshObject("FloatingOB1/FloatingOB1");
+	_floatingOb1->GetComponent<Transform>()->SetScale(0.03f, 0.03f, 0.03f);
+	_floatingOb1->GetComponent<Transform>()->SetPosition(-298.f, 182.f, 189.f);
+	_floatingOb1->GetComponent<Transform>()->SetRotation(-40.f, 48.f, 17.f);
+
 	TitlesceneobjectSetting(_bezierObjectList);
 }
 
@@ -2289,7 +2297,7 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 
 	_endingSoundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
 	_endingSoundComp = _endingSoundManager->AddComponent<SoundPlayer>();
-	endingSoundindex = _endingSoundComp->CreateSoundInfo("Resources/Sound/EndingBGM (mp3cut.net) (2).mp3");
+	endingSoundindex = _endingSoundComp->CreateSoundInfo("Resources/Sound/EndingBGM (mp3cut.net) (2).mp3", false, false);
 	_endingSoundComp->CreateSound(endingSoundindex, 1);
 	_endingSoundComp->SetVolume(20.f, endingSoundindex);
 
@@ -2519,20 +2527,22 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 	_endingMeteo8->GetComponent<Transform>()->SetPosition(-261.0f,
 		CountPlusLoop(_endingMeteo8->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -172.0f);
 
-	_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(700.f,
-		CountPlus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 30.f));
-
-	if (endingTimer <= -60.0f)
+	if (endingTimer <= -20.f)
+	{
+		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(700.f,
+			CountPlus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 30.f));
+	}
+	if (endingTimer <= -50.0f)
 	{
 		_endingEnt->GetComponent<Transform>()->SetPosition(-93.0f,
 			CountPlus(_endingEnt->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -312.0f);
 	}
-	if (endingTimer <= -80.f)
+	if (endingTimer <= -70.f)
 	{
 		_endingSpider->GetComponent<Transform>()->SetPosition(-166.0f,
 			CountPlus(_endingSpider->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -314.0f);
 	}
-	if (endingTimer <= -90.f)
+	if (endingTimer <= -80.f)
 	{
 		_endingThankYou->GetComponent<ImageRenderer>()->SetPosition(0.f,
 			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 500.0f, 30.f));
