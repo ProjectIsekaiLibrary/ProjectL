@@ -393,10 +393,17 @@ void KunrealEngine::BattleUIManager::Update()
 	{
 		SetSkillcool4();
 	}
-
-	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
+	
+	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE)
+		&& GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerMove>()->GetisDashed())
 	{
 		Setdashcool();
+	}
+
+	if (InputSystem::GetInstance()->KeyDown(KEY::_1)
+		&& !GetCurrentScene()->GetGameObject("Player")->GetComponent<PlayerAbility>()->_isPotionReady)
+	{
+		Setpotioncool();
 	}
 
 //	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
@@ -726,15 +733,15 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 	{
 		auto control = this;
 		auto skillcool = _potion_cool;
-		auto ability = _eventmanager->_playerAbill->_abilityContainer[3];
+		auto ability = _eventmanager->_playerAbill;
 		float boxsize = 0.4f;
 
 		// 스킬 쿨타임 동안 skillcool 오브젝트 활성화
 		skillcool->SetActive(true);
 
-		float currenttime = ability->_cooldown;
-		float maxcool = ability->_cooldown;
-		float mincool = 0;
+		float currenttime = ability->_potionCoolDown;
+		float maxcool = ability->_potionCoolDown;
+		float mincool = 0;                                                                                                                                                                                                                                                                                                                                                                                                                                                                   
 
 		float _coolsize = boxsize;
 		float coolgauge = 0;
@@ -779,6 +786,8 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 		uimanager->_died2->SetActive(true);
 		uimanager->_died2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		uimanager->_died2->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
+		int sound = uimanager->_eventmanager->_player->GetComponent<SoundPlayer>()->FindIndex("Resources/sound/youDied.mp3");
+		uimanager->_eventmanager->_player->GetComponent<SoundPlayer>()->Play(sound);
 
 		int loop = 0;
 		while (loop < 50)

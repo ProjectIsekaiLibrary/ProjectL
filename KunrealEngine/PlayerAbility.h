@@ -74,6 +74,7 @@ namespace KunrealEngine
 
 		bool _isLaserReady;			// E 스킬 쿨타임 조건
 		bool _destroyLaser;			// E 소멸 조건을 위한 변수
+		float _laserDestroyCount;	// 레이저 소멸 타이머
 
 		bool _isMeteorReady;		// R 쿨타임 조건
 
@@ -124,6 +125,14 @@ namespace KunrealEngine
 		GameObject* _meteorParticleHit3;
 		GameObject* _meteorParticleHit4;
 
+		GameObject* _healthParticle1;
+		GameObject* _healthParticle2;
+		GameObject* _healthParticle3;
+		GameObject* _healthParticle4;
+		GameObject* _healthParticle5;
+		GameObject* _healthParticle6;
+
+		std::vector<GameObject*> _healthParticleList;
 	private:
 		// q 스킬 체크용 변수
 		bool _isShotEnded;
@@ -149,6 +158,8 @@ namespace KunrealEngine
 		float _potionCoolDown;			// 포션 재사용 대기시간
 		bool _isPotionReady;			// 포션 사용 가능 여부
 
+		float _potionTimer;
+		bool _isPotionUse;
 		// 비활성화 되었을 경우
 	private:
 		// Q스킬 전기 구체
@@ -169,7 +180,9 @@ namespace KunrealEngine
 		void CreateAbility4();
 
 		// 1번키 스킬 물약
+		void InitializeHealth();
 		void RestoreHealth();
+		void PlayHealParticle();
 
 		// 애니메이션 프레임과 스킬 발동 여부
 		void AnimateByFrame();
@@ -267,41 +280,91 @@ namespace KunrealEngine
 		Coroutine_Func(LaserCratorStart)
 		{
 			auto* ability = this;
+
 			Waitforsecond(1.0f);
-			ability->_laserCrator1->GetComponent<TransparentMesh>()->SetActive(true);
-			ability->_laserCrator1->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			ability->_laserCrator1->GetComponent<TransparentMesh>()->Reset();
-			ability->_laserCrator1->GetComponent<TransparentMesh>()->PlayOnce();
+			//ability->_laserCrator1->GetComponent<TransparentMesh>()->SetActive(true);
+			//ability->_laserCrator1->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			//ability->_laserCrator1->GetComponent<TransparentMesh>()->Reset();
+			//ability->_laserCrator1->GetComponent<TransparentMesh>()->PlayOnce();
+
+			if (ability->_laser->GetActivated())
+			{
+				ability->_laserCrator1->GetComponent<TransparentMesh>()->SetActive(true);
+				ability->_laserCrator1->GetComponent<TransparentMesh>()->TransformForceUpdate();
+				ability->_laserCrator1->GetComponent<TransparentMesh>()->Reset();
+				ability->_laserCrator1->GetComponent<TransparentMesh>()->PlayOnce();
+			}
 
 			Waitforsecond(0.1f);
-			ability->_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
-			ability->_laserCrator2->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			ability->_laserCrator2->GetComponent<TransparentMesh>()->Reset();
-			ability->_laserCrator2->GetComponent<TransparentMesh>()->PlayOnce();
+			//ability->_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
+			//ability->_laserCrator2->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			//ability->_laserCrator2->GetComponent<TransparentMesh>()->Reset();
+			//ability->_laserCrator2->GetComponent<TransparentMesh>()->PlayOnce();
+
+			if (ability->_laser->GetActivated())
+			{
+				ability->_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
+				ability->_laserCrator2->GetComponent<TransparentMesh>()->TransformForceUpdate();
+				ability->_laserCrator2->GetComponent<TransparentMesh>()->Reset();
+				ability->_laserCrator2->GetComponent<TransparentMesh>()->PlayOnce();
+
+			}
 
 			Waitforsecond(0.1f);
-			ability->_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
-			ability->_laserCrator3->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			ability->_laserCrator3->GetComponent<TransparentMesh>()->Reset();
-			ability->_laserCrator3->GetComponent<TransparentMesh>()->PlayOnce();
+			//ability->_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
+			//ability->_laserCrator3->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			//ability->_laserCrator3->GetComponent<TransparentMesh>()->Reset();
+			//ability->_laserCrator3->GetComponent<TransparentMesh>()->PlayOnce();
+
+			if (ability->_laser->GetActivated())
+			{
+				ability->_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
+				ability->_laserCrator3->GetComponent<TransparentMesh>()->TransformForceUpdate();
+				ability->_laserCrator3->GetComponent<TransparentMesh>()->Reset();
+				ability->_laserCrator3->GetComponent<TransparentMesh>()->PlayOnce();
+			}
 
 			Waitforsecond(0.1f);
-			ability->_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
-			ability->_laserCrator4->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			ability->_laserCrator4->GetComponent<TransparentMesh>()->Reset();
-			ability->_laserCrator4->GetComponent<TransparentMesh>()->PlayOnce();
+			//ability->_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
+			//ability->_laserCrator4->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			//ability->_laserCrator4->GetComponent<TransparentMesh>()->Reset();
+			//ability->_laserCrator4->GetComponent<TransparentMesh>()->PlayOnce();
+
+			if (ability->_laser->GetActivated())
+			{
+				ability->_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
+				ability->_laserCrator4->GetComponent<TransparentMesh>()->TransformForceUpdate();
+				ability->_laserCrator4->GetComponent<TransparentMesh>()->Reset();
+				ability->_laserCrator4->GetComponent<TransparentMesh>()->PlayOnce();
+			}
 
 			Waitforsecond(0.1f);
-			ability->_laserCrator5->GetComponent<TransparentMesh>()->SetActive(true);
-			ability->_laserCrator5->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			ability->_laserCrator5->GetComponent<TransparentMesh>()->Reset();
-			ability->_laserCrator5->GetComponent<TransparentMesh>()->PlayOnce();
+			//ability->_laserCrator5->GetComponent<TransparentMesh>()->SetActive(true);
+			//ability->_laserCrator5->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			//ability->_laserCrator5->GetComponent<TransparentMesh>()->Reset();
+			//ability->_laserCrator5->GetComponent<TransparentMesh>()->PlayOnce();
+
+			if (ability->_laser->GetActivated())
+			{
+				ability->_laserCrator5->GetComponent<TransparentMesh>()->SetActive(true);
+				ability->_laserCrator5->GetComponent<TransparentMesh>()->TransformForceUpdate();
+				ability->_laserCrator5->GetComponent<TransparentMesh>()->Reset();
+				ability->_laserCrator5->GetComponent<TransparentMesh>()->PlayOnce();
+			}
 
 			Waitforsecond(0.1f);
-			ability->_laserCrator6->GetComponent<TransparentMesh>()->SetActive(true);
-			ability->_laserCrator6->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			ability->_laserCrator6->GetComponent<TransparentMesh>()->Reset();
-			ability->_laserCrator6->GetComponent<TransparentMesh>()->PlayOnce();
+			//ability->_laserCrator6->GetComponent<TransparentMesh>()->SetActive(true);
+			//ability->_laserCrator6->GetComponent<TransparentMesh>()->TransformForceUpdate();
+			//ability->_laserCrator6->GetComponent<TransparentMesh>()->Reset();
+			//ability->_laserCrator6->GetComponent<TransparentMesh>()->PlayOnce();
+
+			if (ability->_laser->GetActivated())
+			{
+				ability->_laserCrator6->GetComponent<TransparentMesh>()->SetActive(true);
+				ability->_laserCrator6->GetComponent<TransparentMesh>()->TransformForceUpdate();
+				ability->_laserCrator6->GetComponent<TransparentMesh>()->Reset();
+				ability->_laserCrator6->GetComponent<TransparentMesh>()->PlayOnce();
+			}
 
 		};
 
@@ -395,6 +458,67 @@ namespace KunrealEngine
 			ability->_isPotionReady = false;
 			Waitforsecond(ability->_potionCoolDown);
 			ability->_isPotionReady = true;
+		};
+
+		Coroutine_Func(PotionEffectDraw)
+		{
+			_healthParticle1->GetComponent<Particle>()->SetActive(true);
+			_healthParticle1->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle1->GetComponent<Particle>()->SetParticleSize(2,3);
+
+			_healthParticle6->GetComponent<Particle>()->SetActive(true);
+			_healthParticle6->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle6->GetComponent<Particle>()->SetParticleSize(2,3);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle3->GetComponent<Particle>()->SetActive(true);
+			_healthParticle3->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle3->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			_healthParticle2->GetComponent<Particle>()->SetActive(true);
+			_healthParticle2->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle2->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle5->GetComponent<Particle>()->SetActive(true);
+			_healthParticle5->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle5->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			_healthParticle4->GetComponent<Particle>()->SetActive(true);
+			_healthParticle4->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle4->GetComponent<Particle>()->SetParticleSize(2, 3);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle1->GetComponent<Particle>()->SetActive(true);
+			_healthParticle1->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle1->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			_healthParticle5->GetComponent<Particle>()->SetActive(true);
+			_healthParticle5->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle5->GetComponent<Particle>()->SetParticleSize(0, 0);
+			
+			Waitforsecond(0.1f);
+
+			_healthParticle6->GetComponent<Particle>()->SetActive(true);
+			_healthParticle6->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle6->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			_healthParticle4->GetComponent<Particle>()->SetActive(true);
+			_healthParticle4->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle4->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			Waitforsecond(0.1f);
+
+			_healthParticle3->GetComponent<Particle>()->SetActive(true);
+			_healthParticle3->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle3->GetComponent<Particle>()->SetParticleSize(0, 0);
+
+			_healthParticle2->GetComponent<Particle>()->SetActive(true);
+			_healthParticle2->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+			_healthParticle2->GetComponent<Particle>()->SetParticleSize(0, 0);
 		};
 	};
 }

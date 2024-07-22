@@ -29,7 +29,7 @@ KunrealEngine::Player::Player()
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
-	, _onCasting(false)
+	, _onCasting(false), _playerStartX(0.7f), _playerStartZ(-55.0f)
 {
 	_sweepNode.clear();
 }
@@ -71,7 +71,14 @@ void KunrealEngine::Player::Initialize()
 	//this->_owner->GetComponent<MeshCollider>()->SetColliderScale(1.0f, 1.0f, 1.0f);
 	//this->_owner->GetComponent<MeshCollider>()->SetOffset(0.0f, 10.0f, 0.0f);
 
-	this->_owner->AddComponent<SoundPlayer>();
+	auto soundcomp = this->_owner->AddComponent<SoundPlayer>();
+	_knock_downSound = soundcomp->CreateSoundInfo("Resources/sound/body-fall.mp3", true, false, 100);
+	_diedsound = soundcomp->CreateSoundInfo("Resources/sound/youDied.mp3", true, false, 100);
+	_staandup = soundcomp->CreateSoundInfo("Resources/sound/standup_sound.mp3", true, false, 100);
+	soundcomp->CreateSound(_knock_downSound, 1);
+	soundcomp->CreateSound(_diedsound, 1);
+	soundcomp->CreateSound(_staandup, 1);
+
 
 	this->_owner->AddComponent<PlayerAbility>();
 	this->_owner->AddComponent<PlayerMove>();
@@ -481,6 +488,7 @@ void KunrealEngine::Player::PlayerSweep()
 	{
 		// 플레이어를 날아가는 상태로
 		this->_playerStatus = Status::SWEEP;
+		_owner->GetComponent<SoundPlayer>()->Play(_knock_downSound);
 
 		// 더 멀리 날아가는것 방지 안전장치
 		//if (_movedRange >= _sweepRange)
@@ -535,6 +543,9 @@ void KunrealEngine::Player::ResetPlayerStatus()
 	this->_playerInfo._hp = this->_playerInfo._maxhp;
 	this->_playerInfo._spellPower = 1.0f;
 
+	// 위치 초기화
+	this->_transform->SetPosition(this->_playerStartX, 2.0f, this->_playerStartZ);
+
 	// 상태 초기화
 	this->_playerStatus = Status::IDLE;
 }
@@ -573,6 +584,7 @@ void KunrealEngine::Player::BeforeStart()
 		{
 			if (this->_playerStatus == Status::BEFORESTART)
 			{
+				this->_owner->GetComponent<SoundPlayer>()->Play(_staandup);
 				this->_owner->GetComponent<Animator>()->Play("StandingUp", 30.0f * _playerInfo._speedScale, false);
 			}
 		}

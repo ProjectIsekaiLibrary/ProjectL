@@ -64,10 +64,9 @@ namespace KunrealEngine
 	private:
 		unsigned int _insideSafeCount;
 
-		bool _fadeoutFlag;				// 화면 fadeout
-
 		GameObject* _fadeObjectTitle;
 		GameObject* _fadeObjectMain;
+		GameObject* _fadeObjectEnding;
 
 	public:
 		// 플레이어가 보스에게 주는 데미지 계산
@@ -94,13 +93,13 @@ namespace KunrealEngine
 
 	public:
 		// 플레이어 사망후 타이틀화면으로
-		void MoveToTitleAfterDeath();
+		void MoveToTitle();
 
 		// FadeOut 	
 		void ActivateFadeOutTrigger();
 
-		// FadeIn
-		void ActivateFadeInTrigger();
+		// 엔딩씬 fade 연출
+		void ActivateEndingFadeTrigger();
 
 	private:
 		Coroutine_Func(fadeout)
@@ -120,7 +119,7 @@ namespace KunrealEngine
 
 					Waitforsecond(2.0f);
 					blackBG->SetActive(false);
-					manager->MoveToTitleAfterDeath();
+					manager->MoveToTitle();
 
 					break;
 				}
@@ -147,6 +146,43 @@ namespace KunrealEngine
 					blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 					blackBG->SetActive(false);
 
+					break;
+				}
+
+				Return_null;
+			}
+		};
+
+		Coroutine_Func(endingSceneFade)
+		{
+			EventManager* manager = this;
+			GameObject* blackBG = manager->_fadeObjectEnding;
+			blackBG->SetActive(true);
+			blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+
+			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 1.0f)
+			{
+				blackBG->GetComponent<ImageRenderer>()->SetAlpha(blackBG->GetComponent<ImageRenderer>()->GetAlpha() + 0.01f);
+
+				if (blackBG->GetComponent<ImageRenderer>()->GetAlpha() >= 1.0f)
+				{
+					blackBG->GetComponent<ImageRenderer>()->SetAlpha(1.0f);
+					break;
+				}
+
+				Return_null;
+			}
+
+			Waitforsecond(2.5f);
+
+			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() > 0.0f)
+			{
+				blackBG->GetComponent<ImageRenderer>()->SetAlpha(blackBG->GetComponent<ImageRenderer>()->GetAlpha() - 0.01f);
+
+				if (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 0.0f)
+				{
+					blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+					blackBG->SetActive(false);
 					break;
 				}
 

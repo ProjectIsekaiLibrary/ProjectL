@@ -277,9 +277,6 @@ void KunrealEngine::Boss::Enter()
 {
 	if (!_isEnterInitialize)
 	{
-		// 일단 여기에서 이벤트 매니저 시작
-		EventManager::GetInstance().Initialize();
-
 		_bossOriginPos = _boss->GetComponent<Transform>()->GetPosition();
 
 		auto playerPosition = _player->GetComponent<Transform>()->GetPosition();

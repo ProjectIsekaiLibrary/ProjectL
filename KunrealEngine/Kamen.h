@@ -185,7 +185,7 @@ namespace KunrealEngine
 	private:
 		// 베지어 곡선 활용 함수
 		// 일정 수치 사이의 랜덤 보조점을 세팅 (해당 함수는 20 ~ 30의 거리)
-		std::vector<DirectX::XMFLOAT3> BezierSetting(GameObject* bezierObject);
+		std::vector<DirectX::XMFLOAT3> BezierSetting(GameObject* bezierObject, DirectX::XMFLOAT3 endPoint);
 
 	private:
 		BossPattern* _leftAttack;

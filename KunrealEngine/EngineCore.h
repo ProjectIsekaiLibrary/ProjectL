@@ -42,7 +42,7 @@ namespace KunrealEngine
 
 	class _DECLSPEC EngineCore
 	{
-	/// private으로 나중에 바꿔
+		/// private으로 나중에 바꿔
 	public:
 		EngineCore();
 		~EngineCore();
@@ -73,7 +73,7 @@ namespace KunrealEngine
 		void RemoveObstacle();
 
 		void CreateTitleScene();
-	
+
 	private: // 파티클 테스트
 		void ParticleTest();
 		DirectX::XMFLOAT3 Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t);
@@ -95,7 +95,7 @@ namespace KunrealEngine
 		bool _isSettingTimer;
 		bool _isBezierStartSetting;
 		bool _isBezierTeleportSetting;
-			// 여기까지
+		// 여기까지
 	private:
 		// 그래픽스 엔진 객체가 들어갈 부분	
 		GInterface::GraphicsInterface* _gInterface;
@@ -117,7 +117,7 @@ namespace KunrealEngine
 		int _ingameMouseY = 0;
 
 		//임시용 에디터 마우스 포지션
-		POINT _editorMousepos = {-1, -1};
+		POINT _editorMousepos = { -1, -1 };
 
 		POINT _finalMousePosition = { 0,0 };
 
@@ -164,17 +164,29 @@ namespace KunrealEngine
 
 		GameObject* _endingEnt;
 		GameObject* _endingSpider;
+		GameObject* _endingSword;
+		GameObject* _endingKachujin;
+		GameObject* _endingKunho;
 
 		GameObject* _endingCredit1;
+		GameObject* _endingLee;
+		GameObject* _endingYoon;
+		GameObject* _endingKim;
+		GameObject* _endingBae;
+		GameObject* _endingJung;
 		GameObject* _endingThankYou;
+		GameObject* _endingTheme;
 
 		float _originalYpos = -20.0f;
 
+	private:
 		GameObject* titleCamera;
 
 		float titleUIPosY = 0.0f;
 		void SmoothTransition(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 startRot,
 			DirectX::XMFLOAT3 endPos, DirectX::XMFLOAT3 endRot, float duration, float deltaTime);
+
+		GameObject* _floatingOb1;
 	};
 }
 

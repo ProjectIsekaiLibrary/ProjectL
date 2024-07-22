@@ -208,34 +208,23 @@ void KunrealEngine::EventManager::CamShake(float harder)
 void KunrealEngine::EventManager::CreateFadeObject()
 {
 	this->_fadeObjectTitle = SceneManager::GetInstance().GetScene("Title")->CreateObject("FadeObject");
-	//this->_fadeObjectTitle->_autoAwake = true;
 	this->_fadeObjectTitle->AddComponent<ImageRenderer>();
 	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
 	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectTitle->SetActive(false);
 
 	this->_fadeObjectMain = SceneManager::GetInstance().GetScene("Main")->CreateObject("FadeObject");
-	//this->_fadeObjectMain->_autoAwake = true;
 	this->_fadeObjectMain->AddComponent<ImageRenderer>();
 	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
 	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectMain->SetActive(false);
+
+	//this->_fadeObjectEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObject");
+	//this->_fadeObjectEnding->AddComponent<ImageRenderer>();
+	//this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	//this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	//this->_fadeObjectEnding->SetActive(false);
 }
-
-//void KunrealEngine::EventManager::CalculateDamageToBoss()
-//{
-//	auto& bossInfo = _bossComp->GetBossInfo();
-//
-//	auto damage = _playerAbill->GetDamage();
-//
-//	if (damage > 0)
-//	{
-//		auto finalDamage = damage * (100.0f / 100 + bossInfo._armor);
-//
-//		_bossComp->GetBossInfo()._hp -= finalDamage;
-//	}
-//}
-
 
 void KunrealEngine::EventManager::CalculateDamageToBoss(Ability* abil)
 {
@@ -974,8 +963,8 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 void KunrealEngine::EventManager::SetBossObject()
 {
-	_player = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Player");
-	_boss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Boss");
+	_player = SceneManager::GetInstance().GetScene("Main")->GetObjectWithTag("Player");
+	_boss = SceneManager::GetInstance().GetScene("Main")->GetObjectWithTag("Boss");
 
 	_playerComp = _player->GetComponent<Player>();
 	_playerAbill = _player->GetComponent<PlayerAbility>();
@@ -1022,7 +1011,7 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetEgoAttackDirection(Game
 	return colliderDirVec;
 }
 
-void KunrealEngine::EventManager::MoveToTitleAfterDeath()
+void KunrealEngine::EventManager::MoveToTitle()
 {
 	// 카메라 고정 해제
 	this->_iscamfollow = false;
@@ -1048,9 +1037,17 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 
 	// 세팅 후 scene 변경
 	SceneManager::GetInstance().ChangeScene("Title");
+	auto* pauseui = SceneManager::GetInstance().GetScene("Main")->GetGameObject("pauseuibox");
+	auto* oPtion = SceneManager::GetInstance().GetScene("Main")->GetGameObject("Option");
+	if (pauseui != nullptr)
+	{
+		ResetMenuUIPack(pauseui, "Main", "Title");
+	}
 
-	ResetMenuUIPack(SceneManager::GetInstance().GetScene("Main")->GetGameObject("pauseuibox"), "Main", "Title");
-	ResetMenuUIPack(SceneManager::GetInstance().GetScene("Main")->GetGameObject("Option"), "Main", "Title");
+	if (oPtion != nullptr)
+	{
+		ResetMenuUIPack(oPtion, "Main", "Title");
+	}
 	GameObject* soundManager = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("TitleSceneSound");
 	SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
 	int portal = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
@@ -1091,4 +1088,9 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 void KunrealEngine::EventManager::ActivateFadeOutTrigger()
 {
 	Startcoroutine(fadeout);
+}
+
+void KunrealEngine::EventManager::ActivateEndingFadeTrigger()
+{
+	Startcoroutine(endingSceneFade);
 }

@@ -42,6 +42,8 @@ namespace KunrealEngine
 		float _movableRange;					// 대시 가능 거리		// 노드로 계산
 		float _posY;							// 맵마다 다른 높이를 적용할 변수
 
+		int _nodeUpdateCount;					// 네비게이션 while문 탈출불가 방지용
+
 		// 이동할 위치를 마우스 우클릭 시 업데이트
 		void UpdateTargetPosition();
 
@@ -125,6 +127,7 @@ namespace KunrealEngine
 		Coroutine_Func(dashReady)
 		{
 			auto* dashCooldown = this;
+			this->_isDashReady = false;
 			Waitforsecond(_playerComp->GetPlayerData()._dashCooldown);
 			dashCooldown->_isDashReady = true;
 		};

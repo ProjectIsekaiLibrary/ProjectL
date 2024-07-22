@@ -18,6 +18,8 @@ namespace KunrealEngine
 		DirectX::XMFLOAT4 Diffuse = { 0.3f, 1.0f, 0.1f, 1.0f };
 		DirectX::XMFLOAT4 Specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 
+		DirectX::XMFLOAT4 DiffuseLightSet = { 1.0f, 5.0f, 0.0f, 1.0f };
+
 		GameObject* mapParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle1");
 		mapParticle1->GetComponent<Transform>()->SetPosition(-113.83, 20.31, -136.35f);
 		mapParticle1->AddComponent<Particle>();
@@ -138,13 +140,118 @@ namespace KunrealEngine
 		mapParticle8->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticle8);
 
+		GameObject* mapParticle9 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle9");
+		mapParticle9->GetComponent<Transform>()->SetPosition(36.2f, 73.6f, 322.13f);
+		mapParticle9->AddComponent<Particle>();
+		mapParticle9->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle9->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
+		mapParticle9->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle9->GetComponent<Particle>()->SetParticleSize(7.0f, 7.0f);
+		mapParticle9->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
+		mapParticle9->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
+		mapParticle9->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle9->AddComponent<Light>();
+		mapParticle9->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle9->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle9);
+
+		GameObject* mapParticle10 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle10");
+		mapParticle10->GetComponent<Transform>()->SetPosition(-36.0f, 73.62f, 322.13f);
+		mapParticle10->AddComponent<Particle>();
+		mapParticle10->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle10->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
+		mapParticle10->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle10->GetComponent<Particle>()->SetParticleSize(7.0f, 7.0f);
+		mapParticle10->GetComponent<Particle>()->AddParticleColor(0.3f, 10.0f, 0.0f);
+		mapParticle10->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
+		mapParticle10->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle10->AddComponent<Light>();
+		mapParticle10->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle10->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle10);
+
+		GameObject* mapParticle11 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle11");
+		mapParticle11->GetComponent<Transform>()->SetPosition(-12.98f, 122.792f, 421.07f);
+		mapParticle11->AddComponent<Particle>();
+		mapParticle11->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle11->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.6f);
+		mapParticle11->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle11->GetComponent<Particle>()->SetParticleSize(6.0f, 8.0f);
+		mapParticle11->GetComponent<Particle>()->AddParticleColor(1.0f, 10.0f, 0.0f);
+		mapParticle11->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
+		mapParticle11->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle11->AddComponent<Light>();
+		mapParticle11->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle11->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle11);
+
+		GameObject* mapParticle12 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle12");
+		mapParticle12->GetComponent<Transform>()->SetPosition(-63.71f, 166.55f, 293.74f);
+		mapParticle12->AddComponent<Particle>();
+		mapParticle12->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle12->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
+		mapParticle12->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle12->GetComponent<Particle>()->SetParticleSize(16.f, 12.0f);
+		mapParticle12->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
+		mapParticle12->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+		mapParticle12->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle12->AddComponent<Light>();
+		mapParticle12->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle12->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle12);
+
+		GameObject* mapParticle13 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle13");
+		mapParticle13->GetComponent<Transform>()->SetPosition(65.3f, 166.55f, 293.8f);
+		mapParticle13->AddComponent<Particle>();
+		mapParticle13->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resoseurces/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle13->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
+		mapParticle13->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle13->GetComponent<Particle>()->SetParticleSize(16.f, 12.0f);
+		mapParticle13->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
+		mapParticle13->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+		mapParticle13->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle13->AddComponent<Light>();
+		mapParticle13->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle13->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle13);
+
+		GameObject* mapParticle14 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle14");
+		mapParticle14->GetComponent<Transform>()->SetPosition(65.338f, 168.74, 496.8f);
+		mapParticle14->AddComponent<Particle>();
+		mapParticle14->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle14->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
+		mapParticle14->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle14->GetComponent<Particle>()->SetParticleSize(16.f, 12.0f);
+		mapParticle14->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
+		mapParticle14->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+		mapParticle14->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle14->AddComponent<Light>();
+		mapParticle14->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle14->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle14);
+
+		GameObject* mapParticle15 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle15");
+		mapParticle15->GetComponent<Transform>()->SetPosition(-64.9, 168.74, 496.8f);
+		mapParticle15->AddComponent<Particle>();
+		mapParticle15->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resources/Textures/Particles/fx_Twister2.dds", 1000);
+		mapParticle15->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
+		mapParticle15->GetComponent<Particle>()->SetParticleVelocity(3.0f, true);
+		mapParticle15->GetComponent<Particle>()->SetParticleSize(16.f, 12.0f);
+		mapParticle15->GetComponent<Particle>()->AddParticleColor(3.0f, 10.0f, 1.0f);
+		mapParticle15->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
+		mapParticle15->GetComponent<Particle>()->SetParticleCameraApply(false);
+		mapParticle15->AddComponent<Light>();
+		mapParticle15->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
+		mapParticle15->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticle15);
+
 		GameObject* mapParticleEye1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye1");
 		mapParticleEye1->GetComponent<Transform>()->SetPosition(122.3f, 28.13f, -5.02f);
 		mapParticleEye1->AddComponent<Particle>();
 		mapParticleEye1->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
 		mapParticleEye1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye1->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye1->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+		mapParticleEye1->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
 		mapParticleEye1->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye1->_autoAwake = true;
@@ -156,7 +263,7 @@ namespace KunrealEngine
 		mapParticleEye2->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
 		mapParticleEye2->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye2->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye2->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+		mapParticleEye2->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
 		mapParticleEye2->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye2->_autoAwake = true;
@@ -168,7 +275,7 @@ namespace KunrealEngine
 		mapParticleEye3->GetComponent<Particle>()->SetParticleEffect("Blaster1", "Resources/Textures/Particles/fx_Blaster1.dds", 1000);
 		mapParticleEye3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye3->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye3->GetComponent<Particle>()->SetParticleSize(3.f, 1.0f);
+		mapParticleEye3->GetComponent<Particle>()->SetParticleSize(3.0f, 1.0f);
 		mapParticleEye3->GetComponent<Particle>()->AddParticleColor(10.0f, 0.1f, 0.0f);
 		mapParticleEye3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye3->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
@@ -181,7 +288,7 @@ namespace KunrealEngine
 		mapParticleEye4->GetComponent<Particle>()->SetParticleEffect("Blaster1", "Resources/Textures/Particles/fx_Blaster1.dds", 1000);
 		mapParticleEye4->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye4->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye4->GetComponent<Particle>()->SetParticleSize(3.f, 1.0f);
+		mapParticleEye4->GetComponent<Particle>()->SetParticleSize(3.0f, 1.0f);
 		mapParticleEye4->GetComponent<Particle>()->AddParticleColor(10.0f, 0.4f, 0.0f);
 		mapParticleEye4->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye4->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
@@ -194,7 +301,7 @@ namespace KunrealEngine
 		mapParticleEye5->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
 		mapParticleEye5->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye5->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye5->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+		mapParticleEye5->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
 		mapParticleEye5->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye5->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye5->_autoAwake = true;
@@ -206,7 +313,7 @@ namespace KunrealEngine
 		mapParticleEye6->GetComponent<Particle>()->SetParticleEffect("Blaster1", "Resources/Textures/Particles/fx_Blaster1.dds", 1000);
 		mapParticleEye6->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye6->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye6->GetComponent<Particle>()->SetParticleSize(3.f, 1.0f);
+		mapParticleEye6->GetComponent<Particle>()->SetParticleSize(3.0f, 1.0f);
 		mapParticleEye6->GetComponent<Particle>()->AddParticleColor(10.0f, 0.1f, 0.0f);
 		mapParticleEye6->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye6->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 356.0f);
@@ -219,7 +326,7 @@ namespace KunrealEngine
 		mapParticleEye7->GetComponent<Particle>()->SetParticleEffect("Blaster1", "Resources/Textures/Particles/fx_Blaster1.dds", 1000);
 		mapParticleEye7->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye7->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye7->GetComponent<Particle>()->SetParticleSize(3.f, 1.0f);
+		mapParticleEye7->GetComponent<Particle>()->SetParticleSize(3.0f, 1.0f);
 		mapParticleEye7->GetComponent<Particle>()->AddParticleColor(10.0f, 0.4f, 0.0f);
 		mapParticleEye7->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye7->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 30.0f);
@@ -232,11 +339,37 @@ namespace KunrealEngine
 		mapParticleEye8->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
 		mapParticleEye8->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
 		mapParticleEye8->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
-		mapParticleEye8->GetComponent<Particle>()->SetParticleSize(5.f, 5.0f);
+		mapParticleEye8->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
 		mapParticleEye8->GetComponent<Particle>()->AddParticleColor(1.0f, 0.1f, 0.0f);
 		mapParticleEye8->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 		mapParticleEye8->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticleEye8);
+
+		GameObject* mapParticleEye9 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye9");
+		mapParticleEye9->GetComponent<Transform>()->SetPosition(-3.31f, 91.4f, 438.42f);
+		mapParticleEye9->AddComponent<Particle>();
+		mapParticleEye9->GetComponent<Particle>()->SetParticleEffect("Blaster1", "Resources/Textures/Particles/fx_Blaster1.dds", 1000);
+		mapParticleEye9->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+		mapParticleEye9->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+		mapParticleEye9->GetComponent<Particle>()->SetParticleSize(4.0f, 2.0f);
+		mapParticleEye9->GetComponent<Particle>()->AddParticleColor(10.0f, 0.1f, 0.0f);
+		mapParticleEye9->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		mapParticleEye9->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+		mapParticleEye9->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticleEye9);
+
+		GameObject* mapParticleEye10 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticleEye10");
+		mapParticleEye10->GetComponent<Transform>()->SetPosition(2.9f, 91.15f, 442.8f);
+		mapParticleEye10->AddComponent<Particle>();
+		mapParticleEye10->GetComponent<Particle>()->SetParticleEffect("Blaster1", "Resources/Textures/Particles/fx_Blaster1.dds", 1000);
+		mapParticleEye10->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.1f);
+		mapParticleEye10->GetComponent<Particle>()->SetParticleVelocity(5.0f, true);
+		mapParticleEye10->GetComponent<Particle>()->SetParticleSize(4.0f, 2.0f);
+		mapParticleEye10->GetComponent<Particle>()->AddParticleColor(10.0f, 0.4f, 0.0f);
+		mapParticleEye10->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		mapParticleEye10->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+		mapParticleEye10->_autoAwake = true;
+		mapParticleList.emplace_back(mapParticleEye10);
 
 	}
 	
@@ -406,6 +539,29 @@ namespace KunrealEngine
 		//titleBoss->GetComponent<Light>()->CreatePointLight(bambient, bdiffuse,bspecular, 500, 64.f);
 		//titleBoss->GetComponent<Light>()->SetOffSet(0.0f, 60.f, 0.0f);
 
+		GameObject* kamenEye1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("kamenEye1");
+		kamenEye1->GetComponent<Transform>()->SetPosition(-161.85f, 216.9f, 180);
+		kamenEye1->AddComponent<Particle>();
+		kamenEye1->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+		kamenEye1->GetComponent<Particle>()->SetParticleDuration(0.5f, 0.5f);
+		kamenEye1->GetComponent<Particle>()->SetParticleVelocity(20.0f, true);
+		kamenEye1->GetComponent<Particle>()->SetParticleSize(20.0f, 8.3f);
+		kamenEye1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.1f, 0.0f);
+		kamenEye1->GetComponent<Particle>()->SetParticleDirection(-50.0f, 32.0f, 0.0f);
+		kamenEye1->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 156.0f);
+		kamenEye1->_autoAwake = true;
+
+		GameObject* kamenEye2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("kamenEye2");
+		kamenEye2->GetComponent<Transform>()->SetPosition(-147.29f, 216.912f, 180);
+		kamenEye2->AddComponent<Particle>();
+		kamenEye2->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+		kamenEye2->GetComponent<Particle>()->SetParticleDuration(0.5f, 0.5f);
+		kamenEye2->GetComponent<Particle>()->SetParticleVelocity(20.0f, true);
+		kamenEye2->GetComponent<Particle>()->SetParticleSize(20.0f, 8.3f);
+		kamenEye2->GetComponent<Particle>()->AddParticleColor(0.0f, 0.1f, 0.0f);
+		kamenEye2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 15.0f);
+		kamenEye2->_autoAwake = true;
+
 		for (int i = 0; i < 10; ++i)
 		{
 			GameObject* particleBezierTest;
@@ -414,9 +570,9 @@ namespace KunrealEngine
 			particleBezierTest->GetComponent<Transform>()->SetPosition(-152.121f + ToolBox::GetRandomFloat(-150.0f, 150.0f), 182.672f + ToolBox::GetRandomFloat(-100.0f, 100.0f), 180);
 			particleBezierTest->AddComponent<Particle>();
 			particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
-			particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleDuration(2.0f, 3.0f);
 			particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
-			particleBezierTest->GetComponent<Particle>()->SetParticleSize(5.0f, 5.0f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleSize(7.0f, 7.0f);
 			particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 0.0f);
 			particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
