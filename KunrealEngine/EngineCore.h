@@ -164,9 +164,18 @@ namespace KunrealEngine
 
 		GameObject* _endingEnt;
 		GameObject* _endingSpider;
+		GameObject* _endingSword;
+		GameObject* _endingKachujin;
+		GameObject* _endingKunho;
 
 		GameObject* _endingCredit1;
+		GameObject* _endingLee;
+		GameObject* _endingYoon;
+		GameObject* _endingKim;
+		GameObject* _endingBae;
+		GameObject* _endingJung;
 		GameObject* _endingThankYou;
+		GameObject* _endingTheme;
 
 		float _originalYpos = -20.0f;
 
