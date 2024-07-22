@@ -91,8 +91,7 @@ void KunrealEngine::PlayerMove::Update()
 			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
 			)
 		{
-			//this->GetOwner()->GetComponent<BoxCollider>()->SetActive(false);
-			this->_isDashReady = false;
+			this->GetOwner()->GetComponent<BoxCollider>()->SetActive(false);
 			this->_isDashStart = true;
 			Startcoroutine(dashReady);
 
@@ -224,11 +223,11 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 		
 		// 탈출 불가 방지
 		this->_nodeUpdateCount++;
-		if (this->_nodeUpdateCount >= 100)
+		if (this->_nodeUpdateCount >= 500)
 		{
 			if (this->GetOwner()->GetObjectScene()->GetSceneName() == "Title")
 			{
-				//this->_transform->SetPosition(_playerComp->_playerStartX, 2.0f, _playerComp->_playerStartZ);
+				this->_transform->SetPosition(-156.0f, 66.0f, 0.0f);
 			}
 			else
 			{
@@ -503,6 +502,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 	else
 	{
 		this->GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
+		this->GetOwner()->GetComponent<BoxCollider>()->SetActive(true);
 		if (this->GetOwner()->GetComponent<MeshRenderer>()->GetActivated() == true)
 		{
 			if (_isDashEnd == true)

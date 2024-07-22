@@ -258,10 +258,10 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	//ChangeScene("ParticleTest");
 	//ParticleTest();
 	/// 니들 맘대로 해
-	//PlayGround();
-	//CreateTitleScene();
-	CreateEndingScene();
-	//EventManager::GetInstance().CreateFadeObject();
+	PlayGround();
+	CreateTitleScene();
+	//CreateEndingScene();
+	EventManager::GetInstance().CreateFadeObject();
 }
 
 void KunrealEngine::EngineCore::Release()
@@ -319,15 +319,11 @@ void KunrealEngine::EngineCore::Update()
 		ShiveringLight(titleRock3);
 		titleBoss->GetComponent<Animator>()->Play("titleIdle", 0.5f, true);
 		TitleMapParticle();
-		//float movingTime = 6.0f;
-		//titleCamera->GetComponent<Camera>()->MoveParabolic(titleCameraStart, titleCameraEnd, 5);
-		//if (titleCamera->GetComponent<Transform>()->GetRotation().x <= -137.0f && titleCamera->GetComponent<Transform>()->GetRotation().x >= -180.f)
-		//{
-		//	auto titleDeltaTIme = TimeManager::GetInstance().GetDeltaTime();
-		//	auto rotSpeed = titleDeltaTIme * 45.0f * (1 / movingTime);
-		//	titleCamera->GetComponent<Camera>()->CameraRotateY(rotSpeed);
-		//	//titleCamera->GetComponent<Transform>()->SetRotation(-rotSpeed, 0.0f ,0.0f);
-		//}
+		GameObject* soundManager = sceneInstance.GetCurrentScene()->GetGameObject("TitleSceneSound");
+		SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
+		int titlebgm1 = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
+		soundComp->Play(titlebgm1);
+
 		titleUIPosY = GetCurrentScene()->GetGameObject("Title_Image")->GetComponent<Transform>()->GetPosition().y;
 		if (titleUIPosY <= -680)
 		{
@@ -382,6 +378,8 @@ void KunrealEngine::EngineCore::SetEditorMousePos(POINT position)
 
 void KunrealEngine::EngineCore::PlayGround()
 {
+	sceneInstance.ChangeScene("Main");
+
 	navigationInstance.HandleBuild(0, "bossmap.obj");
 	navigationInstance.HandleBuild(1, "bossmap.obj");
 
@@ -454,20 +452,11 @@ void KunrealEngine::EngineCore::PlayGround()
 	// Kamen
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
-	kamen->_autoAwake = true;
-
-	// UI의 부모가 될 0,0pos객체
-	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
-	battle_ui_box->AddComponent<BattleUIManager>();
-	battle_ui_box->_autoAwake = true;
-
-	pause_ui_box = MakeMenuUIPack();
-	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
-	option_ui_box->AddComponent<OptionUIManager>();
-	//Title_ui_box = 
+	kamen->_autoAwake = true;	
 
 	// 맵 꾸미기 파티클
 	MapParticleSetting(_mapParticleList);
+	EventManager::GetInstance().Initialize();
 }
 
 
@@ -2114,7 +2103,6 @@ void KunrealEngine::EngineCore::MoveToMain()
 			SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
 			int portal = soundComp->FindIndex("Resources/Sound/intro.mp3");
 			soundComp->Play(portal);
-
 			int titlebgmindex = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
 			soundComp->Stop(titlebgmindex);
 
@@ -2224,7 +2212,6 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	int portal = soundComp->CreateSoundInfo("Resources/Sound/intro.mp3", false, false);
 	soundComp->CreateSound(portal, 1);
 	soundComp->CreateSound(titlebgm1, 0);
-	soundComp->Play(titlebgm1);
 
 	GameObject* titleLight = sceneInstance.GetCurrentScene()->CreateObject("DirectionalLight");
 	titleLight->_autoAwake = true;
@@ -2249,8 +2236,15 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	GRAPHICS->CreateCubeMap("TitleBackground", "DarkMoon.dds", true);
 	GRAPHICS->SetMainCubeMap("TitleBackground");
 
-	ResetMenuUIPack(sceneInstance.GetScene("Main")->GetGameObject("pauseuibox"), "Main", "Title");
-	ResetMenuUIPack(sceneInstance.GetScene("Main")->GetGameObject("Option"), "Main", "Title");
+	// UI의 부모가 될 0,0pos객체
+	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
+	battle_ui_box->AddComponent<BattleUIManager>();
+	battle_ui_box->_autoAwake = true;
+
+	pause_ui_box = MakeMenuUIPack();
+	option_ui_box = sceneInstance.GetCurrentScene()->CreateObject("Option");
+	option_ui_box->AddComponent<OptionUIManager>();
+
 	GameObject* titleUIpack = MakeTitleUIPack();
 
 	_floatingOb1 = sceneInstance.GetCurrentScene()->CreateObject("FloatingOb1");
@@ -2676,8 +2670,10 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		endingRock->GetComponent<MeshRenderer>()->SetDissolve(endingTimer);
 
 		endingPlayer->GetComponent<Animator>()->Play("fallingEnding", 10.f, true);
+		EventManager::GetInstance().ActivateEndingFadeTrigger();
 	}
-	else if (endingTimer <= -1.5f)
+
+	if (endingTimer <= -2.0f)
 	{
 		//_endingLight->GetComponent<Light>()->SetDirection(1.0f, 1.0f, -1.f);
 
@@ -2689,9 +2685,14 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		endingPlayer->GetComponent<Transform>()->SetRotation(3.0f, 158.f, 0.0f);
 		endingPlayer->GetComponent<Particle>()->SetActive(true);
 
-		_endingSoundComp->SetVolume(70.0f, endingSoundindex);
+		_endingSoundComp->SetVolume(40.0f, endingSoundindex);
 
 		endingPlayer->GetComponent<Animator>()->Play("endingFloatingfbx", 1.f, true);
+	}
+
+	if (sceneInstance.GetScene("Ending")->GetGameObject("EndingThankYou")->GetComponent<Transform>()->GetPosition().y <= 500.0f)
+	{
+		EventManager::GetInstance().ActivateFadeOutTrigger();
 	}
 }
 
