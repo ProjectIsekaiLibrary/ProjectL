@@ -151,7 +151,7 @@ namespace KunrealEngine
 		mapParticle9->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 		mapParticle9->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle9->AddComponent<Light>();
-		mapParticle9->GetComponent<Light>()->CreatePointLight(Ambient, DiffuseLightSet, Specular, 300);
+		mapParticle9->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle9->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticle9);
 
@@ -166,7 +166,7 @@ namespace KunrealEngine
 		mapParticle10->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 		mapParticle10->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle10->AddComponent<Light>();
-		mapParticle10->GetComponent<Light>()->CreatePointLight(Ambient, DiffuseLightSet, Specular, 300);
+		mapParticle10->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle10->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticle10);
 
@@ -181,7 +181,7 @@ namespace KunrealEngine
 		mapParticle11->GetComponent<Particle>()->SetParticleDirection(0.0f, 20.0f, 0.0f);
 		mapParticle11->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle11->AddComponent<Light>();
-		mapParticle11->GetComponent<Light>()->CreatePointLight(Ambient, DiffuseLightSet, Specular, 300);
+		mapParticle11->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle11->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticle11);
 
@@ -201,7 +201,7 @@ namespace KunrealEngine
 		mapParticleList.emplace_back(mapParticle12);
 
 		GameObject* mapParticle13 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("MapParticle13");
-		mapParticle13->GetComponent<Transform>()->SetPosition(-65.3f, 166.55f, 293.8f);
+		mapParticle13->GetComponent<Transform>()->SetPosition(65.3f, 166.55f, 293.8f);
 		mapParticle13->AddComponent<Particle>();
 		mapParticle13->GetComponent<Particle>()->SetParticleEffect("Flare5", "Resoseurces/Textures/Particles/fx_Twister2.dds", 1000);
 		mapParticle13->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.5f);
@@ -226,7 +226,7 @@ namespace KunrealEngine
 		mapParticle14->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
 		mapParticle14->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle14->AddComponent<Light>();
-		mapParticle14->GetComponent<Light>()->CreatePointLight(Ambient, DiffuseLightSet, Specular, 300);
+		mapParticle14->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle14->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticle14);
 
@@ -241,7 +241,7 @@ namespace KunrealEngine
 		mapParticle15->GetComponent<Particle>()->SetParticleDirection(0.0f, 40.0f, 0.0f);
 		mapParticle15->GetComponent<Particle>()->SetParticleCameraApply(false);
 		mapParticle15->AddComponent<Light>();
-		mapParticle15->GetComponent<Light>()->CreatePointLight(Ambient, DiffuseLightSet, Specular, 300);
+		mapParticle15->GetComponent<Light>()->CreatePointLight(Ambient, Diffuse, Specular, 300);
 		mapParticle15->_autoAwake = true;
 		mapParticleList.emplace_back(mapParticle15);
 
@@ -538,6 +538,29 @@ namespace KunrealEngine
 		//titleBoss->AddComponent<Light>();
 		//titleBoss->GetComponent<Light>()->CreatePointLight(bambient, bdiffuse,bspecular, 500, 64.f);
 		//titleBoss->GetComponent<Light>()->SetOffSet(0.0f, 60.f, 0.0f);
+
+		GameObject* kamenEye1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("kamenEye1");
+		kamenEye1->GetComponent<Transform>()->SetPosition(-161.85f, 216.9f, 180);
+		kamenEye1->AddComponent<Particle>();
+		kamenEye1->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+		kamenEye1->GetComponent<Particle>()->SetParticleDuration(0.5f, 0.5f);
+		kamenEye1->GetComponent<Particle>()->SetParticleVelocity(20.0f, true);
+		kamenEye1->GetComponent<Particle>()->SetParticleSize(20.0f, 8.3f);
+		kamenEye1->GetComponent<Particle>()->AddParticleColor(0.0f, 0.1f, 0.0f);
+		kamenEye1->GetComponent<Particle>()->SetParticleDirection(-50.0f, 32.0f, 0.0f);
+		kamenEye1->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 156.0f);
+		kamenEye1->_autoAwake = true;
+
+		GameObject* kamenEye2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("kamenEye2");
+		kamenEye2->GetComponent<Transform>()->SetPosition(-147.29f, 216.912f, 180);
+		kamenEye2->AddComponent<Particle>();
+		kamenEye2->GetComponent<Particle>()->SetParticleEffect("Lightning1", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
+		kamenEye2->GetComponent<Particle>()->SetParticleDuration(0.5f, 0.5f);
+		kamenEye2->GetComponent<Particle>()->SetParticleVelocity(20.0f, true);
+		kamenEye2->GetComponent<Particle>()->SetParticleSize(20.0f, 8.3f);
+		kamenEye2->GetComponent<Particle>()->AddParticleColor(0.0f, 0.1f, 0.0f);
+		kamenEye2->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 15.0f);
+		kamenEye2->_autoAwake = true;
 
 		for (int i = 0; i < 10; ++i)
 		{

@@ -13,7 +13,7 @@
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
-	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(true)
+	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(false)
 	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr)
 {
 
@@ -101,6 +101,10 @@ void KunrealEngine::EventManager::Update()
 				//while문을 돌리자 조건은 카메라와 타겟 위치사이의 거리
 				while (ToolBox::GetDistance(camoverTarget, campos) > distancevalue)
 				{
+					if (t > 1.0f)
+					{
+						break;
+					}
 					// t값을 더해준다.
 					t += 0.1;
 					// for문 조건 연산을 위해 campos를 받아온다.
@@ -208,18 +212,22 @@ void KunrealEngine::EventManager::CamShake(float harder)
 void KunrealEngine::EventManager::CreateFadeObject()
 {
 	this->_fadeObjectTitle = SceneManager::GetInstance().GetScene("Title")->CreateObject("FadeObject");
-	//this->_fadeObjectTitle->_autoAwake = true;
 	this->_fadeObjectTitle->AddComponent<ImageRenderer>();
 	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
 	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectTitle->SetActive(false);
 
 	this->_fadeObjectMain = SceneManager::GetInstance().GetScene("Main")->CreateObject("FadeObject");
-	//this->_fadeObjectMain->_autoAwake = true;
 	this->_fadeObjectMain->AddComponent<ImageRenderer>();
 	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
 	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectMain->SetActive(false);
+
+	//this->_fadeObjectEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObject");
+	//this->_fadeObjectEnding->AddComponent<ImageRenderer>();
+	//this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	//this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	//this->_fadeObjectEnding->SetActive(false);
 }
 
 void KunrealEngine::EventManager::CalculateDamageToBoss(Ability* abil)
@@ -931,6 +939,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 						_playerComp->GetPlayerData()._hp -= damage;
 						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+						nowPattern->_isColliderHit[i] = true;
 
 						// 데미지가 들어간 후 메쉬를 꺼야한다면
 						if (!nowPattern->_isRemainMesh && subObjectList[i]->GetComponent<MeshRenderer>() != nullptr)
@@ -959,8 +968,8 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 void KunrealEngine::EventManager::SetBossObject()
 {
-	_player = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Player");
-	_boss = SceneManager::GetInstance().GetCurrentScene()->GetObjectWithTag("Boss");
+	_player = SceneManager::GetInstance().GetScene("Main")->GetObjectWithTag("Player");
+	_boss = SceneManager::GetInstance().GetScene("Main")->GetObjectWithTag("Boss");
 
 	_playerComp = _player->GetComponent<Player>();
 	_playerAbill = _player->GetComponent<PlayerAbility>();
@@ -1007,7 +1016,7 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetEgoAttackDirection(Game
 	return colliderDirVec;
 }
 
-void KunrealEngine::EventManager::MoveToTitleAfterDeath()
+void KunrealEngine::EventManager::MoveToTitle()
 {
 	// 카메라 고정 해제
 	this->_iscamfollow = false;
@@ -1033,9 +1042,17 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 
 	// 세팅 후 scene 변경
 	SceneManager::GetInstance().ChangeScene("Title");
+	auto* pauseui = SceneManager::GetInstance().GetScene("Main")->GetGameObject("pauseuibox");
+	auto* oPtion = SceneManager::GetInstance().GetScene("Main")->GetGameObject("Option");
+	if (pauseui != nullptr)
+	{
+		ResetMenuUIPack(pauseui, "Main", "Title");
+	}
 
-	ResetMenuUIPack(SceneManager::GetInstance().GetScene("Main")->GetGameObject("pauseuibox"), "Main", "Title");
-	ResetMenuUIPack(SceneManager::GetInstance().GetScene("Main")->GetGameObject("Option"), "Main", "Title");
+	if (oPtion != nullptr)
+	{
+		ResetMenuUIPack(oPtion, "Main", "Title");
+	}
 	GameObject* soundManager = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("TitleSceneSound");
 	SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
 	int portal = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
@@ -1076,4 +1093,9 @@ void KunrealEngine::EventManager::MoveToTitleAfterDeath()
 void KunrealEngine::EventManager::ActivateFadeOutTrigger()
 {
 	Startcoroutine(fadeout);
+}
+
+void KunrealEngine::EventManager::ActivateEndingFadeTrigger()
+{
+	Startcoroutine(endingSceneFade);
 }

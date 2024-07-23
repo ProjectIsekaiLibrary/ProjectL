@@ -54,8 +54,8 @@ void KunrealEngine::PlayerAbility::Initialize()
 	_energyBallExplode = _soundComp->CreateSoundInfo("Resources/Sound/wavsound.mp3", true, false);
 	_circleunfolding = _soundComp->CreateSoundInfo("Resources/Sound/magic_filed.mp3", true, false);
 	_soundlaser = _soundComp->CreateSoundInfo("Resources/Sound/Laser.mp3", true, false);
-	_meteorExplode = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_explode.mp3", true, false);
-	_meteorFall = _soundComp->CreateSoundInfo("Resources/Sound/Meteor_falling.mp3", true, false);
+	_meteorExplode = _soundComp->CreateSoundInfo("Resources/Sound/Rock_Break.mp3", true, false);
+	_meteorFall = _soundComp->CreateSoundInfo("Resources/Sound/Meteor.mp3", true, false);
 	_soundComp->CreateSound(_energyBallShot, 1);
 	_soundComp->CreateSound(_energyBallFlying, 1);
 	_soundComp->CreateSound(_energyBallExplode, 1);
@@ -206,7 +206,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (this->_beforeMeteor)
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
-		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS)
+		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
 		{
 			this->_beforeMeteor = false;
 
@@ -217,6 +217,21 @@ void KunrealEngine::PlayerAbility::Update()
 				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
 			}
 			
+			return;
+		}
+
+		// 다른 스킬이 사용되면 return
+		if (this->_playerComp->_playerStatus == Player::Status::ABILITY && this->_playerComp->_abilityAnimationIndex != 4)
+		{
+			this->_beforeMeteor = false;
+
+			if (!this->_meteor->GetActivated())
+			{
+				this->_meteorRange->GetComponent<MeteorRange>()->_onCast = false;
+				this->_meteorRange->SetActive(false);
+				this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
+			}
+
 			return;
 		}
 
@@ -1150,7 +1165,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		{
 			if (_meteor->GetComponent<Transform>()->GetPosition().y <= 2.0f)
 			{
-				_soundComp->Play(_meteorFall);
+				_soundComp->Stop(_meteorFall);
+				_soundComp->Play(_meteorExplode);
 
 				if (meteorProj->GetCollider()->GetTargetObject() != nullptr && meteorProj->GetCollider()->IsCollided() && meteorProj->GetCollider()->GetTargetObject()->GetTag() == "Boss" && this->_isMeteorHit)
 				{
@@ -1187,6 +1203,8 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		{
 			if (_meteor->GetActivated())
 			{
+				_soundComp->Play(_meteorFall);
+
 				_meteor->GetComponent<Transform>()->SetPosition
 				(
 					_meteor->GetComponent<Transform>()->GetPosition().x,
@@ -1203,9 +1221,6 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 			if (!(_meteor->GetActivated()) && _isMeteorEnded == true)
 			{
-				_soundComp->Stop(_meteorFall);
-				_soundComp->Play(_meteorExplode);
-
 				_meteorParticleTimer += TimeManager::GetInstance().GetDeltaTime();
 
 				_meteorParticleHit1->GetComponent<Particle>()->SetActive(true);

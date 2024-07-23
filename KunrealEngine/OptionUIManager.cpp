@@ -80,7 +80,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_bgmon->GetComponent<ButtonSystem>()->SetImage(button_bgmon->GetComponent<ImageRenderer>());
 	button_bgmon->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			auto image = scene->GetGameObject("button_bgmon")->GetComponent<ImageRenderer>();
+			auto image = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("button_bgmon")->GetComponent<ImageRenderer>();
 			std::string path = "Resources/Textures/";
 			if (image->GetImageName() == path + "ui/sound-on.png")
 			{
@@ -117,7 +117,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_sfxon->GetComponent<ButtonSystem>()->SetImage(button_sfxon->GetComponent<ImageRenderer>());
 	button_sfxon->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			auto image = scene->GetGameObject("button_sfxon")->GetComponent<ImageRenderer>();
+			auto image = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("button_sfxon")->GetComponent<ImageRenderer>();
 			std::string path = "Resources/Textures/";
 			if (image->GetImageName() == path + "ui/sound-on.png")
 			{
@@ -152,7 +152,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check1->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
 	button_check1->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			auto image = scene->GetGameObject("button_check1")->GetComponent<ImageRenderer>();
+			auto image = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("button_check1")->GetComponent<ImageRenderer>();
 			std::string path = "Resources/Textures/";
 			if (image->GetImageName() == path + "ui/Check-false.png")
 			{
@@ -175,7 +175,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check2->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
 	button_check2->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			auto image = scene->GetGameObject("button_check2")->GetComponent<ImageRenderer>();
+			auto image = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("button_check2")->GetComponent<ImageRenderer>();
 			std::string path = "Resources/Textures/";
 			if (image->GetImageName() == path + "ui/Check-false.png")
 			{

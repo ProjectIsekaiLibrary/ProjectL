@@ -127,6 +127,7 @@ namespace KunrealEngine
 		Coroutine_Func(dashReady)
 		{
 			auto* dashCooldown = this;
+			this->_isDashReady = false;
 			Waitforsecond(_playerComp->GetPlayerData()._dashCooldown);
 			dashCooldown->_isDashReady = true;
 		};
