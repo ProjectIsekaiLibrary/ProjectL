@@ -79,10 +79,15 @@ namespace KunrealEngine
 		button_title->GetComponent<ButtonSystem>()->SetButtonFunc([pauseuibox]()
 			{
 				pauseuibox->SetActive(false);
-				// 
-				// 타이틀 씬으로 전환되는 코드
-				// KunrealEngine::SceneManager::GetInstance().ChangeScene("Title");
-				//
+				if (KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+				{
+				}
+
+				if (KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Main")
+				{
+					//타이틀 씬으로 전환되는 코드
+					//KunrealEngine::SceneManager::GetInstance().ChangeScene("Title");	
+				}
 			});
 
 
@@ -166,7 +171,7 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* title_image;				// 게임 로고
 		KunrealEngine::GameObject* button_Start;			// 게임시작 버튼(화면 전체)
 		KunrealEngine::GameObject* button_quit;				// 게임종료 버튼
-		KunrealEngine::GameObject* button_quit_focus;		// 게임종료 버튼 focus시 객체
+		KunrealEngine::GameObject* button_quit_focus;		// 게임종료 버튼 focus시 객체/
 
 		titleuibox = scene.GetCurrentScene()->CreateObject("titleuibox");
 		titleuibox->_autoAwake = true;
@@ -205,13 +210,13 @@ namespace KunrealEngine
 						float		y = trans->GetPosition().y;
 						float		z = trans->GetPosition().z;
 						trans->SetPosition(x, y + 20, z);
-
+		
 						Transform* trans2 = titleobject->GetChild("Title_Image")->GetComponent<Transform>();
 						x = trans2->GetPosition().x;
 						y = trans2->GetPosition().y;
 						z = trans2->GetPosition().z;
 						trans2->SetPosition(x, y - 20, z);
-
+		
 						if (trans->GetPosition().y > 1080 && trans2->GetPosition().y < 0)
 						{
 							titleobject->SetActive(false);
@@ -223,35 +228,35 @@ namespace KunrealEngine
 				};
 				Startcoroutine(disable_staritng);
 			});
-
-		// 게임 종료
-		button_quit_focus = scene.GetCurrentScene()->CreateObject("button_Quit");
-		button_quit_focus->SetParent(titleuibox);
-		button_quit_focus->AddComponent<ImageRenderer>();
-		button_quit_focus->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
-		button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
-		button_quit_focus->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-
-		button_quit = scene.GetCurrentScene()->CreateObject("button_Quit");
-		button_quit->SetParent(titleuibox);
-		button_quit->AddComponent<ImageRenderer>();
-		button_quit->GetComponent<ImageRenderer>()->SetImage("ui/button-short.png");
-		button_quit->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
-		button_quit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-		button_quit->AddComponent<ButtonSystem>();
-		button_quit->GetComponent<ButtonSystem>()->SetImage(button_quit->GetComponent<ImageRenderer>());
-		button_quit->GetComponent<ButtonSystem>()->Setfocused(button_quit_focus->GetComponent<ImageRenderer>());
-		button_quit->GetComponent<ButtonSystem>()->SetButtonFunc([titleuibox]()
-			{
-				titleuibox->SetActive(false);
-				// 
-				//  게임 종료되는 코드
-				//
-				//DestroyWindow();
-				PostQuitMessage(0);
-			});
-
-		titleuibox->SetActive(true);
+		//
+		//// 게임 종료
+		//button_quit_focus = scene.GetCurrentScene()->CreateObject("button_Quit");
+		//button_quit_focus->SetParent(titleuibox);
+		//button_quit_focus->AddComponent<ImageRenderer>();
+		//button_quit_focus->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
+		//button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
+		//button_quit_focus->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+		//
+		//button_quit = scene.GetCurrentScene()->CreateObject("button_Quit");
+		//button_quit->SetParent(titleuibox);
+		//button_quit->AddComponent<ImageRenderer>();
+		//button_quit->GetComponent<ImageRenderer>()->SetImage("ui/button-short.png");
+		//button_quit->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
+		//button_quit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+		//button_quit->AddComponent<ButtonSystem>();
+		//button_quit->GetComponent<ButtonSystem>()->SetImage(button_quit->GetComponent<ImageRenderer>());
+		//button_quit->GetComponent<ButtonSystem>()->Setfocused(button_quit_focus->GetComponent<ImageRenderer>());
+		//button_quit->GetComponent<ButtonSystem>()->SetButtonFunc([titleuibox]()
+		//	{
+		//		titleuibox->SetActive(false);
+		//		// 
+		//		//  게임 종료되는 코드
+		//		//
+		//		//DestroyWindow();
+		//		PostQuitMessage(0);
+		//	});
+		//
+		//titleuibox->SetActive(true);
 
 		return titleuibox;
 	}

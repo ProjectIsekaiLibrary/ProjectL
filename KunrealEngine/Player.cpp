@@ -75,9 +75,11 @@ void KunrealEngine::Player::Initialize()
 	_knock_downSound = soundcomp->CreateSoundInfo("Resources/sound/body-fall.mp3", true, false, 100);
 	_diedsound = soundcomp->CreateSoundInfo("Resources/sound/youDied.mp3", true, false, 100);
 	_staandup = soundcomp->CreateSoundInfo("Resources/sound/standup_sound.mp3", true, false, 100);
+	_hit = soundcomp->CreateSoundInfo("Resources/sound/rosary_hit_02.ogg", true, false, 100);
 	soundcomp->CreateSound(_knock_downSound, 1);
 	soundcomp->CreateSound(_diedsound, 1);
 	soundcomp->CreateSound(_staandup, 1);
+	soundcomp->CreateSound(_hit, 1);
 
 
 	this->_owner->AddComponent<PlayerAbility>();
@@ -256,6 +258,7 @@ void KunrealEngine::Player::AnimateByStatus()
 				break;
 			case KunrealEngine::Player::Status::PARALYSIS:
 				this->_onCasting = false;
+				this->_owner->GetComponent<SoundPlayer>()->Play(_hit);
 				this->_owner->GetComponent<Animator>()->Play("SmallHit", 60.0f * _playerInfo._speedScale, false);
 				break;
 			case KunrealEngine::Player::Status::SWEEP:

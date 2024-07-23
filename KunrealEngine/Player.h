@@ -103,6 +103,7 @@ namespace KunrealEngine
 		int _knock_downSound;
 		int _diedsound;
 		int _staandup;
+		int _hit;
 
 	private:
 		// 플레이어의 상태에 따라 애니메이션 출력
