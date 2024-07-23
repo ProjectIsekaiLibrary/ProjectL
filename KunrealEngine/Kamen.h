@@ -167,6 +167,8 @@ namespace KunrealEngine
 
 		const DirectX::XMFLOAT3& GetSwordPos();
 
+		const DirectX::XMFLOAT3& GetGetSwordInsideCenterPos();
+
 		const DirectX::XMFLOAT3& GetEgoPos();
 
 		const float GetDonutSize();

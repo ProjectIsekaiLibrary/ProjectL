@@ -1314,6 +1314,7 @@ void KunrealEngine::Kamen::CreateParticleObject()
 
 			if (i == 0)
 			{
+				swordCylinder->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 				swordCylinder->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 1.0f);
 			}
 			else
@@ -3441,7 +3442,7 @@ void KunrealEngine::Kamen::CreateBackStep()
 
 	pattern->SetPatternName("BackStep");
 
-	pattern->SetAnimName("Run").SetSpeed(50.0f).SetRange(30.0f).SetMaxColliderCount(0);
+	pattern->SetAnimName("Run").SetSpeed(40.0f).SetRange(30.0f).SetMaxColliderCount(0);
 
 	// 로직 함수 실행 가능하도록 넣어주기
 	pattern->SetLogic(CreateBackStepLogic(pattern, pattern->_speed, pattern->_range));
@@ -5376,6 +5377,8 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			_boss->GetComponent<MeshRenderer>()->Update();
 
 			_timer = 0.0f;
+
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -5525,8 +5528,6 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 			{
 				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
 			}
-
-			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6071,6 +6072,8 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 			}
 
 			_timer = 0.0f;
+
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -7546,7 +7549,7 @@ void KunrealEngine::Kamen::CreateSwordLookPlayer()
 
 	pattern->SetPatternName("SwordLookPlayer");
 
-	pattern->SetAnimName("Idle").SetSpeed(40.0f);
+	pattern->SetAnimName("Idle").SetSpeed(60.0f);
 	pattern->SetMaxColliderCount(0);
 
 	auto swordLookInitLogic = [pattern, this]()
@@ -7926,6 +7929,11 @@ const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetSwordPos()
 	return _freeSword->GetComponent<Transform>()->GetPosition();
 }
 
+const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetGetSwordInsideCenterPos()
+{
+	return _swordOriginPos;
+}
+
 const DirectX::XMFLOAT3& KunrealEngine::Kamen::GetEgoPos()
 {
 	return _alterEgo->GetComponent<Transform>()->GetPosition();
@@ -8242,6 +8250,10 @@ void KunrealEngine::Kamen::CoreSwordMutipleAttackPattern()
 	coreSwordMultipleAttack->SetMaxColliderCount(0);
 
 	coreSwordMultipleAttack->SetPattern(_battleCry);
+
+	coreSwordMultipleAttack->SetPattern(_swordMultipleAttack);
+
+	coreSwordMultipleAttack->SetPattern(_swordMultipleAttack);
 
 	coreSwordMultipleAttack->SetPattern(_swordMultipleAttack);
 
