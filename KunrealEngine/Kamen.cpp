@@ -33,7 +33,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr), _3PhaseParticle(nullptr), _playerLastLifetimer(0), _bossGenkiPos(0)
 {
 	BossBasicInfo info;
 
@@ -397,6 +397,16 @@ void KunrealEngine::Kamen::Reset()
 	_genkiAttackStart = false;
 
 	_genkiHitV = false;
+
+	for (int i = 0; i < 10; i++)
+	{
+		_isDecalPosChecked[i] = false;
+	}
+
+	_playerLastLifetimer = 0;
+	_bossGenkiPos = 0;
+
+	_bezierCurvePoints.clear();
 
 	_bossLastAttackList[0]->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
 	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
@@ -2083,46 +2093,185 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			_bezierSwordParticles.push_back(particleBezierTest);
 		}
 	}
+
 	{
-		GameObject* bossParticleLast1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast1");
-		bossParticleLast1->_autoAwake = true;
-		bossParticleLast1->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
-		bossParticleLast1->AddComponent<Particle>();
-		bossParticleLast1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
-		bossParticleLast1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
-		bossParticleLast1->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
-		bossParticleLast1->GetComponent<Particle>()->SetParticleSize(150.f, 150.0f);
-		bossParticleLast1->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
-		bossParticleLast1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		bossParticleLast1->GetComponent<Particle>()->SetActive(false);
-		_bossLastAttackList.emplace_back(bossParticleLast1);
+		GameObject* lastBossParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast1");
+		lastBossParticle1->_autoAwake = true;
+		lastBossParticle1->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+		lastBossParticle1->AddComponent<Particle>();
+		lastBossParticle1->GetComponent<Particle>()->SetParticleEffect("BlastWave1", "Resources/Textures/Particles/fx_BlastWave1.dds", 1000);
+		lastBossParticle1->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+		lastBossParticle1->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		lastBossParticle1->GetComponent<Particle>()->SetParticleSize(150.f, 150.0f);
+		lastBossParticle1->GetComponent<Particle>()->AddParticleColor(0.05f, 0.1f, 0.0f);
+		lastBossParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		lastBossParticle1->GetComponent<Particle>()->SetActive(false);
+		_bossLastAttackList.emplace_back(lastBossParticle1);
 
-		GameObject* bossParticleLast2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast2");
-		bossParticleLast2->_autoAwake = true;
-		bossParticleLast2->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
-		bossParticleLast2->AddComponent<Particle>();
-		bossParticleLast2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
-		bossParticleLast2->GetComponent<Particle>()->SetParticleDuration(1.5f, 3.2f);
-		bossParticleLast2->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
-		bossParticleLast2->GetComponent<Particle>()->SetParticleSize(170.f, 170.0f);
-		bossParticleLast2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.1f);
-		bossParticleLast2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
-		bossParticleLast2->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
-		bossParticleLast2->GetComponent<Particle>()->SetActive(false);
-		_bossLastAttackList.emplace_back(bossParticleLast2);
+		GameObject* lastBossParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast2");
+		lastBossParticle2->_autoAwake = true;
+		lastBossParticle2->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+		lastBossParticle2->AddComponent<Particle>();
+		lastBossParticle2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+		lastBossParticle2->GetComponent<Particle>()->SetParticleDuration(1.5f, 3.2f);
+		lastBossParticle2->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		lastBossParticle2->GetComponent<Particle>()->SetParticleSize(170.f, 170.0f);
+		lastBossParticle2->GetComponent<Particle>()->AddParticleColor(0.3f, 1.0f, 0.1f);
+		lastBossParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 0.0f);
+		lastBossParticle2->GetComponent<Particle>()->SetParticleAngle(0.0f, 0.0f, 0.0f);
+		lastBossParticle2->GetComponent<Particle>()->SetActive(false);
+		_bossLastAttackList.emplace_back(lastBossParticle2);
 
-		GameObject* bossParticleLast3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast3");
-		bossParticleLast3->_autoAwake = true;
-		bossParticleLast3->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
-		bossParticleLast3->AddComponent<Particle>();
-		bossParticleLast3->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
-		bossParticleLast3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
-		bossParticleLast3->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
-		bossParticleLast3->GetComponent<Particle>()->SetParticleSize(150.0f, 150.0f);
-		bossParticleLast3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
-		bossParticleLast3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		bossParticleLast3->GetComponent<Particle>()->SetActive(false);
-		_bossLastAttackList.emplace_back(bossParticleLast3);
+		GameObject* lastBossParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossParticleLast3");
+		lastBossParticle3->_autoAwake = true;
+		lastBossParticle3->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
+		lastBossParticle3->AddComponent<Particle>();
+		lastBossParticle3->GetComponent<Particle>()->SetParticleEffect("Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+		lastBossParticle3->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
+		lastBossParticle3->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		lastBossParticle3->GetComponent<Particle>()->SetParticleSize(150.0f, 150.0f);
+		lastBossParticle3->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
+		lastBossParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		lastBossParticle3->GetComponent<Particle>()->SetActive(false);
+		_bossLastAttackList.emplace_back(lastBossParticle3);
+	}
+	{
+		GameObject* lastPlayerParticle1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("playerparticleLast1");
+		lastPlayerParticle1->_autoAwake = true;
+		lastPlayerParticle1->GetComponent<Transform>()->SetPosition(-2.0f, 42.0f, -100.0f);
+		lastPlayerParticle1->AddComponent<Particle>();
+		lastPlayerParticle1->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
+		lastPlayerParticle1->GetComponent<Particle>()->SetParticleDuration(7.8f, 3.4f);
+		lastPlayerParticle1->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+		lastPlayerParticle1->GetComponent<Particle>()->SetParticleSize(25.f, 25.0f);
+		lastPlayerParticle1->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.1f);
+		lastPlayerParticle1->GetComponent<Particle>()->SetParticleDirection(0.0f, 92.0f, 140.0f);
+		lastPlayerParticle1->GetComponent<Particle>()->SetActive(false);
+		_playerLastBeamList.emplace_back(lastPlayerParticle1);
+
+		GameObject* lastPlayerParticle2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("playerparticleLast2");
+		lastPlayerParticle2->_autoAwake = true;
+		lastPlayerParticle2->GetComponent<Transform>()->SetPosition(-2.0f, 56.0f, -105.5f);
+		lastPlayerParticle2->AddComponent<Particle>();
+		lastPlayerParticle2->GetComponent<Particle>()->SetParticleEffect("Beam2", "Resources/Textures/Particles/fx_Beam2.dds", 1000);
+		lastPlayerParticle2->GetComponent<Particle>()->SetParticleDuration(10.0f, 2.6f);
+		lastPlayerParticle2->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+		lastPlayerParticle2->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		lastPlayerParticle2->GetComponent<Particle>()->AddParticleColor(0.0f, 0.1f, 5.0f);
+		lastPlayerParticle2->GetComponent<Particle>()->SetParticleDirection(0.0f, 92.0f, 140.0f);
+		lastPlayerParticle2->GetComponent<Particle>()->SetActive(false);
+		_playerLastBeamList.emplace_back(lastPlayerParticle2);
+
+		GameObject* lastPlayerParticle3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("playerparticleLast3");
+		lastPlayerParticle3->_autoAwake = true;
+		lastPlayerParticle3->GetComponent<Transform>()->SetPosition(-2.0f, 33.0f, -93.8f);
+		lastPlayerParticle3->AddComponent<Particle>();
+		lastPlayerParticle3->GetComponent<Particle>()->SetParticleEffect("Beam2", "Resources/Textures/Particles/fx_Beam2.dds", 1000);
+		lastPlayerParticle3->GetComponent<Particle>()->SetParticleDuration(10.0f, 2.6f);
+		lastPlayerParticle3->GetComponent<Particle>()->SetParticleVelocity(2.0f, true);
+		lastPlayerParticle3->GetComponent<Particle>()->SetParticleSize(20.f, 20.0f);
+		lastPlayerParticle3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.1f, 5.0f);
+		lastPlayerParticle3->GetComponent<Particle>()->SetParticleDirection(0.0f, 92.0f, 140.0f);
+		lastPlayerParticle3->GetComponent<Particle>()->SetActive(false);
+		_playerLastBeamList.emplace_back(lastPlayerParticle3);
+
+		GameObject* lastPlayerParticle4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("playerparticleLast4");
+		lastPlayerParticle4->_autoAwake = true;
+		lastPlayerParticle4->GetComponent<Transform>()->SetPosition(-45.5f, 34.6f, -112.2f);
+		lastPlayerParticle4->AddComponent<Particle>();
+		lastPlayerParticle4->GetComponent<Particle>()->SetParticleEffect("fx_Lightning4", "Resources/Textures/Particles/fx_Lightning4.dds", 1000);
+		lastPlayerParticle4->GetComponent<Particle>()->SetParticleDuration(4.0f, 4.5f);
+		lastPlayerParticle4->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		lastPlayerParticle4->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+		lastPlayerParticle4->GetComponent<Particle>()->AddParticleColor(15.0f, 15.0f, 0.0f);
+		lastPlayerParticle4->GetComponent<Particle>()->SetParticleDirection(0.0f, 93.0f, 140.0f);
+		lastPlayerParticle4->GetComponent<Particle>()->SetParticleAngle(34.0f, 0.0f, 0.0f);
+		lastPlayerParticle4->GetComponent<Particle>()->SetActive(false);
+		_playerLastBeamList.emplace_back(lastPlayerParticle4);
+
+		GameObject* lastPlayerParticle5 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("playerparticleLast5");
+		lastPlayerParticle5->_autoAwake = true;
+		lastPlayerParticle5->GetComponent<Transform>()->SetPosition(-2.0f, 38.0f, -103.0f);
+		lastPlayerParticle5->AddComponent<Particle>();
+		lastPlayerParticle5->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
+		lastPlayerParticle5->GetComponent<Particle>()->SetParticleDuration(5.4f, 0.2f);
+		lastPlayerParticle5->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		lastPlayerParticle5->GetComponent<Particle>()->SetParticleSize(80.f, 80.0f);
+		lastPlayerParticle5->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.2f);
+		lastPlayerParticle5->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+		lastPlayerParticle5->GetComponent<Particle>()->SetParticleAngle(0.0f, 319.0f, 63.0f);
+		lastPlayerParticle5->GetComponent<Particle>()->SetActive(false);
+		_playerLastParticleList.emplace_back(lastPlayerParticle5);
+	}
+	{
+		GameObject* particleLastClash1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleLastClash1");
+		particleLastClash1->_autoAwake = true;
+		particleLastClash1->GetComponent<Transform>()->SetPosition(-2.0f, 62.0f, -13.0f);
+		particleLastClash1->AddComponent<Particle>();
+		particleLastClash1->GetComponent<Particle>()->SetParticleEffect("Cracks1", "Resources/Textures/Particles/fx_Cracks1.dds", 1000);
+		particleLastClash1->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.8f);
+		particleLastClash1->GetComponent<Particle>()->SetParticleVelocity(100.0f, true);
+		particleLastClash1->GetComponent<Particle>()->SetParticleSize(36.0f, 12.0f);
+		particleLastClash1->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 5.0f);
+		particleLastClash1->GetComponent<Particle>()->SetParticleDirection(0.0f, -25.0f, -77.0f);
+		particleLastClash1->GetComponent<Particle>()->SetActive(false);
+		_clashLastParticleList.emplace_back(particleLastClash1);
+
+		GameObject* particleLastClash2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleLastClash2");
+		particleLastClash2->_autoAwake = true;
+		particleLastClash2->GetComponent<Transform>()->SetPosition(-2.0f, 62.0f, -13.0f);
+		particleLastClash2->AddComponent<Particle>();
+		particleLastClash2->GetComponent<Particle>()->SetParticleEffect("fx_Halo2", "Resources/Textures/Particles/fx_Halo2.dds", 1000);
+		particleLastClash2->GetComponent<Particle>()->SetParticleDuration(1.2f, 2.0f);
+		particleLastClash2->GetComponent<Particle>()->SetParticleVelocity(100.0f, true);
+		particleLastClash2->GetComponent<Particle>()->SetParticleSize(72.f, 72.0f);
+		particleLastClash2->GetComponent<Particle>()->AddParticleColor(1.0f, 1.0f, 0.1f);
+		particleLastClash2->GetComponent<Particle>()->SetParticleDirection(0.0f, -40.0f, -70.0f);
+		particleLastClash2->GetComponent<Particle>()->SetActive(false);
+		_clashLastParticleList.emplace_back(particleLastClash2);
+
+		GameObject* particleLastClash3 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleLastClash3");
+		particleLastClash3->_autoAwake = true;
+		particleLastClash3->GetComponent<Transform>()->SetPosition(-2.0f, 72.0f, -13.0f);
+		particleLastClash3->AddComponent<Particle>();
+		particleLastClash3->GetComponent<Particle>()->SetParticleEffect("Beam2", "Resources/Textures/Particles/fx_Beam2.dds", 1000);
+		particleLastClash3->GetComponent<Particle>()->SetParticleDuration(1.4f, 1.0f);
+		particleLastClash3->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		particleLastClash3->GetComponent<Particle>()->SetParticleSize(36.f, 36.0f);
+		particleLastClash3->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 5.0f);
+		particleLastClash3->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, -90.0f);
+		particleLastClash3->GetComponent<Particle>()->SetActive(false);
+		_clashLastParticleList.emplace_back(particleLastClash3);
+
+		GameObject* particleLastClash4 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("particleLastClash4");
+		particleLastClash4->_autoAwake = true;
+		particleLastClash4->GetComponent<Transform>()->SetPosition(-2.0f, 52.0f, -13.0f);
+		particleLastClash4->AddComponent<Particle>();
+		particleLastClash4->GetComponent<Particle>()->SetParticleEffect("Beam2", "Resources/Textures/Particles/fx_Beam2.dds", 1000);
+		particleLastClash4->GetComponent<Particle>()->SetParticleDuration(1.4f, 1.0f);
+		particleLastClash4->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		particleLastClash4->GetComponent<Particle>()->SetParticleSize(36.f, 36.0f);
+		particleLastClash4->GetComponent<Particle>()->AddParticleColor(0.0f, 0.5f, 5.0f);
+		particleLastClash4->GetComponent<Particle>()->SetParticleDirection(0.0f, -90.0f, -25.0f);
+		particleLastClash4->GetComponent<Particle>()->SetActive(false);
+		_clashLastParticleList.emplace_back(particleLastClash4);
+	}
+	{
+		for (int i = 0; i < 10; ++i)
+		{
+			GameObject* particleBezierTest;
+			particleBezierTest = SceneManager::GetInstance().GetCurrentScene()->CreateObject("Particle18");
+			particleBezierTest->_autoAwake = true;
+			particleBezierTest->AddComponent<Particle>();
+			particleBezierTest->GetComponent<Particle>()->SetParticleEffect("Dust1", "Resources/Textures/Particles/fx_Dust1.dds", 1000);
+			particleBezierTest->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.3f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleVelocity(0.0f, true);
+			particleBezierTest->GetComponent<Particle>()->SetParticleSize(3.0f, 3.0f);
+			particleBezierTest->GetComponent<Particle>()->AddParticleColor(1.0f, 5.0f, 0.0f);
+			particleBezierTest->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+
+			_lastBezierList.push_back(particleBezierTest);
+		}
 	}
 }
 
@@ -6151,11 +6300,11 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
 			auto camera = _cinematicCamera->GetComponent<Camera>();
-			
+
 			switch (_nowCameraStep)
 			{
 				// 카메라 무빙
-				case 0 :
+				case 0:
 				{
 					DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(-7, 5, -160);
 
@@ -6191,6 +6340,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 					{
 						_boss->GetComponent<Animator>()->Stop();
 						_nowCameraStep++;
+						_timer2 = 0;
+						_isBezierStartSetting = false;
 					}
 					break;
 				}
@@ -6204,6 +6355,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 					int indexNum = 0;
 
+					int bezierNum = 0;
 
 					/// for문 안에 원기옥 베지어 모으기 넣기
 
@@ -6212,16 +6364,17 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 						auto particle = index->GetComponent<Particle>();
 						particle->SetActive(true);
 
-						particle->SetParticleSize(particle->GetParticleSize().x + deltaTime*17, particle->GetParticleSize().x + deltaTime*17);
+						particle->SetParticleSize(particle->GetParticleSize().x + deltaTime * 17, particle->GetParticleSize().x + deltaTime * 17);
+						particle->SetParticleDirection(0.0f, 0.0f, 0.0f);
 
 						if (particle->GetParticleSize().x >= 170.0f)
 						{
 							goalCount++;
-
-							if (indexNum == 1)
-							{
-								index->GetComponent<Particle>()->SetParticleDuration(6.0f, 3.2f);
-							}
+							bezierNum++;
+							//if (indexNum == 1)
+							//{
+							//	index->GetComponent<Particle>()->SetParticleDuration(6.0f, 3.2f); 
+							//}
 						}
 						else
 						{
@@ -6240,9 +6393,91 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 						indexNum++;
 					}
 
+					if (bezierNum == 0)
+					{
+
+						if (_timer2 == 0)
+						{
+							for (auto& bezierObject : _lastBezierList) // 목표 초기 설정
+							{
+								bezierObject->GetComponent<Transform>()->SetPosition(_bossLastAttackList[0]->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-155.0f, 155.0f),
+									_bossLastAttackList[0]->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-120.0f, 120.0f), _bossLastAttackList[0]->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-30.0f, 30.0f));
+								bezierObject->GetComponent<Particle>()->SetActive(true);
+								bezierObject->GetComponent<Particle>()->SetParticleSize(8, 8);
+							}
+							_timer2++;
+						}
+
+
+						if (_isBezierStartSetting == false)
+						{
+							for (auto& bezierObject : _lastBezierList) // 베지어 곡선 초기 설정
+							{
+								_bezierCurvePoints.push_back(BezierSetting(bezierObject, _bossLastAttackList[0]->GetComponent<Transform>()->GetPosition()));
+
+							}
+							_isBezierStartSetting = true;
+						}
+
+						int bezierPointIndex = 0;
+
+						for (auto& bezierPoint : _bezierCurvePoints) // 각 점을 통한 베지어 곡선을 구함
+						{
+							DirectX::XMFLOAT3 particlePoint;
+							float timer = 0;
+
+							if (_isSettingTimer == false)
+							{
+								timer = ToolBox::GetRandomFloat(0.1f, 0.5f);
+
+								_timerList.push_back(timer);
+							}
+
+							particlePoint = ToolBox::Bezier(bezierPoint[0], bezierPoint[1], bezierPoint[2], _bossLastAttackList[0]->GetComponent<Transform>()->GetPosition(), _timerList[bezierPointIndex]);
+							_bezierSwordParticlePoints.push_back(particlePoint);
+							bezierPointIndex++;
+						}
+
+						_isSettingTimer = true;
+
+						for (int i = 0; i < _lastBezierList.size(); ++i) // 곡선을 따라 이동
+						{
+							_lastBezierList[i]->GetComponent<Transform>()->SetPosition(_bezierSwordParticlePoints[i].x, _bezierSwordParticlePoints[i].y, _bezierSwordParticlePoints[i].z);
+						}
+
+
+						for (auto& timer : _timerList) // 타이머
+						{
+							timer += TimeManager::GetInstance().GetDeltaTime();
+						}
+
+						int timerIndex = 0;
+
+						for (auto& timer : _timerList)
+						{
+							if (timer > 1.0f)
+							{
+								_bezierCurvePoints.erase(_bezierCurvePoints.begin() + timerIndex);
+								timer = 0.0f;
+
+								_lastBezierList[timerIndex]->GetComponent<Transform>()->SetPosition(_bossLastAttackList[0]->GetComponent<Transform>()->GetPosition().x + ToolBox::GetRandomFloat(-155.0f, 155.0f),
+									_bossLastAttackList[0]->GetComponent<Transform>()->GetPosition().y + ToolBox::GetRandomFloat(-120.0f, 120.0f), _bossLastAttackList[0]->GetComponent<Transform>()->GetPosition().z + ToolBox::GetRandomFloat(-30.0f, 30.0f));
+
+								_bezierCurvePoints.insert(_bezierCurvePoints.begin() + timerIndex, BezierSetting(_lastBezierList[timerIndex], _bossLastAttackList[0]->GetComponent<Transform>()->GetPosition()));
+							}
+							++timerIndex;
+						}
+
+						_bezierSwordParticlePoints.clear();
+					}
+
 					if (goalCount == 3)
 					{
 						_timer = 0.0f;
+						for (auto& bezierObject : _lastBezierList) // 목표 초기 설정
+						{
+							bezierObject->GetComponent<Particle>()->SetActive(false);
+						}
 						_nowCameraStep++;
 					}
 
@@ -6280,6 +6515,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 							playerPos.y = 80.0f;
 
 							auto Genki = index->GetComponent<Transform>();
+							index->GetComponent<Particle>()->SetParticleDirection(0, 50.0f, 30.0f);
 
 							if (_timer <= 10.0f)
 							{
@@ -6333,15 +6569,43 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 마지막 격돌 카메라 세팅
 				case 4:
 				{
+					int indexNum = 0;
+
 					for (auto& index : _bossLastAttackList)
 					{
 						index->GetComponent<Transform>()->SetPosition(-2, 118, 32);
+
+						if (indexNum == 1)
+						{
+							index->GetComponent<Particle>()->SetParticleDuration(6.0f, 3.2f);
+						}
+
+						indexNum++;
+					}
+
+					for (auto& index : _playerLastBeamList)
+					{
+						index->GetComponent<Particle>()->SetActive(true);
+					}
+
+					for (auto& index : _playerLastParticleList)
+					{
+						index->GetComponent<Particle>()->SetActive(true);
+					}
+
+					for (auto& index : _clashLastParticleList)
+					{
+						index->GetComponent<Particle>()->SetActive(true);
 					}
 
 					_cinematicCamera2->GetComponent<Camera>()->SetMainCamera();
 					_boss->GetComponent<Transform>()->SetPosition(0.0f, 210.0f, 240.0f);
 					_bossLastAttackList[1]->GetComponent<Particle>()->SetParticleDirection(0.0f, 50.0f, 55.0f);
 					_nowCameraStep++;
+					_timer = 0.0f;
+					_timer2 = 0.0f;
+					_timer3 = 0.0f;
+					_playerLastLifetimer = 1.0f;
 
 					break;
 				}
@@ -6349,13 +6613,83 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				case 5:
 				{
 					auto logicFinish = false;
+
+					auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
+
 					/// 여기에 원기옥 vs 에네르기파 코드 넣기
-					
-					if (logicFinish)
+
+					for (auto& index : _playerLastBeamList)
+					{
+						index->GetComponent<Particle>()->SetParticleDuration(10.0f, _playerLastLifetimer);
+					}
+
+					for (auto& index : _bossLastAttackList)
+					{
+						index->GetComponent<Transform>()->SetPosition(-2, 118 + _bossGenkiPos, 32 + _bossGenkiPos);
+					}
+
+					for (auto& index : _clashLastParticleList)
+					{
+						index->GetComponent<Transform>()->SetPosition(-2, 85.0f + _bossGenkiPos, -13.0f + _bossGenkiPos);
+					}
+
+					///
+
+					_timer += deltaTime;
+					_timer2 += deltaTime;
+
+
+					if (_timer < 0.5f)
+					{
+						_playerLastLifetimer -= (_timer / 32);
+						_bossGenkiPos -= (_timer * 3);
+					}
+					else if (_timer < 1.0f)
+					{
+						_playerLastLifetimer += ((_timer - 0.5) / 50);
+						_bossGenkiPos += ((_timer - 0.5));
+					}
+					else
+					{
+						_timer = 0.0f;
+					}
+
+					if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
+					{
+						_timer3 += 1.0f; // 스페이스바 누른 횟수
+						//_playerLastLifetimer += 0.03f;
+						//_bossGenkiPos += 4.f;
+					}
+
+					// 1초마다
+					if (_timer2 >= 1.0f)
+					{
+						// 3번이상 눌렀을때
+						if (_timer3 >= 2.0f)
+						{
+							_playerLastLifetimer += 0.147f;
+							_bossGenkiPos += 24.0f;
+						}
+
+						// 0.5초 지나면 다시 초기화
+						_timer2 = 0;
+						_timer3 = 0;
+					}
+
+					if (_bossGenkiPos > 120.0f)
 					{
 						_nowCameraStep++;
 					}
-					
+
+
+					if (logicFinish)
+					{
+						_timer = 0;
+						_timer2 = 0;
+						_timer3 = 0;
+						_nowCameraStep++;
+					}
+
 					break;
 				}
 				// 종료 로직

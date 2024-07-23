@@ -58,6 +58,12 @@ void KunrealEngine::PlayerMove::Update()
 	// 마우스 우클릭시	// 홀드도 적용
 	if (InputSystem::GetInstance()->MouseButtonUp(1))
 	{
+		// 행동불가 상황이라면 return
+		if (_playerComp->_playerBindFlag)
+		{
+			return;
+		}
+
 		for (auto& clickParticleList : _clickParticleList)
 		{
 			clickParticleList->GetComponent<Particle>()->SetActive(true);
@@ -87,6 +93,12 @@ void KunrealEngine::PlayerMove::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE) && this->_isDashReady)
 	{
+		// 행동불가 상황이라면 return
+		if (_playerComp->_playerBindFlag)
+		{
+			return;
+		}
+
 		if (_playerComp->_playerStatus == Player::Status::IDLE || _playerComp->_playerStatus == Player::Status::WALK
 			|| _playerComp->_playerStatus == Player::Status::DASH || _playerComp->_playerStatus == Player::Status::ABILITY
 			)
@@ -504,6 +516,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 	{
 		this->GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
 		this->GetOwner()->GetComponent<BoxCollider>()->SetActive(true);
+		this->GetOwner()->GetComponent<BoxCollider>()->FixedUpdate();
 		if (this->GetOwner()->GetComponent<MeshRenderer>()->GetActivated() == true)
 		{
 			if (_isDashEnd == true)

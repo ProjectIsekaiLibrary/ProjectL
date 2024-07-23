@@ -508,5 +508,18 @@ namespace KunrealEngine
 
 	public:
 		DirectX::XMFLOAT3 swordDirPos;
+
+	private:
+		std::vector<GameObject*> _playerLastBeamList;
+		std::vector<GameObject*> _playerLastParticleList;
+
+		std::vector<GameObject*> _clashLastParticleList;
+
+		std::vector<GameObject*> _lastBezierList;
+
+		// 마지막 연출을 위한 변수
+
+		float _playerLastLifetimer;
+		float _bossGenkiPos;
 	};
 }

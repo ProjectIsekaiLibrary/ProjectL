@@ -14,7 +14,7 @@
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
 	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(false)
-	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr)
+	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr), _fadeObjectEnding(nullptr), _fadeObjectWhiteMain(nullptr), _fadeObjectWhiteEnding(nullptr)
 {
 
 }
@@ -223,11 +223,24 @@ void KunrealEngine::EventManager::CreateFadeObject()
 	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectMain->SetActive(false);
 
-	//this->_fadeObjectEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObject");
-	//this->_fadeObjectEnding->AddComponent<ImageRenderer>();
-	//this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
-	//this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
-	//this->_fadeObjectEnding->SetActive(false);
+	this->_fadeObjectEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObject");
+	this->_fadeObjectEnding->AddComponent<ImageRenderer>();
+	this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	this->_fadeObjectEnding->SetActive(false);
+
+	/// 하얀 fade는 불가 alpha 값이 먹질 않음
+	this->_fadeObjectWhiteMain = SceneManager::GetInstance().GetScene("Main")->CreateObject("FadeObjectWhite");
+	this->_fadeObjectWhiteMain->AddComponent<ImageRenderer>();
+	this->_fadeObjectWhiteMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectWhiteMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	this->_fadeObjectWhiteMain->SetActive(false);
+
+	this->_fadeObjectWhiteEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObjectWhite");
+	this->_fadeObjectWhiteEnding->AddComponent<ImageRenderer>();
+	this->_fadeObjectWhiteEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectWhiteEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+	this->_fadeObjectWhiteEnding->SetActive(false);
 }
 
 void KunrealEngine::EventManager::CalculateDamageToBoss(Ability* abil)
@@ -1018,9 +1031,14 @@ const DirectX::XMVECTOR& KunrealEngine::EventManager::SetEgoAttackDirection(Game
 
 void KunrealEngine::EventManager::MoveToTitle()
 {
+	Scene* scene = SceneManager::GetInstance().GetScene("Title");
+
+	// 카메라 재설정 후
+	Camera* titleCamera = scene->GetGameObject("TitleCamera")->GetComponent<Camera>();
+	scene->GetGameObject("TitleCamera")->GetComponent<Transform>()->SetPosition(-155.0f, 135.0f, -45.130f);
+
 	// 카메라 고정 해제
 	this->_iscamfollow = false;
-	Scene* scene = SceneManager::GetInstance().GetScene("Title");
 
 	// 플레이어 위치 초기화
 	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
@@ -1042,6 +1060,7 @@ void KunrealEngine::EventManager::MoveToTitle()
 
 	// 세팅 후 scene 변경
 	SceneManager::GetInstance().ChangeScene("Title");
+
 	auto* pauseui = SceneManager::GetInstance().GetScene("Main")->GetGameObject("pauseuibox");
 	auto* oPtion = SceneManager::GetInstance().GetScene("Main")->GetGameObject("Option");
 	if (pauseui != nullptr)
@@ -1084,10 +1103,65 @@ void KunrealEngine::EventManager::MoveToTitle()
 	scene->GetGameObject("Particle18 (7)")->GetComponent<Particle>()->SetActive(true);
 	scene->GetGameObject("Particle18 (8)")->GetComponent<Particle>()->SetActive(true);
 	scene->GetGameObject("Particle18 (9)")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("kamenEye1")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("kamenEye2")->GetComponent<Particle>()->SetActive(true);
+
+	// 큐브맵 설정
+	GRAPHICS->SetMainCubeMap("TitleBackground");
 
 	// 카메라 재설정 후 fadeout fadein
 	SetCamera("TitleCamera");
 	Startcoroutine(fadein);
+}
+
+
+void KunrealEngine::EventManager::MoveToEnding()
+{
+	// 카메라 고정 해제
+	this->_iscamfollow = false;
+	Scene* scene = SceneManager::GetInstance().GetScene("Ending");
+
+	// 카메라 세팅
+	DirectX::XMFLOAT3 cameraPos = { 0.0f, 0.0f, 1.0f };
+
+	DirectX::XMFLOAT3 targetPos = { 0.0f, 0.0f, 0.0f };
+	scene->GetGameObject("EndingCamera")->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+	scene->GetGameObject("EndingCamera")->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+
+	scene->GetGameObject("EndingCamera")->GetComponent<Transform>()->SetPosition(-322.f, 100.0f, -148.130f);
+	scene->GetGameObject("EndingCamera")->GetComponent<Transform>()->SetRotation(-182.f, 168.f, 0.0f);
+
+	// 빛 세팅
+	DirectX::XMFLOAT4 diffuse = { 1.f, 1.f, 1.f, 0.3f };
+	DirectX::XMFLOAT4 ambient = { 1.f, 1.f, 1.f, 0.2f };
+	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	DirectX::XMFLOAT3 direction = { 0.18f, -0.16f, -1.0f };
+
+	scene->GetGameObject("DirectionalLight (1)")->GetComponent<Light>()->SetDirection(direction.x , direction.y, direction.z);
+
+	// 파티클 재활성화
+	scene->GetGameObject("EndingMeteo1")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo2")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo3")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo4")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo5")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo6")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo7")->GetComponent<Particle>()->SetActive(true);
+	scene->GetGameObject("EndingMeteo8")->GetComponent<Particle>()->SetActive(true);
+
+	// 큐브맵 세팅
+	GRAPHICS->SetMainCubeMap("EndingBackground");
+
+	// scene 변경 후 카메라 확정
+	SceneManager::GetInstance().ChangeScene("Ending");
+	SetCamera("EndingCamera");
+
+	Startcoroutine(WhiteFadeIn);
+}
+
+void KunrealEngine::EventManager::ActivateEndingSceneTrigger()
+{
+	Startcoroutine(WhiteFadeOut);
 }
 
 void KunrealEngine::EventManager::ActivateFadeOutTrigger()

@@ -86,6 +86,7 @@ namespace KunrealEngine
 		float _gravity;							// 포물선에 적용할 중력가속도
 		std::vector<DirectX::XMFLOAT3> _sweepNode;	// 날아가는 좌표노드
 		int _nodeCount;							// 노드 체크 보조변수
+		bool _playerBindFlag;					// true일때 행동불가
 
 		GameObject* _deathParticle1;				// 플레이어 죽을 때 출력될 파티클
 		GameObject* _deathParticle2;	
@@ -157,6 +158,10 @@ namespace KunrealEngine
 
 		// 플레이어 상태, 체력 초기화
 		void ResetPlayerStatus();
+
+		// Flag에 따라 플레이어 행동 불가, 가능 여부 결정
+		void SetPlayerBindFlag(bool flag);
+		bool GetPlayerBindFlag();
 
 		// 플레이어가 스킬 시전중인지 Flag
 		bool _onCasting;

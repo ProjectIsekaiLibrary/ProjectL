@@ -96,6 +96,12 @@ void KunrealEngine::PlayerAbility::Update()
 			return;
 		}
 
+		// 행동불가 상황이라면 return
+		if (_playerComp->_playerBindFlag)
+		{
+			return;
+		}
+
 		ResetShotPos();
 		Startcoroutine(shotCoolDown);
 		_isShotDetected = true;
@@ -119,6 +125,12 @@ void KunrealEngine::PlayerAbility::Update()
 			return;
 		}
 
+		// 행동불가 상황이라면 return
+		if (_playerComp->_playerBindFlag)
+		{
+			return;
+		}
+
 		ResetCirclePos();											// 투사체 위치 리셋
 		_isCircleDetected = true;
 		_isCircleHit = true;
@@ -136,6 +148,12 @@ void KunrealEngine::PlayerAbility::Update()
 	{
 		// 플레이어가 행동할 수 없는 상태라면 return
 		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
+		{
+			return;
+		}
+
+		// 행동불가 상황이라면 return
+		if (_playerComp->_playerBindFlag)
 		{
 			return;
 		}
@@ -189,7 +207,7 @@ void KunrealEngine::PlayerAbility::Update()
 	}
 
 	// 레이저 사용중 피격 혹은 취소되면 레이저 사라지도록
-	if (this->_laser->GetActivated() && (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH))
+	if (this->_laser->GetActivated() && (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH || this->_playerComp->_playerBindFlag))
 	{
 		this->_laser->SetActive(false);
 		this->_laserParticle1->SetActive(false);
