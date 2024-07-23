@@ -92,6 +92,8 @@ namespace KunrealEngine
 		// 트랜스폼 강제 업데이트
 		void TransformForceUpdate();
 
+		bool CheckRenderFinsh();
+
 	private:
 		bool _isRendering;
 		bool _isPlayed;
