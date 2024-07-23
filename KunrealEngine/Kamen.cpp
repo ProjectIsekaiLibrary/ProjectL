@@ -5,6 +5,7 @@
 #include "TimeManager.h"
 #include "SceneManager.h"
 #include "InputSystem.h"
+#include "EventManager.h"
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
@@ -432,6 +433,15 @@ void KunrealEngine::Kamen::Reset()
 	_bossLastAttackList[2]->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
 	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_bossLastAttackList[2]->GetComponent<Particle>()->SetActive(false);
+
+	
+	_swordDonutWarning1->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
+	_swordDonutWarning1->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+
+	_swordDonutWarning2->GetComponent<Transform>()->SetScale(60.0f, 60.0f, 60.0f);
+	_swordDonutWarning2->GetComponent<TransparentMesh>()->SetTimer(1.0f);
+
+	_swordDonutAttack[0]->GetComponent<CylinderCollider>()->SetColliderScale(20, 20, 20);
 
 	BossBasicInfo info;
 
@@ -5516,7 +5526,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
 			}
 
-			// 플레이어 이동 막아야함 이 패턴 끝날때 풀어주기
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -5635,6 +5645,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 					camera->CameraRotateY(-1 * _cameraRot.y);
 
 					_mainPlayCamera->GetComponent<Camera>()->SetMainCamera();
+
+					SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
 
 					return false;
 					break;
@@ -6265,6 +6277,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 	auto initLogic = [pattern, this]()
 		{
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+
 			_bossTransform->SetPosition(0.0f, 100.0f, 200.0f);
 			_bossTransform->SetRotation(-30.0f, -5.0f, 0.0f);
 			_playerTransform->SetPosition(0.0f, _playerTransform->GetPosition().y, -120.0f);
@@ -6289,8 +6303,6 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			}
 
 			_nowCameraStep = 0.0f;
-
-			/// 플레이어 이동 못하게 하기
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6300,6 +6312,9 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
 			auto camera = _cinematicCamera->GetComponent<Camera>();
+
+			_playerTransform->SetPosition(0.0f, _playerTransform->GetPosition().y, -120.0f);
+			_playerTransform->SetRotation(0.0f, 165.0f, 0.0f);
 
 			switch (_nowCameraStep)
 			{
@@ -6356,8 +6371,6 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 					int indexNum = 0;
 
 					int bezierNum = 0;
-
-					/// for문 안에 원기옥 베지어 모으기 넣기
 
 					for (auto& index : _bossLastAttackList)
 					{
@@ -6551,6 +6564,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 									animator->Stop();
 
 									_timer = 0.0f;
+
+									SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
 									return false;
 								}
 							}
@@ -6616,8 +6631,6 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 					auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
-					/// 여기에 원기옥 vs 에네르기파 코드 넣기
-
 					for (auto& index : _playerLastBeamList)
 					{
 						index->GetComponent<Particle>()->SetParticleDuration(10.0f, _playerLastLifetimer);
@@ -6678,7 +6691,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 					if (_bossGenkiPos > 120.0f)
 					{
-						_nowCameraStep++;
+						logicFinish = true;
 					}
 
 
@@ -6692,18 +6705,22 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 					break;
 				}
+
 				// 종료 로직
 				default:
 				{
-					/// 엔딩씬 넘어가는 코드 넣기
-
-					auto cinematicCamera = _cinematicCamera->GetComponent<Camera>();
+ 					auto cinematicCamera = _cinematicCamera->GetComponent<Camera>();
 					cinematicCamera->CameraRotateY(-1 * _cameraRot.y);
 					_cameraRot.y = 0.0f;
 					cinematicCamera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
 					_nowCameraStep = 0;
 
+					SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
+
+					EventManager::GetInstance().ActivateEndingSceneTrigger();
+
 					return false;
+
 					break;
 				}
 			}

@@ -303,6 +303,8 @@ void KunrealEngine::Boss::Enter()
 		InitializeEnterCameraMove();
 
 		_isEnterInitialize = true;
+
+		SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
 	}
 
 
@@ -322,6 +324,8 @@ void KunrealEngine::Boss::Enter()
 			_boss->GetComponent<Transform>()->Update();
 			_boss->GetComponent<MeshRenderer>()->Update();
 			_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
 		}
 
 		// 시작하면 
@@ -575,8 +579,11 @@ void KunrealEngine::Boss::Dead()
 		_isFinalPatternInit = true;
 	}
 
-	_finalPattern->Play();
-
+	if (_finalPattern->_index == 0)
+	{
+		_finalPattern->Play();
+	}
+	
 	// 보스가 죽을때 애니메이션 실행
 	//auto isPlaying = _boss->GetComponent<Animator>()->Play("Dead", _info._baseAnimSpeed, false);
 	//
