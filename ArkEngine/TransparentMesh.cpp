@@ -264,6 +264,12 @@ bool ArkEngine::ArkDX11::TransparentMesh::GetIsApplyPattern()
 	return _isApplyPattern;
 }
 
+
+float ArkEngine::ArkDX11::TransparentMesh::GetRenderTimer()
+{
+	return _timer;
+}
+
 void ArkEngine::ArkDX11::TransparentMesh::BuildGeomtryBuffers()
 {
 	ArkBuffer* buffer = nullptr;

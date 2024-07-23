@@ -66,6 +66,8 @@ namespace ArkEngine
 
 			virtual bool GetIsApplyPattern() override;
 
+			virtual float GetRenderTimer() override;
+
 		public:
 			void Initialize();
 			void Update(ArkEngine::ICamera* p_Camera);

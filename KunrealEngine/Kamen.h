@@ -280,6 +280,7 @@ namespace KunrealEngine
 		GameObject* _largeBlade;
 
 		std::vector<GameObject*> _handFire;
+		std::vector<GameObject*> _handFireDecal;
 
 		GameObject* _leftHandBone;
 		GameObject* _rightHandBone;
@@ -414,6 +415,9 @@ namespace KunrealEngine
 		bool _genkiHitV;
 
 	private:
+		bool _isDecalPosChecked[10];
+
+	private:
 		DirectX::XMFLOAT3 _cameraOriginPos;
 		DirectX::XMFLOAT3 _cameraMove;
 		DirectX::XMFLOAT2 _cameraRot;
@@ -498,6 +502,10 @@ namespace KunrealEngine
 		float _spellWaveDel;
 
 		Light* _mainLight;
+
+	private:
+		std::vector<TransparentMesh*> _nowRenderingDecalVec;
+
 	public:
 		DirectX::XMFLOAT3 swordDirPos;
 	};

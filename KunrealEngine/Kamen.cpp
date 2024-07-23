@@ -145,6 +145,24 @@ void KunrealEngine::Kamen::Update()
 		}
 	}
 
+	for (auto it = _nowRenderingDecalVec.begin(); it != _nowRenderingDecalVec.end();)
+	{
+		(*it)->GetOwner()->SetActive(true);
+		(*it)->SetActive(true);
+
+		(*it)->PlayOnce();
+
+		
+		if ((*it)->CheckRenderFinsh()) 
+		{
+			it = _nowRenderingDecalVec.erase(it);
+		}
+		else 
+		{
+			++it;
+		}
+	}
+
 	/// 디버깅용
 	if (GetAsyncKeyState('U'))
 	{
@@ -2187,6 +2205,19 @@ void KunrealEngine::Kamen::CreateSubObject()
 		handFire->SetTotalComponentState(false);
 		handFire->SetActive(false);
 		_handFire.emplace_back(handFire);
+
+		std::string objectName = "HandFireDecal" + std::to_string(i + 1);
+		auto handFireDecal = _boss->GetObjectScene()->CreateObject(objectName);
+		handFireDecal->AddComponent<TransparentMesh>();
+		handFireDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
+		//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
+		//handFireDecal->GetComponent<TransparentMesh>()->SetRenderType(2);
+		handFireDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		handFireDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+		handFireDecal->GetComponent<Transform>()->SetScale(100.0f, 200.0f, 100.0f);
+		handFireDecal->SetTotalComponentState(false);
+		handFireDecal->SetActive(false);
+		_handFireDecal.emplace_back(handFireDecal);
 	}
 
 	// 내부 장판
@@ -2819,10 +2850,20 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 				_isEgoAttackReady = false;
 			}
 
+			for (auto& index : _handFireDecal)
+			{
+				index->GetComponent<TransparentMesh>()->Reset();
+			}
+
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->Update();
 			_boss->GetComponent<BoxCollider>()->FixedUpdate();
+			
+			for (int i = 0; i < 10; i++)
+			{
+				_isDecalPosChecked[i] = false;
+			}
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -2878,6 +2919,17 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 						DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_handFireDir[i]), pattern->_speed * fireSpeed));
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+
+						//if (_isDecalPosChecked[i] == false)
+						//{
+						//	if (firePos.y <= 0)
+						//	{
+						//		firePos.y += 20.0f;
+						//		_handFireDecal[i]->GetComponent<Transform>()->SetPosition(firePos);
+						//		_nowRenderingDecalVec.emplace_back(_handFireDecal[i]->GetComponent<TransparentMesh>());
+						//		_isDecalPosChecked[i] = true;
+						//	}
+						//}
 					}
 
 					// 분신용
@@ -2923,18 +2975,13 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 				}
 			}
 
-			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
-
-			if (pattern->_colliderOnCount > 0)
-			{
-				if (animator->GetCurrentFrame() >= 10)
-				{
-
-				}
-			}
-
 			if (isAnimationPlaying == false)
 			{
+				for (int i = 0; i < 10; i++)
+				{
+					_isDecalPosChecked[i] = false;
+				}
+
 				return false;
 			}
 
@@ -5228,146 +5275,50 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	testDecal->AddComponent<TransparentMesh>();
 	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
 	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
-	testDecal->GetComponent<TransparentMesh>()->SetRenderType(7);
-	testDecal->GetComponent<TransparentMesh>()->SetDecal(true);
-	testDecal->GetComponent<TransparentMesh>()->SetTimer(2);
-	testDecal->GetComponent<Transform>()->SetScale(200.0f, 100.0f, 230.0f);
-	testDecal->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(0.0f, 2.0f, -5.6f));
+	testDecal->GetComponent<TransparentMesh>()->SetRenderType(2);
+	testDecal->GetComponent<TransparentMesh>()->SetTimer(5);
+	testDecal->GetComponent<Transform>()->SetScale(50.0f, 50.0f, 50.0f);
+	testDecal->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(-30.0f, 0.0f, 0.0f));
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
 	testDecal->GetComponent<TransparentMesh>()->SetInfinite(false);
 
-	pattern->SetSubObject(testDecal);
+	std::string objectName2 = "testDecal2";
+	static GameObject* testDecal2 = _boss->GetObjectScene()->CreateObject(objectName);
+	testDecal2->AddComponent<TransparentMesh>();
+	testDecal2->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
+	testDecal2->GetComponent<TransparentMesh>()->SetRenderType(3);
+	testDecal2->GetComponent<TransparentMesh>()->SetTimer(3);
+	testDecal2->GetComponent<Transform>()->SetScale(50.0f, 50.0f, 50.0f);
+	testDecal2->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(30.0f, 0.0f, 0.0f));
+	testDecal2->SetTotalComponentState(false);
+	testDecal2->SetActive(false);
+	testDecal2->GetComponent<TransparentMesh>()->SetInfinite(false);
 
 	auto initLogic = [pattern, this]()
 		{
 			testDecal->GetComponent<TransparentMesh>()->Reset();
 			testDecal->GetComponent<TransparentMesh>()->SetActive(true);
 
-			_bossTransform->SetPosition(0.0f, 100.0f, 200.0f);
-			_bossTransform->SetRotation(-30.0f, -5.0f, 0.0f);
-			_playerTransform->SetPosition(0.0f, _playerTransform->GetPosition().y, -120.0f);
-			_playerTransform->SetRotation(0.0f, 165.0f, 0.0f);
+			testDecal2->GetComponent<TransparentMesh>()->Reset();
+			testDecal2->GetComponent<TransparentMesh>()->SetActive(true);
 
-			_cameraOriginPos = _cinematicCamera2->GetComponent<Transform>()->GetPosition();
-
-			//_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(-7.0f, 5.0f, -160.0f);
-			//_cinematicCamera2->GetComponent<Camera>()->CameraRotateY(-65.0f);
-			
-			_cinematicCamera2->GetComponent<Camera>()->SetMainCamera();
-
-			_cameraMove = DirectX::XMFLOAT3(0.0f, 0.0f, 0.0f);
-			_cameraRot = DirectX::XMFLOAT2(0.0f, 0.0f);
-
-			_cameraMoveFinish = false;
+			_nowRenderingDecalVec.emplace_back(testDecal->GetComponent<TransparentMesh>());
+			_nowRenderingDecalVec.emplace_back(testDecal2->GetComponent<TransparentMesh>());
 
 			_timer = 0.0f;
-			_timer2 = 0.0f;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attakLogic = [pattern, this]()
 		{
- 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
- 
- 			auto camera = _cinematicCamera2->GetComponent<Camera>();
- 
- 			DirectX::XMFLOAT3 dst = DirectX::XMFLOAT3(-7, 5, -160);
- 
- 			float movingTime = 3.0f;
+			_timer += TimeManager::GetInstance().GetDeltaTime();
 
-			if (_nowCameraStep == 0)
+			if (_timer > 5.0f)
 			{
-				if (_cameraRot.y > -65.0f)
-				{
-					auto rotSpeed = deltaTime * 50.0f * (1 / movingTime);
-					camera->CameraRotateY(-rotSpeed);
-					_cameraRot.y += -rotSpeed;
-				}
-
-				if (!_cameraMoveFinish)
-				{
-					_cameraMoveFinish = camera->MoveParabolic(_cameraOriginPos, dst, movingTime);
-				}
-
-				if (_cameraMoveFinish && _cameraRot.y <= -65.0f)
-				{
-					_cameraMoveFinish = false;
-					_nowCameraStep++;
-				}
-			}
- 
-
-			if (_timer == 0.0f)
-			{
-				auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki1", 10.0f, false);
-
-				if (!isPlaying)
-				{
-					_boss->GetComponent<Animator>()->Stop();
-					_timer = 1.0f;
-				}
-			}
-			if (_timer == 1.0f)
-			{
-				_timer2 += TimeManager::GetInstance().GetDeltaTime();
-
-				auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki2", 5.0f, true);
-
-				for (auto& index : _bossLastAttackList)
-				{
-					index->GetComponent<Particle>()->SetActive(true);
-				}
-
-				for (auto& index : _bossLastAttackList)
-				{
-					auto playerPos = _playerTransform->GetPosition();
-					playerPos.y = 80.0f;
-
-					auto Genki = index->GetComponent<Transform>();
-
-					if (_timer2 <= 10.0f)
-					{
-						auto newPos = ToolBox::LogarithmicInterpolation(DirectX::XMFLOAT3(-2.2f, 180.0f, 88.0f), playerPos, _timer2 * 0.1f);
-
-						Genki->SetPosition(newPos);
-					}
-					else
-					{
-						auto nowPos = Genki->GetPosition();
-
-						DirectX::XMFLOAT3 newPos = DirectX::XMFLOAT3(nowPos.x, nowPos.y - 5 * deltaTime, nowPos.z - 5 * deltaTime);
-
-						if (newPos.y > 40)
-						{
-							Genki->SetPosition(newPos);
-						}
-
-						else
-						{
-							_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
-
-							_timer = 2.0f;
-						}
-					}
-				}
-
-
-			}
-			if (_timer == 2.0f)
-			{
-				auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki3", 10.0f, false);
-
-				if (!isPlaying)
-				{
-					_boss->GetComponent<Animator>()->Stop();
-					_timer = 4.0f;
-				}
-			}
-			if (_timer > 3.0f)
-			{
-				return true;
+				return false;
 			}
 
 			return true;

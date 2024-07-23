@@ -226,3 +226,15 @@ void KunrealEngine::TransparentMesh::TransformForceUpdate()
 {
 	this->_tMesh->SetTransform(_transform->GetWorldTM());
 }
+
+bool KunrealEngine::TransparentMesh::CheckRenderFinsh()
+{
+	if (this->_tMesh->GetRenderTimer() >= this->_timer)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
