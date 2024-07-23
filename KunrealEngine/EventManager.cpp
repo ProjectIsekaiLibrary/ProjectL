@@ -939,6 +939,7 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 						// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
 						_playerComp->GetPlayerData()._hp -= damage;
 						_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+						nowPattern->_isColliderHit[i] = true;
 
 						// 데미지가 들어간 후 메쉬를 꺼야한다면
 						if (!nowPattern->_isRemainMesh && subObjectList[i]->GetComponent<MeshRenderer>() != nullptr)

@@ -62,6 +62,8 @@ namespace KunrealEngine
 	
 		// 베지어 공식
 		static DirectX::XMFLOAT3 Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t);
+
+		static DirectX::XMFLOAT3 LogarithmicInterpolation(const DirectX::XMFLOAT3& startPos, const DirectX::XMFLOAT3& endPos, float t);
 	};
 
 }

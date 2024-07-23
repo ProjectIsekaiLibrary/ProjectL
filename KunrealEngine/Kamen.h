@@ -135,6 +135,10 @@ namespace KunrealEngine
 		void CreateSwordMultipleAttack();
 		void CreateKamenHoldSword();
 
+		// 0줄 패턴
+	private:
+		void CreateGenkiAttack();
+
 		// 3페이즈 with 검
 	private:
 		void CreateSwordSwingVertical();
@@ -244,6 +248,8 @@ namespace KunrealEngine
 		BossPattern* _rentalFraud;
 		BossPattern* _swordMeteorAttack;
 
+		BossPattern* _genkiAttack;
+
 	private:
 		// 패턴에 필요한 subObject들
 		GameObject* _leftHand;
@@ -310,6 +316,7 @@ namespace KunrealEngine
 		std::vector<GameObject*> _rentalCollider;
 
 		GameObject*_cinematicCamera;
+		GameObject* _cinematicCamera2;
 		GameObject* _mainPlayCamera;
 
 	private:
@@ -402,6 +409,10 @@ namespace KunrealEngine
 	private:
 		bool _rentalSuccess;
 	
+	private:
+		bool _genkiAttackStart;
+
+		bool _genkiHitV;
 
 	private:
 		DirectX::XMFLOAT3 _cameraOriginPos;
@@ -467,6 +478,8 @@ namespace KunrealEngine
 		std::vector<GameObject*> _kamenLastphaseParticleBack;
 
 		std::vector<GameObject*> _meteorSwordHitParticle;
+
+		std::vector<GameObject*> _bossLastAttackList;
 
 		// 베지어 곡선을 이용한 파티클 이동 관련 변수
 		std::vector<GameObject*> _bezierSwordParticles;

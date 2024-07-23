@@ -59,7 +59,7 @@ float4 PSGrayScale(VertexOut pin) : SV_Target
     float4 finalTexture;
     
     // GetGBufferAttributes 함수를 사용하여 텍스처 샘플링
-    GetGBufferAttributes(pin.Tex, finalTexture, 8.0f);
+    GetGBufferAttributes(pin.Tex, finalTexture, 4.0f);
 
     // Rec. 709 가중치를 사용하여 그레이스케일 변환
     float3 grayWeights = float3(0.2126f, 0.7152f, 0.0722f);
@@ -96,7 +96,7 @@ float4 PSBlurVertical(VertexOut pin) : SV_Target
         float weight = gaussWeight(i);
         
         // 텍스처 좌표에 4배 스케일링을 적용하여 샘플링
-        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(0.0f, i) * texelSize) * float2(8.0f, 8.0f)) * weight;
+        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(0.0f, i) * texelSize) * float2(4.0f, 4.0f)) * weight;
         weightSum += weight;
     }
     
@@ -120,7 +120,7 @@ float4 PSBlurHorizontal(VertexOut pin) : SV_Target
         float weight = gaussWeight(i);
         
         // 텍스처 좌표에 4배 스케일링을 적용하여 샘플링
-        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(i, 0.0f) * texelSize) * float2(8.0f, 8.0f)) * weight;
+        sum += FinalTexture.Sample(samAnisotropic, (pin.Tex + float2(i, 0.0f) * texelSize) * float2(4.0f, 4.0f)) * weight;
         weightSum += weight;
     }
     
