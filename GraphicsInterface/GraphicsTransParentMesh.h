@@ -52,5 +52,7 @@ namespace GInterface
 		virtual bool GetIsApplyPattern() abstract;
 
 		virtual void ApplyPattern(bool tf) abstract;
+
+		virtual float GetRenderTimer() abstract;
 	}; 
 }
