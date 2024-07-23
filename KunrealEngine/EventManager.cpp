@@ -52,6 +52,8 @@ void KunrealEngine::EventManager::Update()
 		CalculateDamageToPlayer2();
 	}
 
+	UIcontrol();
+
 	if (_player != nullptr)
 	{
 		if (InputSystem::GetInstance()->KeyDown(KEY::SPACE) && _player->GetComponent<PlayerMove>()->GetisDashed())
@@ -994,6 +996,33 @@ void KunrealEngine::EventManager::SetBossObject()
 	_playerComp = _player->GetComponent<Player>();
 	_playerAbill = _player->GetComponent<PlayerAbility>();
 	_bossComp = _boss->GetComponent<Kamen>();
+}
+
+void KunrealEngine::EventManager::UIcontrol()
+{
+	static bool premeteorActive = false;
+	GameObject* pausebox = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("pauseuibox");
+	if (InputSystem::GetInstance()->KeyDown(KEY::ESCAPE) && pausebox != nullptr)
+	{
+		auto* meteorRange = SceneManager::GetInstance().GetCurrentScene()->GetGameObject("MeteorRange");
+		if (meteorRange != nullptr)
+		{
+
+			if (!premeteorActive)
+			{
+				bool active = pausebox->GetActivated() ? false : true;
+				pausebox->SetActive(active);
+			}
+
+		}
+		else
+		{
+			bool active = pausebox->GetActivated() ? false : true;
+			pausebox->SetActive(active);
+		}
+
+	}
+	premeteorActive = _playerAbill->GetisMeteorBefore();
 }
 
 

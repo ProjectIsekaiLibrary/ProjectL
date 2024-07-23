@@ -39,6 +39,9 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
+		//메테오 상태를 받아와야 해
+		bool GetisMeteorBefore();
+
 	private:
 		std::vector<Ability*> _abilityContainer;
 		Player* _playerComp;

@@ -330,6 +330,11 @@ void KunrealEngine::PlayerAbility::SetActive(bool active)
 	this->_isActivated = active;
 }
 
+bool KunrealEngine::PlayerAbility::GetisMeteorBefore()
+{
+	return _beforeMeteor;
+}
+
 
 void KunrealEngine::PlayerAbility::ResetShotPos()
 {
