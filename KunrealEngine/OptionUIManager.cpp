@@ -31,6 +31,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 
 	KunrealEngine::GameObject* button_exit;
 	KunrealEngine::GameObject* button_exit_focus;
+	KunrealEngine::GameObject* button_exit_text;
 
 	optionuibox = this->GetOwner();
 	optionuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
@@ -226,6 +227,13 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_exit_focus->GetComponent<ImageRenderer>()->SetPosition(1468.f, 114.f);
 	button_exit_focus->GetComponent<Transform>()->SetScale(1.2f, 1.2f, 1.0f);
 	button_exit->GetComponent<ButtonSystem>()->Setfocused(button_exit_focus->GetComponent<ImageRenderer>());
+	button_exit_focus = scene->CreateObject("button_exit");
+	
+	button_exit_focus->SetParent(optionuibox);
+	button_exit_focus->AddComponent<ImageRenderer>();
+	button_exit_focus->GetComponent<ImageRenderer>()->SetImage("ui/UiTexts/Xbutton.png");
+	button_exit_focus->GetComponent<ImageRenderer>()->SetPosition(1468.f, 114.f);
+	button_exit_focus->GetComponent<Transform>()->SetScale(1.2f, 1.2f, 1.0f);
 
 	optionuibox->SetActive(false);
 }
