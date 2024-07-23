@@ -79,9 +79,9 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill1_icon = scene.GetCurrentScene()->CreateObject("ui_skill1_icon");
 	ui_skill1_icon->SetParent(_battleuibox);
 	ui_skill1_icon->AddComponent<ImageRenderer>();
-	ui_skill1_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill1_icon->GetComponent<ImageRenderer>()->SetPosition(708.0f, 980.f);
-	ui_skill1_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill1_icon->GetComponent<ImageRenderer>()->SetImage("ui/SkillIcon/Shot.png");
+	ui_skill1_icon->GetComponent<ImageRenderer>()->SetPosition(700.0f, 967.f);
+	ui_skill1_icon->GetComponent<Transform>()->SetScale(0.11f, 0.11f, 0.11f);
 
 	_ui_skill1_cool = scene.GetCurrentScene()->CreateObject("_ui_skill1_cool");
 	_ui_skill1_cool->SetParent(_battleuibox);
@@ -121,9 +121,9 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill3_icon = scene.GetCurrentScene()->CreateObject("ui_skill3_icon");
 	ui_skill3_icon->SetParent(_battleuibox);
 	ui_skill3_icon->AddComponent<ImageRenderer>();
-	ui_skill3_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill3_icon->GetComponent<ImageRenderer>()->SetPosition(935.f, 980.f);
-	ui_skill3_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill3_icon->GetComponent<ImageRenderer>()->SetImage("ui/SkillIcon/laser.png");
+	ui_skill3_icon->GetComponent<ImageRenderer>()->SetPosition(932.f, 975.f);
+	ui_skill3_icon->GetComponent<Transform>()->SetScale(0.2f, 0.2f, 0.2f);
 
 	_ui_skill3_cool = scene.GetCurrentScene()->CreateObject("_ui_skill3_cool");
 	_ui_skill3_cool->SetParent(_battleuibox);
@@ -142,9 +142,9 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill4_icon = scene.GetCurrentScene()->CreateObject("ui_skill4");
 	ui_skill4_icon->SetParent(_battleuibox);
 	ui_skill4_icon->AddComponent<ImageRenderer>();
-	ui_skill4_icon->GetComponent<ImageRenderer>()->SetImage("ui/skill_space.png");
-	ui_skill4_icon->GetComponent<ImageRenderer>()->SetPosition(1050.f, 980.f);
-	ui_skill4_icon->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+	ui_skill4_icon->GetComponent<ImageRenderer>()->SetImage("ui/SkillIcon/Meteor.png");
+	ui_skill4_icon->GetComponent<ImageRenderer>()->SetPosition(1050.f, 975.f);
+	ui_skill4_icon->GetComponent<Transform>()->SetScale(0.19f, 0.19f, 0.19f);
 
 	_ui_skill4_cool = scene.GetCurrentScene()->CreateObject("_ui_skill4_cool");
 	_ui_skill4_cool->SetParent(_battleuibox);

@@ -79,10 +79,15 @@ namespace KunrealEngine
 		button_title->GetComponent<ButtonSystem>()->SetButtonFunc([pauseuibox]()
 			{
 				pauseuibox->SetActive(false);
-				// 
-				// 타이틀 씬으로 전환되는 코드
-				// KunrealEngine::SceneManager::GetInstance().ChangeScene("Title");
-				//
+				if (KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+				{
+				}
+
+				if (KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Main")
+				{
+					//타이틀 씬으로 전환되는 코드
+					//KunrealEngine::SceneManager::GetInstance().ChangeScene("Title");	
+				}
 			});
 
 
