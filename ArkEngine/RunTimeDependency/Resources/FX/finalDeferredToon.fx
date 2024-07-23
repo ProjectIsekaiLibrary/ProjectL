@@ -12,7 +12,7 @@ cbuffer cbPerFrame
     DirectionalLight gDirLights[3];
 
     int gPointLightCount;
-    PointLight gPointLights[30];
+    PointLight gPointLights[50];
 
     float3 gEyePosW;
     
