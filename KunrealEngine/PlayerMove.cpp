@@ -504,6 +504,7 @@ void KunrealEngine::PlayerMove::NavigationDash(float speed)
 	{
 		this->GetOwner()->GetComponent<MeshRenderer>()->SetActive(true);
 		this->GetOwner()->GetComponent<BoxCollider>()->SetActive(true);
+		this->GetOwner()->GetComponent<BoxCollider>()->FixedUpdate();
 		if (this->GetOwner()->GetComponent<MeshRenderer>()->GetActivated() == true)
 		{
 			if (_isDashEnd == true)

@@ -67,6 +67,8 @@ namespace KunrealEngine
 		GameObject* _fadeObjectTitle;
 		GameObject* _fadeObjectMain;
 		GameObject* _fadeObjectEnding;
+		GameObject* _fadeObjectWhiteMain;
+		GameObject* _fadeObjectWhiteEnding;
 
 	public:
 		// 플레이어가 보스에게 주는 데미지 계산
@@ -94,6 +96,12 @@ namespace KunrealEngine
 	public:
 		// 플레이어 사망후 타이틀화면으로
 		void MoveToTitle();
+
+		// 메인에서 엔딩씬으로
+		void MoveToEnding();
+
+		// 엔딩씬 이동 트리거
+		void ActivateEndingSceneTrigger();
 
 		// FadeOut 	
 		void ActivateFadeOutTrigger();
@@ -137,8 +145,6 @@ namespace KunrealEngine
 
 			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() > 0.0f)
 			{
-				float pleaseman = blackBG->GetComponent<ImageRenderer>()->GetAlpha();
-
 				blackBG->GetComponent<ImageRenderer>()->SetAlpha(blackBG->GetComponent<ImageRenderer>()->GetAlpha() - 0.005f);
 
 				if (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 0.0f)
@@ -183,6 +189,55 @@ namespace KunrealEngine
 				{
 					blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 					blackBG->SetActive(false);
+					break;
+				}
+
+				Return_null;
+			}
+		};
+
+		Coroutine_Func(WhiteFadeOut)
+		{
+			EventManager* manager = this;
+			GameObject* whiteBG = manager->_fadeObjectWhiteMain;
+			whiteBG->SetActive(true);
+			whiteBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+
+			while (whiteBG->GetComponent<ImageRenderer>()->GetAlpha() < 1.0f)
+			{
+				whiteBG->GetComponent<ImageRenderer>()->SetAlpha(whiteBG->GetComponent<ImageRenderer>()->GetAlpha() + 0.005f);
+
+				if (whiteBG->GetComponent<ImageRenderer>()->GetAlpha() >= 1.0f)
+				{
+					whiteBG->GetComponent<ImageRenderer>()->SetAlpha(1.0f);
+
+					Waitforsecond(1.0f);
+					whiteBG->SetActive(false);
+					manager->MoveToEnding();
+
+					break;
+				}
+
+				Return_null;
+			}
+		};
+
+		Coroutine_Func(WhiteFadeIn)
+		{
+			EventManager* manager = this;
+			GameObject* blackBG = manager->_fadeObjectWhiteEnding;
+			blackBG->SetActive(true);
+			blackBG->GetComponent<ImageRenderer>()->SetAlpha(1.0f);
+
+			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() > 0.0f)
+			{
+				blackBG->GetComponent<ImageRenderer>()->SetAlpha(blackBG->GetComponent<ImageRenderer>()->GetAlpha() - 0.01f);
+
+				if (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 0.0f)
+				{
+					blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+					blackBG->SetActive(false);
+
 					break;
 				}
 

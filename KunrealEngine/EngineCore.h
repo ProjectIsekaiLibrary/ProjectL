@@ -74,8 +74,8 @@ namespace KunrealEngine
 
 		void CreateTitleScene();
 
-	private: // 파티클 테스트
-		void ParticleTest();
+		// Bezier
+	private:
 		DirectX::XMFLOAT3 Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t);
 		DirectX::XMFLOAT2 BezierPoint2D(DirectX::XMFLOAT2 startPoint, DirectX::XMFLOAT2 p1, DirectX::XMFLOAT2 p2, DirectX::XMFLOAT2 endPoint, float t);
 		std::vector<DirectX::XMFLOAT3> BezierSetting(GameObject* bezierObject);
@@ -105,8 +105,6 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _mapParticleList;
 		std::vector<GameObject*> _coreBigKamenSword;
-
-		void UpdateParticleTest();
 
 		void TitleMapParticle();
 		void MoveToMain();
@@ -185,8 +183,6 @@ namespace KunrealEngine
 		float titleUIPosY = 0.0f;
 		void SmoothTransition(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 startRot,
 			DirectX::XMFLOAT3 endPos, DirectX::XMFLOAT3 endRot, float duration, float deltaTime);
-
-		GameObject* _floatingOb1;
 	};
 }
 
