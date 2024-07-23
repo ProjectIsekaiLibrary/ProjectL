@@ -93,13 +93,12 @@ namespace KunrealEngine
 
 		_Coroutine(DashCamMove);
 
-	public:
 		// 플레이어 사망후 타이틀화면으로
 		void MoveToTitle();
 
 		// 메인에서 엔딩씬으로
 		void MoveToEnding();
-
+	public:
 		// 엔딩씬 이동 트리거
 		void ActivateEndingSceneTrigger();
 

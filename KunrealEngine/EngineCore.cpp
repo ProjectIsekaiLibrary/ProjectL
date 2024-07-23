@@ -190,10 +190,24 @@ void KunrealEngine::EngineCore::Update()
 		EndingSceneUpdate();
 	}
 
+	/// 지워제발나중에꼭기억해
 	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main" && inputInstance->KeyDown(KEY::X))
 	{
 		EventManager::GetInstance().ActivateEndingSceneTrigger();
 	}
+
+	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main" && inputInstance->KeyDown(KEY::HOME))
+	{
+		if (sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->GetPlayerBindFlag())
+		{
+			sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
+		}
+		else
+		{
+			sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+		}
+	}
+	///
 
 	MoveToMain();
 	Updatecoroutine();

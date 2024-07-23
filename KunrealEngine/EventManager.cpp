@@ -1140,7 +1140,6 @@ void KunrealEngine::EventManager::MoveToEnding()
 	scene->GetGameObject("DirectionalLight (1)")->GetComponent<Light>()->SetDirection(direction.x , direction.y, direction.z);
 
 	// 파티클 재활성화
-	scene->GetGameObject("EndingPlayer")->GetComponent<Particle>()->SetActive(true);
 	scene->GetGameObject("EndingMeteo1")->GetComponent<Particle>()->SetActive(true);
 	scene->GetGameObject("EndingMeteo2")->GetComponent<Particle>()->SetActive(true);
 	scene->GetGameObject("EndingMeteo3")->GetComponent<Particle>()->SetActive(true);
