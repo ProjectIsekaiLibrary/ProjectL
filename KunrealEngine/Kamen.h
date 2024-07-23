@@ -54,9 +54,6 @@ namespace KunrealEngine
 
 	private:
 		void CreateSubObject();
-		
-	private:
-		void BasicPattern();
 
 	private:
 		// 기본 패턴
@@ -150,6 +147,7 @@ namespace KunrealEngine
 		// 카멘 이동 관련
 	private:
 		void CreateTurn180();
+		void CreateTurn270();
 		void CreateBackStep();
 		void CreateTeleportToCenter();
 		void CreateTeleportToCenterWithLook();
@@ -202,6 +200,7 @@ namespace KunrealEngine
 
 		BossPattern* _backStep;
 		BossPattern* _turn180;
+		BossPattern* _turn270;
 		BossPattern* _teleport;
 		BossPattern* _teleportWithLook;
 		BossPattern* _teleportRandomWithLook;

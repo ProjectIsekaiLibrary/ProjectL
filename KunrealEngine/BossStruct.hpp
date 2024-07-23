@@ -31,7 +31,7 @@ enum class BossStatus
 struct BossBasicInfo
 {
 	BossBasicInfo()
-		: _hp(0.0f), _phase(1), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(20.0f), _rotationSpeed(100.0f), _baseAnimSpeed(30.0f),
+		: _hp(0.0f), _phase(1), _armor(0.0f), _damage(0.0f), _attackRange(0.0f), _moveSpeed(40.0f), _rotationSpeed(120.0f), _baseAnimSpeed(30.0f),
 		_staggeredGauge(0.0f), _maxHp(0.0f), _maxStaggeredGauge(0.0f), _maxPhase(0)
 	{};
 
