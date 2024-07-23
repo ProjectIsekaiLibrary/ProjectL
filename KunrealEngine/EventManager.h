@@ -98,6 +98,9 @@ namespace KunrealEngine
 
 		// 메인에서 엔딩씬으로
 		void MoveToEnding();
+
+		// 엔딩씬 오브젝트들 초기화
+		void ResetEndingSceneObjects();
 	public:
 		// 엔딩씬 이동 트리거
 		void ActivateEndingSceneTrigger();
@@ -115,6 +118,8 @@ namespace KunrealEngine
 			GameObject* blackBG = manager->_fadeObjectMain;
 			blackBG->SetActive(true);
 			blackBG->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
+
+			Waitforsecond(3.0f);
 
 			while (blackBG->GetComponent<ImageRenderer>()->GetAlpha() < 1.0f)
 			{
