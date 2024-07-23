@@ -873,28 +873,35 @@ void KunrealEngine::EventManager::CalculateDamageToPlayer2()
 
 					collider->SetActive(true);
 
-					if (collider->IsCollided() && collider->GetTargetObject() == _player)
-					{
-
-					}
-					else
+					if (!collider->IsCollided())
 					{
 						_insideSafeCount++;
 
 						if (_insideSafeCount > 1)
 						{
-							// 소드와 서브오젝트의 콜라이더
-							auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
+							auto playerPos = _player->GetComponent<Transform>()->GetPosition();
+							playerPos.y = 0.0f;
 
-							_playerComp->CalculateSweep(colliderDirVec);
+							auto swordPos = _bossComp->GetGetSwordInsideCenterPos();
+							swordPos.y = 0.0f;
 
-							auto damage = nowPattern->_damage;
+							auto distance = ToolBox::GetDistance(swordPos, playerPos);
 
-							// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
-							_playerComp->GetPlayerData()._hp -= damage;
-							_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+							if (distance > 30)
+							{
+								// 소드와 서브오젝트의 콜라이더
+								auto colliderDirVec = SetWarningAttackDirection(subObjectList[i]);
 
-							nowPattern->_isColliderHit[i] = true;
+								_playerComp->CalculateSweep(colliderDirVec);
+
+								auto damage = nowPattern->_damage;
+
+								// 플레이어의 hp에서 패턴의 데미지만큼 차감시킴
+								_playerComp->GetPlayerData()._hp -= damage;
+								_playerComp->SetHitState(static_cast<int> (nowPattern->_attackState));
+
+								nowPattern->_isColliderHit[i] = true;
+							}
 						}
 					}
 				}

@@ -1344,13 +1344,18 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 
 				_stopover = Navigation::GetInstance().FindStraightPath(1);
 
-				_prevPos = _stopover[0].first;
+				if (_stopover.empty())
+				{
+					return false;
+				}
 
 				for (auto& index : _stopover)
 				{
 					index.first.y = _bossTransform->GetPosition().y;
 					index.second.y = _bossTransform->GetPosition().y;
 				}
+
+				_prevPos = _stopover[0].first;
 			}
 			// 그냥 타겟 포지션까지 네비메쉬로 길찾기
 			else
@@ -1360,13 +1365,13 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 
 				_stopover = Navigation::GetInstance().FindStraightPath(1);
 
-				_prevPos = _stopover[0].first;
-
 				for (auto& index : _stopover)
 				{
 					index.first.y = _bossTransform->GetPosition().y;
 					index.second.y = _bossTransform->GetPosition().y;
 				}
+
+				_prevPos = _stopover[0].first;
 			}
 
 			// 이제 움직이기 시작
@@ -1378,7 +1383,7 @@ bool KunrealEngine::Boss::Move(DirectX::XMFLOAT3& targetPos, float speed, bool r
 		{
 			// 타겟을 향하여 이동
 			//auto trs = _bossTransform->GetPosition();
-			auto isChasing = MoveToTarget(_prevPos, _stopover[_nodeCount].second, _info._moveSpeed);
+			auto isChasing = MoveToTarget(_prevPos, _stopover[_nodeCount].second, speed);
 
 			// 노드만큼 쫓아갔다면
 			if (!isChasing)
@@ -1764,7 +1769,7 @@ bool KunrealEngine::Boss::MoveToTarget(DirectX::XMFLOAT3& startPos, DirectX::XMF
 		direction = DirectX::XMVector3Normalize(direction);
 
 		DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(currentPosVec, DirectX::XMVectorScale(direction, moveSpeed));
-		_bossTransform->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+		_bossTransform->SetPosition(newPosition.m128_f32[0], _bossTransform->GetPosition().y, newPosition.m128_f32[2]);
 
 		_prevPos = _bossTransform->GetPosition();
 
