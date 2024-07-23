@@ -93,6 +93,7 @@ void KunrealEngine::PlayerMove::Update()
 		{
 			this->GetOwner()->GetComponent<BoxCollider>()->SetActive(false);
 			this->_isDashStart = true;
+			_SoundComp->Play(_sounddash);
 			Startcoroutine(dashReady);
 
 			// 이동 상태 해제
@@ -858,14 +859,6 @@ void KunrealEngine::PlayerMove::UpdateSound()
 			_SoundComp->Play(_soundwalk);
 		}
 	}
-
-	bool temp = InputSystem::GetInstance()->KeyDown(KEY::SPACE);
-
-	if ( InputSystem::GetInstance()->KeyDown(KEY::SPACE) && _isDashReady)
-	{
-		_SoundComp->Play(_sounddash);
-	}
-
 }
 
 bool KunrealEngine::PlayerMove::GetisDashed()
