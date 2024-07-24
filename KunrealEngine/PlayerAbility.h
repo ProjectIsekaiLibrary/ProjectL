@@ -256,6 +256,7 @@ namespace KunrealEngine
 		Coroutine_Func(LaserCoolDown)
 		{
 			auto* ability = this;
+			ability->_isLaserReady = false;
 			Waitforsecond(ability->_abilityContainer[2]->_cooldown);
 			ability->_isLaserReady = true;
 		};

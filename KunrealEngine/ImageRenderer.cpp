@@ -173,7 +173,11 @@ bool KunrealEngine::ImageRenderer::IsPicked(int mouseX, int mouseY)
 	// 이미지의 끝점 (우하단)
 	auto tlbpos = GetImageSize();
 	// 부모가 있다면? 부모의 포지션도 더해줘야 한다.
-	auto papos = GetOwner()->GetParent()->GetComponent<Transform>()->GetPosition();
+	DirectX::XMFLOAT3 papos = {0.0f,0.0f ,0.0f };
+	if (GetOwner()->GetParent())
+	{
+		papos = GetOwner()->GetParent()->GetComponent<Transform>()->GetPosition();
+	}
 
 
 	int posl = tbpos.x + tlbpos.x + papos.x;

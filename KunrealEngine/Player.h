@@ -26,6 +26,7 @@ namespace KunrealEngine
 			SWEEP,				// 날아가는중
 			DEAD,				// 사망
 			BEFORESTART,		// 게임 시작 전 누워있는 상태
+			CINEMATIC,			// 특수 상태
 		};
 
 		// 플레이어의 스탯 정보
@@ -76,6 +77,7 @@ namespace KunrealEngine
 		DirectX::XMVECTOR _directionVector;		// 플레이어가 바라보는 방향 벡터
 
 		int _abilityAnimationIndex;				// 어떤 스킬 애니메이션
+		int _cinematicIndex;
 
 		// 피격 후 날아가는 로직 관련
 		bool _isSweep;							// 날아가는 트리거
@@ -89,17 +91,17 @@ namespace KunrealEngine
 		bool _playerBindFlag;					// true일때 행동불가
 
 		GameObject* _deathParticle1;				// 플레이어 죽을 때 출력될 파티클
-		GameObject* _deathParticle2;	
-		GameObject* _deathParticle3;	
-		GameObject* _deathParticle4;	
-		GameObject* _deathParticle5;	
-		GameObject* _deathParticle6;	
+		GameObject* _deathParticle2;
+		GameObject* _deathParticle3;
+		GameObject* _deathParticle4;
+		GameObject* _deathParticle5;
+		GameObject* _deathParticle6;
 
-		std::vector<GameObject*> _deathParticleVector;	
+		std::vector<GameObject*> _deathParticleVector;
 		float _deathAnimationSpeed;
 
 		float _playerStartX;					// 보스맵 시작 x z 좌표
-		float _playerStartZ;		
+		float _playerStartZ;
 
 		int _knock_downSound;
 		int _diedsound;
@@ -124,7 +126,7 @@ namespace KunrealEngine
 		{
 			auto* playerComp = this;
 			Waitforsecond(playerComp->_sweepDuration + 1.0f);				// 누운 다음 1초 뒤 기상
-			
+
 			playerComp->_isSweep = false;
 			playerComp->_playerStatus = Status::IDLE;
 		};
@@ -149,7 +151,7 @@ namespace KunrealEngine
 		// 플레이어 피격 후 날아가는 좌표 계산
 		void CalculateSweep(DirectX::XMVECTOR direction);
 		void CalculateSweep(DirectX::XMFLOAT3 direction);
-		
+
 		// 플레이어 피격 후 날아가는 로직
 		void PlayerSweep();
 
@@ -159,12 +161,17 @@ namespace KunrealEngine
 		// 플레이어 상태, 체력 초기화
 		void ResetPlayerStatus();
 
-		// Flag에 따라 플레이어 행동 불가, 가능 여부 결정
+		// Flag에 따라 플레이어 행동 불가, 가능 여부 결정	// int 매개변수는 정의 참조
+		// 상세는 정의 참조
 		void SetPlayerBindFlag(bool flag, int state = 0);
 		bool GetPlayerBindFlag();
 
+		void SetPlayerIdle();
+
 		// 플레이어가 스킬 시전중인지 Flag
 		bool _onCasting;
+	public:
+		bool _iswakeuped;
 	};
 }
 

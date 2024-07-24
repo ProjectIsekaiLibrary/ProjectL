@@ -102,6 +102,11 @@ void KunrealEngine::PlayerAbility::Update()
 			return;
 		}
 
+		_soundComp->Stop(_energyBallShot);
+		_soundComp->Stop(_energyBallFlying);
+		_soundComp->Play(_energyBallShot);
+		_soundComp->Play(_energyBallFlying);
+
 		ResetShotPos();
 		Startcoroutine(shotCoolDown);
 		_isShotDetected = true;
@@ -200,7 +205,7 @@ void KunrealEngine::PlayerAbility::Update()
 			ability->_laserParticle3->SetActive(false);
 			ability->_laserParticle4->SetActive(false);
 			ability->_destroyLaser = true;
-			ability->_isLaserReady = false;
+			//ability->_isLaserReady = false;
 			ability->_isLaserStarted = false;
 
 		};
@@ -219,8 +224,29 @@ void KunrealEngine::PlayerAbility::Update()
 		this->_laserParticle4->SetActive(false);
 	}
 
+	// 운석이 떨어지는 도중 시네마틱 상태가 되면 운석이 사라지도록
+	if (this->_meteor->GetActivated() && this->_playerComp->_playerStatus == Player::Status::CINEMATIC)
+	{
+		this->_meteor->SetActive(false);
+		this->_soundComp->Stop(_meteorFall);
+		this->_meteorParticle2->SetActive(false);
+		this->_meteorParticle3->SetActive(false);
+		this->_meteorParticle4->SetActive(false);
+
+		this->_beforeMeteor = false;
+		this->_meteorRange->GetComponent<MeteorRange>()->_onCast = false;
+		this->_meteorRange->SetActive(false);
+		this->_meteorRange->GetComponent<MeteorRange>()->SetActive(false);
+	}
+
 	if (InputSystem::GetInstance()->KeyDown(KEY::R) && this->_isMeteorReady && !_playerComp->_onCasting)
 	{
+		// 행동불가 상황이라면 return
+		if (_playerComp->_playerBindFlag)
+		{
+			return;
+		}
+
 		this->_beforeMeteor = true;
 	}
 
@@ -274,8 +300,8 @@ void KunrealEngine::PlayerAbility::Update()
 
 			if (InputSystem::GetInstance()->MouseButtonDown(0))
 			{
-				// 사용할 수 없는 범위라면 return
-				if (!CheckMeteorRange())
+				// 사용할 수 없는 범위라면 return			// 이미 사용중이라면
+				if (!CheckMeteorRange() || this->_meteorRange->GetComponent<MeteorRange>()->_onCast)
 				{
 					return;
 				}
@@ -294,6 +320,12 @@ void KunrealEngine::PlayerAbility::Update()
 
 	if (InputSystem::GetInstance()->KeyDown(KEY::_1) && this->_maxPotion > 0 && this->_isPotionReady)
 	{
+		// 사용할 수 없는 상태
+		if (_playerComp->_playerStatus == Player::Status::DEAD || _playerComp->_playerStatus == Player::Status::CINEMATIC)
+		{
+			return;
+		}
+
 		RestoreHealth();
 	}
 
@@ -513,6 +545,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				{
 					//_soundComp->Stop(_energyBallShot);
 					_soundComp->Stop(_energyBallFlying);
+					_soundComp->Stop(_energyBallExplode);
 					_soundComp->Play(_energyBallExplode);
 					EventManager::GetInstance().CalculateDamageToBoss(shot);
 
@@ -557,8 +590,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		{
 			if (_shot->GetActivated())
 			{
-				_soundComp->Play(_energyBallShot);
-				_soundComp->Play(_energyBallFlying);
 				DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
 
 				DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);
@@ -1480,7 +1511,6 @@ void KunrealEngine::PlayerAbility::UpdateAbilityLogic()
 	this->_abilityContainer[2]->_abilityLogic();
 	this->_abilityContainer[3]->_abilityLogic();
 }
-
 
 void KunrealEngine::PlayerAbility::DebugText()
 {

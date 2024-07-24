@@ -35,8 +35,10 @@ namespace KunrealEngine
 	private: 
 		ImageRenderer* _image;
 		ImageRenderer* _focusimage;
-		SoundPlayer* _soundComp;
 
+		// 사운드 재생 컴포넌트
+		SoundPlayer* _soundComp;
+		// 입력해둔 소리 (int를 통해 인덱스로만 관리한다.)
 		int _soundclick;
 
 		// 이미지가 포커스드인지 아닌지 구별하기 위한 변수

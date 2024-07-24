@@ -1078,9 +1078,9 @@ void KunrealEngine::EventManager::MoveToTitle()
 	this->_iscamfollow = false;
 
 	// 플레이어 위치 초기화
-	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 68.0f, 0.0f);
 	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetRotation(0.0f, 45.0f, 0.0f);
-	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(68.0f);
 	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
 	scene->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
 
@@ -1189,6 +1189,7 @@ void KunrealEngine::EventManager::ResetEndingSceneObjects()
 
 	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetPosition(-340.0f, 100.f, -267.0f);
 	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetRotation(0.f, 212.f, 0.f);
+	scene->GetGameObject("endingBoss")->GetComponent<Animator>()->SetCurrentFrame(0);
 	scene->GetGameObject("endingBoss")->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 	
 	scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
