@@ -311,22 +311,22 @@ void KunrealEngine::Boss::Enter()
 
 		auto playerPosition = _player->GetComponent<Transform>()->GetPosition();
 
-		//_boss->GetComponent<BoxCollider>()->SetActive(false);
-		//_boss->GetComponent<MeshRenderer>()->SetActive(false);
-		//
-		//_boss->GetComponent<BoxCollider>()->FixedUpdate();
-		//
-		//InitializeEnterCameraMove();
-		//
-		//_isEnterInitialize = true;
-		//
-		//SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+		_boss->GetComponent<BoxCollider>()->SetActive(false);
+		_boss->GetComponent<MeshRenderer>()->SetActive(false);
+		
+		_boss->GetComponent<BoxCollider>()->FixedUpdate();
+		
+		InitializeEnterCameraMove();
+		
+		_isEnterInitialize = true;
+		
+		SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
 	}
 
 
-	//auto isCameraMoveFinsh = EnterCameraMove();
-	//
-	//if (isCameraMoveFinsh)
+	auto isCameraMoveFinsh = EnterCameraMove();
+	
+	if (isCameraMoveFinsh)
 	{
 		_startTime -= TimeManager::GetInstance().GetDeltaTime();
 
