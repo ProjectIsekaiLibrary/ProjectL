@@ -889,19 +889,19 @@ void KunrealEngine::BattleUIManager::Setpotioncool()
 	switch (num)
 	{
 	case 1:
-		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion1.png");
+		_potion_text->GetComponent<ImageRenderer>()->ChangeImage("ui/SkillText/Potion1.png");
 		break;
 	case 2:
-		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion2.png");
+		_potion_text->GetComponent<ImageRenderer>()->ChangeImage("ui/SkillText/Potion2.png");
 		break;
 	case 3:
-		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion3.png");
+		_potion_text->GetComponent<ImageRenderer>()->ChangeImage("ui/SkillText/Potion3.png");
 		break;
 	case 4:
-		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion4.png");
+		_potion_text->GetComponent<ImageRenderer>()->ChangeImage("ui/SkillText/Potion4.png");
 		break;
 	case 5:
-		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion5.png");
+		_potion_text->GetComponent<ImageRenderer>()->ChangeImage("ui/SkillText/Potion5.png");
 		break;
 
 		default:
