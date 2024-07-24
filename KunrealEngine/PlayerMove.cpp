@@ -148,7 +148,7 @@ void KunrealEngine::PlayerMove::Update()
 
 	}
 
-	NavigationMove(15.f * TimeManager::GetInstance().GetDeltaTime());
+	NavigationMove(_playerComp->_playerInfo._moveSpeed * TimeManager::GetInstance().GetDeltaTime());
 	NavigationDash(15.f * TimeManager::GetInstance().GetDeltaTime());
 
 	ShowPlayerInfo();
