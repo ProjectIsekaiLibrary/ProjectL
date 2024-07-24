@@ -87,8 +87,8 @@ float4 PSBlurVertical(VertexOut pin) : SV_Target
     
     float weights[9] = { 0.028532f, 0.067234f, 0.124009f, 0.179044f, 0.20236f, 0.179044f, 0.124009f, 0.067234f, 0.028532f };
     
-    // 1 / 1080.0f;
-    float2 texelSize = float2(0.0f, 0.00092592592);
+    // 1 / 1440.0f;
+    float2 texelSize = float2(0.0f, 0.00069444444);
     
     // 가우시안 블러링 수행
     for (int i = -4; i <= 4; ++i)
@@ -111,8 +111,8 @@ float4 PSBlurHorizontal(VertexOut pin) : SV_Target
     
     float weights[9] = { 0.028532f, 0.067234f, 0.124009f, 0.179044f, 0.20236f, 0.179044f, 0.124009f, 0.067234f, 0.028532f };
     
-    // 1 / 1920.0f;
-    float2 texelSize = float2(0.00052083333, 0.0f);
+    // 1 / 2560.0f;
+    float2 texelSize = float2(0.000390625, 0.0f);
     
     // 가우시안 블러링 수행
     for (int i = -4; i <= 4; ++i)
