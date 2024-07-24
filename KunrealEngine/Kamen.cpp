@@ -137,8 +137,8 @@ void KunrealEngine::Kamen::Initialize()
 	_emergenceSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/vortex.ogg", false, false);
 	_soundComp->CreateSound(_emergenceSoundIndex, 1);
 
-	//_fiveWaySoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/slash_boon_swish.ogg", false, false);
-	//_soundComp->CreateSound(_fiveWaySoundIndex, 9);
+	_fiveWaySoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/slash_boom_swish.ogg", false, false);
+	_soundComp->CreateSound(_fiveWaySoundIndex, 1);
 
 	/// 1->2 코어
 	_crySoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/outer_god_dmg.ogg", false, false);
@@ -156,8 +156,8 @@ void KunrealEngine::Kamen::Initialize()
 	_swordOutsideSafeSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/lightninggod_roar.ogg", false, false);
 	_soundComp->CreateSound(_swordOutsideSafeSoundIndex, 1);
 
-	//_swordLinearSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/launcher5.mp3", false, false);
-	//_soundComp->CreateSound(_swordLinearSoundIndex, 1);
+	_swordLinearSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/launcher5.mp3", false, false);
+	_soundComp->CreateSound(_swordLinearSoundIndex, 1);
 
 	_swordChopSoundIndex1 = _soundComp->CreateSoundInfo("Resources/Sound/third_strike1.ogg", false, false);
 	_soundComp->CreateSound(_swordChopSoundIndex1, 1);
@@ -199,6 +199,18 @@ void KunrealEngine::Kamen::Initialize()
 
 	_vertucalSound = _soundComp->CreateSoundInfo("Resources/Sound/Boss/hounds_start.ogg", false, false);
 	_soundComp->CreateSound(_vertucalSound, 1);
+
+	_genkitamaCharge = _soundComp->CreateSoundInfo("Resources/Sound/Boss/shockwavearea_e_loop.ogg", false, true);
+	_soundComp->CreateSound(_genkitamaCharge, 1);
+
+	_getnkitamaShot = _soundComp->CreateSoundInfo("Resources/Sound/Boss/tombstones_loop.ogg", false, false);
+	_soundComp->CreateSound(_getnkitamaShot, 1);
+
+	_getnkitamaShouting = _soundComp->CreateSoundInfo("Resources/Sound/Boss/terriblekilling_cast.ogg", false, false);
+	_soundComp->CreateSound(_getnkitamaShouting, 1);
+
+	_playerLastLaser = _soundComp->CreateSoundInfo("Resources/Sound/Player/standalonewave_loop.ogg", false, true);
+	_soundComp->CreateSound(_playerLastLaser, 1);
 }
 
 void KunrealEngine::Kamen::Release()
@@ -5209,6 +5221,8 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 				auto fakePos = _fakeBoss[i]->GetComponent<Transform>()->GetPosition();
 				_fakeMoveDistance[i] = ToolBox::GetDistance(fakePos, targetPosition) - 5.0f;
 			}
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -5234,6 +5248,11 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 			if (warningFinsh)
 			{
 				/// 사운드 - 패턴 - 사방 분신 돌진 (Five-way)
+				if (!_isBasicPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_fiveWaySoundIndex);
+					_isBasicPatternSoundPlayed[0] = true;
+				}
 
 				auto fakeSpeed = 5.0f;
 
@@ -5663,6 +5682,8 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 			auto targetPosition = Navigation::GetInstance().FindRaycastPath(1);
 
 			_swordMoveDistance = ToolBox::GetDistance(swordPos, targetPosition) - 10.0f;
+
+			_isSwordPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(lenearAttackInitLogic);
@@ -5670,6 +5691,12 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 	auto swordLinearAttackLogic = [pattern, this]()
 		{
 			/// 사운드 - 패턴 - 검 날아가는 소리 (Linear)
+			if (!_isSwordPatternSoundPlayed[0])
+			{
+				_soundComp->Play(_swordLinearSoundIndex);
+				_isSwordPatternSoundPlayed[0] = true;
+			}
+
 
 			auto objectIndex = pattern->GetSubObjectIndex(_freeSwordCollider);
 			pattern->_isColliderActive[objectIndex] = true;
@@ -6783,6 +6810,12 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			}
 
 			_nowCameraStep = 0.0f;
+
+			_isBasicPatternSoundPlayed[0] = false;
+			_isBasicPatternSoundPlayed[1] = false;
+			_isBasicPatternSoundPlayed[2] = false;
+			_isBasicPatternSoundPlayed[3] = false;
+			_isBasicPatternSoundPlayed[4] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6842,6 +6875,13 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				}
 				case 2:
 				{
+					if (!_isBasicPatternSoundPlayed[0])
+					{
+						_soundComp->Play(_genkitamaCharge);
+
+						_isBasicPatternSoundPlayed[0] = true;
+					}
+
 					_timer += deltaTime;
 
 					auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki2", 2.0f, true);
@@ -7000,6 +7040,19 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 					if (_genkiAttackStart)
 					{
+						if (!_isBasicPatternSoundPlayed[1])
+						{
+							_soundComp->Play(_getnkitamaShouting);
+
+							_isBasicPatternSoundPlayed[1] = true;
+						}
+
+						if (!_isBasicPatternSoundPlayed[2])
+						{
+							_soundComp->Play(_getnkitamaShot);
+
+							_isBasicPatternSoundPlayed[2] = true;
+						}
 						_timer += deltaTime;
 
 						for (auto& index : _bossLastAttackList)
@@ -7012,6 +7065,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 							if (_timer <= 10.0f)
 							{
+
 								auto newPos = ToolBox::LogarithmicInterpolation(DirectX::XMFLOAT3(-2.2f, 180.0f, 88.0f), playerPos, _timer * 0.1f);
 
 								Genki->SetPosition(newPos);
@@ -7044,6 +7098,12 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 									animator->Stop();
 
 									_timer = 0.0f;
+
+									_soundComp->Stop(_genkitamaCharge);
+									_soundComp->Stop(_getnkitamaShot);
+									_soundComp->Stop(_getnkitamaShouting);
+									_soundComp->Stop(_playerLastLaser);
+
 
 									SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
 									return false;
@@ -7131,6 +7191,19 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 					_timer += deltaTime;
 					_timer2 += deltaTime;
 
+					if (!_isBasicPatternSoundPlayed[3])
+					{
+						_soundComp->Play(_getnkitamaShot);
+
+						_isBasicPatternSoundPlayed[3] = true;
+					}
+
+					if (!_isBasicPatternSoundPlayed[4])
+					{
+						_soundComp->Play(_playerLastLaser);
+
+						_isBasicPatternSoundPlayed[4] = true;
+					}
 
 					if (_timer < 0.5f)
 					{
@@ -7173,8 +7246,22 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 					{
 						logicFinish = true;
 					}
+					else if (_bossGenkiPos < -100.0f)
+					{
+						_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
 
+						_timer = 0.0f;
 
+						SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
+
+						_soundComp->Stop(_genkitamaCharge);
+						_soundComp->Stop(_getnkitamaShot);
+						_soundComp->Stop(_getnkitamaShouting);
+						_soundComp->Stop(_playerLastLaser);
+
+						return false;
+					}
+					
 					if (logicFinish)
 					{
 						_timer = 0;
@@ -7194,6 +7281,11 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 					_cameraRot.y = 0.0f;
 					cinematicCamera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);
 					_nowCameraStep = 0;
+
+					_soundComp->Stop(_genkitamaCharge);
+					_soundComp->Stop(_getnkitamaShot);
+					_soundComp->Stop(_getnkitamaShouting);
+					_soundComp->Stop(_playerLastLaser);
 
 					SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
 

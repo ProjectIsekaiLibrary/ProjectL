@@ -575,5 +575,10 @@ namespace KunrealEngine
 		int _aurabladeShotSound1;
 		int _aurabladeShotSound2;
 		int _vertucalSound;
+
+		int _genkitamaCharge;
+		int _getnkitamaShot;
+		int _getnkitamaShouting;
+		int _playerLastLaser;
 	};
 }
