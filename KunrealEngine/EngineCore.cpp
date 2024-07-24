@@ -269,9 +269,17 @@ void KunrealEngine::EngineCore::PlayGround()
 
 	EventManager::GetInstance().SetCamera("testCamera");
 
+	
+
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
 	player->AddComponent<Player>();
+	player->AddComponent<Light>();
+	DirectX::XMFLOAT4 playerDiffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
+	DirectX::XMFLOAT4 playerAmbient = { 0.2f, 0.2f, 0.2f, 0.2f };
+	DirectX::XMFLOAT4 playerSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	player->GetComponent<Light>()->CreatePointLight(playerAmbient, playerDiffuse, playerSpecular, 300.f, 16.0f);
+	player->GetComponent<Light>()->SetOffSet(0.0f, 15.f, -5.0f);
 	player->_autoAwake = true;
 
 
@@ -282,8 +290,8 @@ void KunrealEngine::EngineCore::PlayGround()
 	GRAPHICS->SetMainCubeMap(list.back());
 
 	// light test
-	DirectX::XMFLOAT4 diffuse = { 1.0f, 1.0f, 1.0f, 1.0f };
-	DirectX::XMFLOAT4 ambient = { 0.3f, 0.3f, 0.3f, 1.0f };
+	DirectX::XMFLOAT4 diffuse = { 0.9f, 0.9f, 0.9f, 1.0f };
+	DirectX::XMFLOAT4 ambient = { 0.0f, 0.06f, 0.41f, 1.0f };
 	DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
 	DirectX::XMFLOAT3 direction = { -1.0f, -1.0f, 1.0f };
 
@@ -321,7 +329,14 @@ void KunrealEngine::EngineCore::PlayGround()
 	// Kamen
 	kamen = sceneInstance.GetCurrentScene()->CreateObject("kamen");
 	kamen->AddComponent<Kamen>();
+	DirectX::XMFLOAT4 bossDiffuse = { 0.f, 1.0f, 0.f, 1.f };
+	DirectX::XMFLOAT4 bossAmbient = { 1.f, 1.f, 1.f, 1.f };
+	DirectX::XMFLOAT4 bossSpecular = { 1.0f, 1.0f, 1.0f, 1.0f };
+	kamen->AddComponent<Light>();
+	kamen->GetComponent<Light>()->CreatePointLight(bossAmbient, bossDiffuse, bossSpecular, 300.f, 16.f);
+	kamen->GetComponent<Light>()->SetOffSet(0.0f, 30.f, -10.0f);
 	kamen->_autoAwake = true;
+
 
 	// UI의 부모가 될 0,0pos객체
 	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
@@ -838,7 +853,7 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingMeteo5->_autoAwake = true;
 	_endingMeteo5->AddComponent<MeshRenderer>();
 	_endingMeteo5->GetComponent<MeshRenderer>()->SetMeshObject("SmallMeteo1/SmallMeteo1");
-	_endingMeteo5->GetComponent<Transform>()->SetPosition(-294.0f, -100.f, -255.0f);
+	_endingMeteo5->GetComponent<Transform>()->SetPosition(99.0f, -100.f, -450.0f);
 	_endingMeteo5->AddComponent<Particle>();
 	_endingMeteo5->GetComponent<Particle>()->SetParticleEffect("Meteo5", "Resources/Textures/Particles/fx_Lightning1.dds", 1000);
 	_endingMeteo5->GetComponent<Particle>()->SetParticleDuration(5.9f, 6.6f);
@@ -949,8 +964,8 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingKunho = endingScene->CreateObject("EndingKunho");
 	_endingKunho->_autoAwake = true;
 	_endingKunho->AddComponent<MeshRenderer>();
-	_endingKunho->GetComponent<MeshRenderer>()->SetMeshObject("Player/Player");
-	_endingKunho->GetComponent<Transform>()->SetPosition(-250.0f, -90.f, -475.0f);
+	_endingKunho->GetComponent<MeshRenderer>()->SetMeshObject("EndingPlayer/EndingPlayer");
+	_endingKunho->GetComponent<Transform>()->SetPosition(-250.0f, -100.f, -475.0f);
 	_endingKunho->GetComponent<Transform>()->SetRotation(25.0f, 140.f, -41.0f);
 	_endingKunho->GetComponent<Transform>()->SetScale(0.5f, 0.5f, 0.5f);
 
@@ -961,50 +976,56 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingCredit1 = endingScene->CreateObject("EndingCredit1");
 	_endingCredit1->_autoAwake = true;
 	auto credit1 = _endingCredit1->AddComponent<ImageRenderer>();
-	credit1->SetImage("ui/Programmers.png");
-	credit1->SetPosition(700.0f, 1100.0f);
+	credit1->SetImage("ui/Ending/Programmers.png");
+	credit1->SetPosition(0.0f, 1460.f);
 
 	_endingLee = endingScene->CreateObject("EndingCredit2");
 	_endingLee->_autoAwake = true;
 	auto credit2 = _endingLee->AddComponent<ImageRenderer>();
-	credit2->SetImage("ui/LeeKunho.png");
-	credit2->SetPosition(0.0f, 1100.0f);
+	credit2->SetImage("ui/Ending/Lee.png");
+	credit2->SetPosition(0.0f, 1460.f);
 
 	_endingYoon = endingScene->CreateObject("EndingCredit3");
 	_endingYoon->_autoAwake = true;
 	auto credit3 = _endingYoon->AddComponent<ImageRenderer>();
-	credit3->SetImage("ui/YoonJonghwa.png");
-	credit3->SetPosition(0.0f, 1100.0f);
+	credit3->SetImage("ui/Ending/Yoon.png");
+	credit3->SetPosition(0.0f, 1460.f);
 
 	_endingKim = endingScene->CreateObject("EndingCredit4");
 	_endingKim->_autoAwake = true;
 	auto credit4 = _endingKim->AddComponent<ImageRenderer>();
-	credit4->SetImage("ui/KimHyunjae.png");
-	credit4->SetPosition(0.0f, 1100.0f);
+	credit4->SetImage("ui/Ending/Kim.png");
+	credit4->SetPosition(0.0f, 1460.f);
 
 	_endingBae = endingScene->CreateObject("EndingCredit5");
 	_endingBae->_autoAwake = true;
 	auto credit5 = _endingBae->AddComponent<ImageRenderer>();
-	credit5->SetImage("ui/BaeSunggeun.png");
-	credit5->SetPosition(-425.0f, 1100.0f);
+	credit5->SetImage("ui/Ending/Bae.png");
+	credit5->SetPosition(0.0f, 1460.f);
 
 	_endingJung = endingScene->CreateObject("EndingCredit6");
 	_endingJung->_autoAwake = true;
 	auto credit6 = _endingJung->AddComponent<ImageRenderer>();
-	credit6->SetImage("ui/JeongJinsoo.png");
-	credit6->SetPosition(-425.0f, 1100.0f);
+	credit6->SetImage("ui/Ending/Jeong.png");
+	credit6->SetPosition(0.0f, 1460.f);
 
 	_endingThankYou = endingScene->CreateObject("EndingThankYou");
 	_endingThankYou->_autoAwake = true;
 	auto credit7 = _endingThankYou->AddComponent<ImageRenderer>();
-	credit7->SetImage("ui/ThankYouForPlaying.png");
-	credit7->SetPosition(0.0f, 1100.0f);
+	credit7->SetImage("ui/Ending/Thanks.png");
+	credit7->SetPosition(0.0f, 1460.f);
 
 	_endingTheme = endingScene->CreateObject("EndingTheme");
 	_endingTheme->_autoAwake = true;
 	auto credit8 = _endingTheme->AddComponent<ImageRenderer>();
-	credit8->SetImage("ui/endingTheme.png");
-	credit8->SetPosition(0.0f, 1100.0f);
+	credit8->SetImage("ui/Ending/endingTheme2.png");
+	credit8->SetPosition(0.0f, 1620.f);
+
+	_bossTheme = endingScene->CreateObject("BossTheme");
+	_bossTheme->_autoAwake = true;
+	auto credit9 = _bossTheme->AddComponent<ImageRenderer>();
+	credit9->SetImage("ui/Ending/BossTheme2.png");
+	credit9->SetPosition(0.0f, 1460.f);
 }
 
 void KunrealEngine::EngineCore::EndingSceneUpdate()
@@ -1024,8 +1045,8 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 	_endingMeteo4->GetComponent<Transform>()->SetPosition(-173.0f,
 		CountPlusLoop(_endingMeteo4->GetComponent<Transform>()->GetPosition().y, 300.f, 4.f), -315.0f);
 
-	_endingMeteo5->GetComponent<Transform>()->SetPosition(-294.0f,
-		CountPlusLoop(_endingMeteo5->GetComponent<Transform>()->GetPosition().y, 200.f, 5.f), -255.0f);
+	_endingMeteo5->GetComponent<Transform>()->SetPosition(99.0f,
+		CountPlusLoop(_endingMeteo5->GetComponent<Transform>()->GetPosition().y, 200.f, 5.f), -450.0f);
 
 	_endingMeteo6->GetComponent<Transform>()->SetPosition(-77.f,
 		CountPlusLoop(_endingMeteo6->GetComponent<Transform>()->GetPosition().y, 400.f, 3.f), -632.0f);
@@ -1039,58 +1060,61 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 
 	if (endingTimer <= -5.f)
 	{
-		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(470.f,
-			CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(0.0f,
+			CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 	}
 	if (endingTimer <= -7.f)
 	{
-		_endingLee->GetComponent<ImageRenderer>()->SetPosition(415.f,
-			CountMinus(_endingLee->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+		_endingLee->GetComponent<ImageRenderer>()->SetPosition(0.0f,
+			CountMinus(_endingLee->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 
 		_endingKunho->GetComponent<Transform>()->SetPosition(-250.0f,
 			CountPlus(_endingKunho->GetComponent<Transform>()->GetPosition().y, 300.f, 11.f), -475.0f);
 	}
 	if (endingTimer <= -17.f)
 	{
-		_endingYoon->GetComponent<ImageRenderer>()->SetPosition(474.f,
-			CountMinus(_endingYoon->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+		_endingYoon->GetComponent<ImageRenderer>()->SetPosition(0.0f,
+			CountMinus(_endingYoon->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 
 		_endingSword->GetComponent<Transform>()->SetPosition(-298.0f,
 			CountPlus(_endingSword->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -397.0f);
 	}
 	if (endingTimer <= -27.f)
 	{
-		_endingKim->GetComponent<ImageRenderer>()->SetPosition(452.f,
-			CountMinus(_endingKim->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+		_endingKim->GetComponent<ImageRenderer>()->SetPosition(0.0f,
+			CountMinus(_endingKim->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 
 		_endingKachujin->GetComponent<Transform>()->SetPosition(-239.0f,
 			CountPlus(_endingKachujin->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -475.0f);
 	}
 	if (endingTimer <= -37.0f)
 	{
-		_endingBae->GetComponent<ImageRenderer>()->SetPosition(485.f,
-			CountMinus(_endingBae->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+		_endingBae->GetComponent<ImageRenderer>()->SetPosition(0.0f,
+			CountMinus(_endingBae->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 
 		_endingEnt->GetComponent<Transform>()->SetPosition(-273.0f,
 			CountPlus(_endingEnt->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -475.0f);
 	}
 	if (endingTimer <= -47.f)
 	{
-		_endingJung->GetComponent<ImageRenderer>()->SetPosition(450.f,
-			CountMinus(_endingJung->GetComponent<Transform>()->GetPosition().y, -1000.0f, 50.f));
+		_endingJung->GetComponent<ImageRenderer>()->SetPosition(0.0f,
+			CountMinus(_endingJung->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 
 		_endingSpider->GetComponent<Transform>()->SetPosition(-242.0f,
 			CountPlus(_endingSpider->GetComponent<Transform>()->GetPosition().y, 300.f, 11.f), -475.0f);
 	}
+	if (endingTimer <= -55.f)
+	{
+		_bossTheme->GetComponent<ImageRenderer>()->SetPosition(0.f,
+			CountMinus(_bossTheme->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
+
+		_endingTheme->GetComponent<ImageRenderer>()->SetPosition(0.f,
+			CountMinus(_endingTheme->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
+	}
 	if (endingTimer <= -70.f)
 	{
 		_endingThankYou->GetComponent<ImageRenderer>()->SetPosition(0.f,
-			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 500.0f, 50.f));
-	}
-	if (endingTimer <= -80.f)
-	{
-		_endingTheme->GetComponent<ImageRenderer>()->SetPosition(0.f,
-			CountMinus(_endingTheme->GetComponent<Transform>()->GetPosition().y, 1000.0f, 50.f));
+			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 680.0f, 65.f));
 	}
 	_endingEnt->GetComponent<Animator>()->Play("Idle", 0.1f, true);
 	_endingSpider->GetComponent<Animator>()->Play("Idle", 0.1f, true);
@@ -1229,7 +1253,7 @@ void KunrealEngine::EngineCore::SmoothTransition(DirectX::XMFLOAT3 startPos, Dir
 
 	if (g_test >= -45.5f)
 	{
-		auto deltaTime = TimeManager::GetInstance().GetDeltaTime() * -11.0f;
+		auto deltaTime = TimeManager::GetInstance().GetDeltaTime() * -11.f;
 		titleCamera->GetComponent<Camera>()->CameraRotateY(deltaTime);
 		g_test += deltaTime;
 	}

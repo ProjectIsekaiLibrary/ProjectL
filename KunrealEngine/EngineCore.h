@@ -175,9 +175,10 @@ namespace KunrealEngine
 		GameObject* _endingJung;
 		GameObject* _endingThankYou;
 		GameObject* _endingTheme;
+		GameObject* _bossTheme;
 
 		float _originalYpos = -20.0f;
-
+		float _endingUIScale = -1.333333f;
 	private:
 		GameObject* titleCamera;
 
