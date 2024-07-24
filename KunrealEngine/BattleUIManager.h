@@ -56,6 +56,7 @@ namespace KunrealEngine
 		GameObject* _ui_skill4_cool;	// 4번 스킬 쿨다운
 
 		GameObject* _potion_cool;			// 포션 먹기
+		GameObject* _potion_text;			// 포션 먹기
 		GameObject* _dash_cool;			// 대쉬(회피?)
 
 		GameObject* _playerhp_bar;		// 플레이어 체력바

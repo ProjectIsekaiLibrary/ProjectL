@@ -42,19 +42,28 @@ void KunrealEngine::BattleUIManager::Initialize()
 	GameObject* playerhp_background1;	// 플레이어 체력바 배경
 	GameObject* playerhp_background2;	// 플레이어 체력바 배경
 
-	GameObject* ui_skill1;				// 1번 스킬
 	GameObject* ui_skill1_icon;			// 1번 스킬
-	GameObject* ui_skill2;				// 2번 스킬
-	GameObject* ui_skill2_icon;			// 1번 스킬
-	GameObject* ui_skill3;				// 3번 스킬
-	GameObject* ui_skill3_icon;			// 1번 스킬
-	GameObject* ui_skill4;				// 4번 스킬
-	GameObject* ui_skill4_icon;			// 1번 스킬
+	GameObject* ui_skill1;				// 1번 스킬
+	GameObject* ui_skill1_text;			// 1번 스킬
 
-	GameObject* potion;					// 포션 먹기
+	GameObject* ui_skill2_icon;			// 2번 스킬
+	GameObject* ui_skill2;				// 2번 스킬
+	GameObject* ui_skill2_text;			// 2번 스킬
+
+	GameObject* ui_skill3_icon;			// 3번 스킬
+	GameObject* ui_skill3;				// 3번 스킬
+	GameObject* ui_skill3_text;			// 3번 스킬
+
+	GameObject* ui_skill4_icon;			// 4번 스킬
+	GameObject* ui_skill4;				// 4번 스킬
+	GameObject* ui_skill4_text;			// 4번 스킬
+
 	GameObject* potion_icon;			// 포션 먹기
-	GameObject* dash;					// 대쉬(회피?)
+	GameObject* potion;					// 포션 먹기
+
 	GameObject* dash_icon;				// 대쉬(회피?)
+	GameObject* dash;					// 대쉬(회피?)
+	GameObject* dash_text;				// 대쉬(회피?)
 
 	_battleuibox = this->GetOwner();
 	_battleuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 1.0f);
@@ -109,6 +118,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill1->GetComponent<ImageRenderer>()->SetPosition(708.0f, 980.f);
 	ui_skill1->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
+	ui_skill1_text = scene.GetCurrentScene()->CreateObject("ui_skill1");
+	ui_skill1_text->SetParent(battleui_pack);
+	ui_skill1_text->AddComponent<ImageRenderer>();
+	ui_skill1_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/QText.png");
+	ui_skill1_text->GetComponent<ImageRenderer>()->SetPosition(708.0f, 980.f);
+	ui_skill1_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
 	ui_skill2_icon = scene.GetCurrentScene()->CreateObject("ui_skill2_icon");
 	ui_skill2_icon->SetParent(battleui_pack);
 	ui_skill2_icon->AddComponent<ImageRenderer>();
@@ -129,6 +145,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill2->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
 	ui_skill2->GetComponent<ImageRenderer>()->SetPosition(820.f, 980.f);
 	ui_skill2->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	ui_skill2_text = scene.GetCurrentScene()->CreateObject("ui_skill2");
+	ui_skill2_text->SetParent(battleui_pack);
+	ui_skill2_text->AddComponent<ImageRenderer>();
+	ui_skill2_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/WText.png");
+	ui_skill2_text->GetComponent<ImageRenderer>()->SetPosition(820.f, 980.f);
+	ui_skill2_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	ui_skill3_icon = scene.GetCurrentScene()->CreateObject("ui_skill3_icon");
 	ui_skill3_icon->SetParent(battleui_pack);
@@ -151,6 +174,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill3->GetComponent<ImageRenderer>()->SetPosition(935.f, 980.f);
 	ui_skill3->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
+	ui_skill3_text = scene.GetCurrentScene()->CreateObject("ui_skill3");
+	ui_skill3_text->SetParent(battleui_pack);
+	ui_skill3_text->AddComponent<ImageRenderer>();
+	ui_skill3_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/EText.png");
+	ui_skill3_text->GetComponent<ImageRenderer>()->SetPosition(935.f, 980.f);
+	ui_skill3_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
 	ui_skill4_icon = scene.GetCurrentScene()->CreateObject("ui_skill4");
 	ui_skill4_icon->SetParent(battleui_pack);
 	ui_skill4_icon->AddComponent<ImageRenderer>();
@@ -171,6 +201,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	ui_skill4->GetComponent<ImageRenderer>()->SetImage("ui/skill space.png");
 	ui_skill4->GetComponent<ImageRenderer>()->SetPosition(1050.f, 980.f);
 	ui_skill4->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	ui_skill4_text = scene.GetCurrentScene()->CreateObject("ui_skill4_icon");
+	ui_skill4_text->SetParent(battleui_pack);
+	ui_skill4_text->AddComponent<ImageRenderer>();
+	ui_skill4_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/RText.png");
+	ui_skill4_text->GetComponent<ImageRenderer>()->SetPosition(1050.f, 980.f);
+	ui_skill4_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	potion_icon = scene.GetCurrentScene()->CreateObject("ui_skill5");
 	potion_icon->SetParent(battleui_pack);
@@ -193,6 +230,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	potion->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
 	potion->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
 
+	_potion_text = scene.GetCurrentScene()->CreateObject("ui_skill5");
+	_potion_text->SetParent(battleui_pack);
+	_potion_text->AddComponent<ImageRenderer>();
+	_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion5.png");
+	_potion_text->GetComponent<ImageRenderer>()->SetPosition(1170.f, 976.f);
+	_potion_text->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
 	dash_icon = scene.GetCurrentScene()->CreateObject("ui_skill6");
 	dash_icon->SetParent(battleui_pack);
 	dash_icon->AddComponent<ImageRenderer>();
@@ -213,6 +257,13 @@ void KunrealEngine::BattleUIManager::Initialize()
 	dash->GetComponent<ImageRenderer>()->SetImage("ui/sub-skill.png");
 	dash->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
 	dash->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
+
+	dash_text = scene.GetCurrentScene()->CreateObject("ui_skill6");
+	dash_text->SetParent(battleui_pack);
+	dash_text->AddComponent<ImageRenderer>();
+	dash_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/SpaceText.png");
+	dash_text->GetComponent<ImageRenderer>()->SetPosition(1170.f, 1023.f);
+	dash_text->GetComponent<Transform>()->SetScale(0.8f, 0.8f, 1.0f);
 
 	/// player
 	playerhp_background = scene.GetCurrentScene()->CreateObject("_playerhp_background");
@@ -329,10 +380,12 @@ void KunrealEngine::BattleUIManager::Initialize()
 
 void KunrealEngine::BattleUIManager::Release()
 {
+
 }
 
 void KunrealEngine::BattleUIManager::FixedUpdate()
 {
+
 }
 
 void KunrealEngine::BattleUIManager::Update()
@@ -418,10 +471,6 @@ void KunrealEngine::BattleUIManager::Update()
 		Setpotioncool();
 	}
 
-//	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE))
-//	{
-//		Setpotioncool();
-//	}
 }
 
 void KunrealEngine::BattleUIManager::LateUpdate()
@@ -741,6 +790,30 @@ void KunrealEngine::BattleUIManager::Setdashcool()
 
 void KunrealEngine::BattleUIManager::Setpotioncool()
 {
+	int num = _eventmanager->_playerAbill->_maxPotion;
+
+	switch (num)
+	{
+	case 1:
+		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion1.png");
+		break;
+	case 2:
+		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion2.png");
+		break;
+	case 3:
+		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion3.png");
+		break;
+	case 4:
+		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion4.png");
+		break;
+	case 5:
+		_potion_text->GetComponent<ImageRenderer>()->SetImage("ui/SkillText/Potion5.png");
+		break;
+
+		default:
+			break;
+	}
+
 	_CoroutineIs(potiongauge)
 	{
 		auto control = this;
