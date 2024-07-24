@@ -428,7 +428,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 
 	shot->SetTotalData(
 		"Shot",			// 이름
-		12.0f,			// 데미지
+		10.0f,			// 데미지
 		10.0f,			// 마나
 		5.0f,			// 무력화 피해량
 		1.5f,			// 쿨타임

@@ -19,7 +19,7 @@ KunrealEngine::Player::Player()
 		250.0f,			// hp
 		250.0f,			// maxhp
 		100.0f,			// stamina
-		20.0f,			// movespeed
+		17.0f,			// movespeed
 		120.0f,			// dashspeed
 		40.0f,			// dashrange
 		8.0f,			// dashcooldown
