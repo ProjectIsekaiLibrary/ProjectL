@@ -14,8 +14,13 @@ KunrealEngine::ButtonSystem::~ButtonSystem()
 
 void KunrealEngine::ButtonSystem::Initialize()
 {
+	// 사운드플레이어 컴포넌트 생성
 	_soundComp = GetOwner()->AddComponent<SoundPlayer>();
+	// SOUNDINFO를 만든다. 경로/3D사운드 여부/Loop 여부/ 음량(기본값 100)
+	// 반환값 int는 그 소리가 저장된 인덱스값
 	_soundclick = _soundComp->CreateSoundInfo("Resources/Sound/Click.wav", false, false);
+	// 그리고 소리를 생성. 변수로 인덱스 값을 넣어준다.
+	// 다음 변수는 이게 bgm(0)인지 sfx(1)인지 구분용도
 	_soundComp->CreateSound(_soundclick, 1);
 }
 
@@ -56,6 +61,8 @@ void KunrealEngine::ButtonSystem::Update()
 	{
 		if (ispick)
 		{
+			// 플레이 하고자 하는 위치에서 함수 실행.
+			// update문에 들어가도 사운드가 종료될때까지 새로 재생하지 않음
 			_soundComp->Play(_soundclick);
 			_script();
 		}
