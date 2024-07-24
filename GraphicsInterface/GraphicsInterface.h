@@ -74,6 +74,8 @@ namespace GInterface
 
 		virtual void DeleteDebugMap(const std::string& name) abstract;
 
+		virtual void SetDeltaTime(float dt) abstract;
+
 	public:
 		// 두 버텍스로 원하는 컬러로 라인을 생성
 		virtual void CreateDebugLine(const DirectX::XMFLOAT3& vertex1, const DirectX::XMFLOAT3& vertex2, const DirectX::XMFLOAT4& color) abstract;
