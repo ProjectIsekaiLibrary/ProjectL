@@ -1189,6 +1189,7 @@ void KunrealEngine::EventManager::ResetEndingSceneObjects()
 
 	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetPosition(-340.0f, 100.f, -267.0f);
 	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetRotation(0.f, 212.f, 0.f);
+	scene->GetGameObject("endingBoss")->GetComponent<Animator>()->SetCurrentFrame(0);
 	scene->GetGameObject("endingBoss")->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 	
 	scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);

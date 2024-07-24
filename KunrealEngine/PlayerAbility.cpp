@@ -102,6 +102,11 @@ void KunrealEngine::PlayerAbility::Update()
 			return;
 		}
 
+		_soundComp->Stop(_energyBallShot);
+		_soundComp->Stop(_energyBallFlying);
+		_soundComp->Play(_energyBallShot);
+		_soundComp->Play(_energyBallFlying);
+
 		ResetShotPos();
 		Startcoroutine(shotCoolDown);
 		_isShotDetected = true;
@@ -200,7 +205,7 @@ void KunrealEngine::PlayerAbility::Update()
 			ability->_laserParticle3->SetActive(false);
 			ability->_laserParticle4->SetActive(false);
 			ability->_destroyLaser = true;
-			ability->_isLaserReady = false;
+			//ability->_isLaserReady = false;
 			ability->_isLaserStarted = false;
 
 		};
@@ -540,6 +545,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 				{
 					//_soundComp->Stop(_energyBallShot);
 					_soundComp->Stop(_energyBallFlying);
+					_soundComp->Stop(_energyBallExplode);
 					_soundComp->Play(_energyBallExplode);
 					EventManager::GetInstance().CalculateDamageToBoss(shot);
 
@@ -584,8 +590,6 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 		{
 			if (_shot->GetActivated())
 			{
-				_soundComp->Play(_energyBallShot);
-				_soundComp->Play(_energyBallFlying);
 				DirectX::XMFLOAT3 currentPoint = _shot->GetComponent<Transform>()->GetPosition();
 
 				DirectX::XMVECTOR currentPosVec = DirectX::XMLoadFloat3(&currentPoint);

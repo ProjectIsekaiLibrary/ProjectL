@@ -94,7 +94,7 @@ void KunrealEngine::PlayerMove::Update()
 	if (InputSystem::GetInstance()->KeyDown(KEY::SPACE) && this->_isDashReady)
 	{
 		// 행동불가 상황이라면 return
-		if (_playerComp->_playerBindFlag)
+		if (_playerComp->_playerBindFlag || SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
 		{
 			return;
 		}
