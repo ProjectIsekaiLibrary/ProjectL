@@ -113,6 +113,8 @@ namespace KunrealEngine
 		void TitleMapParticle();
 		void MoveToMain();
 
+
+
 	private:
 		// 인게임 마우스 포지션
 		int _ingameMouseX = 0;
@@ -130,8 +132,6 @@ namespace KunrealEngine
 		void ShiveringLight(GameObject* name);
 
 	private:
-		
-
 		void CreateEndingScene();
 		void EndingSceneUpdate();
 		SoundPlayer* _endingSoundComp;
@@ -189,6 +189,7 @@ namespace KunrealEngine
 		float titleUIPosY = 0.0f;
 		void SmoothTransition(DirectX::XMFLOAT3 startPos, DirectX::XMFLOAT3 startRot,
 			DirectX::XMFLOAT3 endPos, DirectX::XMFLOAT3 endRot, float duration, float deltaTime);
+		void BeforeStartTutorial();
 	};
 }
 

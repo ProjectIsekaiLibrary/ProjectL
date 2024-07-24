@@ -91,17 +91,17 @@ namespace KunrealEngine
 		bool _playerBindFlag;					// true일때 행동불가
 
 		GameObject* _deathParticle1;				// 플레이어 죽을 때 출력될 파티클
-		GameObject* _deathParticle2;	
-		GameObject* _deathParticle3;	
-		GameObject* _deathParticle4;	
-		GameObject* _deathParticle5;	
-		GameObject* _deathParticle6;	
+		GameObject* _deathParticle2;
+		GameObject* _deathParticle3;
+		GameObject* _deathParticle4;
+		GameObject* _deathParticle5;
+		GameObject* _deathParticle6;
 
-		std::vector<GameObject*> _deathParticleVector;	
+		std::vector<GameObject*> _deathParticleVector;
 		float _deathAnimationSpeed;
 
 		float _playerStartX;					// 보스맵 시작 x z 좌표
-		float _playerStartZ;		
+		float _playerStartZ;
 
 		int _knock_downSound;
 		int _diedsound;
@@ -126,7 +126,7 @@ namespace KunrealEngine
 		{
 			auto* playerComp = this;
 			Waitforsecond(playerComp->_sweepDuration + 1.0f);				// 누운 다음 1초 뒤 기상
-			
+
 			playerComp->_isSweep = false;
 			playerComp->_playerStatus = Status::IDLE;
 		};
@@ -151,7 +151,7 @@ namespace KunrealEngine
 		// 플레이어 피격 후 날아가는 좌표 계산
 		void CalculateSweep(DirectX::XMVECTOR direction);
 		void CalculateSweep(DirectX::XMFLOAT3 direction);
-		
+
 		// 플레이어 피격 후 날아가는 로직
 		void PlayerSweep();
 
@@ -166,8 +166,12 @@ namespace KunrealEngine
 		void SetPlayerBindFlag(bool flag, int state = 0);
 		bool GetPlayerBindFlag();
 
+		void SetPlayerIdle();
+
 		// 플레이어가 스킬 시전중인지 Flag
 		bool _onCasting;
+	public:
+		bool _iswakeuped;
 	};
 }
 

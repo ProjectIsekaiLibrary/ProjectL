@@ -29,7 +29,7 @@ KunrealEngine::Player::Player()
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
-	, _onCasting(false), _playerStartX(0.7f), _playerStartZ(-55.0f), _playerBindFlag(false), _cinematicIndex(0)
+	, _onCasting(false), _playerStartX(0.7f), _playerStartZ(-55.0f), _playerBindFlag(false), _cinematicIndex(0), _iswakeuped(false)
 {
 	_sweepNode.clear();
 }
@@ -672,9 +672,21 @@ void KunrealEngine::Player::BeforeStart()
 
 		if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() >= this->_owner->GetComponent<Animator>()->GetMaxFrame())
 		{
-			this->_playerStatus = Status::IDLE;
+			if (!_iswakeuped)
+			{
+				_iswakeuped = true;
+				auto& scene = SceneManager::GetInstance();
+				this->_owner->GetComponent<SoundPlayer>()->Stop(_staandup);
+				scene.GetScene("Title")->GetGameObject("tutorialFade")->SetActive(true);
+				scene.GetScene("Title")->GetGameObject("tutorialImage")->SetActive(true);
+			}
 		}
 	}
+}
+
+void KunrealEngine::Player::SetPlayerIdle()
+{
+	this->_playerStatus = Status::IDLE;
 }
 
 const DirectX::XMVECTOR KunrealEngine::Player::GetDirectionVector()

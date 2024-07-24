@@ -552,6 +552,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 
 			sceneInstance.GetCurrentScene()->GetGameObject("DirectionalLight")->GetComponent<Light>()->SetDirection(-1.0f, -1.0f, 1.0f);
 
+			sceneInstance.GetScene("Title")->GetGameObject("TitlePlayer")->GetComponent<Player>()->_iswakeuped = false;
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<PlayerMove>()->SetPlayerY(2.0f);
 			navigationInstance.HandleBuild(0, "bossmap.obj");
 			navigationInstance.HandleBuild(1, "bossmap.obj");
@@ -683,6 +684,8 @@ void KunrealEngine::EngineCore::CreateTitleScene()
 	option_ui_box->AddComponent<OptionUIManager>();
 
 	GameObject* titleUIpack = MakeTitleUIPack();
+
+	BeforeStartTutorial();
 
 	TitlesceneobjectSetting(_bezierObjectList);
 }
@@ -1255,4 +1258,56 @@ void KunrealEngine::EngineCore::SmoothTransition(DirectX::XMFLOAT3 startPos, Dir
 	{
 		g_rageOfLee = duration; // 타이머를 끝으로 고정
 	}
+}
+
+void KunrealEngine::EngineCore::BeforeStartTutorial()
+{
+	auto& scene = SceneManager::GetInstance();
+	ImageRenderer* image;
+	ButtonSystem* butt;
+
+	GameObject* tutorialFade = scene.GetScene("Title")->CreateObject("tutorialFade");
+	tutorialFade->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+	image = tutorialFade->AddComponent<ImageRenderer>();
+	image->SetImage("ui/blackBackgroundLarge.png");
+	image->SetAlpha(0.5f);
+	tutorialFade->SetActive(false);
+
+	GameObject* tutorialImage = scene.GetScene("Title")->CreateObject("tutorialImage");
+	tutorialImage->GetComponent<Transform>()->SetPosition(320.0f, 180.0f, 0.0f);
+	image = tutorialImage->AddComponent<ImageRenderer>();
+	image->SetImage("ui/SkillExplain/control_tip.png");
+	butt = tutorialImage->AddComponent<ButtonSystem>();
+	butt->SetImage(image);
+	butt->SetButtonFunc([this]()
+		{
+			Coroutine_Func(tutorialFadeout)
+			{
+				auto thisp = this;
+
+				auto& scene = SceneManager::GetInstance();
+				float speed = 10.0f;
+				float alpha = 1.0f;
+				while (1)
+				{
+					alpha -= TimeManager::GetInstance().GetDeltaTime() * speed;
+
+					scene.GetCurrentScene()->GetGameObject("tutorialFade")->GetComponent<ImageRenderer>()->SetAlpha(alpha / 2);
+					scene.GetCurrentScene()->GetGameObject("tutorialImage")->GetComponent<ImageRenderer>()->SetAlpha(alpha);
+
+					if (alpha < 0)
+					{
+						scene.GetCurrentScene()->GetGameObject("tutorialFade")->GetComponent<ImageRenderer>()->SetAlpha(0.5f);
+						scene.GetCurrentScene()->GetGameObject("tutorialImage")->GetComponent<ImageRenderer>()->SetAlpha(1.0f);
+						scene.GetCurrentScene()->GetGameObject("tutorialFade")->SetActive(false);
+						scene.GetCurrentScene()->GetGameObject("tutorialImage")->SetActive(false);
+						break;
+					}
+					Return_null;
+				}
+				scene.GetCurrentScene()->GetGameObject("TitlePlayer")->GetComponent<Player>()->SetPlayerIdle();
+			};
+			Startcoroutine(tutorialFadeout);
+		});
+	tutorialImage->SetActive(false);
 }
