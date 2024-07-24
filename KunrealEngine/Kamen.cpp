@@ -6,6 +6,7 @@
 #include "SceneManager.h"
 #include "InputSystem.h"
 #include "EventManager.h"
+#include "SoundPlayer.h"
 #include "Kamen.h"
 
 KunrealEngine::Kamen::Kamen()
@@ -34,7 +35,8 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr), _3PhaseParticle(nullptr), _playerLastLifetimer(0), _bossGenkiPos(0), _emergenceDecal(nullptr), _egoEmergenceDecal(nullptr), _swordOutSideSafeDecal(nullptr), _swordMeteorDecal(nullptr)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr), _3PhaseParticle(nullptr), _playerLastLifetimer(0), _bossGenkiPos(0), _emergenceDecal(nullptr), _egoEmergenceDecal(nullptr), _swordOutSideSafeDecal(nullptr), _swordMeteorDecal(nullptr),
+	_soundComp(nullptr), _leftFireSoundIndex(0)
 {
 	BossBasicInfo info;
 
@@ -106,6 +108,97 @@ void KunrealEngine::Kamen::Initialize()
 	_cinematicCamera2->GetComponent<Camera>()->Update();
 
 	_mainPlayCamera = SceneManager::GetInstance().GetCurrentScene()->GetMainCamera();
+
+
+	/// 사운드
+	_soundComp = _boss->AddComponent<SoundPlayer>();
+
+	_leftFireSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fireshot_01.ogg", false, false);
+	_soundComp->CreateSound(_leftFireSoundIndex, 1);
+
+	_callSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fireshot_02.ogg", false, false);
+	_soundComp->CreateSound(_callSoundIndex, 1);
+
+	_callSoundIndex2 = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fireshot_02.ogg", false, false);
+	_soundComp->CreateSound(_callSoundIndex2, 1);
+
+	_callSoundIndex3 = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fireshot_02.ogg", false, false);
+	_soundComp->CreateSound(_callSoundIndex3, 1);
+
+	_callSoundIndex4 = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fireshot_02.ogg", false, false);
+	_soundComp->CreateSound(_callSoundIndex4, 1);
+
+	_callSoundIndex5 = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fireshot_02.ogg", false, false);
+	_soundComp->CreateSound(_callSoundIndex5, 1);
+
+	_spellSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/forbiddenparty_finish_horizen.ogg", false, false);
+	_soundComp->CreateSound(_spellSoundIndex, 1);
+
+	_emergenceSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/vortex.ogg", false, false);
+	_soundComp->CreateSound(_emergenceSoundIndex, 1);
+
+	//_fiveWaySoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/slash_boon_swish.ogg", false, false);
+	//_soundComp->CreateSound(_fiveWaySoundIndex, 9);
+
+	/// 1->2 코어
+	_crySoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/outer_god_dmg.ogg", false, false);
+	_soundComp->CreateSound(_crySoundIndex, 1);
+
+	_meteorSwordSoundAppearIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/ghoststep_slash_exp_01.ogg", false, false);
+	_soundComp->CreateSound(_meteorSwordSoundAppearIndex, 1);
+
+	_meteorSwordAttackSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/microunivers_bigbang.ogg", false, false);
+	_soundComp->CreateSound(_meteorSwordAttackSoundIndex, 1);
+
+	_swordInsideSafeSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/ice_waveex_exp_electric_01.ogg", false, false);
+	_soundComp->CreateSound(_swordInsideSafeSoundIndex, 1);
+
+	_swordOutsideSafeSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/lightninggod_roar.ogg", false, false);
+	_soundComp->CreateSound(_swordOutsideSafeSoundIndex, 1);
+
+	//_swordLinearSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/launcher5.mp3", false, false);
+	//_soundComp->CreateSound(_swordLinearSoundIndex, 1);
+
+	_swordChopSoundIndex1 = _soundComp->CreateSoundInfo("Resources/Sound/third_strike1.ogg", false, false);
+	_soundComp->CreateSound(_swordChopSoundIndex1, 1);
+
+	_swordChopSoundIndex2 = _soundComp->CreateSoundInfo("Resources/Sound/third_strike2.ogg", false, false);
+	_soundComp->CreateSound(_swordChopSoundIndex2, 1);
+
+	_swordChopSoundIndex3 = _soundComp->CreateSoundInfo("Resources/Sound/third_strike3.ogg", false, false);
+	_soundComp->CreateSound(_swordChopSoundIndex3, 1);
+
+	for (int i = 0; i < 20; i++)
+	{
+		_swordMultipleSoundIndexVec.emplace_back(0);
+
+		_swordMultipleSoundIndexVec[i] = _soundComp->CreateSoundInfo("Resources/Sound/Boss/ccrash_fin.ogg", false, false);
+
+		_soundComp->CreateSound(_swordMultipleSoundIndexVec[i], 1);
+
+		_isCorePatternSoundPlayed.emplace_back(false);
+	}
+
+	_swordSwingSound1 = _soundComp->CreateSoundInfo("Resources/Sound/cutindash_originalsin_swish.ogg", false, false);
+	_soundComp->CreateSound(_swordSwingSound1, 1);
+
+	_swordSwingSound2 = _soundComp->CreateSoundInfo("Resources/Sound/cutindash_originalsin_swish.ogg", false, false);
+	_soundComp->CreateSound(_swordSwingSound2, 1);
+
+	_horizontalChargeSound = _soundComp->CreateSoundInfo("Resources/Sound/charging.mp3", false, false);
+	_soundComp->CreateSound(_horizontalChargeSound, 1);
+
+	_horizontalSwingSound = _soundComp->CreateSoundInfo("Resources/Sound/Boss/flense_change.ogg", false, false);
+	_soundComp->CreateSound(_horizontalSwingSound, 1);
+
+	_aurabladeShotSound1 = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fatality_remove.ogg", false, false);
+	_soundComp->CreateSound(_aurabladeShotSound1, 1);
+
+	_aurabladeShotSound2 = _soundComp->CreateSoundInfo("Resources/Sound/Boss/fatality_remove.ogg", false, false);
+	_soundComp->CreateSound(_aurabladeShotSound2, 1);
+
+	_vertucalSound = _soundComp->CreateSoundInfo("Resources/Sound/Boss/hounds_start.ogg", false, false);
+	_soundComp->CreateSound(_vertucalSound, 1);
 }
 
 void KunrealEngine::Kamen::Release()
@@ -309,11 +402,11 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//RightLeftPattern();								// 오른손 + 180도 회전후 왼손
 
-	//_basicPattern[0].emplace_back(_leftFireAttack);
-	//TeleportSpellPattern();							// 텔포 후 spell	
-	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	//_basicPattern[0].emplace_back(_fiveWayAttack);	// 5갈래 분신 발사
+	_basicPattern[0].emplace_back(_leftFireAttack);
+	TeleportSpellPattern();							// 텔포 후 spell	
+	BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	_basicPattern[0].emplace_back(_fiveWayAttack);	// 5갈래 분신 발사
 
 	_basicPattern[1] = _basicPattern[0];
 
@@ -329,8 +422,6 @@ void KunrealEngine::Kamen::GamePattern()
 
 	CoreSwordMeteorPattern();						// 1->2 코어 패턴
 	CoreSwordMutipleAttackPattern();				// 2->3 코어 패턴
-
-	_basicPattern[0].emplace_back(_leftFireAttack);
 }
 
 
@@ -2997,7 +3088,7 @@ void KunrealEngine::Kamen::CreateSubObject()
 		auto swordMeteorDecal = _boss->GetObjectScene()->CreateObject(objectName);
 		swordMeteorDecal->AddComponent<TransparentMesh>();
 		swordMeteorDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
-		swordMeteorDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
+		swordMeteorDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
 		swordMeteorDecal->GetComponent<TransparentMesh>()->SetDecal(true);
 		swordMeteorDecal->GetComponent<Transform>()->SetScale(600.0f, 200.0f, 600.0f);
 		swordMeteorDecal->GetComponent<Transform>()->SetPosition(0.0f, 40.0f, 0.0f);
@@ -3131,6 +3222,8 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 			{
 				_isDecalPosChecked[i] = false;
 			}
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -3150,12 +3243,18 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 				egoAnimator->Play(pattern->_animName, pattern->_speed, false);
 			}
 
+			/// 사운드 - 패턴 - 화염탄 5발 투척 (Fire Attack)
+			if (!_isBasicPatternSoundPlayed[0])
+			{
+				_soundComp->Play(_leftFireSoundIndex);
+
+				_isBasicPatternSoundPlayed[0] = true;
+			}
+
 			for (int i = 0; i < 5; i++)
 			{
 				if (animator->GetCurrentFrame() >= 14 + i)
-				{
-					/// 사운드 - 패턴 - 화염탄 5발 투척 (Fire Attack)
-
+				{					
 					if (_handFireReady[i] == true)
 					{
 						_handFireReady[i] = false;
@@ -3949,6 +4048,8 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 				_egoEmergenceDecal->GetComponent<Transform>()->SetPosition(egoPos.x, 2.0f, egoPos.z);
 			}
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -3994,6 +4095,11 @@ void KunrealEngine::Kamen::CreateEmergence()
 			if (isPlaying)
 			{
 				/// 사운드 - 패턴 - 바닥에서 올라오기 (Emergence)
+				if (!_isBasicPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_emergenceSoundIndex);
+					_isBasicPatternSoundPlayed[0] = true;
+				}
 
 				for (int i = 0; i < _particleEmergenceAttack.size(); i++)
 				{
@@ -4070,6 +4176,8 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			{
 				_isDecalPosChecked[i] = false;
 			}
+
+			_isSwordPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -4083,6 +4191,11 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			if (isPlayed)
 			{
 				/// 사운드 - 패턴 - 외부안전 (Clock)
+				if (!_isSwordPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_swordOutsideSafeSoundIndex);
+					_isSwordPatternSoundPlayed[0] = true;
+				}
 
 				// 콜라이더 키기
 				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
@@ -4157,6 +4270,8 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
 			_particleSwordOutsideAttack[0]->GetComponent<Particle>()->SetActive(true);
+
+			_isSwordPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -4169,6 +4284,14 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 			// 장판 실행이 완료되면
 			if (isPlayed)
 			{
+				/// 사운드 - 패턴 - 내부안전 (Clock)
+				{
+					if (!_isSwordPatternSoundPlayed[0])
+					{
+						_soundComp->Play(_swordInsideSafeSoundIndex);
+						_isSwordPatternSoundPlayed[0] = true;
+					}
+				}
 				// 콜라이더 키기
 				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
 				pattern->_isColliderActive[objectIndex] = true;
@@ -4190,8 +4313,6 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 				if (_swordTimer >= 1.1f)
 				{
-					/// 사운드 - 패턴 - 내부안전 (Clock)
-
 					return false;
 				}
 			}
@@ -4342,6 +4463,11 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 			_swordDonutAttack[2]->GetComponent<CylinderCollider>()->SetColliderScale(donut3Size.x * 2.0f, donut3Size.y * 2.0f, donut3Size.z * 2.0f);
 
 			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
+
+			for (int i = 0; i < 3; i++)
+			{
+				_isSwordPatternSoundPlayed[i] = false;
+			}
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -4359,6 +4485,12 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 			if (_swordTimer <= donutInterval)
 			{
 				/// 사운드 - 패턴 - 삼단파동_1 (Chop)
+				if (!_isSwordPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_swordChopSoundIndex1);
+					_isSwordPatternSoundPlayed[0] = true;
+				}
+
 				_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(true);
 				_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(true);
 				_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(true);
@@ -4371,6 +4503,11 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 			else if (_swordTimer > donutInterval && _swordTimer <= 2 * donutInterval)
 			{
 				/// 사운드 - 패턴 - 삼단파동_2 (Chop)
+				if (!_isSwordPatternSoundPlayed[1])
+				{
+					_soundComp->Play(_swordChopSoundIndex2);
+					_isSwordPatternSoundPlayed[1] = true;
+				}
 				_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(false);
@@ -4389,6 +4526,11 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 			else if (_swordTimer > 2 * donutInterval)
 			{
 				/// 사운드 - 패턴 - 삼단파동_3 (Chop)
+				if (!_isSwordPatternSoundPlayed[2])
+				{
+					_soundComp->Play(_swordChopSoundIndex3);
+					_isSwordPatternSoundPlayed[2] = true;
+				}
 				_particleSwordDonut1[1]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut2[1]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut3[1]->GetComponent<Particle>()->SetActive(false);
@@ -4487,6 +4629,8 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				pattern->DeleteSubObject(_egoLazer);
 				pattern->DeleteSubObject(_egoLazerCollider);
 			}
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -4495,6 +4639,14 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 		{
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
+
+			/// 사운드 - 패턴 - 빔 (Spell)
+			if (!_isBasicPatternSoundPlayed[0] && animator->GetCurrentFrame() >= 15.0f)
+			{
+				_soundComp->Play(_spellSoundIndex);
+
+				_isBasicPatternSoundPlayed[0] = true;
+			}
 
 			// 분신
 			if (_isEgoAttack)
@@ -4507,7 +4659,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 			if (animator->GetCurrentFrame() >= 30.0f)
 			{
-				if (animator->GetCurrentFrame() >= 55.0f)
+				if (animator->GetCurrentFrame() >= 50.0f)
 				{
 					_lazer->GetComponent<Particle>()->SetActive(false);
 					_lazer->GetChilds()[0]->GetComponent<Particle>()->SetActive(false);
@@ -4740,6 +4892,11 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 			}
 
 			_call2PrevStep = 0;
+
+			for (int i = 0; i < 5; i++)
+			{
+				_isBasicPatternSoundPlayed[i] = false;
+			}
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -4784,6 +4941,33 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 				if (step != _call2PrevStep)
 				{
+					switch (_call2PrevStep)
+					{
+						case 0:
+							_soundComp->Play(_call2PrevStep);
+							_isBasicPatternSoundPlayed[0] = true;
+							break;
+						case 1:
+							_soundComp->Play(_call2PrevStep);
+							_isBasicPatternSoundPlayed[1] = true;
+							break;
+						case 2:
+							_soundComp->Play(_call2PrevStep);
+							_isBasicPatternSoundPlayed[2] = true;
+							break;
+						case 3:
+							_soundComp->Play(_call2PrevStep);
+							_isBasicPatternSoundPlayed[3] = true;
+							break;
+						case 4:
+							_soundComp->Play(_call2PrevStep);
+							_isBasicPatternSoundPlayed[4] = true;
+							break;
+						default:
+							break;
+					}
+
+
 					pattern->_colliderOnCount = pattern->_maxColliderOnCount;
 
 					if (_call2PrevStep > 0)
@@ -5611,6 +5795,8 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			_timer = 0.0f;
 
 			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -5637,6 +5823,12 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
 			/// 사운드 - 보스 - 울부짓음 (BattleCry)
+			if (!_isBasicPatternSoundPlayed[0])
+			{
+				_soundComp->Play(_crySoundIndex);
+
+				_isBasicPatternSoundPlayed[0] = true;
+			}
 
 			if (!isAnimationPlaying)
 			{
@@ -5759,6 +5951,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 			{
 				meteorSwordParticle->GetComponent<Particle>()->SetActive(true);
 			}
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -5816,6 +6010,13 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 				}
 				case 2:
 				{
+					if (!_isBasicPatternSoundPlayed[0])
+					{
+						_soundComp->Play(_meteorSwordSoundAppearIndex);
+
+						_isBasicPatternSoundPlayed[0] = true;
+					}
+
 					if (_cameraRot.y < -90.0f)
 					{
 						auto swordTransform = _meteorSword->GetComponent<Transform>();
@@ -6117,6 +6318,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 			}
 
 			_swordMeteorDecal->GetComponent<TransparentMesh>()->Reset();
+
+			_isBasicPatternSoundPlayed[0] = false;
 		};
 	pattern->SetInitializeLogic(initLogic);
 
@@ -6133,6 +6336,11 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 				if (_timer == 0.0f)
 				{
 					/// 사운드 - 검 - 폭발 (SwrodMeteor)
+					if (!_isBasicPatternSoundPlayed[0])
+					{
+						_soundComp->Play(_meteorSwordAttackSoundIndex);
+						_isBasicPatternSoundPlayed[0] = true;
+					}
 
 					for (auto& meteorSwordHitParticle : _meteorSwordHitParticle)
 					{
@@ -6322,6 +6530,11 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 			_timer = 0.0f;
 
 			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
+
+			for (int i = 0; i < 20; i++)
+			{
+				_isCorePatternSoundPlayed[i] = false;
+			}
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6433,6 +6646,15 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 							_multipleSwordMoveDistance[i] -= moveSpeed;
 
 							_multipleSwordVec[i]->GetComponent<Transform>()->SetPosition(swordPosition.m128_f32[0], 30.0f, swordPosition.m128_f32[2]);
+
+							if (i > 0)
+							{
+								if (!_isCorePatternSoundPlayed[i-1])
+								{
+									_soundComp->Play(_swordMultipleSoundIndexVec[i-1]);
+									_isCorePatternSoundPlayed[i-1] = true;
+								}
+							}
 						}
 					}
 				}
@@ -6445,6 +6667,13 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 				_multipleSwordLookPlayer.clear();
 				_multipleSwordDirectionVec.clear();
 				_multipleSwordMoveDistance.clear();
+
+				/// 이거는 빼도 됨
+				if (!_isCorePatternSoundPlayed[19])
+				{
+					_soundComp->Play(_swordMultipleSoundIndexVec[19]);
+					_isCorePatternSoundPlayed[19] = true;
+				}
 
 				return false;
 			}
@@ -7036,6 +7265,8 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 
 			_timer = 0.0;
 
+			_isBasicPatternSoundPlayed[0] = 0;
+
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->Update();
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
@@ -7066,6 +7297,12 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 
 				pattern->_isColliderActive[index] = true;
 
+				if (!_isBasicPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_vertucalSound);
+
+					_isBasicPatternSoundPlayed[0] = true;
+				}
 
 				for (auto& verticalParticle : _verticalParticleSide)
 				{
@@ -7117,7 +7354,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 
 	pattern->SetPatternName("SwordSwingTwice");
 
-	pattern->SetAnimName("SwordSwingTwice").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(40.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::eParalysis);
+	pattern->SetAnimName("SwordSwingTwice").SetMaxColliderCount(1).SetSpeed(30.0f).SetDamage(40.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::eParalysis);
 	pattern->SetColliderType(BossPattern::eColliderType::eSwordDirection).SetSkipChase(true);
 
 	pattern->SetSubObject(_kamenSwordCollider);
@@ -7142,6 +7379,9 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 			_boss->GetComponent<MeshRenderer>()->Update();
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<BoxCollider>()->FixedUpdate();
+
+			_isBasicPatternSoundPlayed[0] = false;
+			_isBasicPatternSoundPlayed[1] = false;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -7160,6 +7400,13 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 			}
 			else if (36 < nowFrame && nowFrame < 47)
 			{
+				if (!_isBasicPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_swordSwingSound1);
+
+					_isBasicPatternSoundPlayed[0] = true;
+				}
+
 				auto nowRot = _bossTransform->GetRotation();
 				if (nowRot.x > -65.0f)
 				{
@@ -7174,6 +7421,12 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 			}
 			else if (47 <= nowFrame && nowFrame <= 59)
 			{
+				if (!_isBasicPatternSoundPlayed[1])
+				{
+					_soundComp->Play(_swordSwingSound2);
+
+					_isBasicPatternSoundPlayed[1] = true;
+				}
 				if (!_isSwordSecondAttackStart)
 				{
 					pattern->SetAttackState(BossPattern::eAttackState::ePush);
@@ -7308,11 +7561,14 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 				auto targetPosition2 = Navigation::GetInstance().FindRaycastPath(1);
 
-				_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) - 5.0f;
+				_swordMoveDistance = ToolBox::GetDistance(bladePos, targetPosition) + 200.0f;
 
-				_swordMoveDistance2 = ToolBox::GetDistance(bladePos2, targetPosition2) - 5.0f;
+				_swordMoveDistance2 = ToolBox::GetDistance(bladePos2, targetPosition2) + 200.0f;
 
 				_isRotateFinish = false;
+
+				_isBasicPatternSoundPlayed[0] = 0;
+				_isBasicPatternSoundPlayed[1] = 0;
 
 				_boss->GetComponent<MeshRenderer>()->SetActive(true);
 				_boss->GetComponent<MeshRenderer>()->Update();
@@ -7340,6 +7596,13 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 				if (nowFrame > 64)
 				{
+					if (!_isBasicPatternSoundPlayed[0])
+					{
+						_soundComp->Play(_aurabladeShotSound1);
+
+						_isBasicPatternSoundPlayed[0] = true;
+					}
+
 					bladeMesh1->SetActive(true);
 					for (auto& bladeParticle : _bladeRParticle)
 					{
@@ -7362,6 +7625,13 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 				if (nowFrame >= 91)
 				{
+					if (!_isBasicPatternSoundPlayed[1])
+					{
+						_soundComp->Play(_aurabladeShotSound2);
+
+						_isBasicPatternSoundPlayed[1] = true;
+					}
+
 					bladeMesh2->SetActive(true);
 					for (auto& bladeParticle : _bladeLParticle)
 					{
@@ -7569,6 +7839,10 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 
 			_timer = 0.0f;
 
+			_isBasicPatternSoundPlayed[0] = 0;
+			_isBasicPatternSoundPlayed[1] = 0;
+			_isBasicPatternSoundPlayed[2] = 0;
+
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->Update();
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
@@ -7596,6 +7870,13 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 
 			if (10 < nowFrame && nowFrame < 17)
 			{
+				if (!_isBasicPatternSoundPlayed[0])
+				{
+					_soundComp->Play(_horizontalChargeSound);
+
+					_isBasicPatternSoundPlayed[0] = true;
+				}
+
 				if (nowFrame < 12)
 				{
 					for (auto& bezierObject : _bezierSwordParticles) // 목표 초기 설정
@@ -7679,6 +7960,16 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 				SetKamenSwordCollider();
 			}
 
+			if (23 < nowFrame && nowFrame < 38)
+			{
+				if (!_isBasicPatternSoundPlayed[1])
+				{
+					_soundComp->Play(_horizontalSwingSound);
+
+					_isBasicPatternSoundPlayed[1] = true;
+				}
+			}
+
 			if (19 < nowFrame && nowFrame < 21)
 			{
 				for (auto& bezierObject : _bezierSwordParticles) // 벡터 비워줌
@@ -7690,6 +7981,12 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 
 			if (35 < nowFrame)
 			{
+				if (!_isBasicPatternSoundPlayed[2])
+				{
+					_soundComp->Play(_aurabladeShotSound1);
+
+					_isBasicPatternSoundPlayed[2] = true;
+				}
 				auto largeBladeMesh = _largeBlade->GetComponent<MeshRenderer>();
 
 				largeBladeMesh->SetActive(true);

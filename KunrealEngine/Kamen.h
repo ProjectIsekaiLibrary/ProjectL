@@ -5,6 +5,8 @@
 
 namespace KunrealEngine
 {
+	class SoundPlayer;
+
 	class _DECLSPEC Kamen : public Component, public Boss
 	{
 	public:
@@ -533,5 +535,45 @@ namespace KunrealEngine
 
 		float _playerLastLifetimer;
 		float _bossGenkiPos;
+
+		// 사운드용
+	private:
+		SoundPlayer* _soundComp;
+		bool _isBasicPatternSoundPlayed[5];
+
+		int _leftFireSoundIndex;
+		int _callSoundIndex;
+		int _callSoundIndex2;
+		int _callSoundIndex3;
+		int _callSoundIndex4;
+		int _callSoundIndex5;
+
+		int _spellSoundIndex;
+		int _emergenceSoundIndex;
+		int _fiveWaySoundIndex;
+
+		int _crySoundIndex;
+		int _meteorSwordSoundAppearIndex;
+		int _meteorSwordAttackSoundIndex;
+
+		bool _isSwordPatternSoundPlayed[3];
+
+		int _swordInsideSafeSoundIndex;
+		int _swordOutsideSafeSoundIndex;
+		int _swordLinearSoundIndex;
+		int _swordChopSoundIndex1;
+		int _swordChopSoundIndex2;
+		int _swordChopSoundIndex3;
+
+		std::vector<int> _swordMultipleSoundIndexVec;
+		std::vector<bool> _isCorePatternSoundPlayed;
+
+		int _swordSwingSound1;
+		int _swordSwingSound2;
+		int _horizontalChargeSound;
+		int _horizontalSwingSound;
+		int _aurabladeShotSound1;
+		int _aurabladeShotSound2;
+		int _vertucalSound;
 	};
 }
