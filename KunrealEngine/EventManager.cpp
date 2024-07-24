@@ -215,32 +215,32 @@ void KunrealEngine::EventManager::CreateFadeObject()
 {
 	this->_fadeObjectTitle = SceneManager::GetInstance().GetScene("Title")->CreateObject("FadeObject");
 	this->_fadeObjectTitle->AddComponent<ImageRenderer>();
-	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetImage("ui/blackBackgroundLarge.png");
 	this->_fadeObjectTitle->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectTitle->SetActive(false);
 
 	this->_fadeObjectMain = SceneManager::GetInstance().GetScene("Main")->CreateObject("FadeObject");
 	this->_fadeObjectMain->AddComponent<ImageRenderer>();
-	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackgroundLarge.png");
 	this->_fadeObjectMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectMain->SetActive(false);
 
 	this->_fadeObjectEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObject");
 	this->_fadeObjectEnding->AddComponent<ImageRenderer>();
-	this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackgroundLarge.png");
 	this->_fadeObjectEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectEnding->SetActive(false);
 
 	/// 하얀 fade는 불가 alpha 값이 먹질 않음
 	this->_fadeObjectWhiteMain = SceneManager::GetInstance().GetScene("Main")->CreateObject("FadeObjectWhite");
 	this->_fadeObjectWhiteMain->AddComponent<ImageRenderer>();
-	this->_fadeObjectWhiteMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectWhiteMain->GetComponent<ImageRenderer>()->SetImage("ui/blackBackgroundLarge.png");
 	this->_fadeObjectWhiteMain->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectWhiteMain->SetActive(false);
 
 	this->_fadeObjectWhiteEnding = SceneManager::GetInstance().GetScene("Ending")->CreateObject("FadeObjectWhite");
 	this->_fadeObjectWhiteEnding->AddComponent<ImageRenderer>();
-	this->_fadeObjectWhiteEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackground.png");
+	this->_fadeObjectWhiteEnding->GetComponent<ImageRenderer>()->SetImage("ui/blackBackgroundLarge.png");
 	this->_fadeObjectWhiteEnding->GetComponent<ImageRenderer>()->SetAlpha(0.0f);
 	this->_fadeObjectWhiteEnding->SetActive(false);
 }
