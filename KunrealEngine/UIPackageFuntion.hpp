@@ -178,22 +178,34 @@ namespace KunrealEngine
 				pauseuibox->SetActive(false);
 			});
 
-		pauseuibox->SetActive(false);
 
 		controltip = scene.GetCurrentScene()->CreateObject("controltip");
 		controltip->SetParent(pauseuibox);
 		controltip->AddComponent<ImageRenderer>();
-		controltip->GetComponent<ImageRenderer>()->SetImage("ui/UiTexts/Xbutton.png");
-		controltip->GetComponent<ImageRenderer>()->SetPosition(1095.f, 200.f);
+		controltip->GetComponent<ImageRenderer>()->SetImage("ui/SkillExplain/control_tip.png");
+		controltip->GetComponent<ImageRenderer>()->SetPosition(320.f, 180.f);
 		controltip->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		controltip->AddComponent<ButtonSystem>();
 		controltip->GetComponent<ButtonSystem>()->SetImage(controltip->GetComponent<ImageRenderer>());
-		controltip->GetComponent<ButtonSystem>()->SetButtonFunc([controltip]()
+		controltip->GetComponent<ButtonSystem>()->SetButtonFunc([pauseuibox,controltip]()
 			{
-				controltip->SetActive(false);
+				static bool first = true;
+				if (first)
+				{
+					first = false;
+				}
+
+				else if (!first)
+				{
+					controltip->SetActive(false);
+					pauseuibox->SetActive(true);
+					first = true;
+				}
 			});
+
 		controltip->SetActive(false);
 
+		pauseuibox->SetActive(false);
 		return pauseuibox;
 	}
 
