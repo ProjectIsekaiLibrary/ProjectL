@@ -138,6 +138,7 @@ namespace KunrealEngine
 		int endingSoundindex = 0;
 		GameObject* _endingSoundManager;
 
+		SoundPlayer* _bossSoundComp;
 		//GameObject* _endingPlayer;
 
 		GameObject* _endingCamera;

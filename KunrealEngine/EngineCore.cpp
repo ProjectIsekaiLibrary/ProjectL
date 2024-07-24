@@ -189,6 +189,7 @@ void KunrealEngine::EngineCore::Update()
 		{
 			mapParticleList->GetComponent<Particle>()->SetActive(true);
 		}
+		_bossSoundComp->Play(0);
 	}
 	else if (sceneInstance.GetCurrentScene()->GetSceneName() == "Ending")
 	{
@@ -330,6 +331,15 @@ void KunrealEngine::EngineCore::PlayGround()
 	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
 	battle_ui_box->AddComponent<BattleUIManager>();
 	battle_ui_box->_autoAwake = true;
+
+
+	auto bossSoundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
+	bossSoundManager->_autoAwake = true;
+	_bossSoundComp = bossSoundManager->AddComponent<SoundPlayer>();
+	auto bossSoundindex = _bossSoundComp->CreateSoundInfo("Resources/Sound/MainSceneBGM.mp3", false, true);
+	_bossSoundComp->CreateSound(bossSoundindex, 1);
+	
+
 
 	// 맵 꾸미기 파티클
 	MapParticleSetting(_mapParticleList);
