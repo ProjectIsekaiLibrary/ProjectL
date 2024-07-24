@@ -285,6 +285,13 @@ namespace KunrealEngine
 		bool _isFinalPatternInit;
 
 	private:
+		// 텔포 파티클
+
+		GameObject* _particleTeleport;
+
+		float _teltimer;
+
+	private:
 		Coroutine_Func(patternEnd)
 		{
 			Boss* boss = this;

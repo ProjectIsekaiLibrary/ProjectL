@@ -25,6 +25,7 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* Text_quit;
 		KunrealEngine::GameObject* Text_exit;
 		KunrealEngine::GameObject* imagebackground;
+		KunrealEngine::GameObject* controltip;
 
 		pauseuibox = scene.GetCurrentScene()->CreateObject("pauseuibox");
 		pauseuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
@@ -99,6 +100,8 @@ namespace KunrealEngine
 				pauseuibox->SetActive(false);
 				if (KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
 				{
+					GameObject* obj = KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetGameObject("controltip");
+					obj->SetActive(true);
 				}
 
 				if (KunrealEngine::SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Main")
@@ -177,6 +180,20 @@ namespace KunrealEngine
 
 		pauseuibox->SetActive(false);
 
+		controltip = scene.GetCurrentScene()->CreateObject("controltip");
+		controltip->SetParent(pauseuibox);
+		controltip->AddComponent<ImageRenderer>();
+		controltip->GetComponent<ImageRenderer>()->SetImage("ui/UiTexts/Xbutton.png");
+		controltip->GetComponent<ImageRenderer>()->SetPosition(1095.f, 200.f);
+		controltip->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+		controltip->AddComponent<ButtonSystem>();
+		controltip->GetComponent<ButtonSystem>()->SetImage(controltip->GetComponent<ImageRenderer>());
+		controltip->GetComponent<ButtonSystem>()->SetButtonFunc([controltip]()
+			{
+				controltip->SetActive(false);
+			});
+		controltip->SetActive(false);
+
 		return pauseuibox;
 	}
 
@@ -253,6 +270,7 @@ namespace KunrealEngine
 						if (trans->GetPosition().y > 1080 && trans2->GetPosition().y < 0)
 						{
 							titleobject->SetActive(false);
+							//titleobject->GetChild("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.f, 20.f);
 							//KunrealEngine::SceneManager::GetInstance().ChangeScene("MAIN_GAME");
 							break;
 						}

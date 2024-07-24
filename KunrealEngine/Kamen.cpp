@@ -3068,7 +3068,7 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Left_Attack_Fire");
-	pattern->SetAnimName("Left_Attack").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
+	pattern->SetAnimName("Left_Attack").SetDamage(20.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::eParalysis).SetMaxColliderCount(1);
 	pattern->SetWithEgo(true).SetColliderType(BossPattern::eColliderType::eBox);
 
@@ -3294,7 +3294,7 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 	BossPattern* pattern = new BossPattern();
 
 	pattern->SetPatternName("Right_Attack_Fire");
-	pattern->SetAnimName("Right_Attack").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0);
+	pattern->SetAnimName("Right_Attack").SetDamage(20.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0);
 	pattern->SetAttackState(BossPattern::eAttackState::eParalysis).SetMaxColliderCount(1);
 	pattern->SetWithEgo(true).SetColliderType(BossPattern::eColliderType::eBox);
 
@@ -3889,7 +3889,7 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 	pattern->SetPatternName("Emergence");
 
-	pattern->SetAnimName("Emergence").SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(10.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("Emergence").SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(30.0f).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eCylinder);
 	pattern->SetSubObject(_bossInsideAttack);
 	pattern->SetSubObject(_egoInsideAttack);
@@ -4036,7 +4036,7 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 
 	pattern->SetPatternName("OutSideSafe");
 
-	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(1.0f);
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(50.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eCylinder);
 
@@ -4129,7 +4129,7 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 	pattern->SetPatternName("InSideSafe");
 
-	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(3.0f);
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(50.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eCircleSafe);
 
@@ -4290,7 +4290,7 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 
 	pattern->SetPatternName("DonutAttack");
 
-	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(10.0f);
+	pattern->SetAnimName("Idle").SetRange(0.0f).SetMaxColliderCount(1).SetSpeed(20.0f).SetDamage(40.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eDonut);
 	pattern->SetSubObject(_freeSword);
@@ -4421,7 +4421,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 
 	pattern->SetPatternName("Spell");
 
-	pattern->SetAnimName("Spell").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
+	pattern->SetAnimName("Spell").SetDamage(15.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::eParalysis).SetColliderType(BossPattern::eColliderType::eBox);
 	pattern->SetSubObject(_lazer);
 	pattern->SetSubObject(_lazerCollider);
@@ -4701,7 +4701,7 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 	pattern->SetPatternName("Call2");
 
-	pattern->SetAnimName("Call").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
+	pattern->SetAnimName("Call").SetDamage(30.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f);
 	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush).SetColliderType(BossPattern::eColliderType::eBox);
 	pattern->SetWithEgo(true);
 	pattern->SetSubObject(_call2);
@@ -4963,7 +4963,7 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 
 	pattern->SetPatternName("FiveWayAttack");
 
-	pattern->SetAnimName("Idle").SetDamage(10.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f).SetSkipMove(true);
+	pattern->SetAnimName("Idle").SetDamage(50.0f).SetSpeed(20.0f).SetRange(_info._attackRange + 50.0f).SetAfterDelay(1.0f).SetSkipMove(true);
 	pattern->SetMaxColliderCount(1).SetAttackState(BossPattern::eAttackState::ePush).SetColliderType(BossPattern::eColliderType::eBox);
 
 	for (auto& index : _fiveAttack)
@@ -6203,7 +6203,7 @@ void KunrealEngine::Kamen::CreateSwordMultipleAttack()
 
 	pattern->SetPatternName("SwordMultipleAttack");
 
-	pattern->SetAnimName("Idle").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("Idle").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(30.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eSwordMultiple).SetSkipChase(true);
 
 	for (auto& index : _multipleSwordVec)
@@ -6985,7 +6985,7 @@ void KunrealEngine::Kamen::CreateSwordSwingVertical()
 
 	pattern->SetPatternName("SwordSwingVertical");
 
-	pattern->SetAnimName("SwordSwingVertical").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("SwordSwingVertical").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(60.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eSwordColliderWithCylinderCollider);
 
 	pattern->SetSubObject(_swordDonutWarning1);
@@ -7110,7 +7110,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwice()
 
 	pattern->SetPatternName("SwordSwingTwice");
 
-	pattern->SetAnimName("SwordSwingTwice").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::eParalysis);
+	pattern->SetAnimName("SwordSwingTwice").SetMaxColliderCount(1).SetSpeed(10.0f).SetDamage(40.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::eParalysis);
 	pattern->SetColliderType(BossPattern::eColliderType::eSwordDirection).SetSkipChase(true);
 
 	pattern->SetSubObject(_kamenSwordCollider);
@@ -7240,7 +7240,7 @@ void KunrealEngine::Kamen::CreateSwordSwingTwiceHard()
 
 	pattern->SetPatternName("SwordHardSwingTwice");
 
-	pattern->SetAnimName("SwordHardSwingTwice").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("SwordHardSwingTwice").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(50.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eSwordColliderWithMeshCollider);
 
 	pattern->SetSubObject(_kamenSwordCollider);
@@ -7486,7 +7486,7 @@ void KunrealEngine::Kamen::CreateSwordSwingHorizontal()
 
 	pattern->SetPatternName("SwordSwingHorizontal");
 
-	pattern->SetAnimName("SwordSwingHorizontal").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(10.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
+	pattern->SetAnimName("SwordSwingHorizontal").SetMaxColliderCount(1).SetSpeed(15.0f).SetDamage(70.0f).SetRange(_info._attackRange + 40.0f).SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetColliderType(BossPattern::eColliderType::eSwordColliderWithMeshCollider).SetSkipChase(true);
 
 	pattern->SetSubObject(_kamenSwordCollider);
