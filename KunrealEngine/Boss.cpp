@@ -450,17 +450,19 @@ void KunrealEngine::Boss::Chase()
 			// 각도를 측정
 			_rotAngle = ToolBox::GetAngleWithDirection(bossPosition, playerPosition, _bossTransform->GetRotation().y);
 
-			if (!isnan(_rotAngle))
+			if (isnan(_rotAngle))
 			{
-				// 현재 각도를 기록
-				_prevRot = _bossTransform->GetRotation();
-
-				// 각도 누적용
-				_sumRot = 0.0f;
-
-				// 두번째 진입시부턴 안들어오게 하도록
-				_isAngleCheck = true;
+				_rotAngle = 0.0f;
 			}
+
+			// 현재 각도를 기록
+			_prevRot = _bossTransform->GetRotation();
+
+			// 각도 누적용
+			_sumRot = 0.0f;
+
+			// 두번째 진입시부턴 안들어오게 하도록
+			_isAngleCheck = true;
 		}
 
 		// 보스가 플레이어를 바라보게 함

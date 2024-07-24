@@ -309,11 +309,11 @@ void KunrealEngine::Kamen::GamePattern()
 {
 	//RightLeftPattern();								// 오른손 + 180도 회전후 왼손
 
-	_basicPattern[0].emplace_back(_leftFireAttack);
-	TeleportSpellPattern();							// 텔포 후 spell	
-	BackStepCallPattern();							// 투사체 4번 터지는 패턴
-	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
-	_basicPattern[0].emplace_back(_fiveWayAttack);	// 5갈래 분신 발사
+	//_basicPattern[0].emplace_back(_leftFireAttack);
+	//TeleportSpellPattern();							// 텔포 후 spell	
+	//BackStepCallPattern();							// 투사체 4번 터지는 패턴
+	//EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
+	//_basicPattern[0].emplace_back(_fiveWayAttack);	// 5갈래 분신 발사
 
 	_basicPattern[1] = _basicPattern[0];
 
@@ -329,6 +329,8 @@ void KunrealEngine::Kamen::GamePattern()
 
 	CoreSwordMeteorPattern();						// 1->2 코어 패턴
 	CoreSwordMutipleAttackPattern();				// 2->3 코어 패턴
+
+	_basicPattern[0].emplace_back(_leftFireAttack);
 }
 
 
@@ -677,7 +679,7 @@ void KunrealEngine::Kamen::InitializeEnterCameraMove()
 
 	_cameraMoveFinish = false;
 
-	_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(0, 600, -500);
+	_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(0, 500, -500);
 
 	_cameraOriginPos = _cinematicCamera->GetComponent<Transform>()->GetPosition();
 
@@ -2995,10 +2997,10 @@ void KunrealEngine::Kamen::CreateSubObject()
 		auto swordMeteorDecal = _boss->GetObjectScene()->CreateObject(objectName);
 		swordMeteorDecal->AddComponent<TransparentMesh>();
 		swordMeteorDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
-		swordMeteorDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		swordMeteorDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 		swordMeteorDecal->GetComponent<TransparentMesh>()->SetDecal(true);
-		swordMeteorDecal->GetComponent<Transform>()->SetScale(500.0f, 200.0f, 500.0f);
-		swordMeteorDecal->GetComponent<Transform>()->SetPosition(0.0f, 200.0f, 0.0f);
+		swordMeteorDecal->GetComponent<Transform>()->SetScale(600.0f, 200.0f, 600.0f);
+		swordMeteorDecal->GetComponent<Transform>()->SetPosition(0.0f, 40.0f, 0.0f);
 		swordMeteorDecal->SetTotalComponentState(false);
 		swordMeteorDecal->SetActive(false);
 		_swordMeteorDecal = swordMeteorDecal;
@@ -5439,7 +5441,7 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 	pattern->SetPatternName("SwordLinearAttack");
 
-	pattern->SetAnimName("Idle").SetSpeed(80.0f).SetDamage(10.0f);
+	pattern->SetAnimName("Idle").SetSpeed(100.0f).SetDamage(10.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 	pattern->SetColliderType(BossPattern::eColliderType::eBox);
@@ -6149,8 +6151,13 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 				}
 				else
 				{
-					_swordMeteorDecal->GetComponent<TransparentMesh>()->PlayOnce();
-					_isDecalPosChecked[0] = true;
+					if (_isDecalPosChecked[0] == false)
+					{
+						_nowRenderingDecalVec.emplace_back(_swordMeteorDecal->GetComponent<TransparentMesh>());
+
+						_isDecalPosChecked[0] = true;
+					}
+
 
 					_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(0, 0);
 					_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(0, 0);
@@ -8063,37 +8070,10 @@ void KunrealEngine::Kamen::HoldKamenSword()
 
 		originDir = ToolBox::RotateVector(originDir, rot);
 
-		auto vec = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 10.0f);
-		auto vec2 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 10.0f);
-		auto vec3 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 14.0f);
-		auto vec4 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 18.0f);
-		auto vec5 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 22.0f);
-		auto vec6 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 26.0f);
-		auto vec7 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 30.0f);
-		auto vec8 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 34.0f);
-		auto vec9 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 38.0f);
-		auto vec10 = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 42.0f);
-
-		DirectX::XMFLOAT3 particleOriginDir = { originDir.x * 720.0f, originDir.y * 720.0f, originDir.z * 720.0f };
-		_kamenSwordParticle[0]->GetComponent<Particle>()->SetParticleDirection(particleOriginDir.x, particleOriginDir.y, particleOriginDir.z);
-		_kamenSwordParticle[0]->GetComponent<Particle>()->SetOffSet(vec.m128_f32[0], vec.m128_f32[1], vec.m128_f32[2]);
-
-		_targetSword.x = vec8.m128_f32[0];
-		_targetSword.y = vec8.m128_f32[1];
-		_targetSword.z = vec8.m128_f32[2];
-
-		_kamenSwordAfterImageParticle[0]->GetComponent<Particle>()->SetOffSet(vec2.m128_f32[0], vec2.m128_f32[1], vec2.m128_f32[2]);
-		_kamenSwordAfterImageParticle[1]->GetComponent<Particle>()->SetOffSet(vec3.m128_f32[0], vec3.m128_f32[1], vec3.m128_f32[2]);
-		_kamenSwordAfterImageParticle[2]->GetComponent<Particle>()->SetOffSet(vec4.m128_f32[0], vec4.m128_f32[1], vec4.m128_f32[2]);
-		_kamenSwordAfterImageParticle[3]->GetComponent<Particle>()->SetOffSet(vec5.m128_f32[0], vec5.m128_f32[1], vec5.m128_f32[2]);
-		_kamenSwordAfterImageParticle[4]->GetComponent<Particle>()->SetOffSet(vec6.m128_f32[0], vec6.m128_f32[1], vec6.m128_f32[2]);
-		_kamenSwordAfterImageParticle[5]->GetComponent<Particle>()->SetOffSet(vec7.m128_f32[0], vec7.m128_f32[1], vec7.m128_f32[2]);
-		_kamenSwordAfterImageParticle[6]->GetComponent<Particle>()->SetOffSet(vec8.m128_f32[0], vec8.m128_f32[1], vec8.m128_f32[2]);
-		_kamenSwordAfterImageParticle[7]->GetComponent<Particle>()->SetOffSet(vec9.m128_f32[0], vec9.m128_f32[1], vec9.m128_f32[2]);
-		_kamenSwordAfterImageParticle[8]->GetComponent<Particle>()->SetOffSet(vec10.m128_f32[0], vec10.m128_f32[1], vec10.m128_f32[2]);
+		auto vec = DirectX::XMVectorScale(DirectX::XMLoadFloat3(&originDir), 22.0f);
 
 		// 카멘 순간 이동 하면 라이트 위치 망가짐
-		auto SwordLightPos = DirectX::XMVectorAdd(trs, vec5);
+		auto SwordLightPos = DirectX::XMVectorAdd(trs, vec);
 		_kamenSwordLight->GetComponent<Transform>()->SetPosition(SwordLightPos.m128_f32[0], SwordLightPos.m128_f32[1], SwordLightPos.m128_f32[2]);
 	}
 }
