@@ -314,6 +314,10 @@ namespace ArkEngine
 
 		private:
 			std::vector<DirectX::XMFLOAT4X4> _decalWorldVec;
+
+		private:
+			virtual void SetDeltaTime(float dt) override;
+			float _deltaT;
 		};
 	}
 }

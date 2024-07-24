@@ -147,6 +147,8 @@ void KunrealEngine::EngineCore::Update()
 	sceneInstance.UpdateScene(sceneInstance.GetCurrentScene());
 	CheckMousePosition();
 
+	GRAPHICS->SetDeltaTime(TimeManager::GetInstance().GetDeltaTime());
+
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 	soundInstance.Update();
 

@@ -34,6 +34,7 @@
 #include "MeshRenderer.h"
 #include "ParticleSystem.h"
 #include "TransparentMesh.h"
+#include "../KunrealEngine/TimeManager.h"
 
 #include "DX11Renderer.h"
 
@@ -178,15 +179,17 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 	}
 
 	// particle
-	float time = 0.016f;
-	float timaplus = 0.0f;
-	timaplus += time;
-	float gameTime = 0.0f;
-	gameTime += time;
+	//float time = 0.032f;
+	
+	//float timaplus = 0.0f;
+	//timaplus += time;
+	//float gameTime = 0.0f;
+	//gameTime += time;
 
 	for (const auto& index : ResourceManager::GetInstance()->GetParticleList())
 	{
-		index->Update(timaplus, gameTime);
+		float speed = 1.8f;
+		index->Update(_deltaT * speed, _deltaT * speed);
 	}
 
 	for (const auto& index : ResourceManager::GetInstance()->GetTransParentMeshList())
@@ -932,6 +935,11 @@ const DirectX::XMFLOAT3 ArkEngine::ArkDX11::DX11Renderer::GetMyPosition(const Di
 	DirectX::XMStoreFloat3(&myPosition, newVec);
 
 	return myPosition;
+}
+
+void ArkEngine::ArkDX11::DX11Renderer::SetDeltaTime(float dt)
+{
+	_deltaT = dt;
 }
 
 void ArkEngine::ArkDX11::DX11Renderer::BeginShadowRender()
