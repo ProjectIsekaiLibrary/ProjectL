@@ -282,7 +282,7 @@ float4 PS(VertexOut pin, uniform bool gUseTexure, uniform bool gReflect) : SV_Ta
     
  
     
-    const float dx = 1.0f / 8192.f;
+    const float dx = 1.0f / 2048.f;
     
     float percentLit = 0.0f;
     const float2 offsets[9] =
