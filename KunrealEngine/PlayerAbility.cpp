@@ -149,6 +149,7 @@ void KunrealEngine::PlayerAbility::Update()
 		// 플레이어가 행동할 수 없는 상태라면 return
 		if (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH)
 		{
+			this->_soundComp->Stop(_soundlaser);
 			return;
 		}
 
@@ -159,6 +160,7 @@ void KunrealEngine::PlayerAbility::Update()
 		}
 
 		ResetLaserPos();
+		this->_soundComp->Play(_soundlaser);
 		Startcoroutine(LaserCratorStart);
 
 		_isLaserDetected = true;
@@ -210,6 +212,7 @@ void KunrealEngine::PlayerAbility::Update()
 	if (this->_laser->GetActivated() && (this->_playerComp->_playerStatus == Player::Status::DEAD || this->_playerComp->_playerStatus == Player::Status::STAGGERED || this->_playerComp->_playerStatus == Player::Status::SWEEP || this->_playerComp->_playerStatus == Player::Status::PARALYSIS || this->_playerComp->_playerStatus == Player::Status::DASH || this->_playerComp->_playerBindFlag))
 	{
 		this->_laser->SetActive(false);
+		this->_soundComp->Stop(_soundlaser);
 		this->_laserParticle1->SetActive(false);
 		this->_laserParticle2->SetActive(false);
 		this->_laserParticle3->SetActive(false);
@@ -302,7 +305,7 @@ void KunrealEngine::PlayerAbility::Update()
 	AnimateByFrame();
 	UpdateAbilityLogic();
 
-	DebugText();
+	//DebugText();
 }
 
 void KunrealEngine::PlayerAbility::LateUpdate()
@@ -393,10 +396,10 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 
 	shot->SetTotalData(
 		"Shot",			// 이름
-		10.0f,			// 데미지
+		12.0f,			// 데미지
 		10.0f,			// 마나
 		5.0f,			// 무력화 피해량
-		2.0f,			// 쿨타임
+		1.5f,			// 쿨타임
 		80.0f			// 사거리
 	);
 
@@ -512,6 +515,17 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 					_soundComp->Stop(_energyBallFlying);
 					_soundComp->Play(_energyBallExplode);
 					EventManager::GetInstance().CalculateDamageToBoss(shot);
+
+					// 소멸조건 활성화 시 파티클이 살아있다면 제거
+					if (_shotParticleHit1->GetComponent<Particle>()->GetActivated())
+					{
+						_shotParticleHit1->GetComponent<Particle>()->SetActive(false);
+						_shotParticleHit2->GetComponent<Particle>()->SetActive(false);
+						_shotParticleHit3->GetComponent<Particle>()->SetActive(false);
+						_shotParticleTimer = 0.0f;
+						_isShotEnded = false;
+					}
+
 					_isShotHit = false;
 				}
 
@@ -519,6 +533,16 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 			}
 			else if (shotProj->_movedRange > shot->GetRange())
 			{
+				// 소멸조건 활성화 시 파티클이 살아있다면 제거
+				if (_shotParticleHit1->GetComponent<Particle>()->GetActivated())
+				{
+					_shotParticleHit1->GetComponent<Particle>()->SetActive(false);
+					_shotParticleHit2->GetComponent<Particle>()->SetActive(false);
+					_shotParticleHit3->GetComponent<Particle>()->SetActive(false);
+					_shotParticleTimer = 0.0f;
+					_isShotEnded = false;
+				}
+
 				return true;
 			}
 			else
@@ -602,7 +626,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 		10.0f,			// 데미지
 		15.0f,			// 마나
 		0.0f,			// 무력화 피해량
-		10.0f,			// 쿨타임
+		14.0f,			// 쿨타임
 		12.0f			// 사거리
 	);
 
@@ -663,7 +687,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 			{
 				if (_circle->GetCollider()->IsCollided() && _circle->GetCollider()->GetTargetObject() == this->GetOwner())
 				{
-					this->_playerComp->_playerInfo._spellPower = 2.0f;
+					this->_playerComp->_playerInfo._spellPower = 1.5f;
 					_circleBuffParticle1->GetComponent<Particle>()->SetActive(true);
 					_circleBuffParticle2->GetComponent<Particle>()->SetActive(true);
 
@@ -799,10 +823,10 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 
 	laser->SetTotalData(
 		"Laser",			// 이름
-		5.0f,			// 데미지
+		7.0f,			// 데미지
 		20.0f,			// 마나
 		15.0f,			// 무력화 피해량
-		7.0f,			// 쿨타임
+		10.0f,			// 쿨타임
 		15.0f			// 사거리
 	);
 
@@ -942,7 +966,6 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 		{
 			if (_isLaserStarted == true)
 			{
-				_soundComp->Play(_soundlaser);
 				_laserParticle1->GetComponent<Particle>()->SetParticleSize(50.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 50.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				_laserParticle2->GetComponent<Particle>()->SetParticleSize(30.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 30.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
 				_laserParticle3->GetComponent<Particle>()->SetParticleSize(60.f * ToolBox::GetRandomFloat(0.8f, 1.0f), 60.f * ToolBox::GetRandomFloat(0.8f, 1.0f));
@@ -1034,7 +1057,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 		50.0f,			// 데미지
 		10.0f,			// 마나
 		15.0f,			// 무력화 피해량
-		0.2f,			// 쿨타임
+		20.0f,			// 쿨타임
 		15.0f			// 사거리
 	);
 
@@ -1515,7 +1538,7 @@ void KunrealEngine::PlayerAbility::DebugText()
 		GRAPHICS->DrawDebugText(100, 800, 40, "Potion on cooldown");
 	}
 
-	GRAPHICS->DrawDebugText(100, 850, 40, "%d", this->_maxPotion);
+	//GRAPHICS->DrawDebugText(100, 850, 40, "%f", g_);
 }
 
 void KunrealEngine::PlayerAbility::AddToContanier(Ability* abil)

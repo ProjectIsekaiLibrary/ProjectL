@@ -29,7 +29,8 @@ void KunrealEngine::ButtonSystem::FixedUpdate()
 
 void KunrealEngine::ButtonSystem::Update()
 {
-	bool ispick = _image->IsPicked(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);
+	bool ispick = ispick = _image->IsPicked(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y);;
+	//static bool ispick = false;
 
 	if (_focusimage != nullptr)
 	{
@@ -51,7 +52,7 @@ void KunrealEngine::ButtonSystem::Update()
 		}
 	}
 
-	if (InputSystem::GetInstance()->MouseButtonDown(0))
+	if (InputSystem::GetInstance()->MouseButtonUp(0))
 	{
 		if (ispick)
 		{

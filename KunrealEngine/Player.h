@@ -160,7 +160,7 @@ namespace KunrealEngine
 		void ResetPlayerStatus();
 
 		// Flag에 따라 플레이어 행동 불가, 가능 여부 결정
-		void SetPlayerBindFlag(bool flag);
+		void SetPlayerBindFlag(bool flag, int state = 0);
 		bool GetPlayerBindFlag();
 
 		// 플레이어가 스킬 시전중인지 Flag

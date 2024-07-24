@@ -236,11 +236,11 @@ void KunrealEngine::PlayerMove::UpdateMoveNode()
 		
 		// 탈출 불가 방지
 		this->_nodeUpdateCount++;
-		if (this->_nodeUpdateCount >= 500)
+		if (this->_nodeUpdateCount >= 2000)
 		{
 			if (this->GetOwner()->GetObjectScene()->GetSceneName() == "Title")
 			{
-				this->_transform->SetPosition(-156.0f, 66.0f, 0.0f);
+				StopPlayer();
 			}
 			else
 			{

@@ -10,11 +10,12 @@
 #include "ToolBox.h"
 #include "Navigation.h"
 #include "UIPackageFuntion.hpp"
+#include "EngineCore.h"
 
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
 	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(false)
-	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr), _fadeObjectEnding(nullptr), _fadeObjectWhiteMain(nullptr), _fadeObjectWhiteEnding(nullptr)
+	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr), _fadeObjectEnding(nullptr), _fadeObjectWhiteMain(nullptr), _fadeObjectWhiteEnding(nullptr), _core(nullptr)
 {
 
 }
@@ -1084,8 +1085,8 @@ void KunrealEngine::EventManager::MoveToTitle()
 	scene->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
 
 	// 타이틀 UI 위치 초기화
-	//scene->GetGameObject("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.0f * 1.3333333f, 20.0f * 1.3333333f);
-	//scene->GetGameObject("button_Start")->GetComponent<ImageRenderer>()->SetPosition(0.0f * 1.3333333f, 400.0f * 1.3333333f);
+	scene->GetGameObject("Title_Image")->GetComponent<ImageRenderer>()->SetPosition(525.0f, 20.0f);
+	scene->GetGameObject("button_Start")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 400.0f);
 
 	// 빛 세팅
 	Light* titleLight = scene->GetGameObject("DirectionalLight")->GetComponent<Light>();
@@ -1162,7 +1163,7 @@ void KunrealEngine::EventManager::ResetEndingSceneObjects()
 	scene->GetGameObject("EndingCamera")->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
 
 	scene->GetGameObject("EndingCamera")->GetComponent<Transform>()->SetPosition(-322.f, 100.0f, -148.130f);
-	scene->GetGameObject("EndingCamera")->GetComponent<Transform>()->SetRotation(-182.f, 168.f, 0.0f);
+	//scene->GetGameObject("EndingCamera")->GetComponent<Transform>()->SetRotation(-182.f, 168.f, 0.0f);
 
 	// 빛 세팅
 	DirectX::XMFLOAT4 diffuse = { 1.f, 1.f, 1.f, 0.3f };
@@ -1183,47 +1184,51 @@ void KunrealEngine::EventManager::ResetEndingSceneObjects()
 	scene->GetGameObject("EndingMeteo8")->GetComponent<Particle>()->SetActive(true);
 
 	// 오브젝트들 위치각도 초기화
-	//scene->GetGameObject("EndingRock")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
-	//
-	//scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetPosition(-340.0f, 100.f, -267.0f);
-	//scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetRotation(0.f, 212.f, 0.f);
-	//
-	//scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
-	//scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetRotation(3.0f, 9.f, 0.0f);
-	//
-	//scene->GetGameObject("EndingMeteo1")->GetComponent<Transform>()->SetPosition(153.7f, -60.f, -255.0f);
-	//scene->GetGameObject("EndingMeteo2")->GetComponent<Transform>()->SetPosition(-203.6f, -50.f, -255.0f);
-	//scene->GetGameObject("EndingMeteo3")->GetComponent<Transform>()->SetPosition(-300.0f, -70.f, -462.0f);
-	//scene->GetGameObject("EndingMeteo4")->GetComponent<Transform>()->SetPosition(-173.0f, -50.f, -315.0f);
-	//scene->GetGameObject("EndingMeteo5")->GetComponent<Transform>()->SetPosition(-294.0f, -100.f, -255.0f);
-	//scene->GetGameObject("EndingMeteo6")->GetComponent<Transform>()->SetPosition(77.f, -200.f, -632.0f);
-	//scene->GetGameObject("EndingMeteo7")->GetComponent<Transform>()->SetPosition(-329.0f, -150.f, -255.0f);
-	//scene->GetGameObject("EndingMeteo8")->GetComponent<Transform>()->SetPosition(-261.0f, -200.f, -172.0f);
-	//
-	//scene->GetGameObject("EndingEnt")->GetComponent<Transform>()->SetPosition(-273.0f, -80.f, -475.0f);
-	//scene->GetGameObject("EndingEnt")->GetComponent<Transform>()->SetRotation(0.0f, 170.f, 56.0f);
-	//
-	//scene->GetGameObject("EndingSpider")->GetComponent<Transform>()->SetPosition(-242.0f, -90.f, -475.0f);
-	//scene->GetGameObject("EndingSpider")->GetComponent<Transform>()->SetRotation(-10.0f, -207.f, -381.0f);
-	//
-	//scene->GetGameObject("EndingSword")->GetComponent<Transform>()->SetPosition(-298.0f, -50.f, -397.0f);
-	//scene->GetGameObject("EndingSword")->GetComponent<Transform>()->SetPosition(-86.0f, 94.f, -188.0f);
-	//
-	//scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetPosition(-239.0f, -90.f, -475.0f);
-	//scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetPosition(10.0f, -149.f, -21.0f);
-	//
-	//scene->GetGameObject("EndingKunho")->GetComponent<Transform>()->SetPosition(-250.0f, -90.f, -475.0f);
-	//scene->GetGameObject("EndingKunho")->GetComponent<Transform>()->SetPosition(25.0f, 140.f, -41.0f);
-	//
-	//scene->GetGameObject("EndingCredit1")->GetComponent<ImageRenderer>()->SetPosition(700.0f, 1100.0f);
-	//scene->GetGameObject("EndingCredit2")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1100.0f);
-	//scene->GetGameObject("EndingCredit3")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1100.0f);
-	//scene->GetGameObject("EndingCredit4")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1100.0f);
-	//scene->GetGameObject("EndingCredit5")->GetComponent<ImageRenderer>()->SetPosition(-425.0f, 1100.0f);
-	//scene->GetGameObject("EndingCredit6")->GetComponent<ImageRenderer>()->SetPosition(-425.0f, 1100.0f);
-	//
-	//scene->GetGameObject("EndingThankYou")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1100.0f);
-	//scene->GetGameObject("EndingTheme")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1100.0f);
+	scene->GetGameObject("EndingRock")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
+	scene->GetGameObject("EndingRock")->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+
+	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetPosition(-340.0f, 100.f, -267.0f);
+	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetRotation(0.f, 212.f, 0.f);
+	scene->GetGameObject("endingBoss")->GetComponent<MeshRenderer>()->SetIsDissolve(false);
+	
+	scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
+	scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetRotation(3.0f, 9.f, 0.0f);
+	
+	scene->GetGameObject("EndingMeteo1")->GetComponent<Transform>()->SetPosition(153.7f, -60.f, -255.0f);
+	scene->GetGameObject("EndingMeteo2")->GetComponent<Transform>()->SetPosition(-203.6f, -50.f, -255.0f);
+	scene->GetGameObject("EndingMeteo3")->GetComponent<Transform>()->SetPosition(-300.0f, -70.f, -462.0f);
+	scene->GetGameObject("EndingMeteo4")->GetComponent<Transform>()->SetPosition(-173.0f, -50.f, -315.0f);
+	scene->GetGameObject("EndingMeteo5")->GetComponent<Transform>()->SetPosition(99.0f, -100.f, -450.0f);
+	scene->GetGameObject("EndingMeteo6")->GetComponent<Transform>()->SetPosition(77.f, -200.f, -632.0f);
+	scene->GetGameObject("EndingMeteo7")->GetComponent<Transform>()->SetPosition(-329.0f, -150.f,-255.0f);
+	scene->GetGameObject("EndingMeteo8")->GetComponent<Transform>()->SetPosition(-261.0f, -200.f,-172.0f);
+	
+	scene->GetGameObject("EndingEnt")->GetComponent<Transform>()->SetPosition(-273.0f, -80.f, -475.0f);
+	scene->GetGameObject("EndingEnt")->GetComponent<Transform>()->SetRotation(0.0f, 170.f, 56.0f);
+	
+	scene->GetGameObject("EndingSpider")->GetComponent<Transform>()->SetPosition(-242.0f, -90.f, -475.0f);
+	scene->GetGameObject("EndingSpider")->GetComponent<Transform>()->SetRotation(-10.0f, -207.f, -381.0f);
+	
+	scene->GetGameObject("EndingSword")->GetComponent<Transform>()->SetPosition(-298.0f, -50.f, -397.0f);
+	scene->GetGameObject("EndingSword")->GetComponent<Transform>()->SetRotation(-86.0f, 94.f, -188.0f);
+	
+	scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetPosition(-239.0f, -90.f,-475.0f);
+	scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetRotation(10.0f, -149.f, -21.0f);
+	
+	scene->GetGameObject("EndingKunho")->GetComponent<Transform>()->SetPosition(-250.0f, -100.f, -475.0f);
+	scene->GetGameObject("EndingKunho")->GetComponent<Transform>()->SetRotation(25.0f, 140.f, -41.0f);
+	
+	// Ending UI
+	scene->GetGameObject("EndingCredit1")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	scene->GetGameObject("EndingCredit2")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	scene->GetGameObject("EndingCredit3")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	scene->GetGameObject("EndingCredit4")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	scene->GetGameObject("EndingCredit5")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	scene->GetGameObject("EndingCredit6")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	
+	scene->GetGameObject("EndingThankYou")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
+	scene->GetGameObject("EndingTheme")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1620.0f);
+	scene->GetGameObject("BossTheme")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
 }
 
 void KunrealEngine::EventManager::MoveToEnding()
@@ -1232,7 +1237,11 @@ void KunrealEngine::EventManager::MoveToEnding()
 	this->_iscamfollow = false;
 	Scene* scene = SceneManager::GetInstance().GetScene("Ending");
 
+	// 오브젝트들 위치 각도 초기화
 	ResetEndingSceneObjects();
+
+	// 엔진코어에 있는 엔딩 타이머 초기화
+	this->_core->_endingTimer = 10.0f;
 
 	// 큐브맵 세팅
 	GRAPHICS->SetMainCubeMap("EndingBackground");
@@ -1257,4 +1266,9 @@ void KunrealEngine::EventManager::ActivateFadeOutTrigger()
 void KunrealEngine::EventManager::ActivateEndingFadeTrigger()
 {
 	Startcoroutine(endingSceneFade);
+}
+
+void KunrealEngine::EventManager::GetEngineCore(EngineCore* core)
+{
+	this->_core = core;
 }
