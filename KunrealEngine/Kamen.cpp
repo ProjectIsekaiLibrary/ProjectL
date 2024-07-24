@@ -34,7 +34,7 @@ KunrealEngine::Kamen::Kamen()
 	_timer2(0.0f), _timer3(0.0f), _fiveWayAttack(nullptr),
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
-	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr), _3PhaseParticle(nullptr), _playerLastLifetimer(0), _bossGenkiPos(0)
+	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr), _3PhaseParticle(nullptr), _playerLastLifetimer(0), _bossGenkiPos(0), _emergenceDecal(nullptr), _egoEmergenceDecal(nullptr), _swordOutSideSafeDecal(nullptr), _swordMeteorDecal(nullptr)
 {
 	BossBasicInfo info;
 
@@ -75,7 +75,7 @@ void KunrealEngine::Kamen::Initialize()
 
 	_cinematicCamera->GetComponent<Transform>()->SetPosition({ 0.0f, 120.0f, -130.0f });
 	_cinematicCamera->GetComponent<Transform>()->SetRotation(-43.f, 180.f, 0.f);
-	
+
 	_cinematicCamera->SetActive(true);
 	_cinematicCamera->GetComponent<Camera>()->SetActive(true);
 
@@ -95,7 +95,7 @@ void KunrealEngine::Kamen::Initialize()
 	_cinematicCamera2->GetComponent<Camera>()->Update();
 	_cinematicCamera2->GetComponent<Camera>()->CameraRotateX(-90.0f);
 	_cinematicCamera2->GetComponent<Camera>()->Update();
-	
+
 
 	//_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(260.0f, 95.0f, 25.0f);
 	_cinematicCamera2->GetComponent<Camera>()->SetCameraPosition(340.0f, 140.0f, 25.0f);		// 카멘 위치 200으로
@@ -153,12 +153,14 @@ void KunrealEngine::Kamen::Update()
 
 		(*it)->PlayOnce();
 
-		
-		if ((*it)->CheckRenderFinsh()) 
+
+		if ((*it)->CheckRenderFinsh())
 		{
+			(*it)->GetOwner()->SetActive(false);
+			(*it)->SetActive(false);
 			it = _nowRenderingDecalVec.erase(it);
 		}
-		else 
+		else
 		{
 			++it;
 		}
@@ -305,13 +307,14 @@ void KunrealEngine::Kamen::CreatePattern()
 
 void KunrealEngine::Kamen::GamePattern()
 {
+	//RightLeftPattern();								// 오른손 + 180도 회전후 왼손
+
 	_basicPattern[0].emplace_back(_leftFireAttack);
-	RightLeftPattern();								// 오른손 + 180도 회전후 왼손
 	TeleportSpellPattern();							// 텔포 후 spell	
 	BackStepCallPattern();							// 투사체 4번 터지는 패턴
 	EmergenceAttackPattern();						// 사라졌다가 등장 후 보스 주변 원으로 터지는 공격
 	_basicPattern[0].emplace_back(_fiveWayAttack);	// 5갈래 분신 발사
-	
+
 	_basicPattern[1] = _basicPattern[0];
 
 	_basicPattern[2].emplace_back(_swordSwingTwice);
@@ -346,6 +349,13 @@ void KunrealEngine::Kamen::Reset()
 
 	_cinematicCamera->GetComponent<Camera>()->CameraRotateY(-1 * _cameraRot.y);
 	_cinematicCamera->GetComponent<Camera>()->SetCameraPosition(0.0f, 120.0f, -130.0f);
+
+	for (int i = 0; i < 10; i++)
+	{
+		_isDecalPosChecked[i] = false;
+	}
+
+	_nowRenderingDecalVec.clear();
 
 	ResetBoss();
 
@@ -434,7 +444,7 @@ void KunrealEngine::Kamen::Reset()
 	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_bossLastAttackList[2]->GetComponent<Particle>()->SetActive(false);
 
-	
+
 	_swordDonutWarning1->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
 	_swordDonutWarning1->GetComponent<TransparentMesh>()->SetTimer(1.0f);
 
@@ -2370,11 +2380,9 @@ void KunrealEngine::Kamen::CreateSubObject()
 		auto handFireDecal = _boss->GetObjectScene()->CreateObject(objectName);
 		handFireDecal->AddComponent<TransparentMesh>();
 		handFireDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
-		//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
-		//handFireDecal->GetComponent<TransparentMesh>()->SetRenderType(2);
 		handFireDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
 		handFireDecal->GetComponent<TransparentMesh>()->SetDecal(true);
-		handFireDecal->GetComponent<Transform>()->SetScale(100.0f, 200.0f, 100.0f);
+		handFireDecal->GetComponent<Transform>()->SetScale(20.0f, 200.0f, 20.0f);
 		handFireDecal->SetTotalComponentState(false);
 		handFireDecal->SetActive(false);
 		_handFireDecal.emplace_back(handFireDecal);
@@ -2718,6 +2726,17 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 		handFire->SetTotalComponentState(false);
 		handFire->SetActive(false);
+
+		std::string objectName = "EgoHandFireDecal" + std::to_string(i + 1);
+		auto egoHandFireDecal = _boss->GetObjectScene()->CreateObject(objectName);
+		egoHandFireDecal->AddComponent<TransparentMesh>();
+		egoHandFireDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
+		egoHandFireDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		egoHandFireDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+		egoHandFireDecal->GetComponent<Transform>()->SetScale(20.0f, 200.0f, 20.0f);
+		egoHandFireDecal->SetTotalComponentState(false);
+		egoHandFireDecal->SetActive(false);
+		_egoHandFireDecal.emplace_back(egoHandFireDecal);
 	}
 
 	// call2 투사체
@@ -2903,6 +2922,87 @@ void KunrealEngine::Kamen::CreateSubObject()
 
 		_meteorSword = sword;
 	}
+
+	{
+		for (int i = 0; i < 5; i++)
+		{
+			std::string objectName = "CallDecal" + std::to_string(i + 1);
+			auto callDecal = _boss->GetObjectScene()->CreateObject(objectName);
+			callDecal->AddComponent<TransparentMesh>();
+			callDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
+			callDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+			callDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+			callDecal->GetComponent<Transform>()->SetScale(30.0f, 200.0f, 30.0f);
+			callDecal->SetTotalComponentState(false);
+			callDecal->SetActive(false);
+			_callDecalVec.emplace_back(callDecal);
+		}
+
+		for (int i = 0; i < 5; i++)
+		{
+			std::string objectName = "EgoCallDecal" + std::to_string(i + 1);
+			auto egoCallDecal = _boss->GetObjectScene()->CreateObject(objectName);
+			egoCallDecal->AddComponent<TransparentMesh>();
+			egoCallDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
+			egoCallDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+			egoCallDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+			egoCallDecal->GetComponent<Transform>()->SetScale(30.0f, 200.0f, 30.0f);
+			egoCallDecal->SetTotalComponentState(false);
+			egoCallDecal->SetActive(false);
+			_egoCallDecalVec.emplace_back(egoCallDecal);
+		}
+	}
+
+	{
+		std::string objectName1 = "EmergenceDecal";
+		auto emergenceDecal = _boss->GetObjectScene()->CreateObject(objectName1);
+		emergenceDecal->AddComponent<TransparentMesh>();
+		emergenceDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName1, "Resources/Textures/Decal/Decal.png", 0.6f);
+		emergenceDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		emergenceDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+		emergenceDecal->GetComponent<Transform>()->SetScale(80.0f, 200.0f, 80.0f);
+		emergenceDecal->SetTotalComponentState(false);
+		emergenceDecal->SetActive(false);
+		_emergenceDecal = emergenceDecal;
+
+		std::string objectName2 = "EgoEmergenceDecal";
+		auto egoEmergenceDecal = _boss->GetObjectScene()->CreateObject(objectName2);
+		egoEmergenceDecal->AddComponent<TransparentMesh>();
+		egoEmergenceDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName2, "Resources/Textures/Decal/Decal.png", 0.6f);
+		egoEmergenceDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		egoEmergenceDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+		egoEmergenceDecal->GetComponent<Transform>()->SetScale(80.0f, 200.0f, 80.0f);
+		egoEmergenceDecal->SetTotalComponentState(false);
+		egoEmergenceDecal->SetActive(false);
+		_egoEmergenceDecal = egoEmergenceDecal;
+	}
+
+	{
+		std::string objectName = "swordOutSideSafeDecal";
+		auto swordOutSideSafeDecal = _boss->GetObjectScene()->CreateObject(objectName);
+		swordOutSideSafeDecal->AddComponent<TransparentMesh>();
+		swordOutSideSafeDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
+		swordOutSideSafeDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		swordOutSideSafeDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+		swordOutSideSafeDecal->GetComponent<Transform>()->SetScale(80.0f, 200.0f, 80.0f);
+		swordOutSideSafeDecal->SetTotalComponentState(false);
+		swordOutSideSafeDecal->SetActive(false);
+		_swordOutSideSafeDecal = swordOutSideSafeDecal;
+	}
+
+	{
+		std::string objectName = "swordMeteorDecal";
+		auto swordMeteorDecal = _boss->GetObjectScene()->CreateObject(objectName);
+		swordMeteorDecal->AddComponent<TransparentMesh>();
+		swordMeteorDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
+		swordMeteorDecal->GetComponent<TransparentMesh>()->SetTimer(5.0f);
+		swordMeteorDecal->GetComponent<TransparentMesh>()->SetDecal(true);
+		swordMeteorDecal->GetComponent<Transform>()->SetScale(500.0f, 200.0f, 500.0f);
+		swordMeteorDecal->GetComponent<Transform>()->SetPosition(0.0f, 200.0f, 0.0f);
+		swordMeteorDecal->SetTotalComponentState(false);
+		swordMeteorDecal->SetActive(false);
+		_swordMeteorDecal = swordMeteorDecal;
+	}
 }
 
 
@@ -2998,6 +3098,11 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 				_handFireReady[i] = true;
 			}
 
+			for (auto& index : _handFireDecal)
+			{
+				index->GetComponent<TransparentMesh>()->Reset();
+			}
+
 			if (_isEgoAttackReady)
 			{
 				for (int i = 0; i < 5; i++)
@@ -3007,19 +3112,19 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 					_egoHandFireReady[i] = true;
 				}
 
-				_isEgoAttackReady = false;
-			}
+				for (auto& index : _egoHandFireDecal)
+				{
+					index->GetComponent<TransparentMesh>()->Reset();
+				}
 
-			for (auto& index : _handFireDecal)
-			{
-				index->GetComponent<TransparentMesh>()->Reset();
+				_isEgoAttackReady = false;
 			}
 
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
 			_boss->GetComponent<BoxCollider>()->SetActive(true);
 			_boss->GetComponent<MeshRenderer>()->Update();
 			_boss->GetComponent<BoxCollider>()->FixedUpdate();
-			
+
 			for (int i = 0; i < 10; i++)
 			{
 				_isDecalPosChecked[i] = false;
@@ -3047,6 +3152,8 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 			{
 				if (animator->GetCurrentFrame() >= 14 + i)
 				{
+					/// 사운드 - 패턴 - 화염탄 5발 투척 (Fire Attack)
+
 					if (_handFireReady[i] == true)
 					{
 						_handFireReady[i] = false;
@@ -3080,16 +3187,16 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 
 						_handFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
 
-						//if (_isDecalPosChecked[i] == false)
-						//{
-						//	if (firePos.y <= 0)
-						//	{
-						//		firePos.y += 20.0f;
-						//		_handFireDecal[i]->GetComponent<Transform>()->SetPosition(firePos);
-						//		_nowRenderingDecalVec.emplace_back(_handFireDecal[i]->GetComponent<TransparentMesh>());
-						//		_isDecalPosChecked[i] = true;
-						//	}
-						//}
+						if (_isDecalPosChecked[i] == false)
+						{
+							if (newPosition.m128_f32[1] <= -7.0f)
+							{
+								newPosition.m128_f32[1] = 2.0f;
+								_handFireDecal[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+								_nowRenderingDecalVec.emplace_back(_handFireDecal[i]->GetComponent<TransparentMesh>());
+								_isDecalPosChecked[i] = true;
+							}
+						}
 					}
 
 					// 분신용
@@ -3130,6 +3237,17 @@ void KunrealEngine::Kamen::CreateLeftAttackThrowingFire()
 							DirectX::XMVECTOR newPosition = DirectX::XMVectorAdd(DirectX::XMLoadFloat3(&firePos), DirectX::XMVectorScale(DirectX::XMLoadFloat3(&_egoHandFireDir[i]), pattern->_speed * fireSpeed));
 
 							_egoHandFire[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+
+							if (_isDecalPosChecked[i + 5] == false)
+							{
+								if (newPosition.m128_f32[1] <= -7.0f)
+								{
+									newPosition.m128_f32[1] = 2.0f;
+									_egoHandFireDecal[i]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], newPosition.m128_f32[1], newPosition.m128_f32[2]);
+									_nowRenderingDecalVec.emplace_back(_egoHandFireDecal[i]->GetComponent<TransparentMesh>());
+									_isDecalPosChecked[i + 5] = true;
+								}
+							}
 						}
 					}
 				}
@@ -3265,6 +3383,8 @@ void KunrealEngine::Kamen::CreateRightAttackThrowingFire()
 				}
 				if (animator->GetCurrentFrame() >= 24 + index)
 				{
+					/// 사운드 - 패턴 - 화염탄 5발 투척 (Fire Attack)
+
 					if (_handFireReady[i] == true)
 					{
 						_handFireReady[i] = false;
@@ -3790,6 +3910,11 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 			_timer = 0.0f;
 
+			_emergenceDecal->GetComponent<TransparentMesh>()->Reset();
+			_isDecalPosChecked[0] = false;
+
+			_emergenceDecal->GetComponent<Transform>()->SetPosition(_emergencePos.x, 2.0f, _emergencePos.z);
+
 			for (auto& index : _particleEmergenceAttack)
 			{
 				index->GetComponent<Particle>()->SetActive(true);
@@ -3816,6 +3941,11 @@ void KunrealEngine::Kamen::CreateEmergence()
 					index->GetComponent<Particle>()->SetActive(true);
 					index->GetComponent<Particle>()->SetParticleSize(80, 80);
 				}
+
+				_egoEmergenceDecal->GetComponent<TransparentMesh>()->Reset();
+				_isDecalPosChecked[1] = false;
+
+				_egoEmergenceDecal->GetComponent<Transform>()->SetPosition(egoPos.x, 2.0f, egoPos.z);
 			}
 		};
 
@@ -3844,6 +3974,12 @@ void KunrealEngine::Kamen::CreateEmergence()
 						if (_timer < 2.6f)
 						{
 							_particleEgoEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
+
+							if (_isDecalPosChecked[1] == false)
+							{
+								_nowRenderingDecalVec.emplace_back(_egoEmergenceDecal->GetComponent<TransparentMesh>());
+								_isDecalPosChecked[1] = true;
+							}
 						}
 						else
 						{
@@ -3855,6 +3991,8 @@ void KunrealEngine::Kamen::CreateEmergence()
 
 			if (isPlaying)
 			{
+				/// 사운드 - 패턴 - 바닥에서 올라오기 (Emergence)
+
 				for (int i = 0; i < _particleEmergenceAttack.size(); i++)
 				{
 					if (_timer >= 1.3f)
@@ -3865,6 +4003,12 @@ void KunrealEngine::Kamen::CreateEmergence()
 						if (_timer < 2.6f)
 						{
 							_particleEmergenceAttack[i]->GetComponent<Particle>()->SetParticleSize(80 - (60 * (_timer - 1.3f)), 80 - (60 * (_timer - 1.3f)));
+
+							if (_isDecalPosChecked[0] == false)
+							{
+								_nowRenderingDecalVec.emplace_back(_emergenceDecal->GetComponent<TransparentMesh>());
+								_isDecalPosChecked[0] = true;
+							}
 						}
 						else
 						{
@@ -3916,6 +4060,14 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 
 			_swordInsideWarning->GetComponent<Transform>()->SetScale(_swordCircleWarningSize, _swordCircleWarningSize, _swordCircleWarningSize);
 			_swordInsideAttack->GetComponent<CylinderCollider>()->SetColliderScale(_swordCircleWarningSize * 1.5f, _swordCircleWarningSize * 1.5f, _swordCircleWarningSize * 1.5f);
+
+			_swordOutSideSafeDecal->GetComponent<TransparentMesh>()->Reset();
+			_swordOutSideSafeDecal->GetComponent<Transform>()->SetPosition(_swordOriginPos.x, 2.0f, _swordOriginPos.z);
+
+			for (int i = 0; i < 10; i++)
+			{
+				_isDecalPosChecked[i] = false;
+			}
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -3928,6 +4080,8 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 			// 장판 실행이 완료되면
 			if (isPlayed)
 			{
+				/// 사운드 - 패턴 - 외부안전 (Clock)
+
 				// 콜라이더 키기
 				auto objectIndex = pattern->GetSubObjectIndex(_swordInsideAttack);
 				pattern->_isColliderActive[objectIndex] = true;
@@ -3944,6 +4098,13 @@ void KunrealEngine::Kamen::CreateOutsideSafe()
 				for (int i = 0; i < 3; i++)
 				{
 					_swordInsideAttack->GetChilds()[i]->GetComponent<Particle>()->SetActive(true);
+				}
+
+				if (_isDecalPosChecked[0] == false)
+				{
+					_nowRenderingDecalVec.emplace_back(_swordOutSideSafeDecal->GetComponent<TransparentMesh>());
+
+					_isDecalPosChecked[0] = true;
 				}
 
 				if (_swordTimer >= 2.0f)
@@ -4027,6 +4188,8 @@ void KunrealEngine::Kamen::CreateInsideSafe()
 
 				if (_swordTimer >= 1.1f)
 				{
+					/// 사운드 - 패턴 - 내부안전 (Clock)
+
 					return false;
 				}
 			}
@@ -4056,6 +4219,8 @@ void KunrealEngine::Kamen::CreateDonutSafe()
 			pattern->SetSubObject(_swordDonutWarning3);
 
 			pattern->SetSubObject(_freeSword);
+
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 
 			auto swordPos = _freeSword->GetComponent<Transform>()->GetPosition();
 
@@ -4173,6 +4338,8 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 			_swordDonutAttack[1]->GetComponent<CylinderCollider>()->SetColliderScale(donut2Size.x * 2.0f, donut2Size.y * 2.0f, donut2Size.z * 2.0f);
 			auto donut3Size = _swordDonutWarning3->GetComponent<Transform>()->GetScale();
 			_swordDonutAttack[2]->GetComponent<CylinderCollider>()->SetColliderScale(donut3Size.x * 2.0f, donut3Size.y * 2.0f, donut3Size.z * 2.0f);
+
+			_freeSword->GetComponent<MeshRenderer>()->SetActive(true);
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -4189,6 +4356,7 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 
 			if (_swordTimer <= donutInterval)
 			{
+				/// 사운드 - 패턴 - 삼단파동_1 (Chop)
 				_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(true);
 				_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(true);
 				_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(true);
@@ -4200,6 +4368,7 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 
 			else if (_swordTimer > donutInterval && _swordTimer <= 2 * donutInterval)
 			{
+				/// 사운드 - 패턴 - 삼단파동_2 (Chop)
 				_particleSwordDonut1[0]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut2[0]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut3[0]->GetComponent<Particle>()->SetActive(false);
@@ -4217,6 +4386,7 @@ void KunrealEngine::Kamen::CreateDonutAttack()
 
 			else if (_swordTimer > 2 * donutInterval)
 			{
+				/// 사운드 - 패턴 - 삼단파동_3 (Chop)
 				_particleSwordDonut1[1]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut2[1]->GetComponent<Particle>()->SetActive(false);
 				_particleSwordDonut3[1]->GetComponent<Particle>()->SetActive(false);
@@ -4356,6 +4526,7 @@ void KunrealEngine::Kamen::CreateSpellAttack()
 				}
 				else
 				{
+					/// 사운드 - 패턴 - 빔 (Spell)
 
 					pattern->SetSpeed(10.0f);
 					_lazer->GetComponent<Particle>()->SetActive(true);
@@ -4551,6 +4722,22 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				pattern->SetSubObject(_egoCall2);
 				_isEgoAttackReady = false;
 			}
+
+			for (auto& index : _callDecalVec)
+			{
+				index->GetComponent<TransparentMesh>()->Reset();
+			}
+			for (auto& index : _egoCallDecalVec)
+			{
+				index->GetComponent<TransparentMesh>()->Reset();
+			}
+
+			for (int i = 0; i < 10; i++)
+			{
+				_isDecalPosChecked[i] = false;
+			}
+
+			_call2PrevStep = 0;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -4569,6 +4756,7 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 			// 일정 프레임이 넘어가면 데미지 체크용 콜라이더를 키기
 			if (animator->GetCurrentFrame() >= 20)
 			{
+				/// 사운드 - 패턴 - 솟구치는 마법 (Call)
 				if (pattern->_colliderOnCount > 0)
 				{
 					// 파티클 키기
@@ -4595,6 +4783,24 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 				if (step != _call2PrevStep)
 				{
 					pattern->_colliderOnCount = pattern->_maxColliderOnCount;
+
+					if (_call2PrevStep > 0)
+					{
+						if (_isDecalPosChecked[_call2PrevStep - 1] == false)
+						{
+							_nowRenderingDecalVec.emplace_back(_callDecalVec[_call2PrevStep - 1]->GetComponent<TransparentMesh>());
+							_isDecalPosChecked[_call2PrevStep - 1] = true;
+						}
+
+						if (_isEgoAttack)
+						{
+							if (_isDecalPosChecked[_call2PrevStep - 1 + 5] == false)
+							{
+								_nowRenderingDecalVec.emplace_back(_egoCallDecalVec[_call2PrevStep - 1]->GetComponent<TransparentMesh>());
+								_isDecalPosChecked[_call2PrevStep - 1 + 5] = true;
+							}
+						}
+					}
 				}
 
 				_call2PrevStep = step;
@@ -4605,6 +4811,12 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 				auto call2Pos = _call2->GetComponent<Transform>()->GetPosition();
 				_call2->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], call2Pos.y, newPosition.m128_f32[2]);
+
+				if (_isDecalPosChecked[step - 1] == false)
+				{
+					newPosition.m128_f32[1] = 2.0f;
+					_callDecalVec[step - 1]->GetComponent<Transform>()->SetPosition(newPosition.m128_f32[0], 2.0f, newPosition.m128_f32[2]);
+				}
 
 				if (_isEgoAttack)
 				{
@@ -4640,11 +4852,25 @@ void KunrealEngine::Kamen::CreateCall2Attack()
 
 					auto egopCall2Pos = _call2->GetComponent<Transform>()->GetPosition();
 					_egoCall2->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], egopCall2Pos.y, egoNewPosition.m128_f32[2]);
+
+					if (_isDecalPosChecked[step - 1 + 5] == false)
+					{
+						_egoCallDecalVec[step - 1]->GetComponent<Transform>()->SetPosition(egoNewPosition.m128_f32[0], 2.0f, egoNewPosition.m128_f32[2]);
+					}
 				}
 			}
 
 			if (isAnimationPlaying == false)
 			{
+				_nowRenderingDecalVec.emplace_back(_callDecalVec[4]->GetComponent<TransparentMesh>());
+				_isDecalPosChecked[4] = true;
+
+				if (_isEgoAttack)
+				{
+					_nowRenderingDecalVec.emplace_back(_egoCallDecalVec[4]->GetComponent<TransparentMesh>());
+					_isDecalPosChecked[9] = true;
+				}
+
 				return false;
 			}
 
@@ -4764,7 +4990,7 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 				auto bossPos = _bossTransform->GetPosition();
 				auto angle = _bossTransform->GetRotation().y + (72.0f * i);
 
-				_fiveAttack[i]->GetComponent<Transform>()->SetRotation(0.0f, angle-180.0f, 0.0f);
+				_fiveAttack[i]->GetComponent<Transform>()->SetRotation(0.0f, angle - 180.0f, 0.0f);
 
 				auto direction = DirectX::XMFLOAT3{ 0.0f, 0.0f, -1.0f };
 				direction = ToolBox::RotateVector(direction, angle);
@@ -4821,6 +5047,8 @@ void KunrealEngine::Kamen::CreateFiveWayAttack()
 
 			if (warningFinsh)
 			{
+				/// 사운드 - 패턴 - 사방 분신 돌진 (Five-way)
+
 				auto fakeSpeed = 5.0f;
 
 				int sumGoal = 0;
@@ -5211,7 +5439,7 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 	pattern->SetPatternName("SwordLinearAttack");
 
-	pattern->SetAnimName("Idle").SetSpeed(70.0f).SetDamage(10.0f);
+	pattern->SetAnimName("Idle").SetSpeed(80.0f).SetDamage(10.0f);
 	pattern->SetAttackState(BossPattern::eAttackState::ePush);
 	pattern->SetMaxColliderCount(1);
 	pattern->SetColliderType(BossPattern::eColliderType::eBox);
@@ -5255,6 +5483,8 @@ void KunrealEngine::Kamen::CreateSwordLinearAttack()
 
 	auto swordLinearAttackLogic = [pattern, this]()
 		{
+			/// 사운드 - 패턴 - 검 날아가는 소리 (Linear)
+
 			auto objectIndex = pattern->GetSubObjectIndex(_freeSwordCollider);
 			pattern->_isColliderActive[objectIndex] = true;
 
@@ -5404,6 +5634,8 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			auto animator = _boss->GetComponent<Animator>();
 			auto isAnimationPlaying = animator->Play(pattern->_animName, pattern->_speed, false);
 
+			/// 사운드 - 보스 - 울부짓음 (BattleCry)
+
 			if (!isAnimationPlaying)
 			{
 				_boss->GetComponent<BoxCollider>()->SetActive(false);
@@ -5435,28 +5667,32 @@ void KunrealEngine::Kamen::CreateDecalTest()
 	std::string objectName = "testDecal";
 	static GameObject* testDecal = _boss->GetObjectScene()->CreateObject(objectName);
 	testDecal->AddComponent<TransparentMesh>();
-	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+	testDecal->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
 	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 	testDecal->GetComponent<TransparentMesh>()->SetRenderType(2);
-	testDecal->GetComponent<TransparentMesh>()->SetTimer(5);
-	testDecal->GetComponent<Transform>()->SetScale(50.0f, 50.0f, 50.0f);
-	testDecal->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(-30.0f, 0.0f, 0.0f));
+	testDecal->GetComponent<TransparentMesh>()->SetTimer(50000);
+
+	testDecal->GetComponent<Transform>()->SetScale(20.0f, 200.0f, 20.0f);
+	testDecal->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(-50.0f, 2.0f, 50.0f));
 	testDecal->SetTotalComponentState(false);
 	testDecal->SetActive(false);
+	testDecal->GetComponent<TransparentMesh>()->SetDecal(true);
 	testDecal->GetComponent<TransparentMesh>()->SetInfinite(false);
 
 	std::string objectName2 = "testDecal2";
 	static GameObject* testDecal2 = _boss->GetObjectScene()->CreateObject(objectName);
 	testDecal2->AddComponent<TransparentMesh>();
-	testDecal2->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Warning/Warning.dds", 0.6f);
+	testDecal2->GetComponent<TransparentMesh>()->CreateTMesh(objectName, "Resources/Textures/Decal/Decal.png", 0.6f);
 	//testDecal->GetComponent<TransparentMesh>()->SetTimer(500.0f);
 	testDecal2->GetComponent<TransparentMesh>()->SetRenderType(3);
-	testDecal2->GetComponent<TransparentMesh>()->SetTimer(3);
-	testDecal2->GetComponent<Transform>()->SetScale(50.0f, 50.0f, 50.0f);
-	testDecal2->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(30.0f, 0.0f, 0.0f));
+	testDecal2->GetComponent<TransparentMesh>()->SetTimer(50000);
+	testDecal2->GetComponent<Transform>()->SetScale(20.0f, 200.0f, 20.0f);
+	testDecal2->GetComponent<Transform>()->SetPosition(DirectX::XMFLOAT3(50.0f, 2.0f, -50.0f));
 	testDecal2->SetTotalComponentState(false);
 	testDecal2->SetActive(false);
+	testDecal2->GetComponent<TransparentMesh>()->SetDecal(true);
 	testDecal2->GetComponent<TransparentMesh>()->SetInfinite(false);
+	testDecal2->GetComponent<TransparentMesh>()->SetApplyPattern(true);
 
 	auto initLogic = [pattern, this]()
 		{
@@ -5476,13 +5712,6 @@ void KunrealEngine::Kamen::CreateDecalTest()
 
 	auto attakLogic = [pattern, this]()
 		{
-			_timer += TimeManager::GetInstance().GetDeltaTime();
-
-			if (_timer > 5.0f)
-			{
-				return false;
-			}
-
 			return true;
 		};
 
@@ -5712,65 +5941,65 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 
 			for (int i = 0; i < 2; i++)
 			{
-				_rentalArea[0 + 20 * i]->GetComponent<Transform>()->SetPosition(-82.5, 10.0, 81 - 118 * i);
-				_rentalArea[0 + 20 * i]->GetComponent<Transform>()->SetScale(33, 100, 60);
+				_rentalArea[0 + 20 * i]->GetComponent<Transform>()->SetPosition(-82.5, 2.0f, 81 - 118 * i);
+				_rentalArea[0 + 20 * i]->GetComponent<Transform>()->SetScale(33, 200, 60);
 
-				_rentalArea[1 + 20 * i]->GetComponent<Transform>()->SetPosition(-39.0, 10.0, 91 - 118 * i);
-				_rentalArea[1 + 20 * i]->GetComponent<Transform>()->SetScale(55, 100, 40);
+				_rentalArea[1 + 20 * i]->GetComponent<Transform>()->SetPosition(-39.0, 2.0f, 91 - 118 * i);
+				_rentalArea[1 + 20 * i]->GetComponent<Transform>()->SetScale(55, 200, 40);
 
-				_rentalArea[2 + 20 * i]->GetComponent<Transform>()->SetPosition(1, 2, 84 - 118 * i);
-				_rentalArea[2 + 20 * i]->GetComponent<Transform>()->SetScale(26, 100, 54);
+				_rentalArea[2 + 20 * i]->GetComponent<Transform>()->SetPosition(1, 2.0f, 84 - 118 * i);
+				_rentalArea[2 + 20 * i]->GetComponent<Transform>()->SetScale(26, 200, 54);
 
-				_rentalArea[3 + 20 * i]->GetComponent<Transform>()->SetPosition(28.0, 10.0, 96 - 118 * i);
-				_rentalArea[3 + 20 * i]->GetComponent<Transform>()->SetScale(28, 100, 30);
+				_rentalArea[3 + 20 * i]->GetComponent<Transform>()->SetPosition(28.0, 2.0f, 96 - 118 * i);
+				_rentalArea[3 + 20 * i]->GetComponent<Transform>()->SetScale(28, 200, 30);
 
-				_rentalArea[4 + 20 * i]->GetComponent<Transform>()->SetPosition(57.0, 10.0, 80 - 118 * i);
-				_rentalArea[4 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 62);
+				_rentalArea[4 + 20 * i]->GetComponent<Transform>()->SetPosition(57.0, 2.0f, 80 - 118 * i);
+				_rentalArea[4 + 20 * i]->GetComponent<Transform>()->SetScale(30, 200, 62);
 
-				_rentalArea[5 + 20 * i]->GetComponent<Transform>()->SetPosition(87.0, 10.0, 86 - 118 * i);
-				_rentalArea[5 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 50);
+				_rentalArea[5 + 20 * i]->GetComponent<Transform>()->SetPosition(87.0, 2.0f, 86 - 118 * i);
+				_rentalArea[5 + 20 * i]->GetComponent<Transform>()->SetScale(30, 200, 50);
 
-				_rentalArea[6 + 20 * i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 46 - 118 * i);
-				_rentalArea[6 + 20 * i]->GetComponent<Transform>()->SetScale(34, 100, 50);
+				_rentalArea[6 + 20 * i]->GetComponent<Transform>()->SetPosition(-50, 2.0f, 46 - 118 * i);
+				_rentalArea[6 + 20 * i]->GetComponent<Transform>()->SetScale(34, 200, 50);
 
-				_rentalArea[7 + 20 * i]->GetComponent<Transform>()->SetPosition(-83, 10.0, 22 - 118 * i);
-				_rentalArea[7 + 20 * i]->GetComponent<Transform>()->SetScale(32, 100, 58);
+				_rentalArea[7 + 20 * i]->GetComponent<Transform>()->SetPosition(-83, 2.0f, 22 - 118 * i);
+				_rentalArea[7 + 20 * i]->GetComponent<Transform>()->SetScale(32, 200, 58);
 
-				_rentalArea[8 + 20 * i]->GetComponent<Transform>()->SetPosition(28, 10.0, 56 - 118 * i);
-				_rentalArea[8 + 20 * i]->GetComponent<Transform>()->SetScale(28, 100, 50);
+				_rentalArea[8 + 20 * i]->GetComponent<Transform>()->SetPosition(28, 2.0f, 56 - 118 * i);
+				_rentalArea[8 + 20 * i]->GetComponent<Transform>()->SetScale(28, 200, 50);
 
-				_rentalArea[9 + 20 * i]->GetComponent<Transform>()->SetPosition(86, 10.0, 36 - 118 * i);
-				_rentalArea[9 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 50);
+				_rentalArea[9 + 20 * i]->GetComponent<Transform>()->SetPosition(86, 2.0f, 36 - 118 * i);
+				_rentalArea[9 + 20 * i]->GetComponent<Transform>()->SetScale(30, 200, 50);
 
-				_rentalArea[10 + 20 * i]->GetComponent<Transform>()->SetPosition(56, 10.0, 30 - 118 * i);
-				_rentalArea[10 + 20 * i]->GetComponent<Transform>()->SetScale(30, 100, 38);
+				_rentalArea[10 + 20 * i]->GetComponent<Transform>()->SetPosition(56, 2.0f, 30 - 118 * i);
+				_rentalArea[10 + 20 * i]->GetComponent<Transform>()->SetScale(30, 200, 38);
 
-				_rentalArea[11 + 20 * i]->GetComponent<Transform>()->SetPosition(1.5, 10.0, 34 - 118 * i);
-				_rentalArea[11 + 20 * i]->GetComponent<Transform>()->SetScale(25, 100, 46);
+				_rentalArea[11 + 20 * i]->GetComponent<Transform>()->SetPosition(1.5, 2.0f, 34 - 118 * i);
+				_rentalArea[11 + 20 * i]->GetComponent<Transform>()->SetScale(25, 200, 46);
 
-				_rentalArea[12 + 20 * i]->GetComponent<Transform>()->SetPosition(-50, 10.0, 7 - 118 * i);
-				_rentalArea[12 + 20 * i]->GetComponent<Transform>()->SetScale(35, 100, 28);
+				_rentalArea[12 + 20 * i]->GetComponent<Transform>()->SetPosition(-50, 2.0f, 7 - 118 * i);
+				_rentalArea[12 + 20 * i]->GetComponent<Transform>()->SetScale(35, 200, 28);
 
-				_rentalArea[13 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 34 - 118 * i);
-				_rentalArea[13 + 20 * i]->GetComponent<Transform>()->SetScale(22, 100, 25);
+				_rentalArea[13 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 2.0f, 34 - 118 * i);
+				_rentalArea[13 + 20 * i]->GetComponent<Transform>()->SetScale(22, 200, 25);
 
-				_rentalArea[14 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 7.5 - 118 * i);
-				_rentalArea[14 + 20 * i]->GetComponent<Transform>()->SetScale(22, 100, 29);
+				_rentalArea[14 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 2.0f, 7.5 - 118 * i);
+				_rentalArea[14 + 20 * i]->GetComponent<Transform>()->SetScale(22, 200, 29);
 
-				_rentalArea[15 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 10.0, 59 - 118 * i);
-				_rentalArea[15 + 20 * i]->GetComponent<Transform>()->SetScale(22, 100, 25);
+				_rentalArea[15 + 20 * i]->GetComponent<Transform>()->SetPosition(-22, 2.0f, 59 - 118 * i);
+				_rentalArea[15 + 20 * i]->GetComponent<Transform>()->SetScale(22, 200, 25);
 
-				_rentalArea[16 + 20 * i]->GetComponent<Transform>()->SetPosition(27.5, 10.0, 21 - 118 * i);
-				_rentalArea[16 + 20 * i]->GetComponent<Transform>()->SetScale(27.5, 100, 20);
+				_rentalArea[16 + 20 * i]->GetComponent<Transform>()->SetPosition(27.5, 2.0f, 21 - 118 * i);
+				_rentalArea[16 + 20 * i]->GetComponent<Transform>()->SetScale(27.5, 200, 20);
 
-				_rentalArea[17 + 20 * i]->GetComponent<Transform>()->SetPosition(9, 10.0, 2 - 118 * i);
-				_rentalArea[17 + 20 * i]->GetComponent<Transform>()->SetScale(40, 100, 18);
+				_rentalArea[17 + 20 * i]->GetComponent<Transform>()->SetPosition(9, 2.0f, 2 - 118 * i);
+				_rentalArea[17 + 20 * i]->GetComponent<Transform>()->SetScale(40, 200, 18);
 
-				_rentalArea[18 + 20 * i]->GetComponent<Transform>()->SetPosition(46, 10.0, 2 - 118 * i);
-				_rentalArea[18 + 20 * i]->GetComponent<Transform>()->SetScale(35, 100, 18);
+				_rentalArea[18 + 20 * i]->GetComponent<Transform>()->SetPosition(46, 2.0f, 2 - 118 * i);
+				_rentalArea[18 + 20 * i]->GetComponent<Transform>()->SetScale(35, 200, 18);
 
-				_rentalArea[19 + 20 * i]->GetComponent<Transform>()->SetPosition(82, 10.0, 2 - 118 * i);
-				_rentalArea[19 + 20 * i]->GetComponent<Transform>()->SetScale(38, 100, 18);
+				_rentalArea[19 + 20 * i]->GetComponent<Transform>()->SetPosition(82, 2.0f, 2 - 118 * i);
+				_rentalArea[19 + 20 * i]->GetComponent<Transform>()->SetScale(38, 200, 18);
 			}
 
 			for (auto& index : _rentalCollider)
@@ -5879,6 +6108,13 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 			_timer = 0.0f;
 			_timer2 = 0.5f;
+
+			for (int i = 0; i < 10; i++)
+			{
+				_isDecalPosChecked[i] = false;
+			}
+
+			_swordMeteorDecal->GetComponent<TransparentMesh>()->Reset();
 		};
 	pattern->SetInitializeLogic(initLogic);
 
@@ -5894,6 +6130,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 			{
 				if (_timer == 0.0f)
 				{
+					/// 사운드 - 검 - 폭발 (SwrodMeteor)
+
 					for (auto& meteorSwordHitParticle : _meteorSwordHitParticle)
 					{
 						meteorSwordHitParticle->GetComponent<Particle>()->SetActive(true);
@@ -5911,6 +6149,9 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 				}
 				else
 				{
+					_swordMeteorDecal->GetComponent<TransparentMesh>()->PlayOnce();
+					_isDecalPosChecked[0] = true;
+
 					_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetParticleSize(0, 0);
 					_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(0, 0);
 					_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(0, 0);
@@ -5927,9 +6168,9 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 						_meteorSword->GetComponent<MeshRenderer>()->SetDissolve(_timer2);
 
-						_timer2 -= TimeManager::GetInstance().GetDeltaTime()*0.2f;
+						_timer2 -= TimeManager::GetInstance().GetDeltaTime() * 0.2f;
 					}
-					
+
 
 					else
 					{
@@ -6712,7 +6953,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 종료 로직
 				default:
 				{
- 					auto cinematicCamera = _cinematicCamera->GetComponent<Camera>();
+					auto cinematicCamera = _cinematicCamera->GetComponent<Camera>();
 					cinematicCamera->CameraRotateY(-1 * _cameraRot.y);
 					_cameraRot.y = 0.0f;
 					cinematicCamera->SetCameraPosition(_cameraOriginPos.x, _cameraOriginPos.y, _cameraOriginPos.z);

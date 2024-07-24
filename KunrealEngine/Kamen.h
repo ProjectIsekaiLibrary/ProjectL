@@ -290,6 +290,7 @@ namespace KunrealEngine
 		GameObject* _alterEgo;
 
 		std::vector<GameObject*> _egoHandFire;
+		std::vector<GameObject*> _egoHandFireDecal;
 
 		GameObject* _egoCall2;
 
@@ -320,6 +321,15 @@ namespace KunrealEngine
 		GameObject*_cinematicCamera;
 		GameObject* _cinematicCamera2;
 		GameObject* _mainPlayCamera;
+
+		std::vector<GameObject*> _callDecalVec;
+		std::vector<GameObject*> _egoCallDecalVec;
+		GameObject* _emergenceDecal;
+		GameObject* _egoEmergenceDecal;
+
+		GameObject* _swordOutSideSafeDecal;
+
+		GameObject* _swordMeteorDecal;
 
 	private:
 		// Call 거리 체크용

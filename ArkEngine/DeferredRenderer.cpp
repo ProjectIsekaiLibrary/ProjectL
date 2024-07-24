@@ -79,7 +79,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
 	_arkDevice = ResourceManager::GetInstance()->GetResource<ArkEngine::ArkDX11::ArkDevice>("Device");
 	BuildQuadBuffers();
 
-	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>("Resources/Textures/Warning/shapeTest128.dds");
+	auto texture = ResourceManager::GetInstance()->GetResource<ArkTexture>("Resources/Textures/Warning/shape128.dds");
 
 	if (texture != nullptr)
 	{
@@ -87,7 +87,7 @@ void ArkEngine::ArkDX11::DeferredRenderer::Initailize()
 	}
 	else
 	{
-		ArkTexture* newTexture = new ArkTexture("Resources/Textures/Warning/shapeTest128.dds");
+		ArkTexture* newTexture = new ArkTexture("Resources/Textures/Warning/shape128.dds");
 		_patternTextureSRV = newTexture->GetDiffuseMapSRV();
 	}
 }
