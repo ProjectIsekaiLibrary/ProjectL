@@ -456,8 +456,8 @@ namespace KunrealEngine
 		GameObject* titlePlayer = sceneInstance.GetCurrentScene()->CreateObject("TitlePlayer");
 		titlePlayer->_autoAwake = true;
 		titlePlayer->AddComponent<Player>();
-		titlePlayer->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 0.0f);
-		titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
+		titlePlayer->GetComponent<Transform>()->SetPosition(-156.0f, 68.f, 0.0f);
+		titlePlayer->GetComponent<PlayerMove>()->SetPlayerY(68.0f);
 		DirectX::XMFLOAT4 pdiffuse = { 0.3f, 0.3f, 0.3f, 0.3f };
 		DirectX::XMFLOAT4 pambient = { 0.2f, 0.2f, 0.2f, 0.2f };
 		DirectX::XMFLOAT4 pspecular = { 1.0f, 1.0f, 1.0f, 1.0f };

@@ -29,7 +29,7 @@ KunrealEngine::Player::Player()
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
-	, _onCasting(false), _playerStartX(0.7f), _playerStartZ(-55.0f), _playerBindFlag(false)
+	, _onCasting(false), _playerStartX(0.7f), _playerStartZ(-55.0f), _playerBindFlag(false), _cinematicIndex(0)
 {
 	_sweepNode.clear();
 }
@@ -283,6 +283,49 @@ void KunrealEngine::Player::AnimateByStatus()
 				{
 					this->_owner->GetComponent<Animator>()->Pause();
 				}
+				break;
+			case Status::CINEMATIC:
+				this->_onCasting = false;
+
+				// 매개변수로 넣어준 index에 따라 애니메이션 반복 출력	// 날아가는거 제외
+				if (this->_cinematicIndex == 0)
+				{
+					// IDLE
+					this->_owner->GetComponent<Animator>()->Play("StandingIdle", 30.0f * _playerInfo._speedScale, true);
+
+				}
+				else if (this->_cinematicIndex == 1)
+				{
+					// WALK
+					this->_owner->GetComponent<Animator>()->Play("FastRun", 15.0f * _playerInfo._speedScale, true);
+				}
+				else if (this->_cinematicIndex == 2)
+				{
+					// STAGGERED
+					this->_owner->GetComponent<Animator>()->Play("Staggered", 20.0f * _playerInfo._speedScale, true);
+				}
+				else if (this->_cinematicIndex == 3)
+				{
+					// LASER
+					this->_owner->GetComponent<Animator>()->Play("Beam_full", 40.0f * (_playerInfo._speedScale * 0.66f), true);
+
+					if (this->_owner->GetComponent<Animator>()->GetCurrentFrame() > 57)
+					{
+						this->_owner->GetComponent<Animator>()->SetCurrentFrame(49);
+					}
+				}
+				else if (this->_cinematicIndex == 4)
+				{
+					// SWEEP
+					this->_owner->GetComponent<Animator>()->Play("Sweep", _sweepAnimationSpeed * _playerInfo._speedScale, false);
+				}		
+				else if (this->_cinematicIndex == 5)
+				{
+					// METEOR	// 마지막 프레임만
+					this->_owner->GetComponent<Animator>()->Play("Meteor", 40.0f * _playerInfo._speedScale, false);
+					this->_owner->GetComponent<Animator>()->SetCurrentFrame(this->_owner->GetComponent<Animator>()->GetMaxFrame());
+				}
+
 				break;
 			case KunrealEngine::Player::Status::DEAD:
 				this->_onCasting = false;
@@ -559,25 +602,27 @@ void KunrealEngine::Player::ResetPlayerStatus()
 
 void KunrealEngine::Player::SetPlayerBindFlag(bool flag, int state /*= 0*/)
 {
+	/// flag가 true일때 행동불가 false일때 IDLE로 바꿔줌
+	/// 반복문에 넣지마 계속 IDLE 된다
+	/// 
+	/// int 매개변수는 플레이어가 반복실행할 애니메이션		DEFAULT는 0
+	// 0 IDLE
+	// 1 WALK
+	// 2 STAGGERED	// 스턴 애니메이션
+	// 3 LASER
+	// 4 SWEEP		// 이건 반복실행안돼
+
 	this->_playerBindFlag = flag;
 
-	//if (!flag)
-	//{
-	//	switch (state)
-	//	{
-	//		case 0:
-	//			this->_playerStatus = Status::IDLE;
-	//			break;
-	//
-	//		case 1:
-	//
-	//
-	//		default:
-	//			break;
-	//	}
-	//
-	//	this->_playerStatus = Status::IDLE;
-	//}
+	if (flag)
+	{
+		this->_playerStatus = Status::CINEMATIC;
+		this->_cinematicIndex = state;
+	}
+	else
+	{
+		this->_playerStatus = Status::IDLE;
+	}
 }
 
 

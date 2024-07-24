@@ -26,6 +26,7 @@ namespace KunrealEngine
 			SWEEP,				// 날아가는중
 			DEAD,				// 사망
 			BEFORESTART,		// 게임 시작 전 누워있는 상태
+			CINEMATIC,			// 특수 상태
 		};
 
 		// 플레이어의 스탯 정보
@@ -76,6 +77,7 @@ namespace KunrealEngine
 		DirectX::XMVECTOR _directionVector;		// 플레이어가 바라보는 방향 벡터
 
 		int _abilityAnimationIndex;				// 어떤 스킬 애니메이션
+		int _cinematicIndex;
 
 		// 피격 후 날아가는 로직 관련
 		bool _isSweep;							// 날아가는 트리거
@@ -159,7 +161,8 @@ namespace KunrealEngine
 		// 플레이어 상태, 체력 초기화
 		void ResetPlayerStatus();
 
-		// Flag에 따라 플레이어 행동 불가, 가능 여부 결정
+		// Flag에 따라 플레이어 행동 불가, 가능 여부 결정	// int 매개변수는 정의 참조
+		// 상세는 정의 참조
 		void SetPlayerBindFlag(bool flag, int state = 0);
 		bool GetPlayerBindFlag();
 

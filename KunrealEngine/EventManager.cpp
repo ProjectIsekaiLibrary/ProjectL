@@ -1078,9 +1078,9 @@ void KunrealEngine::EventManager::MoveToTitle()
 	this->_iscamfollow = false;
 
 	// 플레이어 위치 초기화
-	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 68.0f, 0.0f);
 	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetRotation(0.0f, 45.0f, 0.0f);
-	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(68.0f);
 	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
 	scene->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
 
