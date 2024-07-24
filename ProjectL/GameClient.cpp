@@ -5,7 +5,7 @@
 KunrealEngine::EngineCore* engineInstance = KunrealEngine::CreateEngine();
 
 GameClient::GameClient::GameClient()
-	:_hWnd(), _MSG(), _windowPosX(0), _windowPosY(0), _screenWidth(1920), _screenHeight(1080),
+	:_hWnd(), _MSG(), _windowPosX(0), _windowPosY(0), _screenWidth(2560), _screenHeight(1440),
 	_core(nullptr)
 {
 
@@ -85,7 +85,7 @@ HRESULT GameClient::GameClient::Initialize(HINSTANCE hInstance)
 
 	// 윈도 생성
 	_hWnd = CreateWindowW(szAppName, szAppName,
-		WS_OVERLAPPEDWINDOW,
+		WS_POPUP | WS_VISIBLE,
 		_windowPosX, _windowPosY, _screenWidth, _screenHeight,
 		nullptr, nullptr, hInstance, NULL);
 

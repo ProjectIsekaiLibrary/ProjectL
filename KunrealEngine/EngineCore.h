@@ -64,7 +64,8 @@ namespace KunrealEngine
 
 		void SetEditorMousePos(POINT position);
 
-
+		float _screenWidth;
+		float _screenHeight;
 	public:
 		// 로직 테스트할때 여기다 다 만들어 함수 새로 파고 싶으면 또 만들어도 돼
 		void PlayGround();

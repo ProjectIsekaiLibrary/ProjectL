@@ -70,7 +70,7 @@ static float g_rageOfLee = 0.0f;
 static float g_test = 0.0f;
 
 KunrealEngine::EngineCore::EngineCore()
-	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false)
+	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false), _screenWidth(2560.0f), _screenHeight(1440.0f)
 {
 
 }
@@ -86,6 +86,9 @@ void KunrealEngine::EngineCore::Initialize(HWND hwnd, HINSTANCE hInstance, int s
 	sceneInstance.Initialize();
 	timeInstance.Initialize();
 	GraphicsSystem::GetInstance().Initialize(hwnd, screenWidth, screenHeight);
+
+	this->_screenWidth = (float)screenWidth;
+	this->_screenHeight = (float)screenHeight;
 
 	GameObject* meshTest = sceneInstance.GetCurrentScene()->CreateObject("meshTest");
 	meshTest->AddComponent<MeshRenderer>();
