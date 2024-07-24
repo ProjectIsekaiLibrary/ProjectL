@@ -1,6 +1,7 @@
 #include <random>
 #include <algorithm>
 #include <DirectXMath.h>
+#include <math.h>
 #include "GameObject.h"
 #include "Animator.h"
 #include "TimeManager.h"
@@ -434,14 +435,17 @@ void KunrealEngine::Boss::Chase()
 			// 각도를 측정
 			_rotAngle = ToolBox::GetAngleWithDirection(bossPosition, playerPosition, _bossTransform->GetRotation().y);
 
-			// 현재 각도를 기록
-			_prevRot = _bossTransform->GetRotation();
+			if (!isnan(_rotAngle))
+			{
+				// 현재 각도를 기록
+				_prevRot = _bossTransform->GetRotation();
 
-			// 각도 누적용
-			_sumRot = 0.0f;
+				// 각도 누적용
+				_sumRot = 0.0f;
 
-			// 두번째 진입시부턴 안들어오게 하도록
-			_isAngleCheck = true;
+				// 두번째 진입시부턴 안들어오게 하도록
+				_isAngleCheck = true;
+			}
 		}
 
 		// 보스가 플레이어를 바라보게 함
