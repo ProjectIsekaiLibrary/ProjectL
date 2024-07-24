@@ -12,6 +12,7 @@
 #include "TransparentMesh.h"
 #include "Transform.h"
 #include "TimeManager.h"
+#include "SoundPlayer.h"
 
 namespace KunrealEngine
 {
@@ -267,6 +268,7 @@ namespace KunrealEngine
 
 			if (ability->_playerComp->_playerStatus != Player::Status::ABILITY || _playerComp->_abilityAnimationIndex != 3)
 			{
+				ability->_soundComp->Stop(_soundlaser);
 				co_return;
 			}
 
@@ -291,10 +293,6 @@ namespace KunrealEngine
 			auto* ability = this;
 
 			Waitforsecond(1.0f);
-			//ability->_laserCrator1->GetComponent<TransparentMesh>()->SetActive(true);
-			//ability->_laserCrator1->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			//ability->_laserCrator1->GetComponent<TransparentMesh>()->Reset();
-			//ability->_laserCrator1->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (ability->_laser->GetActivated())
 			{
@@ -305,10 +303,6 @@ namespace KunrealEngine
 			}
 
 			Waitforsecond(0.1f);
-			//ability->_laserCrator2->GetComponent<TransparentMesh>()->SetActive(true);
-			//ability->_laserCrator2->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			//ability->_laserCrator2->GetComponent<TransparentMesh>()->Reset();
-			//ability->_laserCrator2->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (ability->_laser->GetActivated())
 			{
@@ -320,10 +314,6 @@ namespace KunrealEngine
 			}
 
 			Waitforsecond(0.1f);
-			//ability->_laserCrator3->GetComponent<TransparentMesh>()->SetActive(true);
-			//ability->_laserCrator3->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			//ability->_laserCrator3->GetComponent<TransparentMesh>()->Reset();
-			//ability->_laserCrator3->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (ability->_laser->GetActivated())
 			{
@@ -334,10 +324,6 @@ namespace KunrealEngine
 			}
 
 			Waitforsecond(0.1f);
-			//ability->_laserCrator4->GetComponent<TransparentMesh>()->SetActive(true);
-			//ability->_laserCrator4->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			//ability->_laserCrator4->GetComponent<TransparentMesh>()->Reset();
-			//ability->_laserCrator4->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (ability->_laser->GetActivated())
 			{
@@ -348,10 +334,6 @@ namespace KunrealEngine
 			}
 
 			Waitforsecond(0.1f);
-			//ability->_laserCrator5->GetComponent<TransparentMesh>()->SetActive(true);
-			//ability->_laserCrator5->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			//ability->_laserCrator5->GetComponent<TransparentMesh>()->Reset();
-			//ability->_laserCrator5->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (ability->_laser->GetActivated())
 			{
@@ -362,10 +344,6 @@ namespace KunrealEngine
 			}
 
 			Waitforsecond(0.1f);
-			//ability->_laserCrator6->GetComponent<TransparentMesh>()->SetActive(true);
-			//ability->_laserCrator6->GetComponent<TransparentMesh>()->TransformForceUpdate();
-			//ability->_laserCrator6->GetComponent<TransparentMesh>()->Reset();
-			//ability->_laserCrator6->GetComponent<TransparentMesh>()->PlayOnce();
 
 			if (ability->_laser->GetActivated())
 			{

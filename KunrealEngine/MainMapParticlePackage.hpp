@@ -469,7 +469,7 @@ namespace KunrealEngine
 		bossPortal->_autoAwake = true;
 		bossPortal->GetComponent<Transform>()->SetPosition(-156.0f, 66.f, 220.0f);
 		bossPortal->AddComponent<BoxCollider>();
-		bossPortal->GetComponent<BoxCollider>()->SetColliderScale(30.0f, 70.0f, 30.0f);
+		bossPortal->GetComponent<BoxCollider>()->SetColliderScale(100.0f, 70.0f, 40.0f);
 
 
 		// Æ÷Å» ÆÄÆ¼Å¬

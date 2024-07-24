@@ -70,7 +70,7 @@ static float g_rageOfLee = 0.0f;
 static float g_test = 0.0f;
 
 KunrealEngine::EngineCore::EngineCore()
-	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false), _screenWidth(2560.0f), _screenHeight(1440.0f)
+	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false), _screenWidth(2560.0f), _screenHeight(1440.0f), _endingCamera(nullptr), _endingCameraAfter(nullptr)
 {
 
 }
@@ -178,7 +178,7 @@ void KunrealEngine::EngineCore::Update()
 		soundComp->Play(titlebgm1);
 
 		titleUIPosY = GetCurrentScene()->GetGameObject("Title_Image")->GetComponent<Transform>()->GetPosition().y;
-		if (titleUIPosY <= -680)
+		if (titleUIPosY <= -680.0f)
 		{
 			SmoothTransition(titleCameraStart, titleCameraRotStart, titleCameraEnd, titleCameraRotEnd, 5.0f, TimeManager::GetInstance().GetDeltaTime());
 		}
@@ -199,18 +199,6 @@ void KunrealEngine::EngineCore::Update()
 	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main" && inputInstance->KeyDown(KEY::X))
 	{
 		EventManager::GetInstance().ActivateEndingSceneTrigger();
-	}
-
-	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main" && inputInstance->KeyDown(KEY::HOME))
-	{
-		if (sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->GetPlayerBindFlag())
-		{
-			sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
-		}
-		else
-		{
-			sceneInstance.GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
-		}
 	}
 	///
 
@@ -270,9 +258,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	testCamera->_autoAwake = true;
 
 	EventManager::GetInstance().SetCamera("testCamera");
-
 	
-
 	// Player
 	player = sceneInstance.GetCurrentScene()->CreateObject("Player");
 	player->AddComponent<Player>();
@@ -348,6 +334,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	// 맵 꾸미기 파티클
 	MapParticleSetting(_mapParticleList);
 	EventManager::GetInstance().Initialize();
+	EventManager::GetInstance().GetEngineCore(this);
 }
 
 
@@ -714,18 +701,16 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 	_endingCamera->AddComponent<Camera>();
 	_endingCamera->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
 	_endingCamera->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
-
-	//_endingCamera->GetComponent<Camera>()->SetMainCamera();
-
 	_endingCamera->GetComponent<Transform>()->SetPosition({ -322.f, 100.0f,-148.130f });
 	_endingCamera->GetComponent<Transform>()->SetRotation(-182.f, 168.f, 0.f);
-	//EventManager::GetInstance().SetCamera("EndingCamera");
 
-	// light test
-	//DirectX::XMFLOAT4 diffuse = { 0.92f, 0.18f, 0.670f, 0.3f };
-	//DirectX::XMFLOAT4 ambient = { 0.52f, 0.28f, 0.6f, 0.2f };
-	//DirectX::XMFLOAT4 specular = { 1.0f, 1.0f, 1.0f, 1.0f };
-	//DirectX::XMFLOAT3 direction = { 0.18f, -0.16f, -1.0f };
+	_endingCameraAfter = endingScene->CreateObject("EndingCameraAfter");
+	_endingCameraAfter->_autoAwake = true;
+	_endingCameraAfter->AddComponent<Camera>();
+	_endingCameraAfter->GetComponent<Camera>()->SetCameraPosition(cameraPos.x, cameraPos.y, cameraPos.z);
+	_endingCameraAfter->GetComponent<Camera>()->SetTargetPosition(targetPos.x, targetPos.y, targetPos.z);
+	_endingCameraAfter->GetComponent<Transform>()->SetPosition(-322.f, 100.0f,-148.130f);
+	//_endingCameraAfter->GetComponent<Transform>()->SetRotation(-182.f, 168.f, 0.0f);
 
 	DirectX::XMFLOAT4 diffuse = { 1.f, 1.f, 1.f, 0.3f };
 	DirectX::XMFLOAT4 ambient = { 1.f, 1.f, 1.f, 0.2f };
@@ -1032,7 +1017,7 @@ void KunrealEngine::EngineCore::CreateEndingScene()
 
 void KunrealEngine::EngineCore::EndingSceneUpdate()
 {
-	endingTimer -= TimeManager::GetInstance().GetDeltaTime();
+	_endingTimer -= TimeManager::GetInstance().GetDeltaTime();
 
 
 	_endingMeteo1->GetComponent<Transform>()->SetPosition(153.7f,
@@ -1060,12 +1045,12 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		CountPlusLoop(_endingMeteo8->GetComponent<Transform>()->GetPosition().y, 300.f, 5.f), -172.0f);
 
 
-	if (endingTimer <= -5.f)
+	if (_endingTimer <= -5.f)
 	{
 		_endingCredit1->GetComponent<ImageRenderer>()->SetPosition(0.0f,
 			CountMinus(_endingCredit1->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 	}
-	if (endingTimer <= -7.f)
+	if (_endingTimer <= -7.f)
 	{
 		_endingLee->GetComponent<ImageRenderer>()->SetPosition(0.0f,
 			CountMinus(_endingLee->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
@@ -1073,7 +1058,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingKunho->GetComponent<Transform>()->SetPosition(-250.0f,
 			CountPlus(_endingKunho->GetComponent<Transform>()->GetPosition().y, 300.f, 11.f), -475.0f);
 	}
-	if (endingTimer <= -17.f)
+	if (_endingTimer <= -17.f)
 	{
 		_endingYoon->GetComponent<ImageRenderer>()->SetPosition(0.0f,
 			CountMinus(_endingYoon->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
@@ -1081,7 +1066,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingSword->GetComponent<Transform>()->SetPosition(-298.0f,
 			CountPlus(_endingSword->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -397.0f);
 	}
-	if (endingTimer <= -27.f)
+	if (_endingTimer <= -27.f)
 	{
 		_endingKim->GetComponent<ImageRenderer>()->SetPosition(0.0f,
 			CountMinus(_endingKim->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
@@ -1089,7 +1074,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingKachujin->GetComponent<Transform>()->SetPosition(-239.0f,
 			CountPlus(_endingKachujin->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -475.0f);
 	}
-	if (endingTimer <= -37.0f)
+	if (_endingTimer <= -37.0f)
 	{
 		_endingBae->GetComponent<ImageRenderer>()->SetPosition(0.0f,
 			CountMinus(_endingBae->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
@@ -1097,7 +1082,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingEnt->GetComponent<Transform>()->SetPosition(-273.0f,
 			CountPlus(_endingEnt->GetComponent<Transform>()->GetPosition().y, 300.f, 10.f), -475.0f);
 	}
-	if (endingTimer <= -47.f)
+	if (_endingTimer <= -47.f)
 	{
 		_endingJung->GetComponent<ImageRenderer>()->SetPosition(0.0f,
 			CountMinus(_endingJung->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
@@ -1105,7 +1090,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingSpider->GetComponent<Transform>()->SetPosition(-242.0f,
 			CountPlus(_endingSpider->GetComponent<Transform>()->GetPosition().y, 300.f, 11.f), -475.0f);
 	}
-	if (endingTimer <= -55.f)
+	if (_endingTimer <= -55.f)
 	{
 		_bossTheme->GetComponent<ImageRenderer>()->SetPosition(0.f,
 			CountMinus(_bossTheme->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
@@ -1113,7 +1098,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		_endingTheme->GetComponent<ImageRenderer>()->SetPosition(0.f,
 			CountMinus(_endingTheme->GetComponent<Transform>()->GetPosition().y, -1000.0f, 65.f));
 	}
-	if (endingTimer <= -70.f)
+	if (_endingTimer <= -70.f)
 	{
 		_endingThankYou->GetComponent<ImageRenderer>()->SetPosition(0.f,
 			CountMinus(_endingThankYou->GetComponent<Transform>()->GetPosition().y, 680.0f, 65.f));
@@ -1124,40 +1109,42 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 	_endingKunho->GetComponent<Animator>()->Play("Idle", 0.1f, true);
 
 	// boss
-	if (endingTimer <= 10.0f && endingTimer > 5.0f)
+	if (_endingTimer <= 10.0f && _endingTimer > 5.0f)
 	{
 		_endingSoundComp->Play(endingSoundindex);
 		endingBoss->GetComponent<Animator>()->Play("BattleCry", 0.5f, true);
 	}
-	else if (endingTimer <= 5.0f && endingTimer >= 0.0f)
+	else if (_endingTimer <= 5.0f && _endingTimer >= 0.0f)
 	{
 		endingBoss->GetComponent<Animator>()->Play("BattleCry", 10.f, true);
 
 		endingBoss->GetComponent<MeshRenderer>()->SetIsDissolve(true);
-		endingBoss->GetComponent<MeshRenderer>()->SetDissolve(endingTimer / 5);
+		endingBoss->GetComponent<MeshRenderer>()->SetDissolve(_endingTimer / 5);
 	}
 
 	// player
-	if (endingTimer <= 10.0f && endingTimer > 2.f)
+	if (_endingTimer <= 10.0f && _endingTimer > 2.f)
 	{
 		endingPlayer->GetComponent<Animator>()->Play("Idle", 10.0f, true);
 	}
-	else if (endingTimer <= 2.0f && endingTimer > -1.5f)
+	else if (_endingTimer <= 2.0f && _endingTimer > -1.5f)
 	{
 		endingRock->GetComponent<MeshRenderer>()->SetIsDissolve(true);
-		endingRock->GetComponent<MeshRenderer>()->SetDissolve(endingTimer);
+		endingRock->GetComponent<MeshRenderer>()->SetDissolve(_endingTimer);
 
 		endingPlayer->GetComponent<Animator>()->Play("fallingEnding", 10.f, true);
 		EventManager::GetInstance().ActivateEndingFadeTrigger();
 	}
 
-	if (endingTimer <= -2.0f)
+	if (_endingTimer <= -2.0f)
 	{
 		//_endingLight->GetComponent<Light>()->SetDirection(1.0f, 1.0f, -1.f);
 
-		_endingCamera->GetComponent<Transform>()->SetPosition({ -322.f, 100.0f,-148.130f });
-		_endingCamera->GetComponent<Transform>()->SetRotation(-182.f, 149.f, 0.f);
-
+		//_endingCamera->GetComponent<Transform>()->SetPosition({ -322.f, 100.0f,-148.130f });
+		//_endingCamera->GetComponent<Transform>()->SetRotation(-182.f, 149.f, 0.f);
+		EventManager::GetInstance().SetCamera("EndingCameraAfter");
+		_endingCameraAfter->GetComponent<Transform>()->SetPosition({ -322.f, 100.0f,-148.130f });
+		_endingCameraAfter->GetComponent<Transform>()->SetRotation(-182.f, 149.f, 0.0f);
 
 		endingPlayer->GetComponent<Transform>()->SetPosition(-261.0f, 92.f, -255.0f);
 		endingPlayer->GetComponent<Transform>()->SetRotation(3.0f, 158.f, 0.0f);
@@ -1168,7 +1155,7 @@ void KunrealEngine::EngineCore::EndingSceneUpdate()
 		endingPlayer->GetComponent<Animator>()->Play("endingFloatingfbx", 1.f, true);
 	}
 
-	if (sceneInstance.GetScene("Ending")->GetGameObject("EndingThankYou")->GetComponent<Transform>()->GetPosition().y <= 500.0f)
+	if (sceneInstance.GetScene("Ending")->GetGameObject("EndingThankYou")->GetComponent<Transform>()->GetPosition().y <= 680.0f)
 	{
 		EventManager::GetInstance().ActivateFadeOutTrigger();
 	}

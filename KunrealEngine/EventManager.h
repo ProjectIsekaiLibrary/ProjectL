@@ -15,6 +15,7 @@ namespace KunrealEngine
 	
 	class Player;
 	class Kamen;
+	class EngineCore;
 
 	class EventManager
 	{
@@ -50,8 +51,9 @@ namespace KunrealEngine
 		Player* _playerComp;
 		Kamen* _bossComp;
 
-
 		PlayerAbility* _playerAbill;
+
+		EngineCore* _core;
 
 		bool _eventStart;
 
@@ -112,6 +114,9 @@ namespace KunrealEngine
 
 		// 엔딩씬 fade 연출
 		void ActivateEndingFadeTrigger();
+
+		// 엔진코어 받아오기
+		void GetEngineCore(EngineCore* core);
 
 	private:
 		Coroutine_Func(fadeout)

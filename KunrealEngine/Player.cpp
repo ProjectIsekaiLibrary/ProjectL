@@ -16,10 +16,10 @@
 KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE), _owner(nullptr)
 	, _playerInfo(
-		500.0f,			// hp
-		500.0f,			// maxhp
+		250.0f,			// hp
+		250.0f,			// maxhp
 		100.0f,			// stamina
-		30.0f,			// movespeed
+		20.0f,			// movespeed
 		120.0f,			// dashspeed
 		40.0f,			// dashrange
 		8.0f,			// dashcooldown
@@ -557,9 +557,27 @@ void KunrealEngine::Player::ResetPlayerStatus()
 }
 
 
-void KunrealEngine::Player::SetPlayerBindFlag(bool flag)
+void KunrealEngine::Player::SetPlayerBindFlag(bool flag, int state /*= 0*/)
 {
 	this->_playerBindFlag = flag;
+
+	//if (!flag)
+	//{
+	//	switch (state)
+	//	{
+	//		case 0:
+	//			this->_playerStatus = Status::IDLE;
+	//			break;
+	//
+	//		case 1:
+	//
+	//
+	//		default:
+	//			break;
+	//	}
+	//
+	//	this->_playerStatus = Status::IDLE;
+	//}
 }
 
 

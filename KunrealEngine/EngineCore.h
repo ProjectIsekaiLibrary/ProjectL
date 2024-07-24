@@ -75,6 +75,9 @@ namespace KunrealEngine
 
 		void CreateTitleScene();
 
+		// 엔딩타이머
+		float _endingTimer = 10.0f;
+
 		// Bezier
 	private:
 		DirectX::XMFLOAT3 Bezier(DirectX::XMFLOAT3 startPoint, DirectX::XMFLOAT3 p1, DirectX::XMFLOAT3 p2, DirectX::XMFLOAT3 endPoint, float t);
@@ -127,7 +130,7 @@ namespace KunrealEngine
 		void ShiveringLight(GameObject* name);
 
 	private:
-		float endingTimer = 10.0f;
+		
 
 		void CreateEndingScene();
 		void EndingSceneUpdate();
@@ -138,6 +141,7 @@ namespace KunrealEngine
 		//GameObject* _endingPlayer;
 
 		GameObject* _endingCamera;
+		GameObject* _endingCameraAfter;
 		GameObject* _endingLight;
 
 		float CountPlus(float start, float end, float speed);
