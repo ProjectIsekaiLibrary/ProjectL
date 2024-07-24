@@ -61,6 +61,18 @@ namespace KunrealEngine
 		float _camshakex;
 		float _camshakez;
 
+	public:
+		///
+		/// 카멘은 이곳을 가져가도록!
+		/// 이 함수들은 그냥 Main내에서 호출된걸 전재로 합니다.
+		/// 
+		void BattleUIHide(float speed);
+		void BattleUIOpen(float speed);
+		void ActiveVbutton(float speed, float xpos, float ypos);
+		void ActiveSpaceButton(float time, float xpos, float ypos);
+
+		GameObject* _Vbutton;
+		GameObject* _Spacebutton;
 
 		void CreateFadeObject();
 	private:

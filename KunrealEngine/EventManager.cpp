@@ -212,6 +212,98 @@ void KunrealEngine::EventManager::CamShake(float harder)
 }
 
 
+void KunrealEngine::EventManager::BattleUIHide(float speed)
+{
+	SceneManager& scene = SceneManager::GetInstance();
+	auto* booshpbar_pack = scene.GetCurrentScene()->CreateObject("boss_pack");
+	auto* battleui_pack = scene.GetCurrentScene()->CreateObject("battle_pack");
+
+	float bosstarget = -500.0f;
+	float battleuitarget = 3060.0f;
+
+	DirectX::XMFLOAT3 bosspos = booshpbar_pack->GetComponent<Transform>()->GetPosition();
+	DirectX::XMFLOAT3 uipos = battleui_pack->GetComponent<Transform>()->GetPosition();
+
+	if (bosspos.y > bosstarget)
+	{
+		bosspos.y -= speed * TimeManager::GetInstance().GetDeltaTime();
+		booshpbar_pack->GetComponent<Transform>()->SetPosition(bosspos);
+	}
+
+	if (uipos.y < battleuitarget)
+	{
+		uipos.y += speed * TimeManager::GetInstance().GetDeltaTime();
+		battleui_pack->GetComponent<Transform>()->SetPosition(uipos);
+	}
+}
+
+void KunrealEngine::EventManager::BattleUIOpen(float speed)
+{
+	SceneManager& scene = SceneManager::GetInstance();
+	auto* booshpbar_pack = scene.GetCurrentScene()->CreateObject("boss_pack");
+	auto* battleui_pack = scene.GetCurrentScene()->CreateObject("battle_pack");
+
+	float bosstarget = 0.0f;
+	float battleuitarget = 365.0f;
+
+	DirectX::XMFLOAT3 bosspos = booshpbar_pack->GetComponent<Transform>()->GetPosition();
+	DirectX::XMFLOAT3 uipos = battleui_pack->GetComponent<Transform>()->GetPosition();
+
+	if (bosspos.y < bosstarget)
+	{
+		bosspos.y += speed * TimeManager::GetInstance().GetDeltaTime();
+		booshpbar_pack->GetComponent<Transform>()->SetPosition(bosspos);
+	}
+
+	if (uipos.y > battleuitarget)
+	{
+		uipos.y -= speed * TimeManager::GetInstance().GetDeltaTime();
+		battleui_pack->GetComponent<Transform>()->SetPosition(uipos);
+	}
+}
+
+void KunrealEngine::EventManager::ActiveVbutton(float speed, float xpos, float ypos)
+{
+	static GameObject* Vbutton = SceneManager::GetInstance().GetCurrentScene()->CreateObject("vbutton");
+	
+	if (_Vbutton == nullptr)
+	{
+		_Vbutton = Vbutton;
+		_Vbutton->AddComponent<ImageRenderer>()->SetImage("ui/FinalV.png");
+		_Vbutton->GetComponent<ImageRenderer>()->SetPosition(xpos, ypos);
+	}
+}
+
+void KunrealEngine::EventManager::ActiveSpaceButton(float time, float xpos, float ypos)
+{
+	static GameObject* Spacebutton = SceneManager::GetInstance().GetCurrentScene()->CreateObject("spacebutton");
+	if (_Spacebutton == nullptr)
+	{
+		_Spacebutton = Spacebutton;
+		_Spacebutton->AddComponent<ImageRenderer>()->SetImage("ui/EndingSpace1.png");
+		_Spacebutton->GetComponent<ImageRenderer>()->SetPosition(xpos, ypos);
+	}
+	_Vbutton->SetActive(false);
+
+	static float timer = 0.0f;
+	static bool first = true;
+	timer += TimeManager::GetInstance().GetDeltaTime();
+	if(timer > time)
+	{
+		timer = 0.0f;
+		first = first ? false : true;
+	}
+
+	if (first)
+	{
+		_Spacebutton->GetComponent<ImageRenderer>()->ChangeImage("ui/EndingSpace1.png");
+	}
+	else if (!first)
+	{
+		_Spacebutton->GetComponent<ImageRenderer>()->ChangeImage("ui/EndingSpace2.png");
+	}
+}
+
 void KunrealEngine::EventManager::CreateFadeObject()
 {
 	this->_fadeObjectTitle = SceneManager::GetInstance().GetScene("Title")->CreateObject("FadeObject");
@@ -1191,34 +1283,34 @@ void KunrealEngine::EventManager::ResetEndingSceneObjects()
 	scene->GetGameObject("endingBoss")->GetComponent<Transform>()->SetRotation(0.f, 212.f, 0.f);
 	scene->GetGameObject("endingBoss")->GetComponent<Animator>()->SetCurrentFrame(0);
 	scene->GetGameObject("endingBoss")->GetComponent<MeshRenderer>()->SetIsDissolve(false);
-	
+
 	scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetPosition(-302.0f, 92.f, -190.0f);
 	scene->GetGameObject("EndingPlayer")->GetComponent<Transform>()->SetRotation(3.0f, 9.f, 0.0f);
-	
+
 	scene->GetGameObject("EndingMeteo1")->GetComponent<Transform>()->SetPosition(153.7f, -60.f, -255.0f);
 	scene->GetGameObject("EndingMeteo2")->GetComponent<Transform>()->SetPosition(-203.6f, -50.f, -255.0f);
 	scene->GetGameObject("EndingMeteo3")->GetComponent<Transform>()->SetPosition(-300.0f, -70.f, -462.0f);
 	scene->GetGameObject("EndingMeteo4")->GetComponent<Transform>()->SetPosition(-173.0f, -50.f, -315.0f);
 	scene->GetGameObject("EndingMeteo5")->GetComponent<Transform>()->SetPosition(99.0f, -100.f, -450.0f);
 	scene->GetGameObject("EndingMeteo6")->GetComponent<Transform>()->SetPosition(77.f, -200.f, -632.0f);
-	scene->GetGameObject("EndingMeteo7")->GetComponent<Transform>()->SetPosition(-329.0f, -150.f,-255.0f);
-	scene->GetGameObject("EndingMeteo8")->GetComponent<Transform>()->SetPosition(-261.0f, -200.f,-172.0f);
-	
+	scene->GetGameObject("EndingMeteo7")->GetComponent<Transform>()->SetPosition(-329.0f, -150.f, -255.0f);
+	scene->GetGameObject("EndingMeteo8")->GetComponent<Transform>()->SetPosition(-261.0f, -200.f, -172.0f);
+
 	scene->GetGameObject("EndingEnt")->GetComponent<Transform>()->SetPosition(-273.0f, -80.f, -475.0f);
 	scene->GetGameObject("EndingEnt")->GetComponent<Transform>()->SetRotation(0.0f, 170.f, 56.0f);
-	
+
 	scene->GetGameObject("EndingSpider")->GetComponent<Transform>()->SetPosition(-242.0f, -90.f, -475.0f);
 	scene->GetGameObject("EndingSpider")->GetComponent<Transform>()->SetRotation(-10.0f, -207.f, -381.0f);
-	
+
 	scene->GetGameObject("EndingSword")->GetComponent<Transform>()->SetPosition(-298.0f, -50.f, -397.0f);
 	scene->GetGameObject("EndingSword")->GetComponent<Transform>()->SetRotation(-86.0f, 94.f, -188.0f);
-	
-	scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetPosition(-239.0f, -90.f,-475.0f);
+
+	scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetPosition(-239.0f, -90.f, -475.0f);
 	scene->GetGameObject("EndingKachujin")->GetComponent<Transform>()->SetRotation(10.0f, -149.f, -21.0f);
-	
+
 	scene->GetGameObject("EndingKunho")->GetComponent<Transform>()->SetPosition(-250.0f, -100.f, -475.0f);
 	scene->GetGameObject("EndingKunho")->GetComponent<Transform>()->SetRotation(25.0f, 140.f, -41.0f);
-	
+
 	// Ending UI
 	scene->GetGameObject("EndingCredit1")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
 	scene->GetGameObject("EndingCredit2")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
@@ -1226,7 +1318,7 @@ void KunrealEngine::EventManager::ResetEndingSceneObjects()
 	scene->GetGameObject("EndingCredit4")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
 	scene->GetGameObject("EndingCredit5")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
 	scene->GetGameObject("EndingCredit6")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
-	
+
 	scene->GetGameObject("EndingThankYou")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
 	scene->GetGameObject("EndingTheme")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1620.0f);
 	scene->GetGameObject("BossTheme")->GetComponent<ImageRenderer>()->SetPosition(0.0f, 1460.0f);
