@@ -31,7 +31,7 @@ KunrealEngine::Boss::Boss()
 	_rotAngle(0.0f), _sumRot(0.0f), _prevRot(),
 	_isSpecialPatternPlaying(false), _specialPatternTimer(0.0f), _specialPatternIndex(-1), _canPlaySpecialPattern(false),
 	_specialPatternEndLogicPlay(false), _nowSpecialPattern(nullptr), _specialPatternPlayPhase(0), _goalPhase(1), _stopSpecialPattern(false),
-	_isEnterInitialize(false), _deathTimer(0.5f), _finalPattern(nullptr), _updateTimer(0.0f), _isFinalPatternInit(false)
+	_isEnterInitialize(false), _deathTimer(0.5f), _finalPattern(nullptr), _updateTimer(0.0f), _isFinalPatternInit(false), _teltimer(0)
 {
 }
 
@@ -162,6 +162,21 @@ void KunrealEngine::Boss::Initialize(GameObject* boss)
 	SortCorePattern();
 
 	SetSubObjectScene();
+
+	_particleTeleport = SceneManager::GetInstance().GetCurrentScene()->CreateObject("ParticleTeleport");
+	_particleTeleport->_autoAwake = true;
+	_particleTeleport->AddComponent<Particle>();
+	_particleTeleport->GetComponent<Particle>()->SetParticleEffect("fx_SmokeyHalo1", "Resources/Textures/Particles/fx_SmokeyHalo1.dds", 1000);
+	_particleTeleport->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.2f);
+	_particleTeleport->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+	_particleTeleport->GetComponent<Particle>()->SetParticleSize(60.0f, 60.0f);
+	_particleTeleport->GetComponent<Particle>()->AddParticleColor(0.1f, 5.0f, 0.1f);
+	_particleTeleport->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
+	_particleTeleport->GetComponent<Particle>()->SetOffSet(0.0f, 20.0f, 0.0f);
+	//_particleTeleport->GetComponent<Particle>()->SetParticleCameraApply(true);
+	//_particleTeleport->GetComponent<Particle>()->SetParticleAngle(270.0f, 0.0f, 0.0f);
+	_particleTeleport->GetComponent<Particle>()->SetActive(false);
+
 }
 
 void KunrealEngine::Boss::Update()
@@ -1208,11 +1223,28 @@ bool KunrealEngine::Boss::Teleport(const DirectX::XMFLOAT3& targetPos, bool look
 		_boss->GetComponent<BoxCollider>()->SetActive(false);
 		_boss->GetComponent<BoxCollider>()->FixedUpdate();
 
+		// 사라졌을때의 이펙트
+
+		_teltimer += TimeManager::GetInstance().GetDeltaTime();
+
+		if (_teltimer < 1.0f)
+		{
+			_particleTeleport->GetComponent<Particle>()->SetActive(true);
+			_particleTeleport->GetComponent<Particle>()->SetParticleSize(60 - (_teltimer * 60), 60 - (_teltimer * 60));
+			_particleTeleport->GetComponent<Transform>()->SetPosition(this->_bossTransform->GetPosition());
+		}
+		else
+		{
+			_particleTeleport->GetComponent<Particle>()->SetActive(false);
+		}
+
 		Startcoroutine(TeleportWithHide);
 	}
 
 	if (_isHideFinish == true)
 	{
+		_teltimer = 0;
+
 		// 타겟 포지션으로의 경로 계산
 		DirectX::XMVECTOR targetVec = DirectX::XMLoadFloat3(&targetPos);
 
