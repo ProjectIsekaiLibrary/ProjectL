@@ -27,14 +27,14 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* imagebackground;
 
 		pauseuibox = scene.GetCurrentScene()->CreateObject("pauseuibox");
-		pauseuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		pauseuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
 
 		imagebackground = scene.GetCurrentScene()->CreateObject("MenuBackground");
+		imagebackground->SetParent(pauseuibox);
 		imagebackground->AddComponent<ImageRenderer>();
 		imagebackground->GetComponent<ImageRenderer>()->SetImage("ui/MenuBackground.png");
 		imagebackground->GetComponent<ImageRenderer>()->SetPosition(725.f, 207.f);
 		imagebackground->GetComponent<Transform>()->SetScale(1.5f, 1.5f, 1.5f);
-		imagebackground->SetParent(pauseuibox);
 
 		// 옵션 버튼
 		button_option = scene.GetCurrentScene()->CreateObject("button_resume");
@@ -208,15 +208,15 @@ namespace KunrealEngine
 
 		titleuibox = scene.GetCurrentScene()->CreateObject("titleuibox");
 		titleuibox->_autoAwake = true;
-		titleuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		titleuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
 
 		title_image = scene.GetCurrentScene()->CreateObject("Title_Image");
+		title_image->SetParent(titleuibox);
 		title_image->_autoAwake;
 		title_image->AddComponent<ImageRenderer>();
 		title_image->GetComponent<ImageRenderer>()->SetImage("ui/title_logo.png");
 		title_image->GetComponent<ImageRenderer>()->SetPosition(525.f, 20.f);
 		title_image->GetComponent<Transform>()->SetScale(0.4f, 0.4f, 1.0f);
-		title_image->SetParent(titleuibox);
 
 
 		// 게임 시작
@@ -267,7 +267,7 @@ namespace KunrealEngine
 		button_quit_focus->SetParent(titleuibox);
 		button_quit_focus->AddComponent<ImageRenderer>();
 		button_quit_focus->GetComponent<ImageRenderer>()->SetImage("ui/button-short-focus.png");
-		button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
+		button_quit_focus->GetComponent<ImageRenderer>()->SetPosition(1814.0f * 1.33333f, 975.0f * 1.33333f);
 		button_quit_focus->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 
@@ -275,14 +275,14 @@ namespace KunrealEngine
 		button_quit->SetParent(titleuibox);
 		button_quit->AddComponent<ImageRenderer>();
 		button_quit->GetComponent<ImageRenderer>()->SetImage("ui/button-short.png");
-		button_quit->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
+		button_quit->GetComponent<ImageRenderer>()->SetPosition(1814.0f * 1.33333f, 975.0f * 1.33333f);
 		button_quit->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 		button_quit_text = scene.GetCurrentScene()->CreateObject("button_text");
 		button_quit_text->SetParent(titleuibox);
 		button_quit_text->AddComponent<ImageRenderer>();
 		button_quit_text->GetComponent<ImageRenderer>()->SetImage("ui/UiTexts/Xbutton.png");
-		button_quit_text->GetComponent<ImageRenderer>()->SetPosition(1814.0f, 975.0f);
+		button_quit_text->GetComponent<ImageRenderer>()->SetPosition(1814.0f * 1.33333f, 975.0f * 1.33333f);
 		button_quit_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 		button_quit->AddComponent<ButtonSystem>();

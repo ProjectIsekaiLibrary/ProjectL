@@ -34,37 +34,37 @@ void KunrealEngine::OptionUIManager::Initialize()
 	KunrealEngine::GameObject* button_exit_text;
 
 	optionuibox = this->GetOwner();
-	optionuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+	optionuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
 	optionuibox->AddComponent<SoundPlayer>();
 
 	imagebackgroundfill = scene->CreateObject("background_f");
+	imagebackgroundfill->SetParent(optionuibox);
 	imagebackgroundfill->AddComponent<ImageRenderer>();
 	imagebackgroundfill->GetComponent<ImageRenderer>()->SetImage("ui/freebox-middle.png");
 	imagebackgroundfill->GetComponent<ImageRenderer>()->SetPosition(440.f, 75.f);
 	imagebackgroundfill->GetComponent<Transform>()->SetScale(5.0f, 3.0f, 1.0f);
-	imagebackgroundfill->SetParent(optionuibox);
 
 	imagebackgroundmiddle = scene->CreateObject("background_m");
+	imagebackgroundmiddle->SetParent(optionuibox);
 	imagebackgroundmiddle->AddComponent<ImageRenderer>();
 	imagebackgroundmiddle->GetComponent<ImageRenderer>()->SetImage("ui/freebox-constmiddle.png");
 	imagebackgroundmiddle->GetComponent<ImageRenderer>()->SetPosition(900.f, 75.f);
 	imagebackgroundmiddle->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 1.0f);
-	imagebackgroundmiddle->SetParent(optionuibox);
 
 
 	imagebackgroundL = scene->CreateObject("background_L");
+	imagebackgroundL->SetParent(optionuibox);
 	imagebackgroundL->AddComponent<ImageRenderer>();
 	imagebackgroundL->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideL.png");
 	imagebackgroundL->GetComponent<ImageRenderer>()->SetPosition(305.f, 75.f);
 	imagebackgroundL->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 1.0f);
-	imagebackgroundL->SetParent(optionuibox);
 
 	imagebackgroundR = scene->CreateObject("background_R");
+	imagebackgroundR->SetParent(optionuibox);
 	imagebackgroundR->AddComponent<ImageRenderer>();
 	imagebackgroundR->GetComponent<ImageRenderer>()->SetImage("ui/freebox-sideR.png");
 	imagebackgroundR->GetComponent<ImageRenderer>()->SetPosition(1500.f,  75.f);
 	imagebackgroundR->GetComponent<Transform>()->SetScale(3.0f, 3.0f, 1.0f);
-	imagebackgroundR->SetParent(optionuibox);
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////

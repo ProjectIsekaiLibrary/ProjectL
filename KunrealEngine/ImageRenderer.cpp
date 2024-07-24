@@ -168,17 +168,22 @@ bool KunrealEngine::ImageRenderer::IsPicked(int mouseX, int mouseY)
 	}
 // AABB를 이용하여 마우스 커서가 이 위에 올려져 있는지 확인한다.
 // top, bottom은 이미지의 포지션으로 지정한다.	
+	// 이미지의 시작점 (좌상단)
 	auto tbpos = GetOwner()->GetComponent<Transform>()->GetPosition();
+	// 이미지의 끝점 (우하단)
 	auto tlbpos = GetImageSize();
+	// 부모가 있다면? 부모의 포지션도 더해줘야 한다.
+	auto papos = GetOwner()->GetParent()->GetComponent<Transform>()->GetPosition();
 
-	int posl = tbpos.x + tlbpos.x;
-	int posb = tbpos.y + tlbpos.y;
+
+	int posl = tbpos.x + tlbpos.x + papos.x;
+	int posb = tbpos.y + tlbpos.y + papos.y;
 
 	bool isaa = false;
 	bool isbb = false;
 
-	isaa = (mouseX > tbpos.x) && (mouseX < posl);
-	isbb = (mouseY > tbpos.y) && (mouseY < posb);
+	isaa = (mouseX > tbpos.x + papos.x) && (mouseX < posl);
+	isbb = (mouseY > tbpos.y + papos.y) && (mouseY < posb);
 
 	if (isaa && isbb)
 	{
