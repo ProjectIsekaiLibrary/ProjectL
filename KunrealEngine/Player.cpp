@@ -603,13 +603,13 @@ void KunrealEngine::Player::ResetPlayerStatus()
 void KunrealEngine::Player::SetPlayerBindFlag(bool flag, int state /*= 0*/)
 {
 	/// flag가 true일때 행동불가 false일때 IDLE로 바꿔줌
-	/// 반복문에 넣지마 계속 IDLE 된다
+	/// 반복문에 넣지마 매개변수 없이 반복호출하면 계속 IDLE 된다
 	/// 
 	/// int 매개변수는 플레이어가 반복실행할 애니메이션		DEFAULT는 0
 	// 0 IDLE
 	// 1 WALK
 	// 2 STAGGERED	// 스턴 애니메이션
-	// 3 LASER
+	// 3 LASER		// 팔 쭉 펴고 있는체로 반복
 	// 4 SWEEP		// 이건 반복실행안돼
 
 	this->_playerBindFlag = flag;
