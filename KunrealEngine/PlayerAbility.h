@@ -43,16 +43,23 @@ namespace KunrealEngine
 		//메테오 상태를 받아와야 해
 		bool GetisMeteorBefore();
 
+		GameObject* _shot;			// Q 스킬 투사체 객체
+		GameObject* _circle;		// W 스킬 객체
+		GameObject* _laser;			// E 스킬 객체
+		GameObject* _meteor;		// R 스킬 운석 객체
+
+		Ability* _shotAbil;
+		Ability* _circleAbil;
+		Ability* _laserAbil;
+		Ability* _meteorAbil;
+
 	private:
 		std::vector<Ability*> _abilityContainer;
 		Player* _playerComp;
 		SoundPlayer* _soundComp;
 
-		GameObject* _shot;			// Q 스킬 투사체 객체
 
-		GameObject* _circle;		// W 스킬 객체
 
-		GameObject* _laser;			// E 스킬 객체
 		GameObject* _laserCrator1;	// E 스킬 그을림 객체
 		GameObject* _laserCrator2;
 		GameObject* _laserCrator3;
@@ -60,7 +67,6 @@ namespace KunrealEngine
 		GameObject* _laserCrator5;
 		GameObject* _laserCrator6;
 
-		GameObject* _meteor;		// R 스킬 운석 객체
 		GameObject* _meteorRange;	// R 스킬 범위 표시 객체
 		GameObject* _meteorCrator;	// 운석 떨어진 후 그을림 표현 객체
 		bool _beforeMeteor;			// 운석 스킬 사용 준비

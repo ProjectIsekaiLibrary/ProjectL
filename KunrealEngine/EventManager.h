@@ -5,6 +5,13 @@
 
 struct BossBasicInfo;
 
+enum class eDifficulty
+{
+	eEasy,			// 시연꺼
+	eNormal,		// 원래꺼 
+	eHardCore		// 1대 맞으면 죽음	
+};
+
 namespace KunrealEngine
 {
 	class GameObject;
@@ -129,6 +136,12 @@ namespace KunrealEngine
 
 		// 엔진코어 받아오기
 		void GetEngineCore(EngineCore* core);
+
+		// 난이도 조절
+		void SetDifficulty(eDifficulty dif);
+
+	public:
+		eDifficulty _difficulty;
 
 	private:
 		Coroutine_Func(fadeout)

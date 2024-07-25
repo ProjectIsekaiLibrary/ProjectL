@@ -6620,7 +6620,14 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 					{
 						if (!_rentalSuccess)
 						{
-							_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp* 0.7f;
+							if (EventManager::GetInstance()._difficulty == eDifficulty::eEasy)
+							{
+								_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp * 0.7f;
+							}
+							else
+							{
+								_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 1000;
+							}
 						}
 
 						_meteorSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);

@@ -15,7 +15,7 @@
 KunrealEngine::EventManager::EventManager()
 	:_player(nullptr), _boss(nullptr), _playerComp(nullptr), _bossComp(nullptr), _playerAbill(nullptr),
 	_eventStart(false), _mainCamera(nullptr), _insideSafeCount(0), _iscamfollow(false)
-	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr), _fadeObjectEnding(nullptr), _fadeObjectWhiteMain(nullptr), _fadeObjectWhiteEnding(nullptr), _core(nullptr)
+	, _fadeObjectTitle(nullptr), _fadeObjectMain(nullptr), _fadeObjectEnding(nullptr), _fadeObjectWhiteMain(nullptr), _fadeObjectWhiteEnding(nullptr), _core(nullptr), _difficulty(eDifficulty::eEasy)
 {
 
 }
@@ -1368,4 +1368,50 @@ void KunrealEngine::EventManager::ActivateEndingFadeTrigger()
 void KunrealEngine::EventManager::GetEngineCore(EngineCore* core)
 {
 	this->_core = core;
+}
+
+void KunrealEngine::EventManager::SetDifficulty(eDifficulty dif)
+{
+	if (dif == eDifficulty::eEasy)
+	{
+		_playerComp->_playerInfo._hp = 300.0f;
+		_playerComp->_playerInfo._maxhp = 300.0f;
+		_playerComp->_playerInfo._speedScale = 1.8f;
+		_playerComp->_playerInfo._moveSpeed = 17.0f;
+		_playerComp->_playerInfo._dashCooldown = 8.0f;
+
+		_player->GetComponent<PlayerAbility>()->_shotAbil->SetDamage(13.0f);
+		_player->GetComponent<PlayerAbility>()->_circleAbil->SetCoolDown(12.0f);
+		_player->GetComponent<PlayerAbility>()->_laserAbil->SetDamage(10.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetDamage(70.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetCoolDown(15.0f);
+	}
+	else if (dif == eDifficulty::eNormal)
+	{
+		_playerComp->_playerInfo._hp = 250.0f;
+		_playerComp->_playerInfo._maxhp = 250.0f;
+		_playerComp->_playerInfo._speedScale = 1.5f;
+		_playerComp->_playerInfo._moveSpeed = 17.0f;
+		_playerComp->_playerInfo._dashCooldown = 8.0f;
+
+		_player->GetComponent<PlayerAbility>()->_shotAbil->SetDamage(8.0f);
+		_player->GetComponent<PlayerAbility>()->_circleAbil->SetCoolDown(14.0f);
+		_player->GetComponent<PlayerAbility>()->_laserAbil->SetDamage(7.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetDamage(50.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetCoolDown(20.0f);
+	}
+	else if (dif == eDifficulty::eHardCore)
+	{
+		_playerComp->_playerInfo._hp = 1.0f;
+		_playerComp->_playerInfo._maxhp = 1.0f;
+		_playerComp->_playerInfo._speedScale = 1.8f;
+		_playerComp->_playerInfo._moveSpeed = 17.0f;
+		_playerComp->_playerInfo._dashCooldown = 5.0f;
+
+		_player->GetComponent<PlayerAbility>()->_shotAbil->SetDamage(13.0f);
+		_player->GetComponent<PlayerAbility>()->_circleAbil->SetCoolDown(12.0f);
+		_player->GetComponent<PlayerAbility>()->_laserAbil->SetDamage(10.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetDamage(70.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetCoolDown(15.0f);
+	}
 }

@@ -68,12 +68,12 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
+		PlayerInfo _playerInfo;					// 플레이어 기본 정보 스탯 등
 	private:
 		Transform* _transform;					// 플레이어의 transform
 		GameObject* _owner;						// 컴포넌트를 담고 있는 오브젝트
 		Status _playerStatus;					// 플레이어의 상태 이동 기절 등
 		Status _tempStatus;						// 애니메이션 변환하며 Stop 불러줄 용도
-		PlayerInfo _playerInfo;					// 플레이어 기본 정보 스탯 등
 		DirectX::XMVECTOR _directionVector;		// 플레이어가 바라보는 방향 벡터
 
 		int _abilityAnimationIndex;				// 어떤 스킬 애니메이션
@@ -125,7 +125,7 @@ namespace KunrealEngine
 		Coroutine_Func(afterSweep)
 		{
 			auto* playerComp = this;
-			Waitforsecond(playerComp->_sweepDuration + 1.0f);				// 누운 다음 1초 뒤 기상
+			Waitforsecond(playerComp->_sweepDuration + 0.3f);				// 누운 다음 1초 뒤 기상
 
 			playerComp->_isSweep = false;
 			playerComp->_playerStatus = Status::IDLE;

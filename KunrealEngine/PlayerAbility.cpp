@@ -425,6 +425,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 {
 	Ability* shot = new Ability();
 	shot->Initialize("Shot");
+	_shotAbil = shot;
 
 	shot->SetTotalData(
 		"Shot",			// 이름
@@ -651,6 +652,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 {
 	Ability* circle = new Ability();
 	circle->Initialize("Circle");
+	_circleAbil = circle;
 
 	circle->SetTotalData(
 		"Circle",		// 이름
@@ -851,6 +853,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 {
 	Ability* laser = new Ability();
 	laser->Initialize("Laser");
+	_laserAbil = laser;
 
 	laser->SetTotalData(
 		"Laser",			// 이름
@@ -1082,6 +1085,7 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 {
 	Ability* meteor = new Ability();
 	meteor->Initialize("Meteor");
+	_meteorAbil = meteor;
 
 	meteor->SetTotalData(
 		"Meteor",			// 이름
