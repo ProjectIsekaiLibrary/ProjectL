@@ -215,8 +215,8 @@ void KunrealEngine::EventManager::CamShake(float harder)
 void KunrealEngine::EventManager::BattleUIHide(float speed)
 {
 	SceneManager& scene = SceneManager::GetInstance();
-	auto* booshpbar_pack = scene.GetCurrentScene()->CreateObject("boss_pack");
-	auto* battleui_pack = scene.GetCurrentScene()->CreateObject("battle_pack");
+	auto* booshpbar_pack = scene.GetCurrentScene()->GetGameObject("boss_pack");
+	auto* battleui_pack = scene.GetCurrentScene()->GetGameObject("battle_pack");
 
 	float bosstarget = -500.0f;
 	float battleuitarget = 3060.0f;
@@ -240,8 +240,8 @@ void KunrealEngine::EventManager::BattleUIHide(float speed)
 void KunrealEngine::EventManager::BattleUIOpen(float speed)
 {
 	SceneManager& scene = SceneManager::GetInstance();
-	auto* booshpbar_pack = scene.GetCurrentScene()->CreateObject("boss_pack");
-	auto* battleui_pack = scene.GetCurrentScene()->CreateObject("battle_pack");
+	auto* booshpbar_pack = scene.GetCurrentScene()->GetGameObject("boss_pack");
+	auto* battleui_pack = scene.GetCurrentScene()->GetGameObject("battle_pack");
 
 	float bosstarget = 0.0f;
 	float battleuitarget = 365.0f;
