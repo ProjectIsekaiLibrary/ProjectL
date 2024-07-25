@@ -216,11 +216,13 @@ void KunrealEngine::OptionUIManager::Update()
 
 	if (_bgm_step > 0 && prevbgm == 0)
 	{
+		scene = KunrealEngine::SceneManager::GetInstance().GetCurrentScene();
 		scene->GetGameObject("button_bgmon")->GetComponent<ImageRenderer>()->ChangeImage("ui/sound-on.png");
 	}
 
 	if (_sfx_step > 0 && prevsfx == 0)
 	{
+		scene = KunrealEngine::SceneManager::GetInstance().GetCurrentScene();
 		scene->GetGameObject("button_sfxon")->GetComponent<ImageRenderer>()->ChangeImage("ui/sound-on.png");
 	}
 
