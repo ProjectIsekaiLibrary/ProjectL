@@ -77,11 +77,11 @@ void KunrealEngine::BattleUIManager::Initialize()
 
 	booshpbar_pack = scene.GetCurrentScene()->CreateObject("boss_pack");
 	booshpbar_pack->SetParent(_battleuibox);
-	booshpbar_pack->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
+	booshpbar_pack->GetComponent<Transform>()->SetPosition(0.0f, -500.0f, 1.0f);
 	
 	battleui_pack = scene.GetCurrentScene()->CreateObject("battle_pack");
 	battleui_pack->SetParent(_battleuibox);
-	battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 365.0f, 1.0f);
+	battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 600.0f, 1.0f);
 	//battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
 
 	player_background = scene.GetCurrentScene()->CreateObject("background");
@@ -453,7 +453,7 @@ void KunrealEngine::BattleUIManager::Initialize()
 
 	// 플레이어가 죽었을때 쓸 UI
 	_died2 = scene.GetCurrentScene()->CreateObject("you_die2");
-	_died2->SetParent(battleui_pack);
+	_died2->SetParent(_battleuibox);
 	_died2->AddComponent<ImageRenderer>();
 	_died2->GetComponent<ImageRenderer>()->SetImage("ui/YouDied.png");
 	_died2->GetComponent<ImageRenderer>()->SetPosition(0.0f, 300.0f);
@@ -997,6 +997,11 @@ void KunrealEngine::BattleUIManager::ActiveDiedUI()
 
 void KunrealEngine::BattleUIManager::Resebattleuibar()
 {
+	SceneManager::GetInstance().GetScene("Main")->GetGameObject("boss_pack")
+		->GetComponent<Transform>()->SetPosition(0.0f, -500.0f, 1.0f);
+	SceneManager::GetInstance().GetScene("Main")->GetGameObject("battle_pack")
+		->GetComponent<Transform>()->SetPosition(0.0f, 600.0f, 1.0f);
+	
 	_playerhp_bar->GetComponent<Transform>()->SetScale(_playerhpsize, 1.0f, 0.1f);
 	_playerhp_bar_downGauge->GetComponent<Transform>()->SetScale(_playerhpsize, 1.0f, 0.1f);
 

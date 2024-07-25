@@ -218,8 +218,8 @@ void KunrealEngine::EventManager::BattleUIHide(float speed)
 	auto* booshpbar_pack = scene.GetCurrentScene()->GetGameObject("boss_pack");
 	auto* battleui_pack = scene.GetCurrentScene()->GetGameObject("battle_pack");
 
-	float bosstarget = -500.0f;
-	float battleuitarget = 3060.0f;
+	float bosstarget = -120.0f;
+	float battleuitarget = 600.0f;
 
 	DirectX::XMFLOAT3 bosspos = booshpbar_pack->GetComponent<Transform>()->GetPosition();
 	DirectX::XMFLOAT3 uipos = battleui_pack->GetComponent<Transform>()->GetPosition();
