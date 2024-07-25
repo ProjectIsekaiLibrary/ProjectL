@@ -271,12 +271,12 @@ void KunrealEngine::Kamen::Update()
 		}
 	}
 
-	/// 디버깅용
-	if (GetAsyncKeyState('U'))
-	{
-		_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
-	}
-
+	///// 디버깅용
+	//if (GetAsyncKeyState('U'))
+	//{
+	//	_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()-//>GetPlayerData()._hp + 100;
+	//}
+	//
 	if (GetAsyncKeyState('I'))
 	{
 		_info._hp -= 10.0f;
@@ -524,6 +524,8 @@ void KunrealEngine::Kamen::Reset()
 
 	_bezierCurvePoints.clear();
 
+	_isBezierStartSetting = false;
+
 	_bossLastAttackList[0]->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
 	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
 	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
@@ -548,6 +550,11 @@ void KunrealEngine::Kamen::Reset()
 	_bossLastAttackList[2]->GetComponent<Particle>()->AddParticleColor(0.1f, 0.1f, 0.0f);
 	_bossLastAttackList[2]->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
 	_bossLastAttackList[2]->GetComponent<Particle>()->SetActive(false);
+
+	_multipleSwordMoveStart.clear();
+	_multipleSwordLookPlayer.clear();
+	_multipleSwordDirectionVec.clear();
+	_multipleSwordMoveDistance.clear();
 
 
 	_swordDonutWarning1->GetComponent<Transform>()->SetScale(20.0f, 20.0f, 20.0f);
@@ -937,6 +944,282 @@ void KunrealEngine::Kamen::StopAllSpecialPattern()
 	egoTransform->SetRotation(egoTransform->GetRotation().x, 0.0f, egoTransform->GetRotation().z);
 
 	_alterEgo->GetComponent<Animator>()->Stop();
+
+	for (auto& index : _particleBossfire1)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _particleBossfire2)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _particleEgofire1)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _particleEgofire2)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleCall2)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleEgoCall2)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleSwordOutsideAttack)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleSwordDonutAttack)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleEmergenceAttack)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleEgoEmergenceAttack)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleSwordDonut1)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleSwordDonut2)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _particleSwordDonut3)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+	for (auto& index : _verticalParticleSide)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _verticalParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _kamenSwordParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _kamenSwordAfterImageParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _bladeRParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _bladeRParticleWave)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _bladeLParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _bladeLParticleWave)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _largeBladeParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _largeBladeParticleWave)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _laserLight)
+	{
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _kamenLastphaseParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _kamenLastphaseParticleBack)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _meteorSwordHitParticle)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	for (auto& index : _bezierSwordParticles)
+	{
+		index->GetComponent<Particle>()->SetActive(false);
+
+		if (index->GetComponent<Light>() != nullptr)
+		{
+			index->GetComponent<Light>()->SetActive(false);
+		}
+	}
+
+	_3PhaseParticle->GetComponent<Particle>()->SetActive(false);
+
+	if (_3PhaseParticle->GetComponent<Light>() != nullptr)
+	{
+		_3PhaseParticle->GetComponent<Light>()->SetActive(false);
+	}
+	
 }
 
 void KunrealEngine::Kamen::CreateParticleObject()
@@ -1598,86 +1881,6 @@ void KunrealEngine::Kamen::CreateParticleObject()
 		verticalParticle->GetComponent<Particle>()->SetActive(false);
 
 		_verticalParticle.emplace_back(verticalParticle);
-	}
-
-	{
-		std::string name = "verticalParticle2test";
-		auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
-
-		verticalParticle->_autoAwake = true;
-		verticalParticle->AddComponent<Particle>();
-		verticalParticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam3", "Resources/Textures/Particles/fx_Beam3.dds", 1000);
-		verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.4f, 0.3f);
-		verticalParticle->GetComponent<Particle>()->SetParticleVelocity(10.0f, true);
-		verticalParticle->GetComponent<Particle>()->SetParticleSize(12.f, 12.0f);
-		verticalParticle->GetComponent<Particle>()->AddParticleColor(0.5f, 5.0f, 0.0f);
-		verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-		verticalParticle->GetComponent<Particle>()->SetParticleAngle(300.0f, 0.0f, 0.0f);
-		verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-		verticalParticle->GetComponent<Particle>()->SetActive(false);
-		verticalParticle->SetParent(_kamenSword);
-
-
-		verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
-
-		_kamenSwordParticle.emplace_back(verticalParticle);
-	}
-	{
-		for (int i = 0; i < 9; i++)
-		{
-			std::string name = "verticalParticle2test";
-			auto verticalParticle = _boss->GetObjectScene()->CreateObject(name);
-
-			verticalParticle->_autoAwake = true;
-			verticalParticle->AddComponent<Particle>();
-			verticalParticle->GetComponent<Particle>()->SetParticleEffect("fx_Beam4", "Resources/Textures/Particles/fx_Beam4.dds", 1000);
-			verticalParticle->GetComponent<Particle>()->SetParticleDuration(2.0f, 0.1f);
-			verticalParticle->GetComponent<Particle>()->SetParticleVelocity(1.0f, false);
-			verticalParticle->GetComponent<Particle>()->SetParticleSize(8.f, 8.0f);
-			verticalParticle->GetComponent<Particle>()->AddParticleColor(0.0f, 2.0f, 0.0f);
-			verticalParticle->GetComponent<Particle>()->SetParticleDirection(0.0f, 0.0f, 0.0f);
-			verticalParticle->GetComponent<Particle>()->SetParticleAngle(300.0f, 0.0f, 0.0f);
-			verticalParticle->GetComponent<Particle>()->SetParticleCameraApply(true);
-			verticalParticle->GetComponent<Particle>()->SetActive(false);
-			verticalParticle->SetParent(_kamenSword);
-
-			verticalParticle->GetComponent<Particle>()->SetTransform(_boss, "MiddleFinger1_R");
-
-			switch (i)
-			{
-				case 0:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.2f, 10.f);
-					break;
-				case 1:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.3f, 10.f);
-					break;
-				case 2:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.4f, 10.f);
-					break;
-				case 3:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.5f, 10.f);
-					break;
-				case 4:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.6f, 10.f);
-					break;
-				case 5:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.7f, 10.f);
-					break;
-				case 6:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.8f, 10.f);
-					break;
-				case 7:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(0.9f, 10.f);
-					break;
-				case 8:
-					verticalParticle->GetComponent<Particle>()->SetParticleDuration(1.0f, 10.f);
-					break;
-				default:
-					break;
-			}
-
-			_kamenSwordAfterImageParticle.emplace_back(verticalParticle);
-		}
 	}
 	{
 		for (int i = 0; i < _blade.size(); i++)
@@ -5821,7 +6024,7 @@ void KunrealEngine::Kamen::CreateBattleCry()
 
 			_timer = 0.0f;
 
-			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true, 2);
 
 			_isBasicPatternSoundPlayed[0] = false;
 		};
@@ -5986,6 +6189,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAppear()
 
 	auto attackLogic = [pattern, this]()
 		{
+			EventManager::GetInstance().BattleUIHide(500);
+
 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
 			auto camera = _cinematicCamera->GetComponent<Camera>();
@@ -6242,6 +6447,8 @@ void KunrealEngine::Kamen::CreateRentalFraud()
 
 	auto attackLogic = [pattern, this]()
 		{
+			EventManager::GetInstance().BattleUIOpen(500);
+
 			_timer += TimeManager::GetInstance().GetDeltaTime() * 2.0f;
 
 			int intTimer = _timer;
@@ -6399,11 +6606,6 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 					_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(0, 0);
 					_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(0, 0);
 
-					if (!_rentalSuccess)
-					{
-						_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
-					}
-
 					if (_timer2 > 0.0f)
 					{
 						_meteorSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
@@ -6416,6 +6618,11 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 					else
 					{
+						if (!_rentalSuccess)
+						{
+							_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp* 0.7f;
+						}
+
 						_meteorSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
 						_meteorSword->SetTotalComponentState(false);
@@ -6425,6 +6632,11 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 						_boss->GetComponent<BoxCollider>()->SetActive(true);
 						_boss->GetComponent<BoxCollider>()->FixedUpdate();
 						_boss->GetComponent<MeshRenderer>()->Update();
+
+						_meteorSwordHitParticle[0]->GetComponent<Particle>()->SetActive(false);
+						_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetActive(false);
+						_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetActive(false);
+						_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetActive(false);
 
 						ChangePhase(2);
 
@@ -6784,7 +6996,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 	auto initLogic = [pattern, this]()
 		{
-			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true, 0);
 
 			_bossTransform->SetPosition(0.0f, 100.0f, 200.0f);
 			_bossTransform->SetRotation(-30.0f, -5.0f, 0.0f);
@@ -6816,18 +7028,24 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			_isBasicPatternSoundPlayed[2] = false;
 			_isBasicPatternSoundPlayed[3] = false;
 			_isBasicPatternSoundPlayed[4] = false;
+
+			_player->GetComponent<Animator>()->Stop();
 		};
 
 	pattern->SetInitializeLogic(initLogic);
 
 	auto attakLogic = [pattern, this]()
 		{
+			EventManager::GetInstance().BattleUIHide(500);
+
 			auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
 
 			auto camera = _cinematicCamera->GetComponent<Camera>();
 
 			_playerTransform->SetPosition(0.0f, _playerTransform->GetPosition().y, -120.0f);
 			_playerTransform->SetRotation(0.0f, 165.0f, 0.0f);
+
+			_player->GetComponent<Animator>()->Play("Idle", 20.0f);
 
 			switch (_nowCameraStep)
 			{
@@ -6862,6 +7080,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				/// 카메라 흔들기 넣기 case 1 ~ 5까지
 				case 1:
 				{
+					EventManager::GetInstance().CamShake(20.0f);
+
 					auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki1", 10.0f, false);
 
 					if (!isPlaying)
@@ -7020,6 +7240,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 원기옥 공격
 				case 3:
 				{
+					EventManager::GetInstance().CamShake(20.0f);
+
 					auto animator = _boss->GetComponent<Animator>();
 
 					auto isPlaying = animator->Play("Genki3", 10.0f, false);
@@ -7073,6 +7295,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 								/// V키 누르라는 UI 표시해주기
 								if (_timer >= 3.0f)
 								{
+									EventManager::GetInstance().ActiveVbutton(50, 1200, 1100);
+
 									if (InputSystem::GetInstance()->KeyDown(KEY::V))
 									{
 										_genkiHitV = true;
@@ -7094,6 +7318,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 								else
 								{
 									_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 100;
+
+									EventManager::GetInstance()._Vbutton->SetActive(false);
 
 									animator->Stop();
 
@@ -7124,6 +7350,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 마지막 격돌 카메라 세팅
 				case 4:
 				{
+					EventManager::GetInstance().CamShake(20.0f);
+
 					int indexNum = 0;
 
 					for (auto& index : _bossLastAttackList)
@@ -7167,6 +7395,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 원기옥 이동 로직
 				case 5:
 				{
+					EventManager::GetInstance().CamShake(20.0f);
+
 					auto logicFinish = false;
 
 					auto deltaTime = TimeManager::GetInstance().GetDeltaTime();
@@ -7186,7 +7416,9 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 						index->GetComponent<Transform>()->SetPosition(-2, 85.0f + _bossGenkiPos, -13.0f + _bossGenkiPos);
 					}
 
-					///
+					/// 
+
+					EventManager::GetInstance().ActiveSpaceButton(0.2f, 1200, 1200);
 
 					_timer += deltaTime;
 					_timer2 += deltaTime;
@@ -7258,6 +7490,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 						_soundComp->Stop(_getnkitamaShot);
 						_soundComp->Stop(_getnkitamaShouting);
 						_soundComp->Stop(_playerLastLaser);
+
+						EventManager::GetInstance()._Spacebutton->SetActive(false);
 
 						return false;
 					}

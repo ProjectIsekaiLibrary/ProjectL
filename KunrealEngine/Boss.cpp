@@ -320,7 +320,7 @@ void KunrealEngine::Boss::Enter()
 		
 		_isEnterInitialize = true;
 		
-		SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true);
+		SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true, 0);
 	}
 
 
@@ -328,10 +328,15 @@ void KunrealEngine::Boss::Enter()
 	
 	if (isCameraMoveFinsh)
 	{
+		EventManager::GetInstance().BattleUIOpen(500);
+
 		_startTime -= TimeManager::GetInstance().GetDeltaTime();
+
+		static int testCnt = 0;
 
 		if (_startTime < 0.0f)
 		{
+
 			_isStart = true;
 			_boss->GetComponent<Transform>()->SetPosition(_bossOriginPos);
 			_boss->GetComponent<MeshRenderer>()->SetActive(true);
@@ -342,6 +347,13 @@ void KunrealEngine::Boss::Enter()
 			_boss->GetComponent<BoxCollider>()->FixedUpdate();
 
 			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
+
+			testCnt++;
+
+			if (testCnt > 1)
+			{
+				int a = 10;
+			}
 		}
 
 		// 시작하면 

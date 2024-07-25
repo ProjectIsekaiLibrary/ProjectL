@@ -265,6 +265,8 @@ void KunrealEngine::EventManager::BattleUIOpen(float speed)
 void KunrealEngine::EventManager::ActiveVbutton(float speed, float xpos, float ypos)
 {
 	static GameObject* Vbutton = SceneManager::GetInstance().GetCurrentScene()->CreateObject("vbutton");
+
+	Vbutton->SetActive(true);
 	
 	if (_Vbutton == nullptr)
 	{
@@ -277,6 +279,8 @@ void KunrealEngine::EventManager::ActiveVbutton(float speed, float xpos, float y
 void KunrealEngine::EventManager::ActiveSpaceButton(float time, float xpos, float ypos)
 {
 	static GameObject* Spacebutton = SceneManager::GetInstance().GetCurrentScene()->CreateObject("spacebutton");
+
+	Spacebutton->SetActive(true);
 	if (_Spacebutton == nullptr)
 	{
 		_Spacebutton = Spacebutton;
@@ -1170,9 +1174,9 @@ void KunrealEngine::EventManager::MoveToTitle()
 	this->_iscamfollow = false;
 
 	// 플레이어 위치 초기화
-	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 68.0f, 0.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetPosition(-156.0f, 66.0f, 0.0f);
 	scene->GetGameObject("TitlePlayer")->GetComponent<Transform>()->SetRotation(0.0f, 45.0f, 0.0f);
-	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(68.0f);
+	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->SetPlayerY(66.0f);
 	scene->GetGameObject("TitlePlayer")->GetComponent<PlayerMove>()->StopPlayer();
 	scene->GetGameObject("TitlePlayer")->GetComponent<BoxCollider>()->FixedUpdate();
 

@@ -152,10 +152,10 @@ void KunrealEngine::EngineCore::Update()
 	navigationInstance.HandleUpdate(TimeManager::GetInstance().GetDeltaTime());
 	soundInstance.Update();
 
-	if (inputInstance->KeyDown(KEY::PERIOD))
-	{
-		EventManager::GetInstance()._iscamfollow = EventManager::GetInstance()._iscamfollow ? false : true;
-	}
+	//if (inputInstance->KeyDown(KEY::PERIOD))
+	//{
+	//	EventManager::GetInstance()._iscamfollow = EventManager::GetInstance()._iscamfollow ? false : true;
+	//}
 	//GRAPHICS->DrawDebugText(100, 100, 20, "FPS : %.2f", 1 / TimeManager::GetInstance().GetDeltaTime());
 
 	inputInstance->GetMousePosition(_ingameMouseX, _ingameMouseY);
@@ -176,6 +176,7 @@ void KunrealEngine::EngineCore::Update()
 		SoundPlayer* soundComp = soundManager->GetComponent<SoundPlayer>();
 		int titlebgm1 = soundComp->FindIndex("Resources/Sound/TitleMap.mp3");
 		soundComp->Play(titlebgm1);
+		_bossSoundComp->Stop(0);
 
 		titleUIPosY = GetCurrentScene()->GetGameObject("Title_Image")->GetComponent<Transform>()->GetPosition().y;
 		if (titleUIPosY <= -680.0f)
@@ -198,12 +199,12 @@ void KunrealEngine::EngineCore::Update()
 		EndingSceneUpdate();
 	}
 
-	/// 지워제발나중에꼭기억해
-	if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main" && inputInstance->KeyDown(KEY::X))
-	{
-		EventManager::GetInstance().ActivateEndingSceneTrigger();
-	}
-	///
+	///// 지워제발나중에꼭기억해
+	//if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main" && inputInstance->KeyDown(KEY::X))
+	//{
+	//	EventManager::GetInstance().ActivateEndingSceneTrigger();
+	//}
+	/////
 
 	MoveToMain();
 	Updatecoroutine();

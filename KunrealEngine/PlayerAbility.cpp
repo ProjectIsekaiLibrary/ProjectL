@@ -428,7 +428,7 @@ void KunrealEngine::PlayerAbility::CreateAbility1()
 
 	shot->SetTotalData(
 		"Shot",			// 이름
-		10.0f,			// 데미지
+		13.0f,			// 데미지
 		10.0f,			// 마나
 		5.0f,			// 무력화 피해량
 		1.5f,			// 쿨타임
@@ -657,7 +657,7 @@ void KunrealEngine::PlayerAbility::CreateAbility2()
 		10.0f,			// 데미지
 		15.0f,			// 마나
 		0.0f,			// 무력화 피해량
-		14.0f,			// 쿨타임
+		12.0f,			// 쿨타임
 		12.0f			// 사거리
 	);
 
@@ -854,7 +854,7 @@ void KunrealEngine::PlayerAbility::CreateAbility3()
 
 	laser->SetTotalData(
 		"Laser",			// 이름
-		7.0f,			// 데미지
+		10.0f,			// 데미지
 		20.0f,			// 마나
 		15.0f,			// 무력화 피해량
 		10.0f,			// 쿨타임
@@ -1085,10 +1085,10 @@ void KunrealEngine::PlayerAbility::CreateAbility4()
 
 	meteor->SetTotalData(
 		"Meteor",			// 이름
-		50.0f,			// 데미지
+		70.0f,			// 데미지
 		10.0f,			// 마나
 		15.0f,			// 무력화 피해량
-		20.0f,			// 쿨타임
+		15.0f,			// 쿨타임
 		15.0f			// 사거리
 	);
 

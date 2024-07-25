@@ -166,17 +166,17 @@ void ArkEngine::ArkDX11::DX11Renderer::Update()
 
 	ResourceManager::GetInstance()->SortMeshRendererByAlpha();
 
-	if (GetAsyncKeyState(0x23) & 0x0001)
-	{
-		if (_isDebugMode == true)
-		{
-			_isDebugMode = false;
-		}
-		else
-		{
-			_isDebugMode = true;
-		}
-	}
+	//if (GetAsyncKeyState(0x23) & 0x0001)
+	//{
+	//	if (_isDebugMode == true)
+	//	{
+	//		_isDebugMode = false;
+	//	}
+	//	else
+	//	{
+	//		_isDebugMode = true;
+	//	}
+	//}
 
 	// particle
 	//float time = 0.032f;

@@ -16,8 +16,8 @@
 KunrealEngine::Player::Player()
 	:_transform(nullptr), _playerStatus(Status::IDLE), _tempStatus(Status::IDLE), _owner(nullptr)
 	, _playerInfo(
-		250.0f,			// hp
-		250.0f,			// maxhp
+		300.0f,			// hp
+		300.0f,			// maxhp
 		100.0f,			// stamina
 		17.0f,			// movespeed
 		120.0f,			// dashspeed
@@ -25,7 +25,7 @@ KunrealEngine::Player::Player()
 		8.0f,			// dashcooldown
 		1.0f,			// spellpower
 		1.0f,			// damageReduce
-		1.5f			// speedScale
+		1.8f			// speedScale
 	), _directionVector(), _abilityAnimationIndex(0),
 	_isSweep(false), _sweepRange(20.0f), _movedRange(0.0f), _sweepDuration(1.0f), _sweepNode(), _sweepAnimationSpeed(30.0f), _gravity(-5.81f), _nodeCount(0)
 	, _deathParticle1(nullptr), _deathParticle2(nullptr), _deathParticle3(nullptr), _deathParticle4(nullptr), _deathParticle5(nullptr), _deathParticle6(nullptr), _deathParticleVector{}, _deathAnimationSpeed(30.0f)
@@ -589,6 +589,9 @@ void KunrealEngine::Player::ResetPlayerStatus()
 	this->_playerInfo._hp = this->_playerInfo._maxhp;
 	this->_playerInfo._spellPower = 1.0f;
 
+	// 각도 초기화
+	this->_transform->SetRotation(0.0f, -180.0f, 0.0f);
+
 	// 물약 리필
 	this->GetOwner()->GetComponent<PlayerAbility>()->_maxPotion = 5;
 
@@ -614,15 +617,15 @@ void KunrealEngine::Player::SetPlayerBindFlag(bool flag, int state /*= 0*/)
 
 	this->_playerBindFlag = flag;
 
-	if (flag)
-	{
-		this->_playerStatus = Status::CINEMATIC;
-		this->_cinematicIndex = state;
-	}
-	else
-	{
-		this->_playerStatus = Status::IDLE;
-	}
+	//if (flag)
+	//{
+	//	this->_playerStatus = Status::CINEMATIC;
+	//	this->_cinematicIndex = state;
+	//}
+	//else
+	//{
+	//	this->_playerStatus = Status::IDLE;
+	//}
 }
 
 
