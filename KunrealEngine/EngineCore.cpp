@@ -193,6 +193,8 @@ void KunrealEngine::EngineCore::Update()
 	}
 	else if (sceneInstance.GetCurrentScene()->GetSceneName() == "Ending")
 	{
+		_bossSoundComp->Stop(0);
+
 		EndingSceneUpdate();
 	}
 
@@ -336,7 +338,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	auto bossSoundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
 	bossSoundManager->_autoAwake = true;
 	_bossSoundComp = bossSoundManager->AddComponent<SoundPlayer>();
-	auto bossSoundindex = _bossSoundComp->CreateSoundInfo("Resources/Sound/MainSceneBGM.mp3", false, true);
+	auto bossSoundindex = _bossSoundComp->CreateSoundInfo("Resources/Sound/MainSceneBGM.mp3", false, true, 50.f);
 	_bossSoundComp->CreateSound(bossSoundindex, 1);
 	
 

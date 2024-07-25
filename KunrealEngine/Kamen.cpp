@@ -134,7 +134,7 @@ void KunrealEngine::Kamen::Initialize()
 	_spellSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/forbiddenparty_finish_horizen.ogg", false, false);
 	_soundComp->CreateSound(_spellSoundIndex, 1);
 
-	_emergenceSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/vortex.ogg", false, false);
+	_emergenceSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/vortex.ogg", false, false, 50.f);
 	_soundComp->CreateSound(_emergenceSoundIndex, 1);
 
 	_fiveWaySoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/slash_boom_swish.ogg", false, false);
@@ -156,7 +156,7 @@ void KunrealEngine::Kamen::Initialize()
 	_swordOutsideSafeSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/lightninggod_roar.ogg", false, false);
 	_soundComp->CreateSound(_swordOutsideSafeSoundIndex, 1);
 
-	_swordLinearSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/launcher5.mp3", false, false);
+	_swordLinearSoundIndex = _soundComp->CreateSoundInfo("Resources/Sound/Boss/darkshock_cast.ogg", false, false);
 	_soundComp->CreateSound(_swordLinearSoundIndex, 1);
 
 	_swordChopSoundIndex1 = _soundComp->CreateSoundInfo("Resources/Sound/third_strike1.ogg", false, false);
