@@ -9219,7 +9219,7 @@ void KunrealEngine::Kamen::CoreSwordMeteorPattern()
 
 	coreSwordMeteor->SetNextPatternForcePlay(true);
 
-	float triggerHp = _info.GetMaxHP() * 0.7f;
+	float triggerHp = _info.GetMaxHP() * 0.8f;
 
 	coreSwordMeteor->SetTriggerHp(triggerHp);
 
