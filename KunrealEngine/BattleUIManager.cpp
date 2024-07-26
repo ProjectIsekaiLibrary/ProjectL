@@ -490,25 +490,25 @@ void KunrealEngine::BattleUIManager::Update()
 
 
 	// 이건 테스트 용으로 보스나 플레이어의 체력을 강제로 만질 수 있게 해둔 부분
-	if (InputSystem::GetInstance()->KeyDown(KEY::UP))
-	{
-		bossinfo._hp += 10;
-	}
+	//if (InputSystem::GetInstance()->KeyDown(KEY::UP))
+	//{
+	//	bossinfo._hp += 10;
+	//}
+	//
+	//else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
+	//{
+	//	bossinfo._hp -= 10;
+	//}
 
-	else if (InputSystem::GetInstance()->KeyDown(KEY::DOWN))
-	{
-		bossinfo._hp -= 10;
-	}
-
-	if (InputSystem::GetInstance()->KeyDown(KEY::PGUP))
-	{
-		playerinfo._hp += 10;
-	}
-
-	else if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
-	{
-		playerinfo._hp -= 100;
-	}
+	//if (InputSystem::GetInstance()->KeyDown(KEY::PGUP))
+	//{
+	//	playerinfo._hp += 10;
+	//}
+	//
+	//else if (InputSystem::GetInstance()->KeyDown(KEY::PGDOWN))
+	//{
+	//	playerinfo._hp -= 100;
+	//}
 	 
 	// 체력을 받아와서 게이지에 반영하는 부분
 	int bosshp = bossinfo._hp;
