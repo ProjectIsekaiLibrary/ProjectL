@@ -181,11 +181,16 @@ void KunrealEngine::PlayerMove::SetActive(bool active)
 
 void KunrealEngine::PlayerMove::UpdateTargetPosition()
 {
-	/// 에디터 마우스 기준
 	if (this->GetOwner()->GetObjectScene()->GetSceneName() == "Title")
 	{
 		_targetPos = GRAPHICS->ScreenToWorldPoint(InputSystem::GetInstance()->GetEditorMousePos().x, InputSystem::GetInstance()->GetEditorMousePos().y, -66.0f);
 
+		LONG clickedY = InputSystem::GetInstance()->GetEditorMousePos().y;
+
+		if (clickedY < 810)
+		{
+			_targetPos = { -154.0f, 66.0f, 243.0f };
+		}
 	}
 	else
 	{

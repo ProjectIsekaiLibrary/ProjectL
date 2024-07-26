@@ -240,6 +240,9 @@ void KunrealEngine::EventManager::BattleUIHide(float speed)
 void KunrealEngine::EventManager::BattleUIOpen(float speed)
 {
 	SceneManager& scene = SceneManager::GetInstance();
+
+	scene.GetInstance().GetScene("Main")->GetGameObject("BattleUI")->SetActive(true);
+
 	auto* booshpbar_pack = scene.GetCurrentScene()->GetGameObject("boss_pack");
 	auto* battleui_pack = scene.GetCurrentScene()->GetGameObject("battle_pack");
 

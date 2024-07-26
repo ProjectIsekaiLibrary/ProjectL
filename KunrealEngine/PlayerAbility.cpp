@@ -205,7 +205,6 @@ void KunrealEngine::PlayerAbility::Update()
 			ability->_laserParticle3->SetActive(false);
 			ability->_laserParticle4->SetActive(false);
 			ability->_destroyLaser = true;
-			//ability->_isLaserReady = false;
 			ability->_isLaserStarted = false;
 
 		};
@@ -1493,7 +1492,7 @@ void KunrealEngine::PlayerAbility::AnimateByFrame()
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 3 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
 	{
 		_playerComp->_playerStatus = Player::Status::IDLE;
-		this->_isLaserReady = false;
+		//this->_isLaserReady = false;
 	}
 
 	if (_playerComp->_playerStatus == Player::Status::ABILITY && _playerComp->_abilityAnimationIndex == 4 && GetOwner()->GetComponent<Animator>()->GetCurrentFrame() >= GetOwner()->GetComponent<Animator>()->GetMaxFrame())
