@@ -31,6 +31,7 @@ namespace KunrealEngine
 	private:
 		void InitializeVolumeButton(std::vector<GameObject*>& vecs, int* steps, DirectX::XMFLOAT2 tlposition);
 		void Setvolumebutton(int vol, int* type);
+		void setDifficulty();
 
 	private:
 		KunrealEngine::Scene* scene;
@@ -50,6 +51,5 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* button_check1;
 		KunrealEngine::GameObject* button_check2;
 		KunrealEngine::GameObject* button_check3;
-		KunrealEngine::GameObject* button_check4;
 	};
 }

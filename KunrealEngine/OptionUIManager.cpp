@@ -1,6 +1,7 @@
 #include "OptionUIManager.h"
 #include "ButtonSystem.h"
 #include "SoundSystem.h"
+#include "EventManager.h"
 
 KunrealEngine::OptionUIManager::OptionUIManager()
 {
@@ -156,6 +157,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
 			{
 				this->DifficultyLevel = 0;
+				this->setDifficulty();
 			}
 		});
 
@@ -172,6 +174,7 @@ void KunrealEngine::OptionUIManager::Initialize()
 			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
 			{
 				this->DifficultyLevel = 1;
+				this->setDifficulty();
 			}
 		});
 
@@ -182,28 +185,13 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check3->GetComponent<ImageRenderer>()->SetPosition(860.0f, 725.0f);
 	button_check3->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
 	button_check3->AddComponent<ButtonSystem>();
-	button_check3->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
+	button_check3->GetComponent<ButtonSystem>()->SetImage(button_check3->GetComponent<ImageRenderer>());
 	button_check3->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
 			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
 			{
 				this->DifficultyLevel = 2;
-			}
-		});
-
-	button_check4 = scene->CreateObject("button_check2");
-	button_check4->SetParent(optionuibox);
-	button_check4->AddComponent<ImageRenderer>();
-	button_check4->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
-	button_check4->GetComponent<ImageRenderer>()->SetPosition(1400.0f, 725.0f);
-	button_check4->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
-	button_check4->AddComponent<ButtonSystem>();
-	button_check4->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
-	button_check4->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
-		{
-			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
-			{
-				this->DifficultyLevel = 3;
+				this->setDifficulty();
 			}
 		});
 
@@ -224,16 +212,9 @@ void KunrealEngine::OptionUIManager::Initialize()
 	hard_text = scene->CreateObject("fullscreen_text");
 	hard_text->SetParent(optionuibox);
 	hard_text->AddComponent<ImageRenderer>();
-	hard_text->GetComponent<ImageRenderer>()->SetImage("ui/HARD.png");
+	hard_text->GetComponent<ImageRenderer>()->SetImage("ui/HARDCORE.png");
 	hard_text->GetComponent<ImageRenderer>()->SetPosition(430.0f, 660.0f);
 	hard_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
-
-	hardcore_text = scene->CreateObject("windowed_text");
-	hardcore_text->SetParent(optionuibox);
-	hardcore_text->AddComponent<ImageRenderer>();
-	hardcore_text->GetComponent<ImageRenderer>()->SetImage("ui/HARDCORE.png");
-	hardcore_text->GetComponent<ImageRenderer>()->SetPosition(950.0f, 660.0f);
-	hardcore_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////
@@ -321,36 +302,6 @@ void KunrealEngine::OptionUIManager::Update()
 		scene->GetGameObject("button_sfxon")->GetComponent<ImageRenderer>()->ChangeImage("ui/sound-on.png");
 	}
 
-	switch (DifficultyLevel)
-	{
-		case 0:
-			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
-			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			break;
-		case 1:
-			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
-			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			break;
-		case 2:
-			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
-			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			break;
-		case 3:
-			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
-			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
-			break;
-		default:
-			break;
-	}
-
 	prevbgm = _bgm_step;
 	prevsfx = _sfx_step;
 }
@@ -434,5 +385,32 @@ void KunrealEngine::OptionUIManager::Setvolumebutton(int vol, int* type)
 	else if(type == &_sfx_step)
 	{
 		SoundSystem::GetInstance().SetvolumeGroup(SOUNDTYPE::SFX, vol);
+	}
+}
+
+void KunrealEngine::OptionUIManager::setDifficulty()
+{
+	switch (DifficultyLevel)
+	{
+		case 0:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eEasy);
+			break;
+		case 1:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eNormal);
+			break;
+		case 2:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eHardCore);
+			break;
+		default:
+			break;
 	}
 }

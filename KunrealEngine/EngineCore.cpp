@@ -592,7 +592,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 			// 플레이어 위치 조정 및 초기화
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
 
-			EventManager::GetInstance().SetDifficulty(eDifficulty::eEasy);
+			//EventManager::GetInstance().SetDifficulty(eDifficulty::eEasy);
 
 			titleCamera->GetComponent<Camera>()->CameraRotateY(-1 * g_test);
 			g_rageOfLee = 0.0f;
