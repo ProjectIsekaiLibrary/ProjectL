@@ -27,6 +27,7 @@ namespace KunrealEngine
 
 		void SetActive(bool active) override;
 
+		int DifficultyLevel;
 	private:
 		void InitializeVolumeButton(std::vector<GameObject*>& vecs, int* steps, DirectX::XMFLOAT2 tlposition);
 		void Setvolumebutton(int vol, int* type);
@@ -35,7 +36,6 @@ namespace KunrealEngine
 		KunrealEngine::Scene* scene;
 		KunrealEngine::GameObject* optionuibox;
 
-		int DifficultyLevel;
 
 		// 세팅된 볼륨. 0~10까지 이숫자까지의 버튼은 전부 칠하고 이숫자 이후의 버튼은 회색으로 둔다.
 		// 비슷하게 사운드도 이거랑 같이 엮을 예정 -> SetVolume(bgm_step*10)
@@ -46,5 +46,10 @@ namespace KunrealEngine
 		// 사운드 설정용 버튼들은 여기에 차분하게 모아두기
 		std::vector<GameObject*> _bgms;
 		std::vector<GameObject*> _sfxs;
+
+		KunrealEngine::GameObject* button_check1;
+		KunrealEngine::GameObject* button_check2;
+		KunrealEngine::GameObject* button_check3;
+		KunrealEngine::GameObject* button_check4;
 	};
 }

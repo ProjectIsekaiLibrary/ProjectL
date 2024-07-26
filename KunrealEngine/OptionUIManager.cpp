@@ -24,10 +24,6 @@ void KunrealEngine::OptionUIManager::Initialize()
 	KunrealEngine::GameObject* button_bgm;
 	KunrealEngine::GameObject* button_sfx;
 
-	KunrealEngine::GameObject* button_check1;
-	KunrealEngine::GameObject* button_check2;
-	KunrealEngine::GameObject* button_check3;
-	KunrealEngine::GameObject* button_check4;
 	KunrealEngine::GameObject* easy_text;
 	KunrealEngine::GameObject* normal_text;
 	KunrealEngine::GameObject* hard_text;
@@ -157,7 +153,10 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check1->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
 	button_check1->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			this->DifficultyLevel = 0;
+			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+			{
+				this->DifficultyLevel = 0;
+			}
 		});
 
 	button_check2 = scene->CreateObject("button_check2");
@@ -170,7 +169,10 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check2->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
 	button_check2->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			this->DifficultyLevel = 1;
+			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+			{
+				this->DifficultyLevel = 1;
+			}
 		});
 
 	button_check3 = scene->CreateObject("button_check1");
@@ -183,7 +185,10 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check3->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
 	button_check3->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			this->DifficultyLevel = 2;
+			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+			{
+				this->DifficultyLevel = 2;
+			}
 		});
 
 	button_check4 = scene->CreateObject("button_check2");
@@ -196,7 +201,10 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_check4->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
 	button_check4->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
 		{
-			this->DifficultyLevel = 4;
+			if (SceneManager::GetInstance().GetCurrentScene()->GetSceneName() == "Title")
+			{
+				this->DifficultyLevel = 3;
+			}
 		});
 
 	easy_text = scene->CreateObject("fullscreen_text");
@@ -216,14 +224,14 @@ void KunrealEngine::OptionUIManager::Initialize()
 	hard_text = scene->CreateObject("fullscreen_text");
 	hard_text->SetParent(optionuibox);
 	hard_text->AddComponent<ImageRenderer>();
-	hard_text->GetComponent<ImageRenderer>()->SetImage("ui/FullScreen.png");
+	hard_text->GetComponent<ImageRenderer>()->SetImage("ui/HARD.png");
 	hard_text->GetComponent<ImageRenderer>()->SetPosition(430.0f, 660.0f);
 	hard_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	hardcore_text = scene->CreateObject("windowed_text");
 	hardcore_text->SetParent(optionuibox);
 	hardcore_text->AddComponent<ImageRenderer>();
-	hardcore_text->GetComponent<ImageRenderer>()->SetImage("ui/Windowed.png");
+	hardcore_text->GetComponent<ImageRenderer>()->SetImage("ui/HARDCORE.png");
 	hardcore_text->GetComponent<ImageRenderer>()->SetPosition(950.0f, 660.0f);
 	hardcore_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
@@ -311,6 +319,36 @@ void KunrealEngine::OptionUIManager::Update()
 	{
 		scene = KunrealEngine::SceneManager::GetInstance().GetCurrentScene();
 		scene->GetGameObject("button_sfxon")->GetComponent<ImageRenderer>()->ChangeImage("ui/sound-on.png");
+	}
+
+	switch (DifficultyLevel)
+	{
+		case 0:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			break;
+		case 1:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			break;
+		case 2:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			break;
+		case 3:
+			button_check1->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check2->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check3->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-false.png");
+			button_check4->GetComponent<ImageRenderer>()->ChangeImage("ui/Check-true.png");
+			break;
+		default:
+			break;
 	}
 
 	prevbgm = _bgm_step;
