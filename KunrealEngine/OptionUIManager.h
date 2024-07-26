@@ -35,6 +35,8 @@ namespace KunrealEngine
 		KunrealEngine::Scene* scene;
 		KunrealEngine::GameObject* optionuibox;
 
+		int DifficultyLevel;
+
 		// 세팅된 볼륨. 0~10까지 이숫자까지의 버튼은 전부 칠하고 이숫자 이후의 버튼은 회색으로 둔다.
 		// 비슷하게 사운드도 이거랑 같이 엮을 예정 -> SetVolume(bgm_step*10)
 		// 0까지 사용하므로 기본값은 -1로 둘것.
