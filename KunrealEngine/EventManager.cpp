@@ -1407,14 +1407,14 @@ void KunrealEngine::EventManager::SetDifficulty(eDifficulty dif)
 	{
 		_playerComp->_playerInfo._hp = 1.0f;
 		_playerComp->_playerInfo._maxhp = 1.0f;
-		_playerComp->_playerInfo._speedScale = 1.8f;
+		_playerComp->_playerInfo._speedScale = 1.5f;
 		_playerComp->_playerInfo._moveSpeed = 17.0f;
-		_playerComp->_playerInfo._dashCooldown = 5.0f;
+		_playerComp->_playerInfo._dashCooldown = 8.0f;
 
-		_player->GetComponent<PlayerAbility>()->_shotAbil->SetDamage(13.0f);
-		_player->GetComponent<PlayerAbility>()->_circleAbil->SetCoolDown(12.0f);
-		_player->GetComponent<PlayerAbility>()->_laserAbil->SetDamage(10.0f);
-		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetDamage(70.0f);
-		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetCoolDown(15.0f);
+		_player->GetComponent<PlayerAbility>()->_shotAbil->SetDamage(6.0f);
+		_player->GetComponent<PlayerAbility>()->_circleAbil->SetCoolDown(14.0f);
+		_player->GetComponent<PlayerAbility>()->_laserAbil->SetDamage(7.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetDamage(50.0f);
+		_player->GetComponent<PlayerAbility>()->_meteorAbil->SetCoolDown(20.0f);
 	}
 }
