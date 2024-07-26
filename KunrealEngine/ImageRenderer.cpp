@@ -174,9 +174,24 @@ bool KunrealEngine::ImageRenderer::IsPicked(int mouseX, int mouseY)
 	auto tlbpos = GetImageSize();
 	// 부모가 있다면? 부모의 포지션도 더해줘야 한다.
 	DirectX::XMFLOAT3 papos = {0.0f,0.0f ,0.0f };
-	if (GetOwner()->GetParent())
+	GameObject* parent = GetOwner()->GetParent();
+	if (parent != nullptr)
 	{
 		papos = GetOwner()->GetParent()->GetComponent<Transform>()->GetPosition();
+		
+		GameObject* parents = GetOwner()->GetParent()->GetParent();
+		while (1)
+		{
+			if (parents == nullptr)
+			{
+				break;
+			}
+
+			papos.x += parents->GetComponent<Transform>()->GetPosition().x;
+			papos.y += parents->GetComponent<Transform>()->GetPosition().y;
+			parents = parents->GetParent();
+
+		}
 	}
 
 

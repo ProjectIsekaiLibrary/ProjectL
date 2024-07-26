@@ -26,8 +26,12 @@ void KunrealEngine::OptionUIManager::Initialize()
 
 	KunrealEngine::GameObject* button_check1;
 	KunrealEngine::GameObject* button_check2;
-	KunrealEngine::GameObject* fullscreen_text;
-	KunrealEngine::GameObject* windowed_text;
+	KunrealEngine::GameObject* button_check3;
+	KunrealEngine::GameObject* button_check4;
+	KunrealEngine::GameObject* easy_text;
+	KunrealEngine::GameObject* normal_text;
+	KunrealEngine::GameObject* hard_text;
+	KunrealEngine::GameObject* hardcore_text;
 
 	KunrealEngine::GameObject* button_exit;
 	KunrealEngine::GameObject* button_exit_focus;
@@ -139,6 +143,89 @@ void KunrealEngine::OptionUIManager::Initialize()
 	button_sfx->GetComponent<ImageRenderer>()->SetImage("ui/SFX_text.png");
 	button_sfx->GetComponent<ImageRenderer>()->SetPosition(405.0f, 405.0f);
 	button_sfx->GetComponent<Transform>()->SetScale(0.7, 0.7, 0.7f);
+
+	/////////////////////////////////////////////////////////////////////////////////
+	/////////////////////////////////////////////////////////////////////////////////
+
+	button_check1 = scene->CreateObject("button_check1");
+	button_check1->SetParent(optionuibox);
+	button_check1->AddComponent<ImageRenderer>();
+	button_check1->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
+	button_check1->GetComponent<ImageRenderer>()->SetPosition(860.0f, 625.0f);
+	button_check1->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+	button_check1->AddComponent<ButtonSystem>();
+	button_check1->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
+	button_check1->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
+		{
+			this->DifficultyLevel = 0;
+		});
+
+	button_check2 = scene->CreateObject("button_check2");
+	button_check2->SetParent(optionuibox);
+	button_check2->AddComponent<ImageRenderer>();
+	button_check2->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
+	button_check2->GetComponent<ImageRenderer>()->SetPosition(1400.0f, 625.0f);
+	button_check2->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+	button_check2->AddComponent<ButtonSystem>();
+	button_check2->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
+	button_check2->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
+		{
+			this->DifficultyLevel = 1;
+		});
+
+	button_check3 = scene->CreateObject("button_check1");
+	button_check3->SetParent(optionuibox);
+	button_check3->AddComponent<ImageRenderer>();
+	button_check3->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
+	button_check3->GetComponent<ImageRenderer>()->SetPosition(860.0f, 725.0f);
+	button_check3->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+	button_check3->AddComponent<ButtonSystem>();
+	button_check3->GetComponent<ButtonSystem>()->SetImage(button_check1->GetComponent<ImageRenderer>());
+	button_check3->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
+		{
+			this->DifficultyLevel = 2;
+		});
+
+	button_check4 = scene->CreateObject("button_check2");
+	button_check4->SetParent(optionuibox);
+	button_check4->AddComponent<ImageRenderer>();
+	button_check4->GetComponent<ImageRenderer>()->SetImage("ui/Check-false.png");
+	button_check4->GetComponent<ImageRenderer>()->SetPosition(1400.0f, 725.0f);
+	button_check4->GetComponent<Transform>()->SetScale(2.0f, 2.0f, 2.0f);
+	button_check4->AddComponent<ButtonSystem>();
+	button_check4->GetComponent<ButtonSystem>()->SetImage(button_check2->GetComponent<ImageRenderer>());
+	button_check4->GetComponent<ButtonSystem>()->SetButtonFunc([this]()
+		{
+			this->DifficultyLevel = 4;
+		});
+
+	easy_text = scene->CreateObject("fullscreen_text");
+	easy_text->SetParent(optionuibox);
+	easy_text->AddComponent<ImageRenderer>();
+	easy_text->GetComponent<ImageRenderer>()->SetImage("ui/FullScreen.png");
+	easy_text->GetComponent<ImageRenderer>()->SetPosition(430.0f, 560.0f);
+	easy_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	normal_text = scene->CreateObject("windowed_text");
+	normal_text->SetParent(optionuibox);
+	normal_text->AddComponent<ImageRenderer>();
+	normal_text->GetComponent<ImageRenderer>()->SetImage("ui/Windowed.png");
+	normal_text->GetComponent<ImageRenderer>()->SetPosition(950.0f, 560.0f);
+	normal_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	hard_text = scene->CreateObject("fullscreen_text");
+	hard_text->SetParent(optionuibox);
+	hard_text->AddComponent<ImageRenderer>();
+	hard_text->GetComponent<ImageRenderer>()->SetImage("ui/FullScreen.png");
+	hard_text->GetComponent<ImageRenderer>()->SetPosition(430.0f, 660.0f);
+	hard_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
+
+	hardcore_text = scene->CreateObject("windowed_text");
+	hardcore_text->SetParent(optionuibox);
+	hardcore_text->AddComponent<ImageRenderer>();
+	hardcore_text->GetComponent<ImageRenderer>()->SetImage("ui/Windowed.png");
+	hardcore_text->GetComponent<ImageRenderer>()->SetPosition(950.0f, 660.0f);
+	hardcore_text->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 
 	/////////////////////////////////////////////////////////////////////////////////
 	/////////////////////////////////////////////////////////////////////////////////

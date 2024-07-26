@@ -680,7 +680,11 @@ void KunrealEngine::Player::BeforeStart()
 				_iswakeuped = true;
 				auto& scene = SceneManager::GetInstance();
 				this->_owner->GetComponent<SoundPlayer>()->Stop(_staandup);
+
+				scene.GetScene("Title")->GetGameObject("tutorialFade")->GetComponent<ImageRenderer>()->Update();
 				scene.GetScene("Title")->GetGameObject("tutorialFade")->SetActive(true);
+
+				scene.GetScene("Title")->GetGameObject("tutorialImage")->GetComponent<ImageRenderer>()->Update();
 				scene.GetScene("Title")->GetGameObject("tutorialImage")->SetActive(true);
 			}
 		}
