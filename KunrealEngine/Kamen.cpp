@@ -36,7 +36,7 @@ KunrealEngine::Kamen::Kamen()
 	_swordSwingVertical(nullptr), _kamenSword(nullptr), _swordSwingTwice(nullptr), _isSwordSecondAttackStart(false), _swordSwingTwiceHard(nullptr), _swordDirection2(), _swordMoveDistance2(0.0f), _swordSwingHorizontal(nullptr), _swordSwingTeleport(nullptr),
 	_kamenSwordParticle(0), _kamenSwordAfterImageParticle(0), _largeBlade(nullptr),
 	_swordRotationAttack(nullptr), _swordMultipleAttack(nullptr), _battleCry(nullptr), _rentalFraud(nullptr), _rentalSuccess(false), _swordMeteorAppear(nullptr), _swordMeteorAttack(nullptr), _meteorSword(nullptr), _cameraMoveFinish(false), _nowCameraStep(0), _cinematicCamera(nullptr), _mainPlayCamera(nullptr), _genkiAttack(nullptr), _genkiAttackStart(false), _genkiHitV(false), _turn270(nullptr), _3PhaseParticle(nullptr), _playerLastLifetimer(0), _bossGenkiPos(0), _emergenceDecal(nullptr), _egoEmergenceDecal(nullptr), _swordOutSideSafeDecal(nullptr), _swordMeteorDecal(nullptr),
-	_soundComp(nullptr), _leftFireSoundIndex(0)
+	_soundComp(nullptr), _leftFireSoundIndex(0), _isDead(false)
 {
 	BossBasicInfo info;
 
@@ -242,12 +242,17 @@ void KunrealEngine::Kamen::Update()
 
 	if (_status == BossStatus::DEAD || _status == BossStatus::WIN)
 	{
-		StopAllSpecialPattern();
-
-		_kamenSword->SetActive(false);
-		for (auto& bezierSwordParticles : _bezierSwordParticles)
+		if (!_isDead)
 		{
-			bezierSwordParticles->GetComponent<Particle>()->SetActive(false);
+			StopAllSpecialPattern();
+
+			_kamenSword->SetActive(false);
+			for (auto& bezierSwordParticles : _bezierSwordParticles)
+			{
+				bezierSwordParticles->GetComponent<Particle>()->SetActive(false);
+			}
+
+			_isDead = true;
 		}
 	}
 
@@ -280,6 +285,11 @@ void KunrealEngine::Kamen::Update()
 	if (GetAsyncKeyState('I'))
 	{
 		_info._hp -= 10.0f;
+	}
+
+	if (GetAsyncKeyState('O'))
+	{
+		_bossTransform->SetPosition(_centerPos.x, _centerPos.y, _centerPos.z);
 	}
 }
 
@@ -525,6 +535,8 @@ void KunrealEngine::Kamen::Reset()
 	_bezierCurvePoints.clear();
 
 	_isBezierStartSetting = false;
+
+	_isDead = true;
 
 	_bossLastAttackList[0]->GetComponent<Transform>()->SetPosition(-2.2f, 180.0f, 88.0f);
 	_bossLastAttackList[0]->GetComponent<Particle>()->SetParticleDuration(1.0f, 0.2f);
@@ -2602,6 +2614,49 @@ void KunrealEngine::Kamen::CreateParticleObject()
 			_lastBezierList.push_back(particleBezierTest);
 		}
 	}
+
+	{
+		GameObject* bossShouting1 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossShouting1");
+		bossShouting1->_autoAwake = true;
+		bossShouting1->GetComponent<Transform>()->SetPosition(-2.0f, 52.0f, -13.0f);
+		bossShouting1->AddComponent<Particle>();
+		bossShouting1->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave3", "Resources/Textures/Particles/fx_BlastWave3.dds", 1000);
+		bossShouting1->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
+		bossShouting1->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		bossShouting1->GetComponent<Particle>()->SetParticleSize(36.f, 36.0f);
+		bossShouting1->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 0.5f);
+		bossShouting1->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, 0.0f);
+		bossShouting1->GetComponent<Particle>()->SetParticleCameraApply(true);
+		bossShouting1->GetComponent<Particle>()->SetActive(false);
+		_bossShoutingList.emplace_back(bossShouting1);
+
+		GameObject* bossShouting2 = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossShouting1");
+		bossShouting2->_autoAwake = true;
+		bossShouting2->GetComponent<Transform>()->SetPosition(-2.0f, 52.0f, -13.0f);
+		bossShouting2->AddComponent<Particle>();
+		bossShouting2->GetComponent<Particle>()->SetParticleEffect("fx_BlastWave5", "Resources/Textures/Particles/fx_BlastWave5.dds", 1000);
+		bossShouting2->GetComponent<Particle>()->SetParticleDuration(0.8f, 1.0f);
+		bossShouting2->GetComponent<Particle>()->SetParticleVelocity(1.0f, true);
+		bossShouting2->GetComponent<Particle>()->SetParticleSize(36.f, 36.0f);
+		bossShouting2->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 0.5f);
+		bossShouting2->GetComponent<Particle>()->SetParticleDirection(0.0f, 300.0f, .0f);
+		bossShouting2->GetComponent<Particle>()->SetParticleCameraApply(true);
+		bossShouting2->GetComponent<Particle>()->SetActive(false);
+		_bossShoutingList.emplace_back(bossShouting2);
+
+		_bossShoutingForce = SceneManager::GetInstance().GetCurrentScene()->CreateObject("bossShouting1");
+		_bossShoutingForce->_autoAwake = true;
+		_bossShoutingForce->GetComponent<Transform>()->SetPosition(-2.0f, 52.0f, -13.0f);
+		_bossShoutingForce->AddComponent<Particle>();
+		_bossShoutingForce->GetComponent<Particle>()->SetParticleEffect("Beam3", "Resources/Textures/Particles/fx_Beam3.dds", 1000);
+		_bossShoutingForce->GetComponent<Particle>()->SetParticleDuration(1.0f, 1.0f);
+		_bossShoutingForce->GetComponent<Particle>()->SetParticleVelocity(30.0f, true);
+		_bossShoutingForce->GetComponent<Particle>()->SetParticleSize(15.f, 15.0f);
+		_bossShoutingForce->GetComponent<Particle>()->AddParticleColor(0.0f, 5.0f, 0.5f);
+		_bossShoutingForce->GetComponent<Particle>()->SetParticleDirection(0.0f, 80.0f, 0.0f);
+		_bossShoutingForce->GetComponent<Particle>()->SetActive(false);
+	}
+
 }
 
 void KunrealEngine::Kamen::CreateSubObject()
@@ -6027,6 +6082,8 @@ void KunrealEngine::Kamen::CreateBattleCry()
 			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true, 2);
 
 			_isBasicPatternSoundPlayed[0] = false;
+
+			_timer2 = 0.0f;
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -6034,6 +6091,11 @@ void KunrealEngine::Kamen::CreateBattleCry()
 	auto attakLogic = [pattern, this]()
 		{
 			_timer += TimeManager::GetInstance().GetDeltaTime();
+
+			if (2.0f <= _timer && _timer < 5.0f)
+			{
+				EventManager::GetInstance().CamShake(3.0f);
+			}
 
 			if (_boss->GetComponent<MeshRenderer>()->GetActivated() == false)
 			{
@@ -6060,7 +6122,24 @@ void KunrealEngine::Kamen::CreateBattleCry()
 				_isBasicPatternSoundPlayed[0] = true;
 			}
 
-			if (!isAnimationPlaying)
+			if (isAnimationPlaying)
+			{
+				_bossShoutingForce->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+				_bossShoutingForce->GetComponent<Particle>()->SetActive(true);
+
+				if (animator->GetCurrentFrame() > 24)
+				{
+					_timer2 += TimeManager::GetInstance().GetDeltaTime();
+					for (auto& bossShoutingList : _bossShoutingList)
+					{
+						bossShoutingList->GetComponent<Transform>()->SetPosition(this->GetOwner()->GetComponent<Transform>()->GetPosition());
+						bossShoutingList->GetComponent<Particle>()->SetActive(true);
+
+						bossShoutingList->GetComponent<Particle>()->SetParticleSize(_timer2 * 500, _timer2 * 500);
+					}
+				}
+			}
+			else
 			{
 				_boss->GetComponent<BoxCollider>()->SetActive(false);
 				_boss->GetComponent<MeshRenderer>()->SetActive(false);
@@ -6069,6 +6148,13 @@ void KunrealEngine::Kamen::CreateBattleCry()
 				_boss->GetComponent<MeshRenderer>()->Update();
 
 				_info._armor = 1.0f;
+
+				for (auto& bossShoutingList : _bossShoutingList)
+				{
+					bossShoutingList->GetComponent<Particle>()->SetActive(false);
+				}
+				_bossShoutingForce->GetComponent<Particle>()->SetActive(false);
+
 				return false;
 			}
 
@@ -6541,6 +6627,7 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 				_meteorSword->GetComponent<Transform>()->SetPosition(-4, 270, -8);
 				_meteorSword->GetComponent<MeshRenderer>()->SetActive(true);
+				_meteorSword->GetComponent<Transform>()->Update();
 			}
 
 			_timer = 0.0f;
@@ -6567,6 +6654,18 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 			}
 			else
 			{
+				if (!_rentalSuccess)
+				{
+					if (EventManager::GetInstance()._difficulty == eDifficulty::eEasy)
+					{
+						_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp * 0.7f;
+					}
+					else
+					{
+						_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 1000;
+					}
+				}
+
 				if (_timer == 0.0f)
 				{
 					/// 사운드 - 검 - 폭발 (SwrodMeteor)
@@ -6590,6 +6689,8 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 					_meteorSwordHitParticle[1]->GetComponent<Particle>()->SetParticleSize(75 + 6 * 75 * _timer, 75 + 6 * 75 * _timer);
 					_meteorSwordHitParticle[2]->GetComponent<Particle>()->SetParticleSize(80 + 6 * 80 * _timer, 80 + 6 * 80 * _timer);
 					_meteorSwordHitParticle[3]->GetComponent<Particle>()->SetParticleSize(30 + 6 * 30 * _timer, 30 + 6 * 30 * _timer);
+
+					EventManager::GetInstance().CamShake(5.0f);
 				}
 				else
 				{
@@ -6618,18 +6719,6 @@ void KunrealEngine::Kamen::CreateSwordMeteorAttack()
 
 					else
 					{
-						if (!_rentalSuccess)
-						{
-							if (EventManager::GetInstance()._difficulty == eDifficulty::eEasy)
-							{
-								_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp * 0.7f;
-							}
-							else
-							{
-								_player->GetComponent<Player>()->GetPlayerData()._hp -= _player->GetComponent<Player>()->GetPlayerData()._hp + 1000;
-							}
-						}
-
 						_meteorSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 
 						_meteorSword->SetTotalComponentState(false);
@@ -6963,6 +7052,8 @@ void KunrealEngine::Kamen::CreateKamenHoldSword()
 			_kamenSword->GetComponent<MeshRenderer>()->SetIsDissolve(true);
 
 			_timer = 0.0f;
+
+			_info._armor = 100.0f;
 		};
 
 	pattern->SetInitializeLogic(initializeLogic);
@@ -6980,6 +7071,8 @@ void KunrealEngine::Kamen::CreateKamenHoldSword()
 
 			else
 			{
+				_info._armor = 1.0f;
+
 				_kamenSword->GetComponent<MeshRenderer>()->SetIsDissolve(false);
 				ChangePhase(3);
 				return false;
@@ -7003,6 +7096,10 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 	auto initLogic = [pattern, this]()
 		{
+			_boss->GetComponent<MeshRenderer>()->SetActive(true);
+
+			_bezierCurvePoints.clear();
+
 			SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(true, 0);
 
 			_bossTransform->SetPosition(0.0f, 100.0f, 200.0f);
@@ -7037,6 +7134,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 			_isBasicPatternSoundPlayed[4] = false;
 
 			_player->GetComponent<Animator>()->Stop();
+
+			StopAllSpecialPattern();
 		};
 
 	pattern->SetInitializeLogic(initLogic);
@@ -7087,8 +7186,6 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				/// 카메라 흔들기 넣기 case 1 ~ 5까지
 				case 1:
 				{
-					EventManager::GetInstance().CamShake(20.0f);
-
 					auto isPlaying = _boss->GetComponent<Animator>()->Play("Genki1", 10.0f, false);
 
 					if (!isPlaying)
@@ -7247,8 +7344,6 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 원기옥 공격
 				case 3:
 				{
-					EventManager::GetInstance().CamShake(20.0f);
-
 					auto animator = _boss->GetComponent<Animator>();
 
 					auto isPlaying = animator->Play("Genki3", 10.0f, false);
@@ -7339,6 +7434,9 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 
 
 									SceneManager::GetInstance().GetCurrentScene()->GetGameObject("Player")->GetComponent<Player>()->SetPlayerBindFlag(false);
+
+									EventManager::GetInstance().SetCamera("testCamera");
+
 									return false;
 								}
 							}
@@ -7357,8 +7455,6 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 마지막 격돌 카메라 세팅
 				case 4:
 				{
-					EventManager::GetInstance().CamShake(20.0f);
-
 					int indexNum = 0;
 
 					for (auto& index : _bossLastAttackList)
@@ -7402,7 +7498,7 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 				// 원기옥 이동 로직
 				case 5:
 				{
-					EventManager::GetInstance().CamShake(20.0f);
+					EventManager::GetInstance().CamShake(4.0f);
 
 					auto logicFinish = false;
 
@@ -7499,6 +7595,8 @@ void KunrealEngine::Kamen::CreateGenkiAttack()
 						_soundComp->Stop(_playerLastLaser);
 
 						EventManager::GetInstance()._Spacebutton->SetActive(false);
+
+						EventManager::GetInstance().SetCamera("testCamera");
 
 						return false;
 					}

@@ -498,6 +498,9 @@ namespace KunrealEngine
 
 		std::vector<GameObject*> _bossLastAttackList;
 
+		std::vector<GameObject*> _bossShoutingList;
+		GameObject* _bossShoutingForce;
+
 		// 베지어 곡선을 이용한 파티클 이동 관련 변수
 		std::vector<GameObject*> _bezierSwordParticles;
 		std::vector<DirectX::XMFLOAT3> _bezierSwordParticlePoints;
@@ -508,6 +511,7 @@ namespace KunrealEngine
 
 		bool _isBezierStartSetting;
 		bool _isSettingTimer;
+		bool _isDead;
 
 		GameObject* _3PhaseParticle;
 		// 스펠 소멸값을 위한 변수
