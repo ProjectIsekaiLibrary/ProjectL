@@ -183,6 +183,20 @@ void KunrealEngine::EngineCore::Update()
 		{
 			SmoothTransition(titleCameraStart, titleCameraRotStart, titleCameraEnd, titleCameraRotEnd, 5.0f, TimeManager::GetInstance().GetDeltaTime());
 		}
+
+
+		if (inputInstance->KeyInput(KEY::NUM1))
+		{
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eEasy);
+		}
+		else if (inputInstance->KeyInput(KEY::NUM2))
+		{
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eNormal);
+		}
+		else if (inputInstance->KeyInput(KEY::NUM3))
+		{
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eHardCore);
+		}
 	}
 	else if (sceneInstance.GetCurrentScene()->GetSceneName() == "Main")
 	{
@@ -333,7 +347,7 @@ void KunrealEngine::EngineCore::PlayGround()
 	// UI의 부모가 될 0,0pos객체
 	battle_ui_box = sceneInstance.GetCurrentScene()->CreateObject("BattleUI");
 	battle_ui_box->AddComponent<BattleUIManager>();
-	battle_ui_box->_autoAwake = true;
+	//battle_ui_box->_autoAwake = true;
 
 
 	auto bossSoundManager = sceneInstance.GetCurrentScene()->CreateObject("SoundManager");
@@ -578,7 +592,7 @@ void KunrealEngine::EngineCore::MoveToMain()
 			// 플레이어 위치 조정 및 초기화
 			sceneInstance.GetScene("Main")->GetGameObject("Player")->GetComponent<Player>()->ResetPlayerStatus();
 
-			EventManager::GetInstance().SetDifficulty(eDifficulty::eHardCore);
+			EventManager::GetInstance().SetDifficulty(eDifficulty::eNormal);
 
 			titleCamera->GetComponent<Camera>()->CameraRotateY(-1 * g_test);
 			g_rageOfLee = 0.0f;
