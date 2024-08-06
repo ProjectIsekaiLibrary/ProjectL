@@ -184,7 +184,8 @@ namespace KunrealEngine
 		controltip->SetParent(pauseuibox);
 		controltip->AddComponent<ImageRenderer>();
 		controltip->GetComponent<ImageRenderer>()->SetImage("ui/SkillExplain/control_tip.png");
-		controltip->GetComponent<ImageRenderer>()->SetPosition(320.f, 180.f);
+		//controltip->GetComponent<ImageRenderer>()->SetPosition(320.f, 180.f);
+		controltip->GetComponent<ImageRenderer>()->SetPosition(0.f, 0.f);
 		controltip->GetComponent<Transform>()->SetScale(1.0f, 1.0f, 1.0f);
 		controltip->AddComponent<ButtonSystem>();
 		controltip->GetComponent<ButtonSystem>()->SetImage(controltip->GetComponent<ImageRenderer>());
