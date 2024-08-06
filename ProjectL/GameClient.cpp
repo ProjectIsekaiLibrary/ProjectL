@@ -5,7 +5,7 @@
 KunrealEngine::EngineCore* engineInstance = KunrealEngine::CreateEngine();
 
 GameClient::GameClient::GameClient()
-	:_hWnd(), _MSG(), _windowPosX(0), _windowPosY(0), _screenWidth(2560), _screenHeight(1440),
+	:_hWnd(), _MSG(), _windowPosX(0), _windowPosY(0), _screenWidth(1920), _screenHeight(1080),
 	_core(nullptr)
 {
 

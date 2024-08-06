@@ -28,7 +28,8 @@ namespace KunrealEngine
 		KunrealEngine::GameObject* controltip;
 
 		pauseuibox = scene.GetCurrentScene()->CreateObject("pauseuibox");
-		pauseuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
+		pauseuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
+		//pauseuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
 
 		imagebackground = scene.GetCurrentScene()->CreateObject("MenuBackground");
 		imagebackground->SetParent(pauseuibox);
@@ -237,7 +238,8 @@ namespace KunrealEngine
 
 		titleuibox = scene.GetCurrentScene()->CreateObject("titleuibox");
 		titleuibox->_autoAwake = true;
-		titleuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
+		//titleuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
+		titleuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 
 		title_image = scene.GetCurrentScene()->CreateObject("Title_Image");
 		title_image->SetParent(titleuibox);

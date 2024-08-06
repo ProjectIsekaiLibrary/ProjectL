@@ -70,7 +70,8 @@ static float g_rageOfLee = 0.0f;
 static float g_test = 0.0f;
 
 KunrealEngine::EngineCore::EngineCore()
-	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false), _screenWidth(2560.0f), _screenHeight(1440.0f), _endingCamera(nullptr), _endingCameraAfter(nullptr)
+//	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false), _screenWidth(2560.0f), _screenHeight(1440.0f), _endingCamera(nullptr), _endingCameraAfter(nullptr)
+	:_gInterface(nullptr), _isEditor(true), _timeCount(0), _timeCountPlayerR(0), _isSettingTimer(false), _isBezierStartSetting(false), _isBezierTeleportSetting(false), _screenWidth(1920.0f), _screenHeight(1080.0f), _endingCamera(nullptr), _endingCameraAfter(nullptr)
 {
 
 }
@@ -1303,7 +1304,8 @@ void KunrealEngine::EngineCore::BeforeStartTutorial()
 	tutorialFade->SetActive(false);
 
 	GameObject* tutorialImage = scene.GetScene("Title")->CreateObject("tutorialImage");
-	tutorialImage->GetComponent<Transform>()->SetPosition(320.0f, 180.0f, 0.0f);
+	//tutorialImage->GetComponent<Transform>()->SetPosition(320.0f, 180.0f, 0.0f);
+	tutorialImage->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 	image = tutorialImage->AddComponent<ImageRenderer>();
 	image->SetImage("ui/SkillExplain/control_tip.png");
 	butt = tutorialImage->AddComponent<ButtonSystem>();

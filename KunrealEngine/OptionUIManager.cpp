@@ -35,7 +35,8 @@ void KunrealEngine::OptionUIManager::Initialize()
 	KunrealEngine::GameObject* button_exit_text;
 
 	optionuibox = this->GetOwner();
-	optionuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
+	//optionuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 0.0f);
+	optionuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 0.0f);
 	optionuibox->AddComponent<SoundPlayer>();
 
 	imagebackgroundfill = scene->CreateObject("background_f");

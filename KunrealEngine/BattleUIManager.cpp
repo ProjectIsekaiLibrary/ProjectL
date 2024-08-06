@@ -73,16 +73,18 @@ void KunrealEngine::BattleUIManager::Initialize()
 	GameObject* dash_tip;				// 대쉬(회피?)
 
 	_battleuibox = this->GetOwner();
-	_battleuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 1.0f);
+	//_battleuibox->GetComponent<Transform>()->SetPosition(320.0f, 0.0f, 1.0f);
+	_battleuibox->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
 
 	booshpbar_pack = scene.GetCurrentScene()->CreateObject("boss_pack");
 	booshpbar_pack->SetParent(_battleuibox);
-	booshpbar_pack->GetComponent<Transform>()->SetPosition(0.0f, -500.0f, 1.0f);
+	//booshpbar_pack->GetComponent<Transform>()->SetPosition(0.0f, -500.0f, 1.0f);
+	booshpbar_pack->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
 	
 	battleui_pack = scene.GetCurrentScene()->CreateObject("battle_pack");
 	battleui_pack->SetParent(_battleuibox);
-	battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 600.0f, 1.0f);
-	//battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
+	//battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 600.0f, 1.0f);
+	battleui_pack->GetComponent<Transform>()->SetPosition(0.0f, 0.0f, 1.0f);
 
 	player_background = scene.GetCurrentScene()->CreateObject("background");
 	player_background->SetParent(battleui_pack);
